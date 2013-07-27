@@ -1,0 +1,47 @@
+name: BungeeSuiteSpawn
+main : com.minecraftdimensions.bungeesuitespawn.BungeeSuiteSpawn
+version: 0.13
+description: Part of the BungeeSuite this plugin allows users to set a proxy wide spawn and also welcome messages for new players.
+author: Bloodsplat
+website: http://www.spigotmc.org/resources/bungeesuite.9/
+prefix: BungeeSuite
+commands:
+    setspawn:
+        description: Sets the proxies global spawn point.
+        permission: bungeesuite.spawn.setspawn
+    spawn:
+        description: teleports the player to the spawn point set.
+        permission: bungeesuite.spawn.spawn
+    setnewspawn:
+        description: sets the spawnpoint for any new players joining your server
+        permission: bungeesuite.spawn.setspawn
+    setworldspawn:
+        description: sets the worlds spawnpoint for any new players joining your server
+    worldspawn:
+        description: sets the worlds spawnpoint for any new players joining your server
+        aliases: [ws, wspawn]
+    globalspawn:
+        description: sets the worlds spawnpoint for any new players joining your server
+        aliases: [gs, gspawn]
+
+permissions:
+    bungeesuite.*:
+        description: gives access to all bungeesuite commands and features
+        children:
+            bungeesuite.admin: true
+    bungeesuite.admin:
+        description: gives access to all admin features of bungeesuite
+        children:
+            bungeesuite.spawn.*: true
+    bungeesuite.spawn.*:
+        description: gives access to all bungeesuitespawn commands
+        children:
+            bungeesuite.spawn.spawn: true
+            bungeesuite.spawn.setspawn: true
+    bungeesuite.spawn.spawn:
+        description: allows the player to use /spawn
+    bungeesuite.spawn.setspawn:
+        description: allows the player to set a spawn using /setspawn or /setnewspawn
+            
+           
+    
