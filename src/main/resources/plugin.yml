@@ -1,0 +1,20 @@
+name: BungeeSuitePortals
+main : com.minecraftdimensions.bungeesuiteportals.BungeeSuitePortals
+version: 0.14
+description: Part of the BungeeSuite this plugin allows users to use portals to move around the server.
+author: Bloodsplat
+website: http://www.spigotmc.org/resources/bungeesuite.9/
+prefix: BungeeSuite
+commands:
+    setportal:
+        description: Creates a portal to a destination
+        aliases: [createportal]
+        usage: Error use /setportal (portal name) (type) (destination) *(filltype)
+    delportal:
+        description: Deletes a specific portal
+        aliases: [deleteportal]
+        usage: Error use /delportal (portal name)
+    portals:
+        description: Gives a list of portals to the player
+        aliases: [portalslist, portallist, listportals]
+            
