@@ -1,0 +1,24 @@
+name: BungeeSuiteWarps
+main : com.minecraftdimensions.bungeesuitewarps.BungeeSuiteWarps
+version: 0.17
+description: Part of the BungeeSuite this plugin allows users to warp to certain points.
+author: Bloodsplat
+website: http://www.spigotmc.org/resources/bungeesuite.9/
+prefix: BungeeSuite
+commands:
+    bwarps:
+        description: Shows a list of available warps.
+        aliases: [warps,warplist]
+    bwarp:
+        description: Warps a player to a specific warp.
+        aliases: [warp,warpto]
+        usage: Error use /warp (warp name)
+    bsetwarp:
+        description: Sets a warps at the players location. Add "private" or "true" at the end of the command to hide it from basic users
+        usage: Error use /setwarp (warp name) *private
+        aliases: [setwarp]
+    bdelwarp:
+        description: Used to delete a specific warp
+        usage: Error use /delwarp (warp name)
+        aliases: [delwarp]
+            
