@@ -1,0 +1,27 @@
+name: BungeeSuiteHomes
+main : com.minecraftdimensions.bungeesuitehomes.BungeeSuiteHomes
+version: 0.12
+description: Part of the BungeeSuite this plugin allows users to set homes in each server.
+author: Bloodsplat
+website: http://www.spigotmc.org/resources/bungeesuite.9/
+prefix: BungeeSuite
+commands:
+    sethome:
+        description: Sets the players home location.
+        usage: /sethome *(home name)
+    delhome:
+        description: Deletes a players home.
+        usage: /delhome *(home name)
+    home:
+        description: Teleports you home
+        usage: /home *(home name)
+    homes:
+        description: Lists all of your homes
+        usage: /homes
+    importhomes:
+        description: imports homes from your essentials data
+        usage: /importhomes
+    reloadhomes:
+        description: imports homes from your essentials data
+        usage: /importhomes
+        aliases: [homesreload]
