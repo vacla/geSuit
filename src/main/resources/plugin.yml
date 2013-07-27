@@ -1,0 +1,39 @@
+name: BungeeSuiteBans
+main : com.minecraftdimensions.bungeesuitebans.BungeeSuiteBans
+version: 0.15
+description: Part of the BungeeSuite this plugin allows moderators to ban and kick players
+author: Bloodsplat
+website: http://www.spigotmc.org/resources/bungeesuite.9/
+prefix: BungeeSuite
+commands:
+    kick:
+        description: Kicks players on your proxy
+        usage: Error type /kick (player)
+    kickall:
+        description: Kicks everyone from the server.
+    tempban:
+        description: Temporarily bans the player for a certain amount of time
+        usage: "Error type /tempban (player) (time *d:(days) *h:(hours) *m:(minutes))"
+        aliases: [tban]
+    ban:
+        description: Bans the player from your server.
+        usage: Error type /ban (player)
+    unban:
+        description: unbans the player from your server
+        aliases: [pardon]
+        usage: Error type /unban (player)
+    ipban:
+        description: ip bans a player
+        usage: Error type /ipban (ip/player)
+        aliases: [banip]
+    unipban:
+        description: ip bans a player
+        usage: Error type /unipban (ip/player)
+        aliases: [unbanip]
+    reloadbans:
+        description: reloads the bans config
+        aliases: [bansreload]
+    checkban:
+        description: gets the players ban information.
+        usage: Error type /checkban (player)
+        aliases: [lookupban, bancheck]
