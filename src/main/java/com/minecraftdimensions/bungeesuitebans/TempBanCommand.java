@@ -30,6 +30,7 @@ public class TempBanCommand implements CommandExecutor {
 				timing+=data+" ";
 			}
 			plugin.utils.tempBanPlayer(sender.getName(), args[0], timing);
+			return true;
 		}
 		return false;
 	}
