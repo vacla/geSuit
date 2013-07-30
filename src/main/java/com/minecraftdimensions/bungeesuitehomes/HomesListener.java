@@ -30,13 +30,13 @@ public class HomesListener implements PluginMessageListener, Listener {
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent e){
 		if(CommandUtil.hasPermission(e.getPlayer(), PERMISSION_NODES)){
-			if(plugin.defaultHomes.containsKey(e.getPlayer())){
-				Location loc = plugin.defaultHomes.get(e.getPlayer());
+			if(plugin.defaultHomes.containsKey(e.getPlayer().getName())){
+				Location loc = plugin.defaultHomes.get(e.getPlayer().getName());
 				if(loc==null){
 					e.setRespawnLocation(e.getPlayer().getWorld().getSpawnLocation());
 					return;
 				}
-			e.setRespawnLocation(plugin.defaultHomes.get(e.getPlayer()));
+			e.setRespawnLocation(plugin.defaultHomes.get(e.getPlayer().getName()));
 			plugin.utils.getMessage(e.getPlayer().getName(), "SENT_HOME");
 			}else{
 				plugin.utils.getMessage(e.getPlayer().getName(), "HOME_NOT_SET");
@@ -63,11 +63,15 @@ public class HomesListener implements PluginMessageListener, Listener {
 		}else{
 		plugin.utils.getPlayersHome(e.getPlayer());
 		}
+		if(plugin.locqueue.containsKey(e.getPlayer().getName())){
+			e.getPlayer().teleport(plugin.locqueue.get(e.getPlayer().getName()));
+			plugin.locqueue.remove(e.getPlayer().getName());
+		}
 	}
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e){
-		if(plugin.defaultHomes.containsKey(e.getPlayer())){
-			plugin.defaultHomes.remove(e.getPlayer());
+		if(plugin.defaultHomes.containsKey(e.getPlayer().getName())){
+			plugin.defaultHomes.remove(e.getPlayer().getName());
 		}
 	}
 
@@ -131,7 +135,7 @@ public class HomesListener implements PluginMessageListener, Listener {
 			float ya = Float.parseFloat(locs[4]);
 			float pi = Float.parseFloat(locs[5]);
 			Location location = new Location(w, x, y, z, pi,ya);
-			plugin.defaultHomes.put(Bukkit.getPlayer(player), location);
+			plugin.defaultHomes.put(player, location);
 			return;
 		}
 	}

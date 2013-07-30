@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BungeeSuiteHomes extends JavaPlugin {
@@ -19,7 +18,8 @@ public class BungeeSuiteHomes extends JavaPlugin {
 	static String INCOMING_PLUGIN_CHANNEL = "BungeeSuiteHomes";
 	
 	ArrayList<String> groups = new ArrayList<String>();
-	HashMap<Player,Location>defaultHomes = new HashMap<Player, Location>();
+	HashMap<String,Location>defaultHomes = new HashMap<String, Location>();
+	public HashMap<String, Location>locqueue = new HashMap<String,Location>();
 	
 
 	@Override

@@ -97,6 +97,9 @@ public class Utilities {
 		Location location = new Location(w, x, y, z, pi, ya);
 		if (p != null) {
 			p.teleport(location);
+		}else{
+			plugin.locqueue.put(player, location);
+			return;
 		}
 	}
 
@@ -213,8 +216,8 @@ public class Utilities {
 				.runTaskAsynchronously(plugin);
 
 		if (home.equalsIgnoreCase("home")
-				&& plugin.defaultHomes.containsKey((Player) sender)) {
-			plugin.defaultHomes.remove((Player) sender);
+				&& plugin.defaultHomes.containsKey(sender.getName())) {
+			plugin.defaultHomes.remove(sender.getName());
 		}
 
 	}
@@ -236,8 +239,8 @@ public class Utilities {
 	public void sendPlayerHome(CommandSender sender, String homename) {
 		Player p = (Player) sender;
 		if (homename.equalsIgnoreCase("home")) {
-			if (plugin.defaultHomes.containsKey(p)) {
-				Location l = plugin.defaultHomes.get(p);
+			if (plugin.defaultHomes.containsKey(sender.getName())) {
+				Location l = plugin.defaultHomes.get(sender.getName());
 				if (!l.getChunk().isLoaded()) {
 					l.getChunk().load();
 				}
