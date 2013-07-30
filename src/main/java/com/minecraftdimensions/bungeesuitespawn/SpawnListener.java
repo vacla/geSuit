@@ -44,6 +44,10 @@ public class SpawnListener implements PluginMessageListener, Listener {
 				}
 			}
 		}
+		if(plugin.locqueue.containsKey(e.getPlayer().getName())){
+			e.getPlayer().teleport(plugin.locqueue.get(e.getPlayer().getName()));
+			plugin.locqueue.remove(e.getPlayer().getName());
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

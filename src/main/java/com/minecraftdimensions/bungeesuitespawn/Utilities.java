@@ -148,6 +148,8 @@ public class Utilities {
 		}
 		if (bplayer != null) {
 			bplayer.teleport(location);
+		}else{
+			plugin.locqueue.put(player, location);
 		}
 		
 	}

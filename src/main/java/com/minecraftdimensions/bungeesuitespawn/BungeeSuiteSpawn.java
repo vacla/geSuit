@@ -25,6 +25,8 @@ public class BungeeSuiteSpawn extends JavaPlugin {
 	public boolean toServerSpawn;
 
 	public boolean UseSpawnForWorldCommand;
+	
+	public HashMap<String, Location>locqueue = new HashMap<String,Location>();
 
 	@Override
 	public void onEnable() {
