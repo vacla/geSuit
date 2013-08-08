@@ -1,4 +1,4 @@
-package com.minecraftdimensions.bungeesuitebans;
+package com.minecraftdimensions.bungeesuitebans.managers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -7,46 +7,15 @@ import java.io.IOException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import com.minecraftdimensions.bungeesuitebans.BungeeSuiteBans;
+import com.minecraftdimensions.bungeesuitebans.tasks.PluginMessageTask;
 
-public class Utilities {
-	BungeeSuiteBans plugin;
 
-	public Utilities(BungeeSuiteBans bst) {
-		plugin = bst;
-	}
-	public void getMessage(String sender, String message) {
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(b);
-		try {
-			out.writeUTF("GetServerMessage");
-			out.writeUTF(sender);
-			out.writeUTF(message);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		new PluginMessageTask(this.plugin, Bukkit.getOnlinePlayers()[0], b)
-				.runTaskAsynchronously(plugin);
 
-	}
-	public void createBaseTables() {
-		if (!plugin.tablesCreated) {
-			ByteArrayOutputStream b = new ByteArrayOutputStream();
-			DataOutputStream out = new DataOutputStream(b);
-			try {
-				out.writeUTF("CreateTable");
-				out.writeUTF("BungeeBans");
-				out.writeUTF("CREATE TABLE BungeeBans (player VARCHAR(100), banned_by VARCHAR(100), reason VARCHAR(200), type VARCHAR(20), banned_on DATETIME, banned_until DATETIME, FOREIGN KEY (player) REFERENCES BungeePlayers (playername), FOREIGN KEY (banned_by) REFERENCES BungeePlayers (playername))");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			new PluginMessageTask(this.plugin,
-					Bukkit.getOnlinePlayers()[0], b)
-					.runTaskAsynchronously(plugin);
-			plugin.tablesCreated = true;
-		}
-	}
 
-	public void banPlayer(String sender, String player, String msg) {
+public class BansManager {
+	
+	public static void banPlayer(String sender, String player, String msg) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
 		try {
@@ -57,12 +26,10 @@ public class Utilities {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PluginMessageTask(this.plugin,
-				Bukkit.getOnlinePlayers()[0], b).runTaskAsynchronously(plugin);
-		
+		new PluginMessageTask(b).runTaskAsynchronously(BungeeSuiteBans.instance);	
 	}
 
-	public void kickAll(String msg) {
+	public static void kickAll(String msg) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
 		try {
@@ -71,12 +38,11 @@ public class Utilities {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PluginMessageTask(this.plugin,
-				Bukkit.getOnlinePlayers()[0], b).runTaskAsynchronously(plugin);
+		new PluginMessageTask(b).runTaskAsynchronously(BungeeSuiteBans.instance);
 		
 	}
 
-	public void kickPlayer(String sender, String player, String msg) {
+	public static void kickPlayer(String sender, String player, String msg) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
 		try {
@@ -87,12 +53,11 @@ public class Utilities {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PluginMessageTask(this.plugin,
-				Bukkit.getOnlinePlayers()[0], b).runTaskAsynchronously(plugin);
+		new PluginMessageTask(b).runTaskAsynchronously(BungeeSuiteBans.instance);
 		
 	}
 
-	public void tempBanPlayer(String sender, String player, String timing) {
+	public static void tempBanPlayer(String sender, String player, String timing) {
 		String [] arg1 = timing.split(" "); 
 		int minuteIncrease = 0;
 		int hourIncrease = 0;
@@ -137,11 +102,10 @@ public class Utilities {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PluginMessageTask(this.plugin,
-				Bukkit.getOnlinePlayers()[0], b).runTaskAsynchronously(plugin);
+		new PluginMessageTask(b).runTaskAsynchronously(BungeeSuiteBans.instance);
 	}
 
-	public void unbanPlayer(String sender, String player) {
+	public static void unbanPlayer(String sender, String player) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
 		try {
@@ -151,22 +115,11 @@ public class Utilities {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PluginMessageTask(this.plugin,
-				Bukkit.getOnlinePlayers()[0], b).runTaskAsynchronously(plugin);
+		new PluginMessageTask(b).runTaskAsynchronously(BungeeSuiteBans.instance);
 		
 	}
-	public void createBansConfig() {
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(b);
-		try {
-			out.writeUTF("CreateBansConfig");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		new PluginMessageTask(this.plugin, Bukkit.getOnlinePlayers()[0], b)
-				.runTaskAsynchronously(plugin);	
-	}
-	public void reloadBans(String string) {
+
+	public static void reloadBans(String string) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
 		try {
@@ -175,10 +128,11 @@ public class Utilities {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PluginMessageTask(this.plugin, Bukkit.getOnlinePlayers()[0], b)
-				.runTaskAsynchronously(plugin);	
+		new PluginMessageTask(b)
+				.runTaskAsynchronously(BungeeSuiteBans.instance);	
 	}
-	public void ipBanPlayer(String sender, String player, String msg) {
+	
+	public static void ipBanPlayer(String sender, String player, String msg) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
 		try {
@@ -189,11 +143,11 @@ public class Utilities {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PluginMessageTask(this.plugin,
-				Bukkit.getOnlinePlayers()[0], b).runTaskAsynchronously(plugin);
+		new PluginMessageTask(b).runTaskAsynchronously(BungeeSuiteBans.instance);
 		
 	}
-	public void unipBanPlayer(String sender, String player, String msg) {
+	
+	public static void unipBanPlayer(String sender, String player, String msg) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
 		try {
@@ -204,11 +158,11 @@ public class Utilities {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PluginMessageTask(this.plugin,
-				Bukkit.getOnlinePlayers()[0], b).runTaskAsynchronously(plugin);
+		new PluginMessageTask(b).runTaskAsynchronously(BungeeSuiteBans.instance);
 		
 	}
-	public void checkPlayerBans(String sender, String player) {
+	
+	public static void checkPlayerBans(String sender, String player) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
 		try {
@@ -218,8 +172,7 @@ public class Utilities {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PluginMessageTask(this.plugin,
-				Bukkit.getOnlinePlayers()[0], b).runTaskAsynchronously(plugin);
+		new PluginMessageTask(b).runTaskAsynchronously(BungeeSuiteBans.instance);
 		
 	}
 
