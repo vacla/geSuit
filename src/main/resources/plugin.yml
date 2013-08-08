@@ -67,4 +67,26 @@ commands:
         permission-message: §cYou do not have permission for this command
         usage: /<command> (ip)
 
+permissions:
+    bungeesuite.bans.*:
+        description: Gives access to all bans commands
+        default: op
+        children:
+            bungeesuite.chat.admin: true
+    bungeesuite.bans.admin:
+        description: Gives access to all bans admin commands
+        children:
+            bungeesuite.bans.command.kickall: true
+            bungeesuite.bans.command.ipban: true
+            bungeesuite.bans.command.reload: true
+            bungeesuite.bans.mod: true
+    bungeesuite.bans.mod:
+        description: Gives access to all bans mod commands
+        children:
+            bungeesuite.bans.command.ban: true
+            bungeesuite.bans.command.checkban: true
+            bungeesuite.bans.command.kick: true
+            bungeesuite.bans.command.tempban: true
+        
+
         
