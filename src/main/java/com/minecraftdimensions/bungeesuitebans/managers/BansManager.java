@@ -154,7 +154,6 @@ public class BansManager {
 			out.writeUTF("UnIPBanPlayer");
 			out.writeUTF(sender);
 			out.writeUTF(player);
-			out.writeUTF(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -173,7 +172,6 @@ public class BansManager {
 			e.printStackTrace();
 		}
 		new PluginMessageTask(b).runTaskAsynchronously(BungeeSuiteBans.instance);
-		
 	}
 
 	
