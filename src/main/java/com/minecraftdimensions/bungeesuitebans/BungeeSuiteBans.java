@@ -29,15 +29,15 @@ public class BungeeSuiteBans extends JavaPlugin {
 	}
 	
 	private void registerCommands() {
+		getCommand("ban").setExecutor(new BanCommand());
+		getCommand("checkban").setExecutor(new CheckBanCommand());
+		getCommand("ipban").setExecutor(new IPBanCommand());
 		getCommand("kick").setExecutor(new KickCommand());
 		getCommand("kickall").setExecutor(new KickAllCommand());
-		getCommand("tempban").setExecutor(new TempBanCommand());
-		getCommand("ban").setExecutor(new BanCommand());
-		getCommand("unban").setExecutor(new UnbanCommand());
 		getCommand("reloadbans").setExecutor(new ReloadBansCommand());
-		getCommand("ipban").setExecutor(new IPBanCommand());
+		getCommand("tempban").setExecutor(new TempBanCommand());
+		getCommand("unban").setExecutor(new UnbanCommand());
 		getCommand("unipban").setExecutor(new UnBanIPCommand());
-		getCommand("checkban").setExecutor(new CheckBanCommand());
 	}
 
 	private void registerChannels() {

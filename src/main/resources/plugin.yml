@@ -1,39 +1,70 @@
 name: BungeeSuiteBans
 main : com.minecraftdimensions.bungeesuitebans.BungeeSuiteBans
-version: 0.15
+version: 0.50
 description: Part of the BungeeSuite this plugin allows moderators to ban and kick players
 author: Bloodsplat
 website: http://www.spigotmc.org/resources/bungeesuite.9/
 prefix: BungeeSuite
 commands:
-    kick:
-        description: Kicks players on your proxy
-        usage: Error type /kick (player)
-    kickall:
-        description: Kicks everyone from the server.
-    tempban:
-        description: Temporarily bans the player for a certain amount of time
-        usage: "Error type /tempban (player) (time *d:(days) *h:(hours) *m:(minutes))"
-        aliases: [tban]
     ban:
-        description: Bans the player from your server.
-        usage: Error type /ban (player)
-    unban:
-        description: unbans the player from your server
-        aliases: [pardon]
-        usage: Error type /unban (player)
-    ipban:
-        description: ip bans a player
-        usage: Error type /ipban (ip/player)
-        aliases: [banip]
-    unipban:
-        description: ip bans a player
-        usage: Error type /unipban (ip/player)
-        aliases: [unbanip]
-    reloadbans:
-        description: reloads the bans config
-        aliases: [bansreload]
+        description: Bans a player from the proxy
+        aliases: [banplayer]
+        permission: bungeesuite.bans.command.ban
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
+               /<command> (player) (message)
     checkban:
-        description: gets the players ban information.
-        usage: Error type /checkban (player)
-        aliases: [lookupban, bancheck]
+        description: Gets info about a players ban
+        aliases: [cb, lookupban,baninfo]
+        permission: bungeesuite.bans.command.checkban
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>  (player)
+    ipban:
+        description: Bans an IP from the proxy
+        aliases: [banip]
+        permission: bungeesuite.bans.command.ipban
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>  (player)
+               /<command> (ip)
+               /<command> (ip/player) (message)
+    kick:
+        description: Kick a player from the proxy
+        aliases: [kickplayer, playerkick, kickp,pkick]
+        permission: bungeesuite.bans.command.kick
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>  (player)
+               /<command> (player) (message)
+    kickall:
+        description: Kicks everyone from the proxy
+        aliases: [kicka]
+        permission: bungeesuite.bans.command.kickall
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+               /<command>  (message)
+    reloadbans:
+        description: Reloads the bans config
+        aliases: [bansreload, reloadban, banreload]
+        permission: bungeesuite.bans.command.reload
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    tempban:
+        description: Temporarily bans a player from the proxy
+        aliases: [tban, bant, bantemp]
+        permission: bungeesuite.bans.command.tempban
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player) (time d:(days) h:(hours) m:(minutes))
+               /<command> (player) (time d:(days) h:(hours) m:(minutes)) (message)         
+    unban:
+        description: Unbans a player from the proxy
+        aliases: [uban, removeban, pardon]
+        permission: bungeesuite.bans.command.ban
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
+    unbanip:
+        description: Unbans an IP from the proxy
+        aliases: [ipunban, ipsafe, safeip]
+        permission: bungeesuite.bans.command.ipban
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (ip)
+
+        
