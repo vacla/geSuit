@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 
 import com.minecraftdimensions.bungeesuitebans.BungeeSuiteBans;
 import com.minecraftdimensions.bungeesuitebans.tasks.PluginMessageTask;
@@ -29,11 +29,12 @@ public class BansManager {
 		new PluginMessageTask(b).runTaskAsynchronously(BungeeSuiteBans.instance);	
 	}
 
-	public static void kickAll(String msg) {
+	public static void kickAll(String sender,String msg) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
 		try {
 			out.writeUTF("KickAll");
+			out.writeUTF(sender);
 			out.writeUTF(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -57,7 +58,7 @@ public class BansManager {
 		
 	}
 
-	public static void tempBanPlayer(String sender, String player, String timing) {
+	public static void tempBanPlayer(String sender, String player, String timing, Command command) {
 		String [] arg1 = timing.split(" "); 
 		int minuteIncrease = 0;
 		int hourIncrease = 0;
@@ -84,8 +85,7 @@ public class BansManager {
 					message+=arg1[i]+" ";
 				}
 			} catch (NumberFormatException e) {
-				Bukkit.getPlayer(sender).sendMessage(ChatColor.RED
-						+ "An incorrect value was used for the time. /tempban (playername) (d:days h:hours, m: minutes)");
+				Bukkit.getPlayer(sender).sendMessage(command.getUsage());
 				return;
 			}
 		}

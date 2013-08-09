@@ -18,7 +18,7 @@ public class TempBanCommand implements CommandExecutor {
 				if(!data.equals(args[0]));
 				timing+=data+" ";
 			}
-			BansManager.tempBanPlayer(sender.getName(), args[0], timing);
+			BansManager.tempBanPlayer(sender.getName(), args[0], timing,command);
 			return true;
 		}
 		return false;

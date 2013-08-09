@@ -1,6 +1,5 @@
 package com.minecraftdimensions.bungeesuitebans;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.minecraftdimensions.bungeesuitebans.commands.BanCommand;
@@ -12,13 +11,10 @@ import com.minecraftdimensions.bungeesuitebans.commands.ReloadBansCommand;
 import com.minecraftdimensions.bungeesuitebans.commands.TempBanCommand;
 import com.minecraftdimensions.bungeesuitebans.commands.UnBanIPCommand;
 import com.minecraftdimensions.bungeesuitebans.commands.UnbanCommand;
-import com.minecraftdimensions.bungeesuitebans.listener.BansListener;
-
 
 public class BungeeSuiteBans extends JavaPlugin {
 
-	public static String OUTGOING_PLUGIN_CHANNEL = "BungeeSuite";
-	static String INCOMING_PLUGIN_CHANNEL = "BungeeSuiteBans";
+	public static String OUTGOING_PLUGIN_CHANNEL = "BSBans";
 	public static BungeeSuiteBans instance;
 
 	@Override
@@ -41,10 +37,7 @@ public class BungeeSuiteBans extends JavaPlugin {
 	}
 
 	private void registerChannels() {
-		Bukkit.getMessenger().registerIncomingPluginChannel(this,
-				INCOMING_PLUGIN_CHANNEL, new BansListener());
-		Bukkit.getMessenger().registerOutgoingPluginChannel(this,
-				OUTGOING_PLUGIN_CHANNEL);
+		this.getServer().getMessenger().registerOutgoingPluginChannel(this, OUTGOING_PLUGIN_CHANNEL);
 	}
 
 

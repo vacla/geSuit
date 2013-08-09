@@ -20,8 +20,8 @@ public class KickAllCommand implements CommandExecutor {
 			}
 		}
 		
-		BansManager.kickAll(msg);
-		return false;
+		BansManager.kickAll(sender.getName(),msg);
+		return true;
 	}
 
 }
