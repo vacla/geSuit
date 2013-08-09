@@ -1,4 +1,4 @@
-name: BungeeSuiteBans
+name: Bans
 main : com.minecraftdimensions.bungeesuitebans.BungeeSuiteBans
 version: 0.50
 description: Part of the BungeeSuite this plugin allows moderators to ban and kick players
