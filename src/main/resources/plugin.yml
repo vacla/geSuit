@@ -1,24 +1,70 @@
-name: BungeeSuiteWarps
+name: Warps
 main : com.minecraftdimensions.bungeesuitewarps.BungeeSuiteWarps
-version: 0.17
+version: 0.50
 description: Part of the BungeeSuite this plugin allows users to warp to certain points.
 author: Bloodsplat
 website: http://www.spigotmc.org/resources/bungeesuite.9/
 prefix: BungeeSuite
 commands:
-    bwarps:
+    warps:
         description: Shows a list of available warps.
-        aliases: [warps,warplist]
-    bwarp:
+        aliases: [warplist]
+        permission: bungeesuite.warps.command.warps
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    warp:
         description: Warps a player to a specific warp.
-        aliases: [warp,warpto]
-        usage: Error use /warp (warp name)
-    bsetwarp:
-        description: Sets a warps at the players location. Add "private" or "true" at the end of the command to hide it from basic users
-        usage: Error use /setwarp (warp name) *private
-        aliases: [setwarp]
-    bdelwarp:
+        aliases: [warpto]
+        permission: bungeesuite.warps.command.warp
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (warp name)
+    setwarp:
+        description: Sets a warps at the players location.
+        permission: bungeesuite.warps.command.setwarp
+        permission-message: §cYou do not have permission for this command
+        usage: |
+            /<command> - sets a warp for the current server
+            /<command> (hidden true/false) - sets a hidden warp
+            /<command> (hidden) (global true/false) - sets a global warp
+        aliases: [createwarp]
+    delwarp:
         description: Used to delete a specific warp
-        usage: Error use /delwarp (warp name)
-        aliases: [delwarp]
+        permission: bungeesuite.warps.command.delwarp
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (warp name)
+        aliases: [deletewarp, removewarp]
+        
+permissions:
+    bungeesuite.warps.*:
+        description: Gives access to all BungeeSuiteWarps commands
+        default: op
+        children:
+            bungeesuite.warps.admin: true
+    bungeesuite.warps.admin:
+        description: Gives access to all BungeeSuiteWarps admin commands
+        children:
+            bungeesuite.warps.user: true
+            bungeesuite.warps.command.setwarp: true
+            bungeesuite.warps.command.delwarp: true
+            bungeesuite.warps.list.hidden: true
+            bungeesuite.warps.warp.*: true
+    bungeesuite.warps.user:
+        description: Gives access to all BungeeSuiteWarps user commands
+        children:
+            bungeesuite.warps.command.warps: true
+            bungeesuite.warps.command.warp: true
+            bungeesuite.warps.list.server: true
+            bungeesuite.warps.list.global: true
+    bungeesuite.warps.list.hidden:
+        description: Displays all hidden warps to the user
+    bungeesuite.warps.list.server:
+        description: Displays all server warps to the user
+    bungeesuite.warps.list.global:
+        description: Displays all global warps to the user
+    bungeesuite.warps.warp.*:
+        description: Allows access to all warps
+    bungeesuite.warps.warp.<warpname>:
+        description: "allows access to <warpname>"
+                       
+            
             
