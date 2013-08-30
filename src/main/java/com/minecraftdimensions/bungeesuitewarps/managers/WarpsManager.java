@@ -85,21 +85,27 @@ public class WarpsManager {
         new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteWarps.instance );
     }
 
-    public static void teleportPlayerToWarp( final String player, Location location ) {
-        Player p = Bukkit.getPlayer( player );
-        pendingWarps.put( player, location );
-        if ( BungeeSuiteWarps.usingTeleports ) {
-            TeleportsManager.ignoreTeleport.add( p );
-        }
-        Bukkit.getScheduler().runTaskLaterAsynchronously( BungeeSuiteWarps.instance, new Runnable() {
-            @Override
-            public void run() {
-                if ( pendingWarps.containsKey( player ) ) {
-                    pendingWarps.remove( player );
-                }
-            }
-        }, 100 );
-    }
+	public static void teleportPlayerToWarp(final String player,
+			Location location) {
+		Player p = Bukkit.getPlayer(player);
+		if (p != null) {
+			p.teleport(location);
+		} else {
+			pendingWarps.put(player, location);
+			if (BungeeSuiteWarps.usingTeleports) {
+				TeleportsManager.ignoreTeleport.add(p);
+			}
+			Bukkit.getScheduler().runTaskLaterAsynchronously(
+					BungeeSuiteWarps.instance, new Runnable() {
+						@Override
+						public void run() {
+							if (pendingWarps.containsKey(player)) {
+								pendingWarps.remove(player);
+							}
+						}
+					}, 100);
+		}
+	}
 
 
 }
