@@ -79,6 +79,7 @@ public class WarpsManager {
             out.writeBoolean( sender.hasPermission( "bungeesuite.warps.list.server" ) );
             out.writeBoolean( sender.hasPermission( "bungeesuite.warps.list.global" ) );
             out.writeBoolean( sender.hasPermission( "bungeesuite.warps.list.hidden" ) );
+            out.writeBoolean( sender.hasPermission( "bungeesuite.warps.bypass"));
         } catch ( IOException e ) {
             e.printStackTrace();
         }
