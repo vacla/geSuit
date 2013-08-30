@@ -1,54 +1,59 @@
 package com.minecraftdimensions.bungeesuitehomes;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.minecraftdimensions.bungeesuitehomes.commands.DelHomeCommand;
+import com.minecraftdimensions.bungeesuitehomes.commands.HomeCommand;
+import com.minecraftdimensions.bungeesuitehomes.commands.HomesCommand;
+import com.minecraftdimensions.bungeesuitehomes.commands.ImportHomesCommand;
+import com.minecraftdimensions.bungeesuitehomes.commands.ReloadHomesCommand;
+import com.minecraftdimensions.bungeesuitehomes.commands.SetHomeCommand;
+import com.minecraftdimensions.bungeesuitehomes.listeners.HomesListener;
+import com.minecraftdimensions.bungeesuitehomes.listeners.HomesMessageListener;
+import com.minecraftdimensions.bungeesuiteteleports.BungeeSuiteTeleports;
 
 public class BungeeSuiteHomes extends JavaPlugin {
 
-	public Utilities utils;
+	public static BungeeSuiteHomes instance;
 
-	public boolean tablesCreated = false;
-
-	static String OUTGOING_PLUGIN_CHANNEL = "BungeeSuite";
+	public static String OUTGOING_PLUGIN_CHANNEL = "BSHomes";
 	static String INCOMING_PLUGIN_CHANNEL = "BungeeSuiteHomes";
-	
-	ArrayList<String> groups = new ArrayList<String>();
-	HashMap<String,Location>defaultHomes = new HashMap<String, Location>();
-	public HashMap<String, Location>locqueue = new HashMap<String,Location>();
-	
+	public static boolean usingTeleports = false;
 
 	@Override
 	public void onEnable() {
-		utils = new Utilities(this);
+		instance = this;
 		registerListeners();
 		registerChannels();
 		registerCommands();
+		BungeeSuiteTeleports bt = (BungeeSuiteTeleports) Bukkit.getPluginManager().getPlugin("Teleports");
+		if(bt!=null){
+			if(bt.getDescription().getAuthors().contains("Bloodsplat")){
+				usingTeleports = true;
+			}
+		}
 	}
 	
 	private void registerCommands() {
-		getCommand("sethome").setExecutor(new SetHomeCommand(this));
-		getCommand("home").setExecutor(new HomeCommand(this));
-		getCommand("delhome").setExecutor(new DelHomeCommand(this));
-		getCommand("homes").setExecutor(new HomesCommand(this));
-		getCommand("ImportHomes").setExecutor(new ImportHomesCommand(this));
-		getCommand("ReloadHomes").setExecutor(new ReloadHomesCommand(this));
+		getCommand("sethome").setExecutor(new SetHomeCommand());
+		getCommand("home").setExecutor(new HomeCommand());
+		getCommand("delhome").setExecutor(new DelHomeCommand());
+		getCommand("homes").setExecutor(new HomesCommand());
+		getCommand("importhomes").setExecutor(new ImportHomesCommand());
+		getCommand("reloadhomes").setExecutor(new ReloadHomesCommand());
 	}
 
 	private void registerChannels() {
 		Bukkit.getMessenger().registerIncomingPluginChannel(this,
-				INCOMING_PLUGIN_CHANNEL, new HomesListener(this));
+				INCOMING_PLUGIN_CHANNEL, new HomesMessageListener());
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this,
 				OUTGOING_PLUGIN_CHANNEL);
 	}
 
 	private void registerListeners() {
 		getServer().getPluginManager().registerEvents(
-				new HomesListener(this), this);
+				new HomesListener(), this);
 	}
 
 
