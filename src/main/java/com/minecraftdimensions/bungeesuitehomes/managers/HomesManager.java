@@ -155,11 +155,11 @@ public class HomesManager {
 
         int maxlimit = 100;
 
-        if ( p.hasPermission( "bungeesuite.homes.limits.server*" ) || p.hasPermission( "bungeesuite.homes.limits.*" ) ) {
+        if ( p.hasPermission( "bungeesuite.homes.limits.server.*" ) || p.hasPermission( "bungeesuite.homes.limits.*" ) ) {
             return maxlimit;
         } else {
             for ( int ctr = 0; ctr < maxlimit; ctr++ ) {
-                if ( p.hasPermission( "bungeesuite.homes.limits.server" + ctr ) ) {
+                if ( p.hasPermission( "bungeesuite.homes.limits.server." + ctr ) ) {
                     max = ctr;
                 }
             }
@@ -178,7 +178,7 @@ public class HomesManager {
             return maxlimit;
         } else {
             for ( int ctr = 0; ctr < maxlimit; ctr++ ) {
-                if ( p.hasPermission( "bungeesuite.homes.limits.global" + ctr ) ) {
+                if ( p.hasPermission( "bungeesuite.homes.limits.global." + ctr ) ) {
                     max = ctr;
                 }
             }

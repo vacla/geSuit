@@ -23,7 +23,7 @@ public class HomesMessageListener implements PluginMessageListener {
 		try {
 			task = in.readUTF();
 
-			if (task.equals("TeleportPlayerToLocation")) {
+			if (task.equals("TeleportToLocation")) {
 				HomesManager
 						.teleportPlayerToLocation(
 								in.readUTF(),
