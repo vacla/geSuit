@@ -5,6 +5,7 @@ description: Part of the BungeeSuite this plugin allows users to use portals to 
 author: Bloodsplat
 website: http://www.spigotmc.org/resources/bungeesuite.9/
 prefix: BungeeSuite
+softdepend: [WorldEdit]
 commands:
     setportal:
         description: Creates a portal to a destination
@@ -16,5 +17,4 @@ commands:
         usage: Error use /delportal (portal name)
     portals:
         description: Gives a list of portals to the player
-        aliases: [portalslist, portallist, listportals]
-            
+        aliases: [portalslist, portallist, listportals] 

@@ -2,24 +2,23 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.mcdimensions.bungeesuiteportals</groupId>
+	<groupId>com.minecraftdimensions.bungeesuiteportals</groupId>
 	<artifactId>BungeeSuitePortals</artifactId>
-	<version>0.14-SNAPSHOT</version>
+	<version>0.5</version>
 	<packaging>jar</packaging>
-	<name>BungeeSuiteWarps</name>
+	<name>BungeeSuitePortals</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<build.number>0.77</build.number>
 	</properties>
 
 	<repositories>
 		<repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public</url>
-        </repository>
+			<id>bukkit-repo</id>
+			<url>http://repo.bukkit.org/content/groups/public</url>
+		</repository>
 		<repository>
-			<id>vault-repo</id>
-			<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+			<id>sk89q-repo</id>
+			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
 	</repositories>
 
@@ -30,9 +29,9 @@
 			<version>1.6.2-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>net.milkbowl.vault</groupId>
-			<artifactId>Vault</artifactId>
-			<version>1.2.26-SNAPSHOT</version>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldedit</artifactId>
+			<version>5.4</version>
 		</dependency>
 	</dependencies>
 	<build>
