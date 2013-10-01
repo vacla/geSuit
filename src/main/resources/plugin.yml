@@ -1,6 +1,6 @@
 name: BungeeSuitePortals
 main : com.minecraftdimensions.bungeesuiteportals.BungeeSuitePortals
-version: 0.14
+version: 0.50
 description: Part of the BungeeSuite this plugin allows users to use portals to move around the server.
 author: Bloodsplat
 website: http://www.spigotmc.org/resources/bungeesuite.9/
