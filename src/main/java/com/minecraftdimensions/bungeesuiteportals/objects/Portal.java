@@ -20,7 +20,12 @@ public class Portal {
 		this.name = name;
 		this.type = type;
 		this.dest = dest;
-		this.fillType = FillType.valueOf(fillType);
+		try{
+		this.fillType = FillType.valueOf(fillType.toUpperCase());
+		}catch(Exception e){
+			this.fillType = FillType.AIR;
+			System.out.println("Invalid fill type for the portal, setting to AIR");
+		}
 		if(this.fillType==null){
 			this.fillType = FillType.AIR;
 		}
