@@ -92,15 +92,6 @@ public class PortalsManager {
         Player p = ( Player ) sender;
         Selection sel = BungeeSuitePortals.WORLDEDIT.getSelection( p );
 
-        Portal portal = new Portal( name, type, dest, fill, sel.getMaximumPoint(), sel.getMinimumPoint() );
-        ArrayList<Portal> ps = PORTALS.get( sel.getWorld() );
-        if ( ps == null ) {
-            ps = new ArrayList<>();
-        }
-        ps.add( portal );
-        PORTALS.put( sel.getWorld(), ps );
-        System.out.println( "Created portal " + portal.getName() );
-        portal.fillPortal();
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -133,13 +124,14 @@ public class PortalsManager {
     }
 
     public static void addPortal( String name, String type, String dest, String filltype, Location max, Location min ) {
-        Portal p = new Portal( name, type, dest, filltype, max, min );
+        Portal portal = new Portal( name, type, dest, filltype, max, min );
         ArrayList<Portal> ps = PORTALS.get( max.getWorld() );
         if ( ps == null ) {
             ps = new ArrayList<>();
         }
-        ps.add( p );
-        PORTALS.put( max.getWorld(), ps );
+        ps.add( portal );
+        System.out.println( "Created portal " + portal.getName() );
+        portal.fillPortal();
     }
 
 }
