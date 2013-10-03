@@ -18,7 +18,6 @@ public class Portal {
 	private World world;
 
 	public Portal(String name, String type, String dest, String fillType, Location max, Location min) {
-		System.out.println("Creating the portal");
 		this.name = name;
 		this.type = type;
 		this.dest = dest;
@@ -36,7 +35,6 @@ public class Portal {
 			for(int y = min.getBlockY(); y<=max.getBlockY(); y++){
 				for(int z = min.getBlockZ(); z<=max.getBlockZ(); z++){
 					blocks.add(new Loc(max.getWorld().getName(), x, y, z));
-					System.out.println("Adding block "+max.getWorld().getName()+x+y+z);
 				}
 			}
 		}
@@ -59,7 +57,6 @@ public class Portal {
 	}
 	
 	public void fillPortal(){
-		System.out.println("Filling the portal with "+ fillType.getBlockMaterial().toString());
 		for(Loc locs: blocks){
 			Block b = locs.getBlock();
 			if(b.isEmpty()){
@@ -69,7 +66,6 @@ public class Portal {
 	}
 	
 	public void clearPortal(){
-		System.out.println("clearing");
 		for(Loc locs: blocks){
 			Block b = locs.getBlock();
 			if(b.getType()==fillType.getBlockMaterial()){
