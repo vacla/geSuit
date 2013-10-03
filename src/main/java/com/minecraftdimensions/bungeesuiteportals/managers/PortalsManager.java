@@ -19,6 +19,7 @@ import java.util.HashMap;
 public class PortalsManager {
 
     public static HashMap<World, ArrayList<Portal>> PORTALS = new HashMap<>();
+    public static HashMap<Player,Location> pendingTeleports = new HashMap<>();
 
     public static void deletePortal( String name, String string ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -38,11 +39,7 @@ public class PortalsManager {
     public static void removePortal( String name ) {
         Portal p = getPortal( name );
         if ( p != null ) {
-            for ( ArrayList<Portal> list : PORTALS.values() ) {
-                if ( list.contains( p ) ) {
-                    list.remove( p );
-                }
-            }
+        	PORTALS.get(p.getWorld()).remove(p);
         }
     }
 
@@ -72,19 +69,19 @@ public class PortalsManager {
     }
 
     public static void teleportPlayer( Player p, Portal portal ) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( b );
-        try {
-            out.writeUTF( "TeleportPlayer" );
-            out.writeUTF( p.getName() );
-            out.writeUTF( portal.getType() );
-            out.writeUTF( portal.getDestination() );
-            out.writeBoolean( p.hasPermission( "bungeesuite.portals.portal." + portal.getName() ) || p.hasPermission( "bungeesuite.portals.portal.*" ) );
-
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuitePortals.INSTANCE );
+//        ByteArrayOutputStream b = new ByteArrayOutputStream();
+//        DataOutputStream out = new DataOutputStream( b );
+//        try {
+//            out.writeUTF( "TeleportPlayer" );
+//            out.writeUTF( p.getName() );
+//            out.writeUTF( portal.getType() );
+//            out.writeUTF( portal.getDestination() );
+//            out.writeBoolean( p.hasPermission( "bungeesuite.portals.portal." + portal.getName() ) || p.hasPermission( "bungeesuite.portals.portal.*" ) );
+//
+//        } catch ( IOException e ) {
+//            e.printStackTrace();
+//        }
+//        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuitePortals.INSTANCE );
     }
 
     public static void setPortal( CommandSender sender, String name, String type, String dest, String fill ) {
@@ -128,9 +125,9 @@ public class PortalsManager {
         ArrayList<Portal> ps = PORTALS.get( max.getWorld() );
         if ( ps == null ) {
             ps = new ArrayList<>();
+            PORTALS.put(max.getWorld(), ps);
         }
         ps.add( portal );
-        System.out.println( "Created portal " + portal.getName() );
         portal.fillPortal();
     }
 

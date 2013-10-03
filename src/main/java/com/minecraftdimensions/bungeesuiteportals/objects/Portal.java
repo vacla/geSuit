@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 
 
@@ -14,12 +15,14 @@ public class Portal {
 	private String dest;
 	private ArrayList<Loc> blocks = new ArrayList<>();
 	private FillType fillType;
+	private World world;
 
 	public Portal(String name, String type, String dest, String fillType, Location max, Location min) {
 		System.out.println("Creating the portal");
 		this.name = name;
 		this.type = type;
 		this.dest = dest;
+		this.world = max.getWorld();
 		try{
 		this.fillType = FillType.valueOf(fillType.toUpperCase());
 		}catch(Exception e){
@@ -86,6 +89,10 @@ public class Portal {
 			}
 		}
 		return false;
+	}
+	
+	public World getWorld(){
+		return world;
 	}
 	
 	public boolean isLocationInPortal(Location l){
