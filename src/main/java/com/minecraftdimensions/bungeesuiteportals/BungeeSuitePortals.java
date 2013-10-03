@@ -71,6 +71,7 @@ public class BungeeSuitePortals extends JavaPlugin {
 				this);
 		getServer().getPluginManager().registerEvents(
 				new PhysicsListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerLoginListener(), this);
 		
 	}
 }
