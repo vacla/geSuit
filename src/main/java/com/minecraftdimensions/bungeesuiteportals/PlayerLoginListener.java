@@ -15,6 +15,10 @@ public class PlayerLoginListener implements Listener{
 	
 	 @EventHandler( priority = EventPriority.LOWEST )
 	    public void playerConnect( PlayerJoinEvent e ) {
+		 if(!PortalsManager.RECEIVED){
+			 PortalsManager.RECEIVED = true;
+			 PortalsManager.requestPortals();
+		 }
 	        if ( PortalsManager.pendingTeleports.containsKey( e.getPlayer().getName() ) ) {
 	            Location l = PortalsManager.pendingTeleports.get( e.getPlayer().getName() );
 	            e.getPlayer().teleport( l );

@@ -9,12 +9,41 @@ softdepend: [WorldEdit]
 commands:
     setportal:
         description: Creates a portal to a destination
-        aliases: [createportal]
+        aliases: [createportal, makeportal, sportal]
         usage: Error use /setportal (portal name) (type) (destination) *(filltype)
+        permission: bungeesuite.portals.command.setportal
+        permission-message: §cYou do not have permission for this command
     delportal:
         description: Deletes a specific portal
-        aliases: [deleteportal]
+        aliases: [deleteportal, dportal, removeportal]
         usage: Error use /delportal (portal name)
+        permission: bungeesuite.portals.command.delportal
+        permission-message: §cYou do not have permission for this command
     portals:
         description: Gives a list of portals to the player
-        aliases: [portalslist, portallist, listportals] 
+        aliases: [portalslist, portallist, listportals]
+        permission: bungeesuite.portals.command.portals
+        permission-message: §cYou do not have permission for this command
+permissions:
+    bungeesuite.portals.*:
+        description: Gives access to all BungeeSuitePortal commands
+        default: op
+        children:
+            bungeesuite.portals.admin: true
+    bungeesuite.portals.admin:
+        description: Gives access to all BungeeSuitePortal admin commands
+        children:
+            bungeesuite.portals.user: true
+            bungeesuite.portals.command.portals: true
+            bungeesuite.portals.command.delportal: true
+            bungeesuite.portals.command.setportal: true
+    bungeesuite.portals.user:
+        description: Gives access to all BungeeSuitePortal user commands
+        children:
+            bungeesuite.portals.portal.*: true
+    bungeesuite.portals.portal.*:
+        description: Gives access to all portals
+        children:
+            bungeesuite.portals.portal.<portalname>: true
+    bungeesuite.portals.portal.<portalname>:
+        description: Gives access tp <portalname>

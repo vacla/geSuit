@@ -18,7 +18,8 @@ import java.util.HashMap;
 
 public class PortalsManager {
 
-    public static HashMap<World, ArrayList<Portal>> PORTALS = new HashMap<>();
+    public static boolean RECEIVED = false;
+	public static HashMap<World, ArrayList<Portal>> PORTALS = new HashMap<>();
     public static HashMap<Player,Location> pendingTeleports = new HashMap<>();
 
     public static void deletePortal( String name, String string ) {
@@ -132,5 +133,17 @@ public class PortalsManager {
         ps.add( portal );
         portal.fillPortal();
     }
+
+	public static void requestPortals() {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "RequestPortals" );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuitePortals.INSTANCE );
+		
+	}
 
 }
