@@ -38,8 +38,10 @@ public class PortalsManager {
 
     public static void removePortal( String name ) {
         Portal p = getPortal( name );
+        System.out.println("removing portal "+ name);
         if ( p != null ) {
         	PORTALS.get(p.getWorld()).remove(p);
+            p.clearPortal();
         }
     }
 
@@ -69,19 +71,19 @@ public class PortalsManager {
     }
 
     public static void teleportPlayer( Player p, Portal portal ) {
-//        ByteArrayOutputStream b = new ByteArrayOutputStream();
-//        DataOutputStream out = new DataOutputStream( b );
-//        try {
-//            out.writeUTF( "TeleportPlayer" );
-//            out.writeUTF( p.getName() );
-//            out.writeUTF( portal.getType() );
-//            out.writeUTF( portal.getDestination() );
-//            out.writeBoolean( p.hasPermission( "bungeesuite.portals.portal." + portal.getName() ) || p.hasPermission( "bungeesuite.portals.portal.*" ) );
-//
-//        } catch ( IOException e ) {
-//            e.printStackTrace();
-//        }
-//        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuitePortals.INSTANCE );
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "TeleportPlayer" );
+            out.writeUTF( p.getName() );
+            out.writeUTF( portal.getType() );
+            out.writeUTF( portal.getDestination() );
+            out.writeBoolean( p.hasPermission( "bungeesuite.portals.portal." + portal.getName() ) || p.hasPermission( "bungeesuite.portals.portal.*" ) );
+
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuitePortals.INSTANCE );
     }
 
     public static void setPortal( CommandSender sender, String name, String type, String dest, String fill ) {

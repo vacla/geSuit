@@ -1,6 +1,7 @@
 package com.minecraftdimensions.bungeesuiteportals;
 
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -12,6 +13,8 @@ import com.minecraftdimensions.bungeesuiteportals.commands.SetPortalCommand;
 import com.minecraftdimensions.bungeesuiteportals.listeners.PhysicsListener;
 import com.minecraftdimensions.bungeesuiteportals.listeners.PlayerMoveListener;
 import com.minecraftdimensions.bungeesuiteportals.listeners.PortalsMessageListener;
+import com.minecraftdimensions.bungeesuiteportals.managers.PortalsManager;
+import com.minecraftdimensions.bungeesuiteportals.objects.Portal;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class BungeeSuitePortals extends JavaPlugin {
@@ -29,6 +32,16 @@ public class BungeeSuitePortals extends JavaPlugin {
 		registerChannels();
 		registerCommands();
 	}
+	
+	@Override
+	public void onDisable() {
+		for(ArrayList<Portal> list: PortalsManager.PORTALS.values()){
+			for(Portal p: list){
+				p.clearPortal();
+			}
+		}
+	}
+	
 
 	private void loadWorldEdit() {
 		WORLDEDIT = (WorldEditPlugin) getServer().getPluginManager().getPlugin("WorldEdit");

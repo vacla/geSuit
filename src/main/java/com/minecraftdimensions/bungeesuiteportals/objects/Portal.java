@@ -69,12 +69,18 @@ public class Portal {
 	}
 	
 	public void clearPortal(){
+		System.out.println("clearing");
 		for(Loc locs: blocks){
 			Block b = locs.getBlock();
 			if(b.getType()==fillType.getBlockMaterial()){
-				b.getState().setType(Material.AIR);
-				b.getState().update();
+				b.setType(fillType.AIR.getBlockMaterial());
+			}else if(fillType.equals(FillType.LAVA) && b.getType().equals(Material.LAVA)){
+				b.setType(fillType.AIR.getBlockMaterial());
+			}else if(fillType.equals(FillType.WATER) && b.getType().equals(Material.WATER)){
+				b.setType(fillType.AIR.getBlockMaterial());
 			}
+				
+			
 		}
 	}
 	
