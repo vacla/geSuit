@@ -49,6 +49,7 @@ permissions:
             bungeesuite.warps.list.hidden: true
             bungeesuite.warps.warp.*: true
             bungeesuite.warps.bypass: true
+            bungeesuite.warps.command.warp.other: true
     bungeesuite.warps.user:
         description: Gives access to all BungeeSuiteWarps user commands
         children:
@@ -68,3 +69,5 @@ permissions:
         description: "allows access to <warpname>"
     bungeesuite.warps.bypass:
         description: Allows players to user perserver warps cross server
+    bungeesuite.warps.command.warp.other
+        description: Allows players to warp other players
