@@ -2,14 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.mcdimensions.bungeesuitespawn</groupId>
+	<groupId>com.minecraftdimensions.bungeesuitespawn</groupId>
 	<artifactId>BungeeSuiteSpawn</artifactId>
-	<version>0.13-SNAPSHOT</version>
+	<version>0.5</version>
 	<packaging>jar</packaging>
 	<name>BungeeSuiteSpawn</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<build.number>0.77</build.number>
 	</properties>
 
 	<repositories>
@@ -21,6 +20,10 @@
 			<id>vault-repo</id>
 			<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
 		</repository>
+						<repository>
+			<id>md-5</id>
+			<url>http://ci.md-5.net/job/BungeeSuiteTeleports/com.minecraftdimensions.bungeesuiteteleports$BungeeSuiteTeleports/lastBuild/artifact/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -29,10 +32,10 @@
 			<artifactId>bukkit</artifactId>
 			<version>1.6.2-R0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>net.milkbowl.vault</groupId>
-			<artifactId>Vault</artifactId>
-			<version>1.2.26-SNAPSHOT</version>
+				<dependency>
+			<groupId>com.minecraftdimensions.bungeesuiteteleports</groupId>
+			<artifactId>BungeeSuiteTeleports</artifactId>
+			<version>0.50</version>
 		</dependency>
 	</dependencies>
 	<build>
