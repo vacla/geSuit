@@ -38,6 +38,7 @@ public class BungeeSuiteSpawn extends JavaPlugin {
 	}
 
 	private void registerCommands() {
+		
 		getCommand("setnewspawn").setExecutor(new SetNewSpawnCommand());
 		getCommand("setworldspawn").setExecutor(new SetWorldSpawnCommand());
 		getCommand("setserverspawn").setExecutor(new SetServerSpawnCommand());
