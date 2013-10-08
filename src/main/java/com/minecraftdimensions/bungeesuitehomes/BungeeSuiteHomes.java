@@ -41,7 +41,6 @@ public class BungeeSuiteHomes extends JavaPlugin {
 		getCommand("delhome").setExecutor(new DelHomeCommand());
 		getCommand("homes").setExecutor(new HomesCommand());
 		getCommand("importhomes").setExecutor(new ImportHomesCommand());
-		getCommand("reloadhomes").setExecutor(new ReloadHomesCommand());
 	}
 
 	private void registerChannels() {

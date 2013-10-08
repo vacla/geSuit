@@ -11,31 +11,31 @@ commands:
         usage: |
                /<command>
                /<command> (home name)
-        permission: bungeesuite.homes.command.sethome
+        permission: bungeesuite.homes.commands.sethome
         permission-message: §cYou do not have permission for this command
     delhome:
         description: Deletes a players home.
         usage: |
                /<command>
                /<command>(home name)
-        permission: bungeesuite.homes.command.delhome
+        permission: bungeesuite.homes.commands.delhome
         permission-message: §cYou do not have permission for this command
     home:
         description: Teleports you home
         usage: |
                 /<command>
                 /<command> (home name)
-        permission: bungeesuite.homes.command.home
+        permission: bungeesuite.homes.commands.home
         permission-message: §cYou do not have permission for this command
     homes:
         description: Lists all of your homes
         usage: /<command>
-        permission: bungeesuite.homes.command.homes
+        permission: bungeesuite.homes.commands.homes
         permission-message: §cYou do not have permission for this command      
     importhomes:
         description: imports homes from your essentials data
         usage: /<command>
-        permission: bungeesuite.homes.command.importhomes
+        permission: bungeesuite.homes.commands.importhomes
         permission-message: §cYou do not have permission for this command
 permissions:
     bungeesuite.homes.*:
