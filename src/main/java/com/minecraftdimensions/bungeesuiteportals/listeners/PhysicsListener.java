@@ -34,7 +34,6 @@ public class PhysicsListener implements Listener {
 		if(!(e.getBlock().isLiquid() || e.getBlock().getType()==Material.PORTAL || e.getBlock().getType()==Material.ENDER_PORTAL || e.getBlock().getType()==Material.SUGAR_CANE_BLOCK)){
 			return;
 		}
-		e.setCancelled(true);
 		if(!PortalsManager.PORTALS.containsKey(e.getBlock().getWorld())){
 			return;
 		}
