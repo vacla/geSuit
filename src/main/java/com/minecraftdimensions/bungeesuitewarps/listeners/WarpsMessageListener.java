@@ -1,6 +1,6 @@
 package com.minecraftdimensions.bungeesuitewarps.listeners;
 
-import com.minecraftdimensions.bungeesuiteteleports.BungeeSuiteTeleports;
+import com.minecraftdimensions.bungeesuitewarps.BungeeSuiteWarps;
 import com.minecraftdimensions.bungeesuitewarps.managers.WarpsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,10 +37,10 @@ public class WarpsMessageListener implements PluginMessageListener {
             }
             if ( name != null ) {
                 Player p = Bukkit.getPlayer( name );
-                p.sendMessage( ChatColor.RED + "Warps - " + ChatColor.GOLD + BungeeSuiteTeleports.instance.getDescription().getVersion() );
+                p.sendMessage( ChatColor.RED + "Warps - " + ChatColor.GOLD + BungeeSuiteWarps.instance.getDescription().getVersion() );
             }
             WarpsManager.sendVersion();
-            Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Warps - " + ChatColor.GOLD + BungeeSuiteTeleports.instance.getDescription().getVersion() );
+            Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Warps - " + ChatColor.GOLD + BungeeSuiteWarps.instance.getDescription().getVersion() );
         }
 
     }
