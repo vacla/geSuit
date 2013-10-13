@@ -5,6 +5,8 @@ import com.minecraftdimensions.bungeesuiteportals.objects.Portal;
 import com.minecraftdimensions.bungeesuiteportals.tasks.PluginMessageTask;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -19,8 +21,8 @@ import java.util.HashMap;
 public class PortalsManager {
 
     public static boolean RECEIVED = false;
-	public static HashMap<World, ArrayList<Portal>> PORTALS = new HashMap<>();
-    public static HashMap<Player,Location> pendingTeleports = new HashMap<>();
+    public static HashMap<World, ArrayList<Portal>> PORTALS = new HashMap<>();
+    public static HashMap<Player, Location> pendingTeleports = new HashMap<>();
 
     public static void deletePortal( String name, String string ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -39,9 +41,9 @@ public class PortalsManager {
 
     public static void removePortal( String name ) {
         Portal p = getPortal( name );
-        System.out.println("removing portal "+ name);
+        System.out.println( "removing portal " + name );
         if ( p != null ) {
-        	PORTALS.get(p.getWorld()).remove(p);
+            PORTALS.get( p.getWorld() ).remove( p );
             p.clearPortal();
         }
     }
@@ -124,17 +126,21 @@ public class PortalsManager {
     }
 
     public static void addPortal( String name, String type, String dest, String filltype, Location max, Location min ) {
+        if ( max.getWorld() == null ) {
+            Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "World does not exist portal " + name + " will not load :(" );
+            return;
+        }
         Portal portal = new Portal( name, type, dest, filltype, max, min );
         ArrayList<Portal> ps = PORTALS.get( max.getWorld() );
         if ( ps == null ) {
             ps = new ArrayList<>();
-            PORTALS.put(max.getWorld(), ps);
+            PORTALS.put( max.getWorld(), ps );
         }
         ps.add( portal );
         portal.fillPortal();
     }
 
-	public static void requestPortals() {
+    public static void requestPortals() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -143,7 +149,7 @@ public class PortalsManager {
             e.printStackTrace();
         }
         new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuitePortals.INSTANCE );
-		
-	}
+
+    }
 
 }
