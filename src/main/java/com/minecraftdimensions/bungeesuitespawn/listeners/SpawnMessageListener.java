@@ -29,9 +29,17 @@ public class SpawnMessageListener implements PluginMessageListener, Listener {
                     SpawnManager.teleportPlayer( in.readUTF(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat() );
                     break;
                 case "GetVersion":
-                    Player p = Bukkit.getPlayer( in.readUTF() );
-                    p.sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + BungeeSuiteSpawn.INSTANCE.getDescription().getVersion() );
+                    String name = null;
+                    try {
+                        name = in.readUTF();
+                    } catch ( IOException e ) {
+                    }
+                    if ( name != null ) {
+                        Player p = Bukkit.getPlayer( name );
+                        p.sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + BungeeSuiteSpawn.INSTANCE.getDescription().getVersion() );
+                    }
                     Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + BungeeSuiteSpawn.INSTANCE.getDescription().getVersion() );
+                    SpawnManager.sendVersion();
                     break;
             }
 
