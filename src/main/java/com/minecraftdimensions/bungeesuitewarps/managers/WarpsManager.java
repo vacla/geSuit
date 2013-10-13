@@ -1,9 +1,11 @@
 package com.minecraftdimensions.bungeesuitewarps.managers;
 
+import com.minecraftdimensions.bungeesuiteteleports.BungeeSuiteTeleports;
 import com.minecraftdimensions.bungeesuiteteleports.managers.TeleportsManager;
 import com.minecraftdimensions.bungeesuitewarps.BungeeSuiteWarps;
 import com.minecraftdimensions.bungeesuitewarps.tasks.PluginMessageTask;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -79,34 +81,44 @@ public class WarpsManager {
             out.writeBoolean( sender.hasPermission( "bungeesuite.warps.list.server" ) );
             out.writeBoolean( sender.hasPermission( "bungeesuite.warps.list.global" ) );
             out.writeBoolean( sender.hasPermission( "bungeesuite.warps.list.hidden" ) );
-            out.writeBoolean( sender.hasPermission( "bungeesuite.warps.bypass"));
+            out.writeBoolean( sender.hasPermission( "bungeesuite.warps.bypass" ) );
         } catch ( IOException e ) {
             e.printStackTrace();
         }
         new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteWarps.instance );
     }
 
-	public static void teleportPlayerToWarp(final String player,
-			Location location) {
-		Player p = Bukkit.getPlayer(player);
-		if (p != null) {
-			p.teleport(location);
-		} else {
-			pendingWarps.put(player, location);
-			if (BungeeSuiteWarps.usingTeleports) {
-				TeleportsManager.ignoreTeleport.add(p);
-			}
-			Bukkit.getScheduler().runTaskLaterAsynchronously(
-					BungeeSuiteWarps.instance, new Runnable() {
-						@Override
-						public void run() {
-							if (pendingWarps.containsKey(player)) {
-								pendingWarps.remove(player);
-							}
-						}
-					}, 100);
-		}
-	}
+    public static void teleportPlayerToWarp( final String player, Location location ) {
+        Player p = Bukkit.getPlayer( player );
+        if ( p != null ) {
+            p.teleport( location );
+        } else {
+            pendingWarps.put( player, location );
+            if ( BungeeSuiteWarps.usingTeleports ) {
+                TeleportsManager.ignoreTeleport.add( p );
+            }
+            Bukkit.getScheduler().runTaskLaterAsynchronously( BungeeSuiteWarps.instance, new Runnable() {
+                @Override
+                public void run() {
+                    if ( pendingWarps.containsKey( player ) ) {
+                        pendingWarps.remove( player );
+                    }
+                }
+            }, 100 );
+        }
+    }
 
 
+    public static void sendVersion() {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "SendVersion" );
+            out.writeUTF( ChatColor.RED + "Warps - " + ChatColor.GOLD + BungeeSuiteTeleports.instance.getDescription().getVersion() );
+
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteWarps.instance );
+    }
 }
