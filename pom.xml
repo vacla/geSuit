@@ -8,8 +8,7 @@
     <packaging>jar</packaging>
     <name>BungeeSuiteHomes</name>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <build.number>0.77</build.number>
+        <build.number>${BUILD_NUMBER}</build.number>
     </properties>
 
     <repositories>
