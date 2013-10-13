@@ -39,9 +39,18 @@ public class PortalsMessageListener implements PluginMessageListener {
                     PortalsManager.removePortal( in.readUTF() );
                     break;
                 case "GetVersion": {
-                    Player p = Bukkit.getPlayer( in.readUTF() );
-                    p.sendMessage( ChatColor.RED + "Portals - " + ChatColor.GOLD + BungeeSuitePortals.INSTANCE.getDescription().getVersion() );
+                    String name = null;
+                    try {
+                        name = in.readUTF();
+                    } catch ( IOException e ) {
+
+                    }
+                    if ( name != null ) {
+                        Player p = Bukkit.getPlayer( name );
+                        p.sendMessage( ChatColor.RED + "Portals - " + ChatColor.GOLD + BungeeSuitePortals.INSTANCE.getDescription().getVersion() );
+                    }
                     Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Portals - " + ChatColor.GOLD + BungeeSuitePortals.INSTANCE.getDescription().getVersion() );
+                    PortalsManager.sendVersion();
                     break;
                 }
             }

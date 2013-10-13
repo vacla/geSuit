@@ -152,4 +152,15 @@ public class PortalsManager {
 
     }
 
+    public static void sendVersion() {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "SendVersion" );
+            out.writeUTF( ChatColor.RED + "Portals - " + ChatColor.GOLD + BungeeSuitePortals.INSTANCE.getDescription().getVersion() );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuitePortals.INSTANCE );
+    }
 }
