@@ -44,7 +44,7 @@ commands:
     globalspawn:
         description: Sends the player to the proxys spawn
         permission: bungeesuite.spawns.command.globalspawn
-        aliases: [gs,hub]
+        aliases: [gs,hub,lobby]
         permission-message: §cYou do not have permission for this command
 
 permissions:
