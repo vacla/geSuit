@@ -23,10 +23,11 @@ public class PortalsMessageListener implements PluginMessageListener {
             task = in.readUTF();
             switch ( task ) {
                 case "TeleportPlayer": {
-                    Player p = Bukkit.getPlayer( in.readUTF() );
+                    String name = in.readUTF();
+                    Player p = Bukkit.getPlayer( name );
                     Location l = new Location( Bukkit.getWorld( in.readUTF() ), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat() );
                     if ( p == null ) {
-                        PortalsManager.pendingTeleports.put( p, l );
+                        PortalsManager.pendingTeleports.put( name, l );
                     } else {
                         p.teleport( l );
                     }

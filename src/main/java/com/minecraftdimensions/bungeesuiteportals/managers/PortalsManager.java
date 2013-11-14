@@ -22,7 +22,7 @@ public class PortalsManager {
 
     public static boolean RECEIVED = false;
     public static HashMap<World, ArrayList<Portal>> PORTALS = new HashMap<>();
-    public static HashMap<Player, Location> pendingTeleports = new HashMap<>();
+    public static HashMap<String, Location> pendingTeleports = new HashMap<>();
 
     public static void deletePortal( String name, String string ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
