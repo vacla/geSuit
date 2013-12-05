@@ -1,7 +1,9 @@
 package com.minecraftdimensions.bungeesuiteportals.listeners;
 
+import com.minecraftdimensions.bungeesuiteportals.BungeeSuitePortals;
 import com.minecraftdimensions.bungeesuiteportals.managers.PermissionsManager;
 import com.minecraftdimensions.bungeesuiteportals.managers.PortalsManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,8 +17,17 @@ public class PlayerLoginListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerConnect( PlayerJoinEvent e ) {
         if ( !PortalsManager.RECEIVED ) {
-            PortalsManager.RECEIVED = true;
-            PortalsManager.requestPortals();
+            Bukkit.getScheduler().runTaskLaterAsynchronously( BungeeSuitePortals.INSTANCE, new Runnable() {
+
+                @Override
+                public void run() {
+                    if ( !PortalsManager.RECEIVED ) {
+                        PortalsManager.RECEIVED = true;
+                        PortalsManager.requestPortals();
+                    }
+
+                }
+            }, 10L );
         }
         if ( PortalsManager.pendingTeleports.containsKey( e.getPlayer().getName() ) ) {
             Location l = PortalsManager.pendingTeleports.get( e.getPlayer().getName() );
@@ -24,7 +35,7 @@ public class PlayerLoginListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler( priority = EventPriority.NORMAL )
     public void setPermissionGroup( final PlayerLoginEvent e ) {
         if ( e.getPlayer().hasPermission( "bungeesuite.*" ) ) {
             PermissionsManager.addAllPermissions( e.getPlayer() );
