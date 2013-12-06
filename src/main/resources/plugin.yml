@@ -16,7 +16,7 @@ commands:
                /<command> (player) (message)
     checkban:
         description: Gets info about a players ban
-        aliases: [cb, lookupban,baninfo]
+        aliases: [lookupban,baninfo]
         permission: bungeesuite.bans.command.checkban
         permission-message: §cYou do not have permission for this command
         usage: /<command>  (player)
