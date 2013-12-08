@@ -31,11 +31,12 @@ public class PlayerLoginListener implements Listener {
         }
         if ( PortalsManager.pendingTeleports.containsKey( e.getPlayer().getName() ) ) {
             Location l = PortalsManager.pendingTeleports.get( e.getPlayer().getName() );
+            PortalsManager.pendingTeleports.remove( e.getPlayer().getName() );
             e.getPlayer().teleport( l );
         }
     }
 
-    @EventHandler( priority = EventPriority.NORMAL )
+    @EventHandler(priority = EventPriority.NORMAL)
     public void setPermissionGroup( final PlayerLoginEvent e ) {
         if ( e.getPlayer().hasPermission( "bungeesuite.*" ) ) {
             PermissionsManager.addAllPermissions( e.getPlayer() );
