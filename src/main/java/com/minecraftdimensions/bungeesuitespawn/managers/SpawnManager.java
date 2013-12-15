@@ -186,7 +186,7 @@ public class SpawnManager {
             p.teleport( getWorldSpawn( p.getWorld() ) );
         } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "bungeesuite.spawns.spawn.server" ) ) {
             p.teleport( getServerSpawn() );
-        } else if ( SpawnManager.hasGlobalSpawn() && p.hasPermission( "bungeesuite.spawn.spawn.global" ) ) {
+        } else if ( SpawnManager.hasGlobalSpawn() && p.hasPermission( "bungeesuite.spawns.spawn.global" ) ) {
             SpawnManager.sendPlayerToProxySpawn( p, false );
         }
     }
