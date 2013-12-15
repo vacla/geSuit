@@ -20,7 +20,6 @@ public class SpawnManager {
 
     public static boolean HAS_SPAWNS = false;
     public static HashMap<String, Location> SPAWNS = new HashMap<>();
-    public static boolean HAS_GLOBAL = false;
     public static HashMap<String, Location> pendingTeleports = new HashMap<>();
 
     public static void sendPlayerToProxySpawn( CommandSender sender, boolean silent ) {
@@ -176,17 +175,13 @@ public class SpawnManager {
         return SPAWNS.get( "server" );
     }
 
-    public static boolean hasGlobalSpawn() {
-        return HAS_GLOBAL;
-    }
-
     public static void sendPlayerToSpawn( CommandSender sender ) {
         Player p = ( Player ) sender;
         if ( SpawnManager.hasWorldSpawn( p.getWorld() ) && p.hasPermission( "bungeesuite.spawns.spawn.world" ) ) {
             p.teleport( getWorldSpawn( p.getWorld() ) );
         } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "bungeesuite.spawns.spawn.server" ) ) {
             p.teleport( getServerSpawn() );
-        } else if ( SpawnManager.hasGlobalSpawn() && p.hasPermission( "bungeesuite.spawns.spawn.global" ) ) {
+        } else if ( p.hasPermission( "bungeesuite.spawns.spawn.global" ) ) {
             SpawnManager.sendPlayerToProxySpawn( p, false );
         }
     }
