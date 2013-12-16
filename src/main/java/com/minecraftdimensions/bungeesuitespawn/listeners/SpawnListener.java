@@ -40,7 +40,7 @@ public class SpawnListener implements Listener {
                 SpawnManager.sendPlayerToWorldSpawn( p );
             } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "bungeesuite.spawns.new.server" ) ) {
                 SpawnManager.sendPlayerToServerSpawn( p );
-            } else if ( SpawnManager.hasGlobalSpawn() && p.hasPermission( "bungeesuite.spawns.new.global" ) ) {
+            } else if ( p.hasPermission( "bungeesuite.spawns.new.global" ) ) {
                 SpawnManager.sendPlayerToProxySpawn( p, true );
             }
         }
@@ -56,7 +56,7 @@ public class SpawnListener implements Listener {
             e.setRespawnLocation( SpawnManager.getWorldSpawn( p.getWorld() ) );
         } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "bungeesuite.spawns.spawn.server" ) ) {
             e.setRespawnLocation( SpawnManager.getServerSpawn() );
-        } else if ( SpawnManager.hasGlobalSpawn() && p.hasPermission( "bungeesuite.spawns.spawn.global" ) ) {
+        } else if ( p.hasPermission( "bungeesuite.spawns.spawn.global" ) ) {
             if ( SpawnManager.hasWorldSpawn( p.getWorld() ) ) {
                 e.setRespawnLocation( SpawnManager.getWorldSpawn( p.getWorld() ) );
             } else if ( SpawnManager.hasServerSpawn() ) {
