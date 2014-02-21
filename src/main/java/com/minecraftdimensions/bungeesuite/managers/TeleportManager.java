@@ -6,6 +6,7 @@ import com.minecraftdimensions.bungeesuite.objects.BSPlayer;
 import com.minecraftdimensions.bungeesuite.objects.Location;
 import com.minecraftdimensions.bungeesuite.objects.Messages;
 import com.minecraftdimensions.bungeesuite.tasks.SendPluginMessage;
+import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 
@@ -18,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 public class TeleportManager {
     public static HashMap<BSPlayer, BSPlayer> pendingTeleportsTPA; // Player ----teleported---> player
     public static HashMap<BSPlayer, BSPlayer> pendingTeleportsTPAHere; // Player ----teleported---> player
-    public static HashMap<BSPlayer, Location> backLocations;
     public static String OUTGOING_CHANNEL = "BungeeSuiteTP";
     static int expireTime;
 
@@ -152,14 +152,6 @@ public class TeleportManager {
         return player.acceptingTeleports();
     }
 
-    public static boolean playerHasDeathBackLocation( BSPlayer player ) {
-        return player.hasDeathBackLocation();
-    }
-
-    public static boolean playerHasTeleportBackLocation( BSPlayer player ) {
-        return player.hasTeleportBackLocation();
-    }
-
     public static void setPlayersDeathBackLocation( BSPlayer player, Location loc ) {
         player.setDeathBackLocation( loc );
     }
@@ -228,10 +220,25 @@ public class TeleportManager {
         }
     }
 
-    public static void teleportPlayerToLocation( BSPlayer p, Location t ) {
+    public static void teleportPlayerToLocation( final BSPlayer p, final Location t ) {
+        if ( !p.getServer().getInfo().equals( t.getServer() ) ) {
+            p.getProxiedPlayer().connect( t.getServer(), new Callback<Boolean>() {
+                @Override
+                public void done(Boolean aBoolean, Throwable throwable) {
+                    if (aBoolean) {
+                        sendTeleportPlayerToLocation(p, t);
+                    }
+                }
+            });
+        } else {
+            sendTeleportPlayerToLocation(p, t);
+        }
+    }
 
+    private static void sendTeleportPlayerToLocation( BSPlayer p, Location t ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
+
         try {
             out.writeUTF( "TeleportToLocation" );
             out.writeUTF( p.getName() );
@@ -239,10 +246,8 @@ public class TeleportManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
+
         sendPluginMessageTaskTP( t.getServer(), b );
-        if ( !p.getServer().getInfo().equals( t.getServer() ) ) {
-            p.getProxiedPlayer().connect( t.getServer() );
-        }
     }
 
     public static void sendPluginMessageTaskTP( ServerInfo server, ByteArrayOutputStream b ) {

@@ -24,7 +24,7 @@ public class HomesManager {
     public static void createNewHome( String player, int serverLimit, int globalLimit, String home, Location loc ) throws SQLException {
         BSPlayer p = PlayerManager.getPlayer( player );
 
-        if ( getSimilarHome( p, home ) == null ) {
+        if ( getHome( p, home ) == null ) {
             int globalHomeCount = getPlayersGlobalHomeCount( p );
             int serverHomeCount = getPlayersServerHomeCount( p );
             if ( globalHomeCount >= globalLimit ) {
@@ -42,7 +42,7 @@ public class HomesManager {
             SQLManager.standardQuery( "INSERT INTO BungeeHomes (player,home_name,server,world,x,y,z,yaw,pitch) VALUES('" + player + "','" + home + "','" + loc.getServer().getName() + "','" + loc.getWorld() + "'," + loc.getX() + "," + loc.getY() + "," + loc.getZ() + "," + loc.getYaw() + "," + loc.getPitch() + ")" );
             p.sendMessage( Messages.HOME_SET );
         } else {
-            getSimilarHome( p, home ).setLoc( loc );
+            getHome( p, home ).setLoc( loc );
             SQLManager.standardQuery( "UPDATE BungeeHomes SET server = '" + loc.getServer().getName() + "', world = '" + loc.getWorld() + "', x = " + loc.getX() + ", y = " + loc.getY() + ", z = " + loc.getZ() + ", yaw = " + loc.getYaw() + ", pitch = " + loc.getPitch() + " WHERE player = '" + player + "' AND home_name ='" + home + "'" );
             p.sendMessage( Messages.HOME_UPDATED );
             return;
@@ -110,23 +110,25 @@ public class HomesManager {
     }
 
 
-    public static Home getSimilarHome( BSPlayer player, String home ) {
+    public static Home getHome( BSPlayer player, String home ) {
         for ( ArrayList<Home> list : player.getHomes().values() ) {
             for ( Home h : list ) {
-                if ( h.name.toLowerCase().contains( home.toLowerCase() ) ) {
+                if ( h.name.toLowerCase().equals( home.toLowerCase() ) ) {
                     return h;
                 }
             }
         }
+
         return null;
     }
 
     public static void sendPlayerToHome( BSPlayer player, String home ) {
-        Home h = getSimilarHome( player, home );
+        Home h = getHome( player, home );
         if ( h == null ) {
             player.sendMessage( Messages.HOME_DOES_NOT_EXIST );
             return;
         }
+
         Location l = h.loc;
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
@@ -156,7 +158,8 @@ public class HomesManager {
 
     public static void deleteHome( String player, String home ) {
         BSPlayer p = PlayerManager.getPlayer( player );
-        Home h = getSimilarHome( p, home );
+        Home h = getHome( p, home );
+
         if ( h == null ) {
             p.sendMessage( Messages.HOME_DOES_NOT_EXIST );
             return;
