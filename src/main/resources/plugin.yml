@@ -1,11 +1,11 @@
-name: BungeeSuiteSpawn
-main : com.minecraftdimensions.bungeesuitespawn.BungeeSuiteSpawn
+name: geSuiteSpawn
+main : net.cubespace.geSuiteSpawn.BungeeSuiteSpawn
 version: ${project.version}b-${build.number}
-description: Part of the BungeeSuite this plugin allows users to set a proxy wide spawn
-author: Bloodsplat
+description: Part of the geSuit (BungeeSuite) this plugin allows users to set a proxy wide spawn
+author: Bloodsplat, geNAZt
 website: http://www.spigotmc.org/resources/bungeesuite.9/
 prefix: BungeeSuite
-softdepend: [Teleports]
+softdepend: [geSuiteTeleports]
 commands:
     setnewspawn:
         description: Sets the new players spawn point.
