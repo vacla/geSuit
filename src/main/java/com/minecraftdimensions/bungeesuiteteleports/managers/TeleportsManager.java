@@ -204,16 +204,20 @@ public class TeleportsManager {
         new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteTeleports.instance );
     }
 
-    public static void teleportToLocation( String player, String loc ) {
+    public static void teleportToLocation( String player, String world, Double x, Double y, Double z) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "TeleportToLocation" );
             out.writeUTF( player );
-            out.writeUTF( loc );
+            out.writeUTF( world );
+            out.writeDouble( x );
+            out.writeDouble( y );
+            out.writeDouble( z );
         } catch ( IOException e ) {
             e.printStackTrace();
         }
+
         new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteTeleports.instance );
 
     }

@@ -8,10 +8,6 @@
     <packaging>jar</packaging>
     <name>BungeeSuiteTeleports</name>
 
-    <properties>
-        <build.number>${BUILD_NUMBER}</build.number>
-    </properties>
-
     <repositories>
         <repository>
             <id>bukkit-repo</id>

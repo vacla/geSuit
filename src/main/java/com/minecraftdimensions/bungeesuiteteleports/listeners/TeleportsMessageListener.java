@@ -24,10 +24,7 @@ public class TeleportsMessageListener implements PluginMessageListener {
             }
 
             if ( task.equals( "TeleportToLocation" ) ) {
-                String name = in.readUTF();
-                String loc = in.readUTF();
-                String locs[] = loc.split( "~!~" );
-                TeleportsManager.teleportPlayerToLocation( name, locs[1], Double.parseDouble( locs[2] ), Double.parseDouble( locs[3] ), Double.parseDouble( locs[4] ) );
+                TeleportsManager.teleportPlayerToLocation( in.readUTF(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble() );
             }
 
         } catch ( IOException e ) {

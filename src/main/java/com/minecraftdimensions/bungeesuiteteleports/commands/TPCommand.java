@@ -29,20 +29,12 @@ public class TPCommand implements CommandExecutor {
             return true;
         }
         if ( args.length == 3 ) {
-            String x = args[0];
-            String y = args[1];
-            String z = args[2];
-            String loc = ( ( Player ) sender ).getWorld().getName() + "~!~" + x + "~!~" + y + "~!~" + z;
-            TeleportsManager.teleportToLocation( sender.getName(), loc );
+            TeleportsManager.teleportToLocation( sender.getName(), ( ( Player ) sender ).getWorld().getName(), Double.valueOf( args[0] ), Double.valueOf( args[1] ), Double.valueOf( args[2] ) );
             return true;
         }
         if ( args.length == 5 ) {
             if ( Bukkit.getPlayer( args[0] ) != null ) {
-                String x = args[1];
-                String y = args[2];
-                String z = args[3];
-                String loc = args[4] + "~!~" + x + "~!~" + y + "~!~" + z;
-                TeleportsManager.teleportToLocation( args[0], loc );
+                TeleportsManager.teleportToLocation( args[0], args[4], Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
             }
             return true;
         }
