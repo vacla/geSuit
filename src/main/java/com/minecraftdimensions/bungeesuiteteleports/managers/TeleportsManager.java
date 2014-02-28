@@ -2,9 +2,12 @@ package com.minecraftdimensions.bungeesuiteteleports.managers;
 
 import com.minecraftdimensions.bungeesuiteteleports.BungeeSuiteTeleports;
 import com.minecraftdimensions.bungeesuiteteleports.tasks.PluginMessageTask;
+import com.minecraftdimensions.bungeesuiteteleports.utils.LocationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -13,10 +16,15 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 
 
 public class TeleportsManager {
-
+    private static LinkedHashSet<Material> unsafeBlocks = new LinkedHashSet<Material>() {{
+        add(Material.LAVA);
+        add(Material.STATIONARY_LAVA);
+        add(Material.AIR);
+    }};
 
     public static HashMap<String, Player> pendingTeleports = new HashMap<String, Player>();
     public static HashMap<String, Location> pendingTeleportLocations = new HashMap<String, Location>();
@@ -104,6 +112,8 @@ public class TeleportsManager {
             e.printStackTrace();
         }
         new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteTeleports.instance );
+
+        BungeeSuiteTeleports.instance.getLogger().info("DeathBackLocation: " + p.getLocation());
     }
 
     public static void sendTeleportBackLocation( Player p, boolean empty ) {
@@ -121,6 +131,8 @@ public class TeleportsManager {
             e.printStackTrace();
         }
         new PluginMessageTask( b, empty ).runTaskAsynchronously( BungeeSuiteTeleports.instance );
+
+        BungeeSuiteTeleports.instance.getLogger().info("TeleportBackLocation: " + p.getLocation());
     }
 
     public static void sendPlayerBack( CommandSender sender ) {
@@ -169,11 +181,58 @@ public class TeleportsManager {
         }
     }
 
+    private static Location getSafeBlock(World world, int x, int y, int z, int radius) {
+        if (radius == 0) {
+            return null;
+        }
+
+        if (unsafeBlocks.contains(world.getBlockAt(x, y, z).getType())) {
+            Location location;
+            if ( ( location = getSafeBlock( world, x + 1, y, z, radius - 1 ) ) != null) {
+                return location;
+            }
+
+            if ( ( location = getSafeBlock( world, x - 1, y, z, radius - 1 ) ) != null) {
+                return location;
+            }
+
+            if ( ( location = getSafeBlock( world, x, y + 1, z, radius - 1 ) ) != null) {
+                return location;
+            }
+
+            if ( ( location = getSafeBlock( world, x, y - 1, z, radius - 1 ) ) != null) {
+                return location;
+            }
+
+            if ( ( location = getSafeBlock( world, x, y, z + 1, radius - 1 ) ) != null) {
+                return location;
+            }
+
+            if ( ( location = getSafeBlock( world, x, y, z - 1, radius - 1 ) ) != null) {
+                return location;
+            }
+
+            return null;
+        } else {
+            return new Location(world, x, y, z);
+        }
+    }
+
     public static void teleportPlayerToLocation( final String player, String world, double x, double y, double z ) {
         Location t = new Location( Bukkit.getWorld( world ), x, y, z );
         Player p = Bukkit.getPlayer( player );
         if ( p != null ) {
-            p.teleport( t );
+            //Check if Block is safe
+            if (LocationUtil.isBlockUnsafe(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ())) {
+                try {
+                    Location l = LocationUtil.getSafeDestination(p, t);
+                    p.teleport(l);
+                } catch (Exception e) {
+
+                }
+            } else {
+                p.teleport(t);
+            }
         } else {
             pendingTeleportLocations.put( player, t );
             //clear pending teleport if they dont connect

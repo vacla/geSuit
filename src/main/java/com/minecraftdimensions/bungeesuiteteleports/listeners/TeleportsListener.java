@@ -1,5 +1,7 @@
 package com.minecraftdimensions.bungeesuiteteleports.listeners;
 
+import com.minecraftdimensions.bungeesuiteteleports.managers.PermissionsManager;
+import com.minecraftdimensions.bungeesuiteteleports.managers.TeleportsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -12,9 +14,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-
-import com.minecraftdimensions.bungeesuiteteleports.managers.PermissionsManager;
-import com.minecraftdimensions.bungeesuiteteleports.managers.TeleportsManager;
 
 public class TeleportsListener implements Listener {
 	
@@ -63,7 +62,8 @@ public class TeleportsListener implements Listener {
 	
 	@EventHandler
 	public void playerDeath(PlayerDeathEvent e){
-		TeleportsManager.sendDeathBackLocation(e.getEntity());	
+		TeleportsManager.sendDeathBackLocation(e.getEntity());
+        TeleportsManager.ignoreTeleport.add(e.getEntity());
 	}
 	
 
