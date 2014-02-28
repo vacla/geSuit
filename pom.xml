@@ -8,6 +8,10 @@
     <packaging>jar</packaging>
     <name>geSuitTeleports</name>
 
+    <properties>
+        <build.number>${BUILD_NUMBER}</build.number>
+    </properties>
+
     <repositories>
         <repository>
             <id>bukkit-repo</id>
