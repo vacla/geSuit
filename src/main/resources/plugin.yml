@@ -1,10 +1,9 @@
-name: Teleports
-main : com.minecraftdimensions.bungeesuiteteleports.BungeeSuiteTeleports
+name: geSuitTeleports
+main : net.cubespace.geSuitTeleports.BungeeSuiteTeleports
 version: ${project.version}b-${build.number}
 description: Part of the BungeeSuite this plugin allows users to teleport to each other.
-author: Bloodsplat
+author: Bloodsplat, geNAZt
 website: http://www.spigotmc.org/resources/bungeesuite.9/
-prefix: BungeeSuite
 commands:
     tp:
         description: Teleports a player to another player or location

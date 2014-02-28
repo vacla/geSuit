@@ -1,8 +1,8 @@
-package com.minecraftdimensions.bungeesuiteteleports.managers;
+package net.cubespace.geSuitTeleports.managers;
 
 import org.bukkit.entity.Player;
 
-import com.minecraftdimensions.bungeesuiteteleports.BungeeSuiteTeleports;
+import net.cubespace.geSuitTeleports.BungeeSuiteTeleports;
 
 public class PermissionsManager {
 	

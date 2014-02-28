@@ -1,10 +1,10 @@
-package com.minecraftdimensions.bungeesuiteteleports.commands;
+package net.cubespace.geSuitTeleports.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import com.minecraftdimensions.bungeesuiteteleports.managers.TeleportsManager;
+import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 
 
 public class TPAcceptCommand implements CommandExecutor {

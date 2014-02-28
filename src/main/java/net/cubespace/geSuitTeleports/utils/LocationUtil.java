@@ -1,8 +1,4 @@
-package com.minecraftdimensions.bungeesuiteteleports.utils;
-
-/**
- * @author geNAZt (fabian.fassbender42@googlemail.com)
- */
+package net.cubespace.geSuitTeleports.utils;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -22,7 +18,6 @@ import java.util.Set;
 public class LocationUtil {
     // The player can stand inside these materials
     public static final Set<Integer> HOLLOW_MATERIALS = new HashSet<Integer>();
-    private static final HashSet<Byte> TRANSPARENT_MATERIALS = new HashSet<Byte>();
 
     public static class Vector3D
     {
@@ -109,12 +104,6 @@ public class LocationUtil {
         } catch (java.lang.NoSuchFieldError e) {
 
         }
-
-        for (Integer integer : HOLLOW_MATERIALS) {
-            TRANSPARENT_MATERIALS.add(integer.byteValue());
-        }
-        TRANSPARENT_MATERIALS.add((byte) Material.WATER.getId());
-        TRANSPARENT_MATERIALS.add((byte) Material.STATIONARY_WATER.getId());
     }
 
     static boolean isBlockAboveAir(final World world, final int x, final int y, final int z) {
