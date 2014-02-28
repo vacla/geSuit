@@ -14,5 +14,4 @@ public class Affix {
         this.group = g;
         this.affix = a;
     }
-
 }

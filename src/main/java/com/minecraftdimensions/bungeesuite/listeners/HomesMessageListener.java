@@ -26,6 +26,7 @@ public class HomesMessageListener implements Listener {
         if ( !event.getTag().equalsIgnoreCase( "BSHomes" ) ) {
             return;
         }
+
         event.setCancelled( true );
 
         DataInputStream in = new DataInputStream( new ByteArrayInputStream( event.getData() ) );

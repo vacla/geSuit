@@ -3,11 +3,25 @@ package com.minecraftdimensions.bungeesuite;
 import com.minecraftdimensions.bungeesuite.commands.BSVersionCommand;
 import com.minecraftdimensions.bungeesuite.commands.MOTDCommand;
 import com.minecraftdimensions.bungeesuite.commands.ReloadCommand;
-import com.minecraftdimensions.bungeesuite.listeners.*;
-import com.minecraftdimensions.bungeesuite.managers.*;
+import com.minecraftdimensions.bungeesuite.listeners.BansListener;
+import com.minecraftdimensions.bungeesuite.listeners.BansMessageListener;
+import com.minecraftdimensions.bungeesuite.listeners.HomesMessageListener;
+import com.minecraftdimensions.bungeesuite.listeners.PlayerListener;
+import com.minecraftdimensions.bungeesuite.listeners.PortalsMessageListener;
+import com.minecraftdimensions.bungeesuite.listeners.SpawnListener;
+import com.minecraftdimensions.bungeesuite.listeners.SpawnMessageListener;
+import com.minecraftdimensions.bungeesuite.listeners.TeleportsMessageListener;
+import com.minecraftdimensions.bungeesuite.listeners.WarpsMessageListener;
+import com.minecraftdimensions.bungeesuite.managers.AnnouncementManager;
+import com.minecraftdimensions.bungeesuite.managers.DatabaseTableManager;
+import com.minecraftdimensions.bungeesuite.managers.LoggingManager;
+import com.minecraftdimensions.bungeesuite.managers.PortalManager;
+import com.minecraftdimensions.bungeesuite.managers.SQLManager;
+import com.minecraftdimensions.bungeesuite.managers.SpawnManager;
+import com.minecraftdimensions.bungeesuite.managers.TeleportManager;
+import com.minecraftdimensions.bungeesuite.managers.WarpsManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.sql.SQLException;
@@ -24,11 +38,9 @@ public class BungeeSuite extends Plugin {
         initialiseManagers();
         registerListeners();
         registerCommands();
-        reloadServersPlugins();
     }
 
     private void registerCommands() {
-        //        proxy.getPluginManager().registerCommand( this, new WhoIsCommand() );
         proxy.getPluginManager().registerCommand( this, new BSVersionCommand() );
         proxy.getPluginManager().registerCommand( this, new MOTDCommand() );
         proxy.getPluginManager().registerCommand( this, new ReloadCommand() );
@@ -38,12 +50,6 @@ public class BungeeSuite extends Plugin {
         if ( SQLManager.initialiseConnections() ) {
             DatabaseTableManager.createDefaultTables();
             AnnouncementManager.loadAnnouncements();
-            //            if ( MainConfig.UserSocketPort ) {
-            //                SocketManager.startServer();
-            //            }
-            ChatManager.loadChannels();
-            PrefixSuffixManager.loadPrefixes();
-            PrefixSuffixManager.loadSuffixes();
             TeleportManager.initialise();
             try {
                 WarpsManager.loadWarpLocations();
@@ -52,9 +58,7 @@ public class BungeeSuite extends Plugin {
             } catch ( SQLException e ) {
                 e.printStackTrace();
             }
-            //test
         } else {
-            //            setupSQL();
             LoggingManager.log( ChatColor.DARK_RED + "Your BungeeSuite is unable to connect to your SQL database specified in the config" );
         }
     }
@@ -75,8 +79,6 @@ public class BungeeSuite extends Plugin {
         this.getProxy().registerChannel( "BSSpawns" );//in
         this.getProxy().registerChannel( "BungeeSuiteSpawn" );//out
         proxy.getPluginManager().registerListener( this, new PlayerListener() );
-        proxy.getPluginManager().registerListener( this, new ChatListener() );
-        proxy.getPluginManager().registerListener( this, new ChatMessageListener() );
         proxy.getPluginManager().registerListener( this, new BansMessageListener() );
         proxy.getPluginManager().registerListener( this, new BansListener() );
         proxy.getPluginManager().registerListener( this, new TeleportsMessageListener() );
@@ -85,13 +87,6 @@ public class BungeeSuite extends Plugin {
         proxy.getPluginManager().registerListener( this, new PortalsMessageListener() );
         proxy.getPluginManager().registerListener( this, new SpawnListener() );
         proxy.getPluginManager().registerListener( this, new SpawnMessageListener() );
-    }
-
-
-    private void reloadServersPlugins() {
-        for ( ServerInfo s : ProxyServer.getInstance().getServers().values() ) {
-            ChatManager.checkForPlugins( s );
-        }
     }
 
     public void onDisable() {

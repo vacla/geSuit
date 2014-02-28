@@ -1,12 +1,16 @@
 package com.minecraftdimensions.bungeesuite.managers;
 
 import com.minecraftdimensions.bungeesuite.BungeeSuite;
-import com.minecraftdimensions.bungeesuite.configs.MainConfig;
 import com.minecraftdimensions.bungeesuite.objects.ConnectionHandler;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
@@ -19,30 +23,30 @@ public class SQLManager {
      */
     public static boolean initialiseConnections() {
         Connection connection = null;
-        for ( int i = 0; i < MainConfig.threads; i++ ) {
+        for (int i = 0; i < ConfigManager.main.Database_Threads; i++) {
             try {
-                Class.forName( "com.mysql.jdbc.Driver" );
-                connection = DriverManager.getConnection( "jdbc:mysql://" + MainConfig.host + ":" + MainConfig.port + "/" + MainConfig.database, MainConfig.username, MainConfig.password );
-            } catch ( SQLException | ClassNotFoundException ex ) {
-                System.out.println( ChatColor.DARK_RED + "SQL is unable to conect" );
+                Class.forName("com.mysql.jdbc.Driver");
+                connection = DriverManager.getConnection("jdbc:mysql://" + ConfigManager.main.Database_Host + ":" + ConfigManager.main.Database_Port + "/" + ConfigManager.main.Database_Database, ConfigManager.main.Database_Username, ConfigManager.main.Database_Password);
+            } catch (SQLException | ClassNotFoundException ex) {
+                System.out.println(ChatColor.DARK_RED + "SQL is unable to conect");
                 return false;
             }
-            connections.add( new ConnectionHandler( connection ) );
+            connections.add(new ConnectionHandler(connection));
             connection = null;
         }
 
-        ProxyServer.getInstance().getScheduler().schedule( BungeeSuite.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().schedule(BungeeSuite.instance, new Runnable() {
             public void run() {
                 Iterator<ConnectionHandler> cons = connections.iterator();
-                while ( cons.hasNext() ) {
+                while (cons.hasNext()) {
                     ConnectionHandler con = cons.next();
-                    if ( con.isOldConnection() ) {
+                    if (con.isOldConnection()) {
                         con.closeConnection();
                         cons.remove();
                     }
                 }
             }
-        }, 60, 60, TimeUnit.MINUTES );
+        }, 60, 60, TimeUnit.MINUTES);
         return true;
     }
 
@@ -50,8 +54,8 @@ public class SQLManager {
      * @return Returns a free connection from the pool of connections. Creates a new connection if there are none available
      */
     private static ConnectionHandler getConnection() {
-        for ( ConnectionHandler c : connections ) {
-            if ( !c.isUsed() ) {
+        for (ConnectionHandler c : connections) {
+            if (!c.isUsed()) {
                 return c;
             }
         }
@@ -59,14 +63,15 @@ public class SQLManager {
         Connection connection = null;
         ConnectionHandler ch = null;
         try {
-            Class.forName( "com.mysql.jdbc.Driver" );
-            connection = DriverManager.getConnection( "jdbc:mysql://" + MainConfig.host + ":" + MainConfig.port + "/" + MainConfig.database, MainConfig.username, MainConfig.password );
-        } catch ( SQLException | ClassNotFoundException ex ) {
-            System.out.println( "SQL is unable to create a new connection" );
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://" + ConfigManager.main.Database_Host + ":" + ConfigManager.main.Database_Port + "/" + ConfigManager.main.Database_Database, ConfigManager.main.Database_Username, ConfigManager.main.Database_Password);
+        } catch (SQLException | ClassNotFoundException ex) {
+            System.out.println(ChatColor.DARK_RED + "SQL is unable to conect");
+            return null;
         }
-        ch = new ConnectionHandler( connection );
-        connections.add( ch );
-        System.out.println( "Created new sql connection!" );
+        ch = new ConnectionHandler(connection);
+        connections.add(ch);
+        System.out.println("Created new sql connection!");
 
         return ch;
 
@@ -79,9 +84,9 @@ public class SQLManager {
      * @param query
      * @throws SQLException
      */
-    public static void standardQuery( String query ) throws SQLException {
+    public static void standardQuery(String query) throws SQLException {
         ConnectionHandler ch = getConnection();
-        standardQuery( query, ch.getConnection() );
+        standardQuery(query, ch.getConnection());
         ch.release();
     }
 
@@ -92,12 +97,12 @@ public class SQLManager {
      * @return Whether or not a result has been found in the query.
      * @throws SQLException
      */
-    public static boolean existanceQuery( String query ) {
+    public static boolean existanceQuery(String query) {
         boolean check = false;
         ConnectionHandler ch = getConnection();
         try {
-            check = sqlQuery( query, ch.getConnection() ).next();
-        } catch ( SQLException e ) {
+            check = sqlQuery(query, ch.getConnection()).next();
+        } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -115,10 +120,10 @@ public class SQLManager {
      * @param query
      * @return ResultSet
      */
-    public static ResultSet sqlQuery( String query ) {
+    public static ResultSet sqlQuery(String query) {
         ResultSet res = null;
         ConnectionHandler ch = getConnection();
-        res = sqlQuery( query, ch.getConnection() );
+        res = sqlQuery(query, ch.getConnection());
         ch.release();
         return res;
     }
@@ -129,64 +134,64 @@ public class SQLManager {
      * @param table
      * @return
      */
-    public static boolean doesTableExist( String table ) {
+    public static boolean doesTableExist(String table) {
         boolean check = false;
         ConnectionHandler ch = getConnection();
-        check = checkTable( table, ch.getConnection() );
+        check = checkTable(table, ch.getConnection());
         ch.release();
         return check;
     }
 
-    protected synchronized static int standardQuery( String query, Connection connection ) throws SQLException {
+    protected synchronized static int standardQuery(String query, Connection connection) throws SQLException {
         Statement statement = null;
 
         statement = connection.createStatement();
 
         int rowsUpdated = 0;
-        rowsUpdated = statement.executeUpdate( query );
+        rowsUpdated = statement.executeUpdate(query);
 
         statement.close();
         int rows = rowsUpdated;
         return rows;
     }
 
-    protected synchronized static ResultSet sqlQuery( String query, Connection connection ) {
+    protected synchronized static ResultSet sqlQuery(String query, Connection connection) {
         Statement statement = null;
         try {
             statement = connection.createStatement();
-        } catch ( SQLException e ) {
+        } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         ResultSet result = null;
         try {
-            result = statement.executeQuery( query );
-        } catch ( SQLException e ) {
+            result = statement.executeQuery(query);
+        } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return result;
     }
 
-    protected synchronized static boolean checkTable( String table, Connection connection ) {
+    protected synchronized static boolean checkTable(String table, Connection connection) {
         DatabaseMetaData dbm = null;
         try {
             dbm = connection.getMetaData();
-        } catch ( SQLException e2 ) {
+        } catch (SQLException e2) {
             // TODO Auto-generated catch block
             e2.printStackTrace();
         }
         ResultSet tables = null;
         try {
-            tables = dbm.getTables( null, null, table, null );
-        } catch ( SQLException e1 ) {
+            tables = dbm.getTables(null, null, table, null);
+        } catch (SQLException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
         boolean check = false;
         try {
             check = tables.next();
-        } catch ( SQLException e ) {
+        } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -194,7 +199,7 @@ public class SQLManager {
     }
 
     public static void closeConnections() {
-        for ( ConnectionHandler c : connections ) {
+        for (ConnectionHandler c : connections) {
             c.closeConnection();
         }
 

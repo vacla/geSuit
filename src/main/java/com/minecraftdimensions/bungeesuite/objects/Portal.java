@@ -14,7 +14,7 @@ public class Portal {
     Location min;
 
 
-    public Portal( String name, String server, String fillType, String type, String dest, Location max, Location min ) {
+    public Portal(String name, String server, String fillType, String type, String dest, Location max, Location min) {
         this.name = name;
         this.server = server;
         this.fillType = fillType;
@@ -25,7 +25,7 @@ public class Portal {
     }
 
     public ServerInfo getServer() {
-        return BungeeSuite.proxy.getServerInfo( server );
+        return BungeeSuite.proxy.getServerInfo(server);
     }
 
     public String getName() {

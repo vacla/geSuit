@@ -1,22 +1,19 @@
 package com.minecraftdimensions.bungeesuite.configs;
 
-
-import com.minecraftdimensions.bungeesuite.configlibrary.Config;
-import com.minecraftdimensions.bungeesuite.managers.AnnouncementManager;
+import com.minecraftdimensions.bungeesuite.BungeeSuite;
+import com.minecraftdimensions.bungeesuite.configs.SubConfig.AnnouncementEntry;
+import net.cubespace.Yamler.Config.Config;
 
 import java.io.File;
+import java.util.HashMap;
 
-public class Announcements {
-    private static String configpath = File.separator + "plugins" + File.separator + "BungeeSuite" + File.separator + "announcements.yml";
-    public static Config announcements = new Config( configpath );
-    public static boolean announcer = announcements.getBoolean( "Announcements.enabled", true );
-
-    public static void reloadAnnouncements() {
-        announcements = null;
-        announcements = new Config( configpath );
-        announcer = announcements.getBoolean( "Announcements.enabled", true );
-        AnnouncementManager.reloadAnnouncements();
+public class Announcements extends Config {
+    public Announcements() {
+        CONFIG_FILE = new File(BungeeSuite.instance.getDataFolder(), "announcements.yml");
     }
+
+    public Boolean Enabled = true;
+    public HashMap<String, AnnouncementEntry> Announcements = new HashMap<>();
 }
 
 

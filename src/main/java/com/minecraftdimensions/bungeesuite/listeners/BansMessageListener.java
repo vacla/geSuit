@@ -15,57 +15,58 @@ import java.sql.SQLException;
 public class BansMessageListener implements Listener {
 
     @EventHandler
-    public void receivePluginMessage( PluginMessageEvent event ) throws IOException, SQLException {
-        if ( event.isCancelled() ) {
+    public void receivePluginMessage(PluginMessageEvent event) throws IOException, SQLException {
+        if (event.isCancelled()) {
             return;
         }
-        if ( !( event.getSender() instanceof Server ) )
+        if (!(event.getSender() instanceof Server))
             return;
-        if ( !event.getTag().equalsIgnoreCase( "BSBans" ) ) {
+        if (!event.getTag().equalsIgnoreCase("BSBans")) {
             return;
         }
-        event.setCancelled( true );
-        DataInputStream in = new DataInputStream( new ByteArrayInputStream( event.getData() ) );
+
+        event.setCancelled(true);
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
         String task = in.readUTF();
-        if ( task.equals( "KickPlayer" ) ) {
-            BansManager.kickPlayer( in.readUTF(), in.readUTF(), in.readUTF() );
+        if (task.equals("KickPlayer")) {
+            BansManager.kickPlayer(in.readUTF(), in.readUTF(), in.readUTF());
             return;
         }
-        if ( task.equals( "BanPlayer" ) ) {
-            BansManager.banPlayer( in.readUTF(), in.readUTF(), in.readUTF() );
+        if (task.equals("BanPlayer")) {
+            BansManager.banPlayer(in.readUTF(), in.readUTF(), in.readUTF());
             return;
         }
-        if ( task.equals( "TempBanPlayer" ) ) {
-            BansManager.tempBanPlayer( in.readUTF(), in.readUTF(), in.readInt(), in.readInt(), in.readInt(), in.readUTF() );
+        if (task.equals("TempBanPlayer")) {
+            BansManager.tempBanPlayer(in.readUTF(), in.readUTF(), in.readInt(), in.readInt(), in.readInt(), in.readUTF());
             return;
         }
-        if ( task.equals( "KickAll" ) ) {
-            BansManager.kickAll( in.readUTF(), in.readUTF() );
+        if (task.equals("KickAll")) {
+            BansManager.kickAll(in.readUTF(), in.readUTF());
             return;
         }
-        if ( task.equals( "UnbanPlayer" ) ) {
-            BansManager.unbanPlayer( in.readUTF(), in.readUTF() );
+        if (task.equals("UnbanPlayer")) {
+            BansManager.unbanPlayer(in.readUTF(), in.readUTF());
             return;
         }
-        if ( task.equals( "IPBanPlayer" ) ) {
-            BansManager.banIP( in.readUTF(), in.readUTF(), in.readUTF() );
+        if (task.equals("IPBanPlayer")) {
+            BansManager.banIP(in.readUTF(), in.readUTF(), in.readUTF());
             return;
         }
-        if ( task.equals( "UnIPBanPlayer" ) ) {
-            BansManager.unbanIP( in.readUTF(), in.readUTF() );
+        if (task.equals("UnIPBanPlayer")) {
+            BansManager.unbanIP(in.readUTF(), in.readUTF());
             return;
         }
-        if ( task.equals( "CheckPlayerBans" ) ) {
-            BansManager.checkPlayersBan( in.readUTF(), in.readUTF() );
+        if (task.equals("CheckPlayerBans")) {
+            BansManager.checkPlayersBan(in.readUTF(), in.readUTF());
             return;
         }
-        if ( task.equals( "ReloadBans" ) ) {
-            BansManager.reloadBans( in.readUTF() );
+        if (task.equals("ReloadBans")) {
+            BansManager.reloadBans(in.readUTF());
             return;
         }
-        if ( task.equals( "SendVersion" ) ) {
-            LoggingManager.log( in.readUTF() );
+        if (task.equals("SendVersion")) {
+            LoggingManager.log(in.readUTF());
             return;
         }
 

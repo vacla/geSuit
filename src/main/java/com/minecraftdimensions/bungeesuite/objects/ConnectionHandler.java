@@ -4,46 +4,46 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class ConnectionHandler {
-	private Connection connection;
-	private boolean used;
-	public long lastUsed;
+    private Connection connection;
+    private boolean used;
+    public long lastUsed;
 
-	public ConnectionHandler(Connection connection) {
-		this.connection = connection;
-	}
+    public ConnectionHandler(Connection connection) {
+        this.connection = connection;
+    }
 
-	public Connection getConnection() {
-		this.lastUsed = System.currentTimeMillis();
-		this.used = true;
-		return connection;
-	}
+    public Connection getConnection() {
+        this.lastUsed = System.currentTimeMillis();
+        this.used = true;
+        return connection;
+    }
 
-	public boolean isOldConnection() {
-		if ((System.currentTimeMillis() - lastUsed) > 3600000) {
-			return true;
-		} else {
-			return false;
-		}
+    public boolean isOldConnection() {
+        if ((System.currentTimeMillis() - lastUsed) > 3600000) {
+            return true;
+        } else {
+            return false;
+        }
 
-	}
+    }
 
-	public void release() {
-		this.used = false;
-	}
+    public void release() {
+        this.used = false;
+    }
 
-	public boolean isUsed() {
-		return used;
-	}
+    public boolean isUsed() {
+        return used;
+    }
 
-	public void closeConnection() {
-		this.used = true;
-		if (connection != null) {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+    public void closeConnection() {
+        this.used = true;
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 }

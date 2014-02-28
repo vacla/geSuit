@@ -1,7 +1,7 @@
 package com.minecraftdimensions.bungeesuite.managers;
 
 import com.minecraftdimensions.bungeesuite.BungeeSuite;
-import com.minecraftdimensions.bungeesuite.configs.Announcements;
+import com.minecraftdimensions.bungeesuite.configs.SubConfig.AnnouncementEntry;
 import com.minecraftdimensions.bungeesuite.tasks.GlobalAnnouncements;
 import com.minecraftdimensions.bungeesuite.tasks.ServerAnnouncements;
 import net.md_5.bungee.api.ProxyServer;
@@ -9,6 +9,7 @@ import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class AnnouncementManager {
@@ -16,34 +17,35 @@ public class AnnouncementManager {
     static ProxyServer proxy = ProxyServer.getInstance();
 
     public static void loadAnnouncements() {
-        //create defaults
+        // create defaults
         setDefaults();
+
         // load global announcements
-        if ( Announcements.announcer ) {
-            List<String> global = Announcements.announcements.getListString( "Announcements.Global.Messages", new ArrayList<String>() );
-            if ( !global.isEmpty() ) {
-                int interval = Announcements.announcements.getInt( "Announcements.Global.Interval", 0 );
-                if ( interval > 0 ) {
+        if (ConfigManager.announcements.Enabled) {
+            List<String> global = ConfigManager.announcements.Announcements.get("global").Messages;
+            if (!global.isEmpty()) {
+                int interval = ConfigManager.announcements.Announcements.get("global").Interval;
+                if (interval > 0) {
                     GlobalAnnouncements g = new GlobalAnnouncements();
-                    for ( String messages : global ) {
-                        g.addAnnouncement( messages );
+                    for (String messages : global) {
+                        g.addAnnouncement(messages);
                     }
-                    ScheduledTask t = proxy.getScheduler().schedule( BungeeSuite.instance, g, interval, interval, TimeUnit.SECONDS );
-                    announcementTasks.add( t );
+                    ScheduledTask t = proxy.getScheduler().schedule(BungeeSuite.instance, g, interval, interval, TimeUnit.SECONDS);
+                    announcementTasks.add(t);
                 }
             }
             //load server announcements
-            for ( String server : proxy.getServers().keySet() ) {
-                List<String> servermes = Announcements.announcements.getListString( "Announcements." + server + ".Messages", new ArrayList<String>() );
-                if ( !servermes.isEmpty() ) {
-                    int interval = Announcements.announcements.getInt( "Announcements." + server + ".Interval", 0 );
-                    if ( interval > 0 ) {
-                        ServerAnnouncements s = new ServerAnnouncements( proxy.getServerInfo( server ) );
-                        for ( String messages : servermes ) {
-                            s.addAnnouncement( messages );
+            for (String server : proxy.getServers().keySet()) {
+                List<String> servermes = ConfigManager.announcements.Announcements.get(server).Messages;
+                if (!servermes.isEmpty()) {
+                    int interval = ConfigManager.announcements.Announcements.get(server).Interval;
+                    if (interval > 0) {
+                        ServerAnnouncements s = new ServerAnnouncements(proxy.getServerInfo(server));
+                        for (String messages : servermes) {
+                            s.addAnnouncement(messages);
                         }
-                        ScheduledTask t = proxy.getScheduler().schedule( BungeeSuite.instance, s, interval, interval, TimeUnit.SECONDS );
-                        announcementTasks.add( t );
+                        ScheduledTask t = proxy.getScheduler().schedule(BungeeSuite.instance, s, interval, interval, TimeUnit.SECONDS);
+                        announcementTasks.add(t);
                     }
                 }
             }
@@ -51,29 +53,32 @@ public class AnnouncementManager {
     }
 
     private static void setDefaults() {
-        List<String> check = Announcements.announcements.getSubNodes( "Announcements" );
-        if ( !check.contains( "Global" ) ) {
-            Announcements.announcements.setInt( "Announcements.Global.Interval", 300 );
-            List<String> l = new ArrayList<String>();
-            l.add( "&4Welcome to the server!" );
-            l.add( "&aDon't forget to check out our website" );
-            Announcements.announcements.setListString( "Announcements.Global.Messages", l );
+        Map<String, AnnouncementEntry> check = ConfigManager.announcements.Announcements;
+        if (!check.containsKey("global")) {
+            AnnouncementEntry announcementEntry = new AnnouncementEntry();
+            announcementEntry.Interval = 300;
+            announcementEntry.Messages.add("&4Welcome to the server!");
+            announcementEntry.Messages.add("&aDon't forget to check out our website");
+
+            check.put("global", announcementEntry);
         }
-        for ( String server : proxy.getServers().keySet() ) {
-            if ( !check.contains( server ) ) {
-                Announcements.announcements.setInt( "Announcements." + server + ".Interval", 150 );
-                List<String> l = new ArrayList<String>();
-                l.add( "&4Welcome to the " + server + " server!" );
-                l.add( "&aDon't forget to check out our website" );
-                Announcements.announcements.setListString( "Announcements." + server + ".Messages", l );
+        for (String server : proxy.getServers().keySet()) {
+            if (!check.containsKey(server)) {
+                AnnouncementEntry announcementEntry = new AnnouncementEntry();
+                announcementEntry.Interval = 150;
+                announcementEntry.Messages.add("&4Welcome to the " + server + " server!");
+                announcementEntry.Messages.add("&aDon't forget to check out our website");
+
+                check.put(server, announcementEntry);
             }
         }
     }
 
     public static void reloadAnnouncements() {
-        for ( ScheduledTask task : announcementTasks ) {
+        for (ScheduledTask task : announcementTasks) {
             task.cancel();
         }
+
         announcementTasks.clear();
         loadAnnouncements();
     }

@@ -1,32 +1,44 @@
 package com.minecraftdimensions.bungeesuite.commands;
 
-import com.minecraftdimensions.bungeesuite.configs.Announcements;
-import com.minecraftdimensions.bungeesuite.configs.MainConfig;
-import com.minecraftdimensions.bungeesuite.objects.Messages;
+import com.minecraftdimensions.bungeesuite.managers.AnnouncementManager;
+import com.minecraftdimensions.bungeesuite.managers.ConfigManager;
+import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
+/**
+ * Current Maintainer: geNAZt
+ * <p/>
+ * Command: /bsreload
+ * Permission needed: bungeesuite.reload or bungeesuite.admin
+ * Arguments: none
+ * What does it do: Reloads every config
+ */
 public class ReloadCommand extends Command {
-
     public ReloadCommand() {
-        super( "bsreload" );
+        super("bsreload");
     }
 
     @Override
-    public void execute( CommandSender sender, String[] args ) {
-        if ( !( sender.hasPermission( "bungeesuite.reload" ) || sender.hasPermission( "bungeesuite.admin" ) ) ) {
-            if ( sender instanceof ProxiedPlayer ) {
-                ProxiedPlayer p = ( ProxiedPlayer ) sender;
-                p.chat( "/bsreload" );
-            }
-        } else {
-            Messages.reloadMessages();
-            MainConfig.reloadConfig();
-            Announcements.reloadAnnouncements();
-            sender.sendMessage( "config.yml, announcements.yml and messages.yml reloaded!" );
+    public void execute(CommandSender sender, String[] args) {
+        if (!(sender.hasPermission("bungeesuite.reload") || sender.hasPermission("bungeesuite.admin"))) {
+            sender.sendMessage(ConfigManager.messages.NO_PERMISSION);
+
+            return;
         }
 
-    }
+        try {
+            ConfigManager.announcements.reload();
+            ConfigManager.bans.reload();
+            ConfigManager.main.reload();
+            ConfigManager.spawn.reload();
+            ConfigManager.messages.reload();
 
+            AnnouncementManager.reloadAnnouncements();
+            sender.sendMessage("All Configs reloaded");
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+            sender.sendMessage("Could not reload. Check the logs");
+        }
+    }
 }
