@@ -1,4 +1,4 @@
-name: BungeeSuite
-main : com.minecraftdimensions.bungeesuite.BungeeSuite
+name: geSuit
+main : net.cubespace.getSuit.BungeeSuite
 version: ${project.version}b-${build.number}
-author: Bloodsplat
+author: Bloodsplat, geNAZt
