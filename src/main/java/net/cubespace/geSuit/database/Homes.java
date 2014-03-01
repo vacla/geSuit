@@ -113,7 +113,7 @@ public class Homes implements IRepository {
                 "yaw FLOAT, " +
                 "pitch FLOAT, " +
                 "CONSTRAINT pk_home PRIMARY KEY (player,home_name,server), " +
-                "CONSTRAINT fk_playerhome FOREIGN KEY (player) REFERENCES players (playername) ON UPDATE CASCADE ON DELETE CASCADE"};
+                "FOREIGN KEY fk_playerhome(player) REFERENCES players (playername) ON UPDATE CASCADE ON DELETE CASCADE"};
     }
 
     @Override
