@@ -1,15 +1,13 @@
-name: Bans
-main : com.minecraftdimensions.bungeesuitebans.BungeeSuiteBans
+name: geSuitBans
+main : net.cubespace.geSuitBans.geSuitBans
 version: ${project.version}b-${build.number}
-description: Part of the BungeeSuite this plugin allows moderators to ban and kick players
-author: Bloodsplat
-website: http://www.spigotmc.org/resources/bungeesuite.9/
-prefix: BungeeSuite
+description: Part of the geSuit this plugin allows moderators to ban and kick players
+author: geNAZt
 commands:
     ban:
         description: Bans a player from the proxy
         aliases: [banplayer]
-        permission: bungeesuite.bans.command.ban
+        permission: gesuit.bans.command.ban
         permission-message: §cYou do not have permission for this command
         usage: |
                /<command> (player)
@@ -17,13 +15,13 @@ commands:
     checkban:
         description: Gets info about a players ban
         aliases: [lookupban,baninfo]
-        permission: bungeesuite.bans.command.checkban
+        permission: gesuit.bans.command.checkban
         permission-message: §cYou do not have permission for this command
         usage: /<command>  (player)
     ipban:
         description: Bans an IP from the proxy
         aliases: [banip]
-        permission: bungeesuite.bans.command.ipban
+        permission: gesuit.bans.command.ipban
         permission-message: §cYou do not have permission for this command
         usage: |
                /<command>  (player)
@@ -32,7 +30,7 @@ commands:
     kick:
         description: Kick a player from the proxy
         aliases: [kickplayer, playerkick, kickp,pkick]
-        permission: bungeesuite.bans.command.kick
+        permission: gesuit.bans.command.kick
         permission-message: §cYou do not have permission for this command
         usage: |
                /<command>  (player)
@@ -40,7 +38,7 @@ commands:
     kickall:
         description: Kicks everyone from the proxy
         aliases: [kicka]
-        permission: bungeesuite.bans.command.kickall
+        permission: gesuit.bans.command.kickall
         permission-message: §cYou do not have permission for this command
         usage: |
                /<command>
@@ -48,13 +46,13 @@ commands:
     reloadbans:
         description: Reloads the bans config
         aliases: [bansreload, reloadban, banreload]
-        permission: bungeesuite.bans.command.reload
+        permission: gesuit.bans.command.reload
         permission-message: §cYou do not have permission for this command
         usage: /<command>
     tempban:
         description: Temporarily bans a player from the proxy
         aliases: [tban, bant, bantemp]
-        permission: bungeesuite.bans.command.tempban
+        permission: gesuit.bans.command.tempban
         permission-message: §cYou do not have permission for this command
         usage: |
                "/<command> (player) (time d:(days) h:(hours) m:(minutes))"
@@ -62,36 +60,36 @@ commands:
     unban:
         description: Unbans a player from the proxy
         aliases: [uban, removeban, pardon]
-        permission: bungeesuite.bans.command.ban
+        permission: gesuit.bans.command.ban
         permission-message: §cYou do not have permission for this command
         usage: /<command> (player)
     unipban:
         description: Unbans an IP from the proxy
         aliases: [ipunban, unbanip, ipsafe, safeip]
-        permission: bungeesuite.bans.command.ipban
+        permission: gesuit.bans.command.ipban
         permission-message: §cYou do not have permission for this command
         usage: /<command> (ip)
 
 permissions:
-    bungeesuite.bans.*:
+    gesuit.bans.*:
         description: Gives access to all bans commands
         default: op
         children:
-            bungeesuite.chat.admin: true
-    bungeesuite.bans.admin:
+            gesuit.chat.admin: true
+    gesuit.bans.admin:
         description: Gives access to all bans admin commands
         children:
-            bungeesuite.bans.command.kickall: true
-            bungeesuite.bans.command.ipban: true
-            bungeesuite.bans.command.reload: true
-            bungeesuite.bans.mod: true
-    bungeesuite.bans.mod:
+            gesuit.bans.command.kickall: true
+            gesuit.bans.command.ipban: true
+            gesuit.bans.command.reload: true
+            gesuit.bans.mod: true
+    gesuit.bans.mod:
         description: Gives access to all bans mod commands
         children:
-            bungeesuite.bans.command.ban: true
-            bungeesuite.bans.command.checkban: true
-            bungeesuite.bans.command.kick: true
-            bungeesuite.bans.command.tempban: true
+            gesuit.bans.command.ban: true
+            gesuit.bans.command.checkban: true
+            gesuit.bans.command.kick: true
+            gesuit.bans.command.tempban: true
         
 
         

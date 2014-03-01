@@ -1,9 +1,9 @@
-package com.minecraftdimensions.bungeesuitebans.commands;
+package net.cubespace.geSuitBans.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import com.minecraftdimensions.bungeesuitebans.managers.BansManager;
+import net.cubespace.geSuitBans.managers.BansManager;
 
 
 public class UnbanCommand implements CommandExecutor {

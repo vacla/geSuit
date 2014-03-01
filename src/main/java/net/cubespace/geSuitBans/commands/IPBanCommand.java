@@ -1,24 +1,23 @@
-package com.minecraftdimensions.bungeesuitebans.commands;
-
+package net.cubespace.geSuitBans.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
-import com.minecraftdimensions.bungeesuitebans.managers.BansManager;
-
+import net.cubespace.geSuitBans.managers.BansManager;
 
 
-public class BanCommand implements CommandExecutor {
+public class IPBanCommand implements CommandExecutor {
+
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 		
 		if(args.length==1){
-			BansManager.banPlayer(sender.getName(),args[0], "");
+			BansManager.ipBanPlayer(sender.getName(),args[0], "");
 			return true;
 		}
+		
 		if(args.length>1){
 			String msg = "";
 			for(String data: args){
@@ -26,7 +25,7 @@ public class BanCommand implements CommandExecutor {
 					msg+=data+" ";
 				}
 			}
-			BansManager.banPlayer(sender.getName(),args[0],msg);
+			BansManager.ipBanPlayer(sender.getName(),args[0],msg);
 			return true;
 		}
 

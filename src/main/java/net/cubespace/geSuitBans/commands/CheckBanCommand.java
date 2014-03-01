@@ -1,19 +1,22 @@
-package com.minecraftdimensions.bungeesuitebans.commands;
+package net.cubespace.geSuitBans.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import com.minecraftdimensions.bungeesuitebans.managers.BansManager;
+import net.cubespace.geSuitBans.managers.BansManager;
 
 
-public class ReloadBansCommand implements CommandExecutor {
-
+public class CheckBanCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 
-		BansManager.reloadBans(sender.getName());
+		if(args.length>0){
+			BansManager.checkPlayerBans(sender.getName(),args[0]);
+			return true;
+		}
+
 		return false;
 	}
 
