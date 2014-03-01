@@ -1,26 +1,25 @@
-name: Warps
-main : com.minecraftdimensions.bungeesuitewarps.BungeeSuiteWarps
+name: geSuitWarps
+main: net.cubespace.geSuitWarps.geSuitWarps
 version: ${project.version}b-${build.number}
-description: Part of the BungeeSuite this plugin allows users to warp to certain points.
-author: Bloodsplat
-website: http://www.spigotmc.org/resources/bungeesuite.9/
-prefix: BungeeSuite
+description: Part of the gesuit this plugin allows users to warp to certain points.
+author: geNAZt
+depend: [geSuitTeleports]
 commands:
     warps:
         description: Shows a list of available warps.
         aliases: [warplist]
-        permission: bungeesuite.warps.command.warps
+        permission: gesuit.warps.command.warps
         permission-message: §cYou do not have permission for this command
         usage: /<command>
     warp:
         description: Warps a player to a specific warp.
         aliases: [warpto]
-        permission: bungeesuite.warps.command.warp
+        permission: gesuit.warps.command.warp
         permission-message: §cYou do not have permission for this command
         usage: /<command> (warp name)
     setwarp:
         description: Sets a warps at the players location.
-        permission: bungeesuite.warps.command.setwarp
+        permission: gesuit.warps.command.setwarp
         permission-message: §cYou do not have permission for this command
         usage: |
             /<command> - sets a warp for the current server
@@ -29,45 +28,45 @@ commands:
         aliases: [createwarp]
     delwarp:
         description: Used to delete a specific warp
-        permission: bungeesuite.warps.command.delwarp
+        permission: gesuit.warps.command.delwarp
         permission-message: §cYou do not have permission for this command
         usage: /<command> (warp name)
         aliases: [deletewarp, removewarp]
         
 permissions:
-    bungeesuite.warps.*:
-        description: Gives access to all BungeeSuiteWarps commands
+    gesuit.warps.*:
+        description: Gives access to all gesuitWarps commands
         default: op
         children:
-            bungeesuite.warps.admin: true
-    bungeesuite.warps.admin:
-        description: Gives access to all BungeeSuiteWarps admin commands
+            gesuit.warps.admin: true
+    gesuit.warps.admin:
+        description: Gives access to all gesuitWarps admin commands
         children:
-            bungeesuite.warps.user: true
-            bungeesuite.warps.command.setwarp: true
-            bungeesuite.warps.command.delwarp: true
-            bungeesuite.warps.list.hidden: true
-            bungeesuite.warps.warp.*: true
-            bungeesuite.warps.bypass: true
-            bungeesuite.warps.command.warp.other: true
-    bungeesuite.warps.user:
-        description: Gives access to all BungeeSuiteWarps user commands
+            gesuit.warps.user: true
+            gesuit.warps.command.setwarp: true
+            gesuit.warps.command.delwarp: true
+            gesuit.warps.list.hidden: true
+            gesuit.warps.warp.*: true
+            gesuit.warps.bypass: true
+            gesuit.warps.command.warp.other: true
+    gesuit.warps.user:
+        description: Gives access to all gesuitWarps user commands
         children:
-            bungeesuite.warps.command.warps: true
-            bungeesuite.warps.command.warp: true
-            bungeesuite.warps.list.server: true
-            bungeesuite.warps.list.global: true
-    bungeesuite.warps.list.hidden:
+            gesuit.warps.command.warps: true
+            gesuit.warps.command.warp: true
+            gesuit.warps.list.server: true
+            gesuit.warps.list.global: true
+    gesuit.warps.list.hidden:
         description: Displays all hidden warps to the user
-    bungeesuite.warps.list.server:
+    gesuit.warps.list.server:
         description: Displays all server warps to the user
-    bungeesuite.warps.list.global:
+    gesuit.warps.list.global:
         description: Displays all global warps to the user
-    bungeesuite.warps.warp.*:
+    gesuit.warps.warp.*:
         description: Allows access to all warps
-    bungeesuite.warps.warp.<warpname>:
+    gesuit.warps.warp.<warpname>:
         description: "allows access to <warpname>"
-    bungeesuite.warps.bypass:
+    gesuit.warps.bypass:
         description: Allows players to user perserver warps cross server
-    bungeesuite.warps.command.warp.other:
+    gesuit.warps.command.warp.other:
         description: Allows players to warp other players

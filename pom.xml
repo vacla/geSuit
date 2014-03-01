@@ -2,11 +2,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.mcdimensions.bungeesuitewarps</groupId>
-    <artifactId>BungeeSuiteWarps</artifactId>
-    <version>0.17-SNAPSHOT</version>
+    <groupId>net.cubespace</groupId>
+    <artifactId>geSuitWarps</artifactId>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
-    <name>BungeeSuiteWarps</name>
+    <name>geSuitWarps</name>
 
     <properties>
         <build.number>${BUILD_NUMBER}</build.number>
@@ -17,12 +17,6 @@
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
         </repository>
-        <repository>
-            <id>md-5</id>
-            <url>
-                http://ci.md-5.net/job/BungeeSuiteTeleports/com.minecraftdimensions.bungeesuiteteleports$BungeeSuiteTeleports/lastBuild/artifact/
-            </url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -30,11 +24,6 @@
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.6.2-R0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.minecraftdimensions.bungeesuiteteleports</groupId>
-            <artifactId>BungeeSuiteTeleports</artifactId>
-            <version>0.50</version>
         </dependency>
     </dependencies>
     <build>

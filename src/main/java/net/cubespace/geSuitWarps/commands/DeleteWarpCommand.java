@@ -1,10 +1,10 @@
-package com.minecraftdimensions.bungeesuitewarps.commands;
+package net.cubespace.geSuitWarps.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import com.minecraftdimensions.bungeesuitewarps.managers.WarpsManager;
+import net.cubespace.geSuitWarps.managers.WarpsManager;
 
 public class DeleteWarpCommand implements CommandExecutor {
 
