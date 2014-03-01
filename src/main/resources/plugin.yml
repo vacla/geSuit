@@ -1,4 +1,4 @@
 name: geSuit
-main : net.cubespace.getSuit.BungeeSuite
+main : net.cubespace.geSuit.geSuit
 version: ${project.version}b-${build.number}
-author: Bloodsplat, geNAZt
+author: geNAZt

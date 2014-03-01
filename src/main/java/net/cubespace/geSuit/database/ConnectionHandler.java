@@ -1,0 +1,64 @@
+package net.cubespace.geSuit.database;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+
+public class ConnectionHandler {
+    private Connection connection;
+    private boolean used;
+    private long lastUsed;
+    private LinkedHashMap<String, PreparedStatement> preparedStatements = new LinkedHashMap<>();
+
+    public ConnectionHandler(Connection connection) {
+        this.connection = connection;
+    }
+
+    public Connection getConnection() {
+        this.lastUsed = System.currentTimeMillis();
+        this.used = true;
+        return connection;
+    }
+
+    public boolean isOldConnection() {
+        if ((System.currentTimeMillis() - lastUsed) > 3600000) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public void addPreparedStatement(String name, String query) {
+        try {
+            preparedStatements.put(name, connection.prepareStatement(query));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public PreparedStatement getPreparedStatement(String name) {
+        return preparedStatements.get(name);
+    }
+
+    public void release() {
+        this.used = false;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void closeConnection() {
+        this.used = true;
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+}
