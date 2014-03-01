@@ -54,7 +54,7 @@ public class BansManager {
             return;
         }
 
-        if (!DatabaseManager.bans.isPlayerBanned(player)) {
+        if (!DatabaseManager.bans.isPlayerBanned(player) && !DatabaseManager.bans.isPlayerBanned(DatabaseManager.players.getPlayerIP(player))) {
             PlayerManager.sendMessageToPlayer(sender, ConfigManager.messages.PLAYER_NOT_BANNED);
             return;
         }
