@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 public class Ban {
+    private int id;
     private String player;
     private String bannedBy;
     private String reason;
@@ -11,7 +12,8 @@ public class Ban {
     private Date bannedOn;
     private Date bannedUntil;
 
-    public Ban(String player, String bannedBy, String reason, String type, Timestamp timestamp, Timestamp timestamp2) {
+    public Ban(int id, String player, String bannedBy, String reason, String type, Timestamp timestamp, Timestamp timestamp2) {
+        this.id = id;
         this.player = player;
         this.bannedBy = bannedBy;
         this.reason = reason;
@@ -28,7 +30,7 @@ public class Ban {
         return bannedBy;
     }
 
-    public String getReasaon() {
+    public String getReason() {
         return reason;
     }
 
@@ -42,5 +44,9 @@ public class Ban {
 
     public Date getBannedUntil() {
         return bannedUntil;
+    }
+
+    public int getId() {
+        return id;
     }
 }

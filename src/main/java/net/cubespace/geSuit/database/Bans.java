@@ -75,7 +75,7 @@ public class Bans implements IRepository {
 
             ResultSet res = banInfo.executeQuery();
             while (res.next()) {
-                b = new Ban(res.getString("player"), res.getString("banned_by"), res.getString("reason"), res.getString("type"), res.getTimestamp("banned_on"), res.getTimestamp("banned_until"));
+                b = new Ban(res.getInt("id"), res.getString("player"), res.getString("banned_by"), res.getString("reason"), res.getString("type"), res.getTimestamp("banned_on"), res.getTimestamp("banned_until"));
             }
 
             res.close();
@@ -88,15 +88,12 @@ public class Bans implements IRepository {
         return b;
     }
 
-    public void unbanPlayer(String player) {
+    public void unbanPlayer(int id) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
             PreparedStatement unbanPlayer = connectionHandler.getPreparedStatement("unbanPlayer");
-            unbanPlayer.setString(1, player);
-            unbanPlayer.executeUpdate();
-
-            unbanPlayer.setString(1, DatabaseManager.players.getPlayerIP(player));
+            unbanPlayer.setInt(1, id);
             unbanPlayer.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,20 +124,21 @@ public class Bans implements IRepository {
 
     @Override
     public String[] getTable() {
-        return new String[]{"bans", "player VARCHAR(100), " +
+        return new String[]{"bans", "id INT(11) NOT NULL AUTO_INCREMENT," +
+                "player VARCHAR(100), " +
                 "banned_by VARCHAR(100), " +
                 "reason VARCHAR(255), " +
                 "type VARCHAR(100), " +
                 "banned_on DATETIME NOT NULL," +
                 "banned_until DATETIME, " +
-                "CONSTRAINT pk_bannedPlayer PRIMARY KEY (player)"};
+                "CONSTRAINT pk_banid PRIMARY KEY (id)"};
     }
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
-        connection.addPreparedStatement("isPlayerBanned", "SELECT player FROM bans WHERE player=?");
+        connection.addPreparedStatement("isPlayerBanned", "SELECT id FROM bans WHERE player=? AND type <> 'unban'");
         connection.addPreparedStatement("banPlayer", "INSERT INTO bans (player,banned_by,reason,type,banned_on) VALUES (?,?,?,?,NOW());");
-        connection.addPreparedStatement("unbanPlayer", "DELETE FROM bans WHERE player = ?");
+        connection.addPreparedStatement("unbanPlayer", "UPDATE bans SET type = 'unban' WHERE id = ?");
         connection.addPreparedStatement("banInfo", "SELECT * FROM bans WHERE player = ?");
         connection.addPreparedStatement("tempBanPlayer", "INSERT INTO bans (player,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,'tempban',NOW(),?)");
         connection.addPreparedStatement("insertBanConvert", "INSERT INTO bans (player,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,?,?)");

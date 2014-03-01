@@ -59,7 +59,13 @@ public class BansManager {
             return;
         }
 
-        DatabaseManager.bans.unbanPlayer(player);
+        Ban b = DatabaseManager.bans.getBanInfo(player);
+
+        if (b == null) {
+            b = DatabaseManager.bans.getBanInfo(DatabaseManager.players.getPlayerIP(player));
+        }
+
+        DatabaseManager.bans.unbanPlayer(b.getId());
 
         if (ConfigManager.bans.BroadcastBans) {
             PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", player).replace("{sender}", sender));
@@ -120,7 +126,7 @@ public class BansManager {
             p.sendMessage(ChatColor.RED + "Player: " + ChatColor.AQUA + b.getPlayer());
             p.sendMessage(ChatColor.RED + "Ban type: " + ChatColor.AQUA + b.getType());
             p.sendMessage(ChatColor.RED + "Banned by: " + ChatColor.AQUA + b.getBannedBy());
-            p.sendMessage(ChatColor.RED + "Ban reason: " + ChatColor.AQUA + b.getReasaon());
+            p.sendMessage(ChatColor.RED + "Ban reason: " + ChatColor.AQUA + b.getReason());
             p.sendMessage(ChatColor.RED + "Bannned on: " + ChatColor.AQUA + sdf.format(b.getBannedOn()));
 
             if (b.getBannedUntil() == null) {
@@ -221,7 +227,7 @@ public class BansManager {
         java.util.Date today = new java.util.Date(Calendar.getInstance().getTimeInMillis());
         java.util.Date banned = b.getBannedUntil();
         if (today.compareTo(banned) >= 0) {
-            DatabaseManager.bans.unbanPlayer(b.getPlayer());
+            DatabaseManager.bans.unbanPlayer(b.getId());
             return false;
         }
 
