@@ -3,7 +3,7 @@ main : net.cubespace.geSuitPortals.geSuitPortals
 version: ${project.version}b-${build.number}
 description: Part of the geSuit this plugin allows users to use portals to move around the server.
 author: geNAZt
-depend: [WorldEdit]
+depend: [WorldEdit, geSuitTeleports]
 commands:
     setportal:
         description: Creates a portal to a destination
