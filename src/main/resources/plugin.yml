@@ -1,88 +1,86 @@
 name: geSuiteSpawn
-main : net.cubespace.geSuiteSpawn.BungeeSuiteSpawn
+main : net.cubespace.geSuiteSpawn.geSuitSpawn
 version: ${project.version}b-${build.number}
-description: Part of the geSuit (BungeeSuite) this plugin allows users to set a proxy wide spawn
-author: Bloodsplat, geNAZt
-website: http://www.spigotmc.org/resources/bungeesuite.9/
-prefix: BungeeSuite
-softdepend: [geSuiteTeleports]
+description: Part of the geSuit (gesuit) this plugin allows users to set a proxy wide spawn
+author: geNAZt
+depend: [geSuitTeleports]
 commands:
     setnewspawn:
         description: Sets the new players spawn point.
-        permission: bungeesuite.spawns.command.setnewspawn
+        permission: gesuit.spawns.command.setnewspawn
         aliases: [sns, setnewplayerspawn, setnoobspawn]
         permission-message: §cYou do not have permission for this command
     setworldspawn:
         description: Sets the proxies world spawn point.
-        permission: bungeesuite.spawns.command.setworldspawn
+        permission: gesuit.spawns.command.setworldspawn
         aliases: [sws]
         permission-message: §cYou do not have permission for this command
     setserverspawn:
         description: Sets the servers spawn point.
-        permission: bungeesuite.spawns.command.setserverspawn
+        permission: gesuit.spawns.command.setserverspawn
         aliases: [sss]
         permission-message: §cYou do not have permission for this command
     setglobalspawn:
         description: Sets the proxies global spawn point.
-        permission: bungeesuite.spawns.command.setglobalspawn
+        permission: gesuit.spawns.command.setglobalspawn
         aliases: [sgs, setproxyspawn,sethub,sethubspawn]
         permission-message: §cYou do not have permission for this command
     spawn:
         description: Sends the player to the relevent spawn
-        permission: bungeesuite.spawns.command.spawn
+        permission: gesuit.spawns.command.spawn
         permission-message: §cYou do not have permission for this command
     worldspawn:
         description: Sends the player to the worlds spawn
-        permission: bungeesuite.spawns.command.worldspawn
+        permission: gesuit.spawns.command.worldspawn
         aliases: [ws]
         permission-message: §cYou do not have permission for this command
     serverspawn:
         description: Sends the player to the servers spawn
-        permission: bungeesuite.spawns.command.serverspawn
+        permission: gesuit.spawns.command.serverspawn
         aliases: [ss]
         permission-message: §cYou do not have permission for this command
     globalspawn:
         description: Sends the player to the proxys spawn
-        permission: bungeesuite.spawns.command.globalspawn
+        permission: gesuit.spawns.command.globalspawn
         aliases: [gs,hub,lobby]
         permission-message: §cYou do not have permission for this command
 
 permissions:
-    bungeesuite.spawns.*:
-        description: gives access to all bungeesuitespawn commands and features
+    gesuit.spawns.*:
+        description: gives access to all gesuitspawn commands and features
         default: op
         children:
-            bungeesuite.spawns.admin: true
-    bungeesuite.spawns.admin:
-        description: gives access to all admin features of bungeesuitespawn
+            gesuit.spawns.admin: true
+    gesuit.spawns.admin:
+        description: gives access to all admin features of gesuitspawn
         children:
-            bungeesuite.spawns.command.setnewspawn: true
-            bungeesuite.spawns.command.setworldspawn: true
-            bungeesuite.spawns.command.setserverspawn: true
-            bungeesuite.spawns.command.setglobalspawn: true
-            bungeesuite.spawns.command.spawn: true
-            bungeesuite.spawns.command.worldspawn: true
-            bungeesuite.spawns.command.serverspawn: true
-            bungeesuite.spawns.command.globalspawn: true
-    bungeesuite.spawns.new.world:
+            gesuit.spawns.command.setnewspawn: true
+            gesuit.spawns.command.setworldspawn: true
+            gesuit.spawns.command.setserverspawn: true
+            gesuit.spawns.command.setglobalspawn: true
+            gesuit.spawns.command.spawn: true
+            gesuit.spawns.command.worldspawn: true
+            gesuit.spawns.command.serverspawn: true
+            gesuit.spawns.command.globalspawn: true
+    gesuit.spawns.new.world:
         description: Teleports players with no server.data to the world spawn on first connect
         default: false
-    bungeesuite.spawns.new.server:
+    gesuit.spawns.new.server:
         description: Teleports players with no server.data to the server spawn on first connect
         default: false
-    bungeesuite.spawns.new.global:
+    gesuit.spawns.new.global:
         description: Teleports players with no server.data to the proxy spawn on first connect
         default: false
-    bungeesuite.spawns.spawn.bed:
+    gesuit.spawns.spawn.bed:
         description: If a player has a bed spawn then the player will respawn at the bed on death
         default: false
-    bungeesuite.spawns.spawn.world:
+    gesuit.spawns.spawn.world:
         description: IF the player doesnt have a bed location or bed perm then the player will respawn at the world spawn if there is one
         default: false
-    bungeesuite.spawns.spawn.server:
+    gesuit.spawns.spawn.server:
         description: If the player doesnt have the world/bed perms or there is no bed/world spawn location the player will spawn at the server spawn if there is one on death
         default: false
-    bungeesuite.spawns.spawn.global:
+    gesuit.spawns.spawn.global:
         description: On death if none of the previous cases are met the player will respawn at the proxy spawn.
         default: false
     

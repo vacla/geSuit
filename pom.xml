@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.cubespace</groupId>
-    <artifactId>geSuiteSpawn</artifactId>
-    <version>0.5.1</version>
+    <artifactId>geSuitSpawn</artifactId>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
-    <name>geSuiteSpawn</name>
+    <name>geSuitSpawn</name>
 
     <properties>
         <build.number>${BUILD_NUMBER}</build.number>
@@ -24,7 +24,7 @@
         <repository>
             <id>cubespace-jenkins</id>
             <url>
-                http://jenkins.cube-space.net/job/BungeeSuiteTeleports/com.minecraftdimensions.bungeesuiteteleports$BungeeSuiteTeleports/lastBuild/artifact/
+                http://jenkins.cube-space.net/job/geSuitTeleport/net.cubespace$geSuitTeleports/lastBuild/artifact/
             </url>
         </repository>
     </repositories>
@@ -36,9 +36,9 @@
             <version>1.6.2-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.minecraftdimensions.bungeesuiteteleports</groupId>
-            <artifactId>BungeeSuiteTeleports</artifactId>
-            <version>0.50</version>
+            <groupId>net.cubespace</groupId>
+            <artifactId>geSuitTeleports</artifactId>
+            <version>0.1.0</version>
         </dependency>
     </dependencies>
     <build>

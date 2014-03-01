@@ -1,6 +1,6 @@
 package net.cubespace.geSuiteSpawn.listeners;
 
-import net.cubespace.geSuiteSpawn.BungeeSuiteSpawn;
+import net.cubespace.geSuiteSpawn.geSuitSpawn;
 import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,9 +25,6 @@ public class SpawnMessageListener implements PluginMessageListener, Listener {
                 case "SendSpawn":
                     SpawnManager.addSpawn( in.readUTF(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat() );
                     break;
-                case "TeleportToLocation":
-                    SpawnManager.teleportPlayer( in.readUTF(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat() );
-                    break;
                 case "GetVersion":
                     String name = null;
                     try {
@@ -36,9 +33,9 @@ public class SpawnMessageListener implements PluginMessageListener, Listener {
                     }
                     if ( name != null ) {
                         Player p = Bukkit.getPlayer( name );
-                        p.sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + BungeeSuiteSpawn.INSTANCE.getDescription().getVersion() );
+                        p.sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.INSTANCE.getDescription().getVersion() );
                     }
-                    Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + BungeeSuiteSpawn.INSTANCE.getDescription().getVersion() );
+                    Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.INSTANCE.getDescription().getVersion() );
                     SpawnManager.sendVersion();
                     break;
             }

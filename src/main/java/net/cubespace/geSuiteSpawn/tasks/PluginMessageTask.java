@@ -1,6 +1,6 @@
 package net.cubespace.geSuiteSpawn.tasks;
 
-import net.cubespace.geSuiteSpawn.BungeeSuiteSpawn;
+import net.cubespace.geSuiteSpawn.geSuitSpawn;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -17,8 +17,8 @@ public class PluginMessageTask extends BukkitRunnable {
 	
 	public void run() {
 			Bukkit.getOnlinePlayers()[0].sendPluginMessage(
-					BungeeSuiteSpawn.INSTANCE,
-					BungeeSuiteSpawn.OUTGOING_PLUGIN_CHANNEL,
+					geSuitSpawn.INSTANCE,
+					"geSuitSpawns",
 					bytes.toByteArray());
 	
 	}

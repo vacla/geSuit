@@ -1,8 +1,7 @@
 package net.cubespace.geSuiteSpawn.managers;
 
-import net.cubespace.geSuiteSpawn.BungeeSuiteSpawn;
+import net.cubespace.geSuiteSpawn.geSuitSpawn;
 import net.cubespace.geSuiteSpawn.tasks.PluginMessageTask;
-import com.minecraftdimensions.bungeesuiteteleports.managers.TeleportsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -17,10 +16,8 @@ import java.util.HashMap;
 
 
 public class SpawnManager {
-
     public static boolean HAS_SPAWNS = false;
     public static HashMap<String, Location> SPAWNS = new HashMap<>();
-    public static HashMap<String, Location> pendingTeleports = new HashMap<>();
 
     public static void sendPlayerToProxySpawn( CommandSender sender, boolean silent ) {
 
@@ -34,7 +31,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteSpawn.INSTANCE );
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
 
     }
 
@@ -57,7 +54,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteSpawn.INSTANCE );
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
 
     }
 
@@ -80,7 +77,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteSpawn.INSTANCE );
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
     }
 
     public static void setServerSpawn( CommandSender sender ) {
@@ -103,7 +100,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteSpawn.INSTANCE );
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
 
     }
 
@@ -127,7 +124,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteSpawn.INSTANCE );
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
 
     }
 
@@ -151,12 +148,11 @@ public class SpawnManager {
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "GetSpawns" );
-
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteSpawn.INSTANCE );
 
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
     }
 
     public static boolean hasWorldSpawn( World w ) {
@@ -177,11 +173,11 @@ public class SpawnManager {
 
     public static void sendPlayerToSpawn( CommandSender sender ) {
         Player p = ( Player ) sender;
-        if ( SpawnManager.hasWorldSpawn( p.getWorld() ) && p.hasPermission( "bungeesuite.spawns.spawn.world" ) ) {
+        if ( SpawnManager.hasWorldSpawn( p.getWorld() ) && p.hasPermission( "gesuit.spawns.spawn.world" ) ) {
             p.teleport( getWorldSpawn( p.getWorld() ) );
-        } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "bungeesuite.spawns.spawn.server" ) ) {
+        } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "gesuit.spawns.spawn.server" ) ) {
             p.teleport( getServerSpawn() );
-        } else if ( p.hasPermission( "bungeesuite.spawns.spawn.global" ) ) {
+        } else if ( p.hasPermission( "gesuit.spawns.spawn.global" ) ) {
             SpawnManager.sendPlayerToProxySpawn( p, false );
         }
     }
@@ -191,39 +187,16 @@ public class SpawnManager {
 
     }
 
-    public static void teleportPlayer( final String player, String world, double x, double y, double z, float yaw, float pitch ) {
-        Location location = new Location( Bukkit.getWorld( world ), x, y, z, yaw, pitch );
-        Player p = Bukkit.getPlayer( player );
-        if ( p != null ) {
-            p.teleport( location );
-        } else {
-            pendingTeleports.put( player, location );
-            if ( BungeeSuiteSpawn.usingTeleports ) {
-                TeleportsManager.ignoreTeleport.add( p );
-            }
-            Bukkit.getScheduler().runTaskLaterAsynchronously( BungeeSuiteSpawn.INSTANCE, new Runnable() {
-                @Override
-                public void run() {
-                    if ( pendingTeleports.containsKey( player ) ) {
-                        pendingTeleports.remove( player );
-                    }
-                }
-            }, 100 );
-        }
-
-    }
-
-
     public static void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "SendVersion" );
-            out.writeUTF( ChatColor.RED + "Spawns - " + ChatColor.GOLD + BungeeSuiteSpawn.INSTANCE.getDescription().getVersion() );
+            out.writeUTF( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.INSTANCE.getDescription().getVersion() );
 
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( BungeeSuiteSpawn.INSTANCE );
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
     }
 }

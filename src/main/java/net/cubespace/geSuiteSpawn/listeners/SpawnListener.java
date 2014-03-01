@@ -1,9 +1,8 @@
 package net.cubespace.geSuiteSpawn.listeners;
 
-import net.cubespace.geSuiteSpawn.BungeeSuiteSpawn;
+import net.cubespace.geSuiteSpawn.geSuitSpawn;
 import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,13 +14,8 @@ public class SpawnListener implements Listener {
 
     @EventHandler( priority = EventPriority.LOWEST )
     public void playerLogin( PlayerJoinEvent e ) {
-        if ( SpawnManager.pendingTeleports.containsKey( e.getPlayer().getName() ) ) {
-            Location l = SpawnManager.pendingTeleports.get( e.getPlayer().getName() );
-            e.getPlayer().teleport( l );
-            return;
-        }
         if ( !SpawnManager.HAS_SPAWNS ) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously( BungeeSuiteSpawn.INSTANCE, new Runnable() {
+            Bukkit.getScheduler().runTaskLaterAsynchronously( geSuitSpawn.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
                     if ( !SpawnManager.HAS_SPAWNS ) {
@@ -29,18 +23,16 @@ public class SpawnListener implements Listener {
                         SpawnManager.HAS_SPAWNS = true;
                     }
                 }
-
-
             }, 10L );
         }
-        //potential error below TODO
+
         Player p = e.getPlayer();
         if ( !p.hasPlayedBefore() ) {
-            if ( SpawnManager.hasWorldSpawn( p.getWorld() ) && p.hasPermission( "bungeesuite.spawns.new.world" ) ) {
+            if ( SpawnManager.hasWorldSpawn( p.getWorld() ) && p.hasPermission( "gesuit.spawns.new.world" ) ) {
                 SpawnManager.sendPlayerToWorldSpawn( p );
-            } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "bungeesuite.spawns.new.server" ) ) {
+            } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "gesuit.spawns.new.server" ) ) {
                 SpawnManager.sendPlayerToServerSpawn( p );
-            } else if ( p.hasPermission( "bungeesuite.spawns.new.global" ) ) {
+            } else if ( p.hasPermission( "gesuit.spawns.new.global" ) ) {
                 SpawnManager.sendPlayerToProxySpawn( p, true );
             }
         }
@@ -50,18 +42,19 @@ public class SpawnListener implements Listener {
     @EventHandler( priority = EventPriority.LOWEST )
     public void playerRespawn( PlayerRespawnEvent e ) {
         Player p = e.getPlayer();
-        if ( p.getBedSpawnLocation() != null && p.hasPermission( "bungeesuite.spawns.spawn.bed" ) ) {
+        if ( p.getBedSpawnLocation() != null && p.hasPermission( "gesuit.spawns.spawn.bed" ) ) {
             e.setRespawnLocation( p.getBedSpawnLocation() );
-        } else if ( SpawnManager.hasWorldSpawn( p.getWorld() ) && p.hasPermission( "bungeesuite.spawns.spawn.world" ) ) {
+        } else if ( SpawnManager.hasWorldSpawn( p.getWorld() ) && p.hasPermission( "gesuit.spawns.spawn.world" ) ) {
             e.setRespawnLocation( SpawnManager.getWorldSpawn( p.getWorld() ) );
-        } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "bungeesuite.spawns.spawn.server" ) ) {
+        } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "gesuit.spawns.spawn.server" ) ) {
             e.setRespawnLocation( SpawnManager.getServerSpawn() );
-        } else if ( p.hasPermission( "bungeesuite.spawns.spawn.global" ) ) {
+        } else if ( p.hasPermission( "gesuit.spawns.spawn.global" ) ) {
             if ( SpawnManager.hasWorldSpawn( p.getWorld() ) ) {
                 e.setRespawnLocation( SpawnManager.getWorldSpawn( p.getWorld() ) );
             } else if ( SpawnManager.hasServerSpawn() ) {
                 e.setRespawnLocation( SpawnManager.getServerSpawn() );
             }
+
             SpawnManager.sendPlayerToProxySpawn( p, true );
         }
     }
