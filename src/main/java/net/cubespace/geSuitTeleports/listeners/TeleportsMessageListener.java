@@ -1,6 +1,6 @@
 package net.cubespace.geSuitTeleports.listeners;
 
-import net.cubespace.geSuitTeleports.BungeeSuiteTeleports;
+import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -39,10 +39,10 @@ public class TeleportsMessageListener implements PluginMessageListener {
             }
             if ( name != null ) {
                 Player p = Bukkit.getPlayer( name );
-                p.sendMessage( ChatColor.RED + "Teleports - " + ChatColor.GOLD + BungeeSuiteTeleports.instance.getDescription().getVersion() );
+                p.sendMessage( ChatColor.RED + "Teleports - " + ChatColor.GOLD + geSuitTeleports.instance.getDescription().getVersion() );
             }
             TeleportsManager.sendVersion();
-            Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Teleports - " + ChatColor.GOLD + BungeeSuiteTeleports.instance.getDescription().getVersion() );
+            Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Teleports - " + ChatColor.GOLD + geSuitTeleports.instance.getDescription().getVersion() );
         }
     }
 

@@ -1,6 +1,6 @@
 package net.cubespace.geSuitTeleports.tasks;
 
-import net.cubespace.geSuitTeleports.BungeeSuiteTeleports;
+import net.cubespace.geSuitTeleports.geSuitTeleports;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -29,7 +29,7 @@ public class PluginMessageTask extends BukkitRunnable {
         if ( p == null ) {
             return;
         }
-        p.sendPluginMessage( BungeeSuiteTeleports.instance, BungeeSuiteTeleports.OUTGOING_PLUGIN_CHANNEL, bytes.toByteArray() );
+        p.sendPluginMessage( geSuitTeleports.instance, "geSuitTeleport", bytes.toByteArray() );
     }
 
 

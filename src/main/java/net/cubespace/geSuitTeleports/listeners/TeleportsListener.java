@@ -69,13 +69,13 @@ public class TeleportsListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void setFormatChat(final PlayerLoginEvent e) {
-		if(e.getPlayer().hasPermission("bungeesuite.*")){
+		if(e.getPlayer().hasPermission("gesuit.*")){
 			PermissionsManager.addAllPermissions(e.getPlayer());
-		}else if(e.getPlayer().hasPermission("bungeesuite.admin")){
+		}else if(e.getPlayer().hasPermission("gesuit.admin")){
 			PermissionsManager.addAdminPermissions(e.getPlayer());
-		}else if(e.getPlayer().hasPermission("bungeesuite.vip")){
+		}else if(e.getPlayer().hasPermission("gesuit.vip")){
 			PermissionsManager.addVIPPermissions(e.getPlayer());
-		}else if(e.getPlayer().hasPermission("bungeesuite.user")){
+		}else if(e.getPlayer().hasPermission("gesuit.user")){
 			PermissionsManager.addUserPermissions(e.getPlayer());
 		}
 	}
