@@ -1,10 +1,10 @@
-package com.minecraftdimensions.bungeesuiteportals.commands;
+package net.cubespace.geSuitPortals.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import com.minecraftdimensions.bungeesuiteportals.managers.PortalsManager;
+import net.cubespace.geSuitPortals.managers.PortalsManager;
 
 
 public class DeletePortalCommand implements CommandExecutor {

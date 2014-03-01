@@ -1,8 +1,8 @@
-package com.minecraftdimensions.bungeesuiteportals.listeners;
+package net.cubespace.geSuitPortals.listeners;
 
-import com.minecraftdimensions.bungeesuiteportals.BungeeSuitePortals;
-import com.minecraftdimensions.bungeesuiteportals.managers.PermissionsManager;
-import com.minecraftdimensions.bungeesuiteportals.managers.PortalsManager;
+import net.cubespace.geSuitPortals.geSuitPortals;
+import net.cubespace.geSuitPortals.managers.PermissionsManager;
+import net.cubespace.geSuitPortals.managers.PortalsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -17,7 +17,7 @@ public class PlayerLoginListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerConnect( PlayerJoinEvent e ) {
         if ( !PortalsManager.RECEIVED ) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously( BungeeSuitePortals.INSTANCE, new Runnable() {
+            Bukkit.getScheduler().runTaskLaterAsynchronously( geSuitPortals.INSTANCE, new Runnable() {
 
                 @Override
                 public void run() {
@@ -38,11 +38,11 @@ public class PlayerLoginListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void setPermissionGroup( final PlayerLoginEvent e ) {
-        if ( e.getPlayer().hasPermission( "bungeesuite.*" ) ) {
+        if ( e.getPlayer().hasPermission( "gesuit.*" ) ) {
             PermissionsManager.addAllPermissions( e.getPlayer() );
-        } else if ( e.getPlayer().hasPermission( "bungeesuite.admin" ) ) {
+        } else if ( e.getPlayer().hasPermission( "gesuit.admin" ) ) {
             PermissionsManager.addAdminPermissions( e.getPlayer() );
-        } else if ( e.getPlayer().hasPermission( "bungeesuite.user" ) ) {
+        } else if ( e.getPlayer().hasPermission( "gesuit.user" ) ) {
             PermissionsManager.addUserPermissions( e.getPlayer() );
         }
     }

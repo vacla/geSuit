@@ -1,49 +1,47 @@
-name: BungeeSuitePortals
-main : com.minecraftdimensions.bungeesuiteportals.BungeeSuitePortals
+name: geSuitPortals
+main : net.cubespace.geSuitPortals.geSuitPortals
 version: ${project.version}b-${build.number}
-description: Part of the BungeeSuite this plugin allows users to use portals to move around the server.
-author: Bloodsplat
-website: http://www.spigotmc.org/resources/bungeesuite.9/
-prefix: BungeeSuite
-softdepend: [WorldEdit]
+description: Part of the geSuit this plugin allows users to use portals to move around the server.
+author: geNAZt
+depend: [WorldEdit]
 commands:
     setportal:
         description: Creates a portal to a destination
         aliases: [createportal, makeportal, sportal]
         usage: Error use /setportal (portal name) (type) (destination) *(filltype)
-        permission: bungeesuite.portals.command.setportal
+        permission: gesuit.portals.command.setportal
         permission-message: §cYou do not have permission for this command
     delportal:
         description: Deletes a specific portal
         aliases: [deleteportal, dportal, removeportal]
         usage: Error use /delportal (portal name)
-        permission: bungeesuite.portals.command.delportal
+        permission: gesuit.portals.command.delportal
         permission-message: §cYou do not have permission for this command
     portals:
         description: Gives a list of portals to the player
         aliases: [portalslist, portallist, listportals]
-        permission: bungeesuite.portals.command.portals
+        permission: gesuit.portals.command.portals
         permission-message: §cYou do not have permission for this command
 permissions:
-    bungeesuite.portals.*:
-        description: Gives access to all BungeeSuitePortal commands
+    gesuit.portals.*:
+        description: Gives access to all gesuitPortal commands
         default: op
         children:
-            bungeesuite.portals.admin: true
-    bungeesuite.portals.admin:
-        description: Gives access to all BungeeSuitePortal admin commands
+            gesuit.portals.admin: true
+    gesuit.portals.admin:
+        description: Gives access to all gesuitPortal admin commands
         children:
-            bungeesuite.portals.user: true
-            bungeesuite.portals.command.portals: true
-            bungeesuite.portals.command.delportal: true
-            bungeesuite.portals.command.setportal: true
-    bungeesuite.portals.user:
-        description: Gives access to all BungeeSuitePortal user commands
+            gesuit.portals.user: true
+            gesuit.portals.command.portals: true
+            gesuit.portals.command.delportal: true
+            gesuit.portals.command.setportal: true
+    gesuit.portals.user:
+        description: Gives access to all gesuitPortal user commands
         children:
-            bungeesuite.portals.portal.*: true
-    bungeesuite.portals.portal.*:
+            gesuit.portals.portal.*: true
+    gesuit.portals.portal.*:
         description: Gives access to all portals
         children:
-            bungeesuite.portals.portal.<portalname>: true
-    bungeesuite.portals.portal.<portalname>:
+            gesuit.portals.portal.<portalname>: true
+    gesuit.portals.portal.<portalname>:
         description: Gives access tp <portalname>

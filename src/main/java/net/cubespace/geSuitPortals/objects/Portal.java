@@ -1,12 +1,12 @@
 
-package com.minecraftdimensions.bungeesuiteportals.objects;
-
-import java.util.ArrayList;
+package net.cubespace.geSuitPortals.objects;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+
+import java.util.ArrayList;
 
 
 public class Portal {
