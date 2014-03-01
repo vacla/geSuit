@@ -3,6 +3,7 @@ package net.cubespace.geSuit.managers;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
+import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.ChatColor;
 
 import java.util.ArrayList;
@@ -128,6 +129,8 @@ public class HomesManager {
             player.sendMessage(ConfigManager.messages.HOME_DOES_NOT_EXIST);
             return;
         }
+
+        TeleportToLocation.execute(player, h.loc);
 
         player.sendMessage(ConfigManager.messages.SENT_HOME);
     }
