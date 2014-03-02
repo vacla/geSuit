@@ -49,6 +49,11 @@ public class Converter {
         public void registerPreparedStatements(ConnectionHandler connection) {
             connection.addPreparedStatement("selectPlayers", "SELECT * FROM BungeePlayers");
         }
+
+        @Override
+        public void checkUpdate() {
+
+        }
     }
 
     private class Homes implements IRepository {
@@ -77,6 +82,11 @@ public class Converter {
         @Override
         public void registerPreparedStatements(ConnectionHandler connection) {
             connection.addPreparedStatement("selectHomes", "SELECT * FROM BungeeHomes");
+        }
+
+        @Override
+        public void checkUpdate() {
+
         }
     }
 
@@ -120,6 +130,11 @@ public class Converter {
         public void registerPreparedStatements(ConnectionHandler connection) {
             connection.addPreparedStatement("selectPortals", "SELECT * FROM BungeePortals");
         }
+
+        @Override
+        public void checkUpdate() {
+
+        }
     }
 
     private class Bans implements IRepository {
@@ -147,6 +162,11 @@ public class Converter {
         @Override
         public void registerPreparedStatements(ConnectionHandler connection) {
             connection.addPreparedStatement("selectBans", "SELECT * FROM BungeeBans");
+        }
+
+        @Override
+        public void checkUpdate() {
+
         }
     }
 
@@ -177,6 +197,11 @@ public class Converter {
         public void registerPreparedStatements(ConnectionHandler connection) {
             connection.addPreparedStatement("selectSpawns", "SELECT * FROM BungeeSpawns");
         }
+
+        @Override
+        public void checkUpdate() {
+
+        }
     }
 
     private class Warps implements IRepository {
@@ -205,6 +230,11 @@ public class Converter {
         @Override
         public void registerPreparedStatements(ConnectionHandler connection) {
             connection.addPreparedStatement("selectWarps", "SELECT * FROM BungeeWarps");
+        }
+
+        @Override
+        public void checkUpdate() {
+
         }
     }
 
