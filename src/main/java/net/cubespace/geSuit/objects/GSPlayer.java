@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.objects;
 
+import net.cubespace.geSuit.Utilities;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -36,7 +37,7 @@ public class GSPlayer {
 
     public void sendMessage( String message ) {
         for ( String line : message.split( "\n" ) ) {
-            getProxiedPlayer().sendMessage( line );
+            getProxiedPlayer().sendMessage( Utilities.colorize(line) );
         }
     }
 
@@ -80,10 +81,6 @@ public class GSPlayer {
 
     public Location getTeleportBackLocation() {
         return teleportBackLocation;
-    }
-
-    public void sendToServer( String targetName ) {
-        getProxiedPlayer().connect( ProxyServer.getInstance().getServerInfo( targetName ) );
     }
 
     public Server getServer() {

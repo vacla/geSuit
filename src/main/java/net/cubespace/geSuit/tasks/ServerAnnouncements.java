@@ -1,10 +1,10 @@
 package net.cubespace.geSuit.tasks;
 
-import java.util.ArrayList;
-
-import net.md_5.bungee.api.ChatColor;
+import net.cubespace.geSuit.Utilities;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.util.ArrayList;
 
 public class ServerAnnouncements implements Runnable {
 
@@ -17,7 +17,7 @@ public class ServerAnnouncements implements Runnable {
 	}
 
 	public void addAnnouncement(String message) {
-		list.add(colorize(message));
+		list.add(Utilities.colorize(message));
 	}
 
 	public void run() {
@@ -36,8 +36,5 @@ public class ServerAnnouncements implements Runnable {
 		if((count+1)>list.size()){
 			count=0;
 		}
-	}
-	public String colorize(String input) {
-		return ChatColor.translateAlternateColorCodes('&', input);
 	}
 }

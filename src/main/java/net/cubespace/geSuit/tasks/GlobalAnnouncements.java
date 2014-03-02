@@ -1,6 +1,6 @@
 package net.cubespace.geSuit.tasks;
 
-import net.md_5.bungee.api.ChatColor;
+import net.cubespace.geSuit.Utilities;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -12,7 +12,7 @@ public class GlobalAnnouncements implements Runnable  {
 	private int count = 0;
 
 	public void addAnnouncement(String message) {
-		list.add(colorize(message));
+		list.add(Utilities.colorize(message));
 	}
 
 	public void run() {
@@ -36,9 +36,5 @@ public class GlobalAnnouncements implements Runnable  {
 		if ((count+1) > list.size()){
 			count = 0;
 		}
-	}
-
-	public String colorize(String input) {
-		return ChatColor.translateAlternateColorCodes('&', input);
 	}
 }
