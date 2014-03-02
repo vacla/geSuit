@@ -122,4 +122,9 @@ public class Spawns implements IRepository {
         connection.addPreparedStatement("insertSpawn", "INSERT INTO spawns (spawnname, server, world, x, y, z, yaw, pitch) VALUES(?,?,?,?,?,?,?,?)");
         connection.addPreparedStatement("updateSpawn", "UPDATE spawns SET world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE spawnname = ? AND server = ?");
     }
+
+    @Override
+    public void checkUpdate() {
+
+    }
 }

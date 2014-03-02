@@ -1,7 +1,9 @@
 package net.cubespace.geSuit.database;
 
+import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.configs.SubConfig.Database;
+import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 
@@ -59,16 +61,30 @@ public class ConnectionPool {
             }
         }, 60, 60, TimeUnit.MINUTES);
 
-        for(IRepository repository : repositories) {
-            String[] tableInformation = repository.getTable();
+        if (!ConfigManager.main.Database_Inited) {
+            for(IRepository repository : repositories) {
+                String[] tableInformation = repository.getTable();
 
-            if (!doesTableExist(tableInformation[0])) {
-                try {
-                    standardQuery("CREATE TABLE `"+ tableInformation[0] +"` (" + tableInformation[1] + ");");
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    geSuit.instance.getLogger().severe("Could not create Table");
+                if (!doesTableExist(tableInformation[0])) {
+                    try {
+                        standardQuery("CREATE TABLE `"+ tableInformation[0] +"` (" + tableInformation[1] + ");");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        geSuit.instance.getLogger().severe("Could not create Table");
+                        throw new IllegalStateException();
+                    }
                 }
+            }
+
+            ConfigManager.main.Database_Inited = true;
+            try {
+                ConfigManager.main.save();
+            } catch (InvalidConfigurationException e) {
+
+            }
+        } else {
+            for(IRepository repository : repositories) {
+                repository.checkUpdate();
             }
         }
 

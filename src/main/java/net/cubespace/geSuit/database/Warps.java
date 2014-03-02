@@ -120,4 +120,9 @@ public class Warps implements IRepository {
         connection.addPreparedStatement("updateWarp", "UPDATE warps SET server=?, world=?, x=?, y=?, z=?, yaw=?, pitch=?, hidden=?, global=? WHERE warpname=?");
         connection.addPreparedStatement("deleteWarp", "DELETE FROM warps WHERE warpname=?");
     }
+
+    @Override
+    public void checkUpdate() {
+
+    }
 }

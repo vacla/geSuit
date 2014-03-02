@@ -149,4 +149,9 @@ public class Portals implements IRepository {
         connection.addPreparedStatement("insertPortal", "INSERT INTO portals (portalname,server,type,destination,world,filltype,xmax,xmin,ymax,ymin,zmax,zmin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
         connection.addPreparedStatement("updatePortal", "UPDATE portals SET server=?, world=?, type =?, filltype = ?, destination = ?, xmax=?, ymax=?, zmax=?, xmin = ?, ymin = ?, zmin = ? WHERE portalname=?");
     }
+
+    @Override
+    public void checkUpdate() {
+
+    }
 }

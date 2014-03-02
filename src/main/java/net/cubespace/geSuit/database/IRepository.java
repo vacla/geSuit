@@ -6,4 +6,5 @@ package net.cubespace.geSuit.database;
 public interface IRepository {
     public String[] getTable();
     public void registerPreparedStatements(ConnectionHandler connection);
+    public void checkUpdate();
 }

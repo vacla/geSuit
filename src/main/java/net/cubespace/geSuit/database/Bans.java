@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.database;
 
+import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.Ban;
 
@@ -28,15 +29,16 @@ public class Bans implements IRepository {
         return true;
     }
 
-    public void banPlayer(String bannedBy, String player, String reason, String type) {
+    public void banPlayer(String display, String bannedBy, String bannedEntity, String reason, String type) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
             PreparedStatement banPlayer = connectionHandler.getPreparedStatement("banPlayer");
-            banPlayer.setString(1, player);
-            banPlayer.setString(2, bannedBy);
-            banPlayer.setString(3, reason);
-            banPlayer.setString(4, type);
+            banPlayer.setString(1, display);
+            banPlayer.setString(2, bannedEntity);
+            banPlayer.setString(3, bannedBy);
+            banPlayer.setString(4, reason);
+            banPlayer.setString(5, type);
 
             banPlayer.executeUpdate();
         } catch (Exception e) {
@@ -46,15 +48,16 @@ public class Bans implements IRepository {
         }
     }
 
-    public void tempBanPlayer(String bannedBy, String player, String reason, String till) {
+    public void tempBanPlayer(String display, String bannedBy, String bannedEntity, String reason, String till) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
             PreparedStatement tempBanPlayer = connectionHandler.getPreparedStatement("tempBanPlayer");
-            tempBanPlayer.setString(1, player);
-            tempBanPlayer.setString(2, bannedBy);
-            tempBanPlayer.setString(3, reason);
-            tempBanPlayer.setString(4, till);
+            tempBanPlayer.setString(1, display);
+            tempBanPlayer.setString(2, bannedEntity);
+            tempBanPlayer.setString(3, bannedBy);
+            tempBanPlayer.setString(4, reason);
+            tempBanPlayer.setString(5, till);
 
             tempBanPlayer.executeUpdate();
         } catch (Exception e) {
@@ -75,7 +78,7 @@ public class Bans implements IRepository {
 
             ResultSet res = banInfo.executeQuery();
             while (res.next()) {
-                b = new Ban(res.getInt("id"), res.getString("player"), res.getString("banned_by"), res.getString("reason"), res.getString("type"), res.getTimestamp("banned_on"), res.getTimestamp("banned_until"));
+                b = new Ban(res.getInt("id"), res.getString("display"), res.getString("banned_by"), res.getString("reason"), res.getString("type"), res.getTimestamp("banned_on"), res.getTimestamp("banned_until"));
             }
 
             res.close();
@@ -108,11 +111,12 @@ public class Bans implements IRepository {
         try {
             PreparedStatement insertBanConvert = connectionHandler.getPreparedStatement("insertBanConvert");
             insertBanConvert.setString(1, player);
-            insertBanConvert.setString(2, bannedBy);
-            insertBanConvert.setString(3, reason);
-            insertBanConvert.setString(4, type);
-            insertBanConvert.setDate(5, bannedOn);
-            insertBanConvert.setDate(6, bannedUntil);
+            insertBanConvert.setString(2, player);
+            insertBanConvert.setString(3, bannedBy);
+            insertBanConvert.setString(4, reason);
+            insertBanConvert.setString(5, type);
+            insertBanConvert.setDate(6, bannedOn);
+            insertBanConvert.setDate(7, bannedUntil);
 
             insertBanConvert.executeUpdate();
         } catch (Exception e) {
@@ -125,7 +129,8 @@ public class Bans implements IRepository {
     @Override
     public String[] getTable() {
         return new String[]{"bans", "id INT(11) NOT NULL AUTO_INCREMENT," +
-                "player VARCHAR(100), " +
+                "display VARCHAR(100), " +
+                "banned_entity VARCHAR(100), " +
                 "banned_by VARCHAR(100), " +
                 "reason VARCHAR(255), " +
                 "type VARCHAR(100), " +
@@ -136,11 +141,17 @@ public class Bans implements IRepository {
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
-        connection.addPreparedStatement("isPlayerBanned", "SELECT id FROM bans WHERE player=? AND type <> 'unban'");
-        connection.addPreparedStatement("banPlayer", "INSERT INTO bans (player,banned_by,reason,type,banned_on) VALUES (?,?,?,?,NOW());");
+        connection.addPreparedStatement("isPlayerBanned", "SELECT id FROM bans WHERE banned_entity = ? AND type <> 'unban'");
+        connection.addPreparedStatement("banPlayer", "INSERT INTO bans (display,banned_entity,banned_by,reason,type,banned_on) VALUES (?,?,?,?,?,NOW());");
         connection.addPreparedStatement("unbanPlayer", "UPDATE bans SET type = 'unban' WHERE id = ?");
-        connection.addPreparedStatement("banInfo", "SELECT * FROM bans WHERE player = ?");
-        connection.addPreparedStatement("tempBanPlayer", "INSERT INTO bans (player,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,'tempban',NOW(),?)");
-        connection.addPreparedStatement("insertBanConvert", "INSERT INTO bans (player,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,?,?)");
+        connection.addPreparedStatement("banInfo", "SELECT * FROM bans WHERE banned_entity = ?");
+        connection.addPreparedStatement("tempBanPlayer", "INSERT INTO bans (display,banned_entity,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,'tempban',NOW(),?)");
+        connection.addPreparedStatement("insertBanConvert", "INSERT INTO bans (display,banned_entity,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,?,?,?)");
+    }
+
+    @Override
+    public void checkUpdate() {
+        //What current Version of the Database is this ?
+        int installedVersion = ConfigManager.main.Version_Database_Ban;
     }
 }

@@ -126,4 +126,9 @@ public class Players implements IRepository {
         connection.addPreparedStatement("insertPlayer", "INSERT INTO players (playername,lastonline,ipaddress) VALUES (?, NOW(), ?)");
         connection.addPreparedStatement("insertPlayerConvert", "INSERT INTO players (playername,lastonline,ipaddress,tps) VALUES (?, ?, ?, ?)");
     }
+
+    @Override
+    public void checkUpdate() {
+
+    }
 }

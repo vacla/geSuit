@@ -123,4 +123,9 @@ public class Homes implements IRepository {
         connection.addPreparedStatement("getAllHomesForPlayer", "SELECT * FROM homes WHERE player = ?");
         connection.addPreparedStatement("deleteHome", "DELETE FROM BungeeHomes WHERE home_name = ? AND player = ?");
     }
+
+    @Override
+    public void checkUpdate() {
+
+    }
 }

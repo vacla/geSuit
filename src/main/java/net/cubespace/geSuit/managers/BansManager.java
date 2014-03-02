@@ -26,7 +26,7 @@ public class BansManager {
             return;
         }
 
-        if (DatabaseManager.bans.isPlayerBanned(player)) {
+        if (DatabaseManager.bans.isPlayerBanned(player) || DatabaseManager.bans.isPlayerBanned(DatabaseManager.players.getPlayerIP(player))) {
             p.sendMessage(ConfigManager.messages.PLAYER_ALREADY_BANNED);
             return;
         }
@@ -35,7 +35,7 @@ public class BansManager {
             reason = ConfigManager.messages.DEFAULT_BAN_REASON;
         }
 
-        DatabaseManager.bans.banPlayer(bannedBy, player, reason, "ban");
+        DatabaseManager.bans.banPlayer(player, bannedBy, player, reason, "ban");
 
         if (PlayerManager.isPlayerOnline(player)) {
             disconnectPlayer(player, ConfigManager.messages.BAN_PLAYER_MESSAGE.replace("{message}", reason).replace("{sender}", bannedBy));
@@ -87,7 +87,7 @@ public class BansManager {
         }
 
         if (!DatabaseManager.bans.isPlayerBanned(ip)) {
-            DatabaseManager.bans.banPlayer(bannedBy, ip, reason, "ipban");
+            DatabaseManager.bans.banPlayer(player, bannedBy, ip, reason, "ipban");
         }
 
         if (PlayerManager.isPlayerOnline(player)) {
@@ -190,7 +190,7 @@ public class BansManager {
             return;
         }
 
-        if (DatabaseManager.bans.isPlayerBanned(player)) {
+        if (DatabaseManager.bans.isPlayerBanned(player) || DatabaseManager.bans.isPlayerBanned(DatabaseManager.players.getPlayerIP(player))) {
             p.sendMessage(ConfigManager.messages.PLAYER_ALREADY_BANNED);
             return;
         }
@@ -210,7 +210,7 @@ public class BansManager {
         String time = sdf.format(sqlToday) + "(" + day + " days, " + hour + " hours, " + minute + " minutes)";
         sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
 
-        DatabaseManager.bans.tempBanPlayer(sender, player, message, sdf.format(sqlToday));
+        DatabaseManager.bans.tempBanPlayer(player, sender, player, message, sdf.format(sqlToday));
 
         if (t != null) {
             disconnectPlayer(t.getName(), ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", p.getName()).replace("{time}", time).replace("{message}", message));
