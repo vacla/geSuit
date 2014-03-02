@@ -140,8 +140,7 @@ public class Bans implements IRepository {
                 "type VARCHAR(100), " +
                 "banned_on DATETIME NOT NULL," +
                 "banned_until DATETIME, " +
-                "CONSTRAINT pk_banid PRIMARY KEY (id)," +
-                "INDEX uq_uuid UNIQUE (uuid)"};
+                "CONSTRAINT pk_banid PRIMARY KEY (id)"};
     }
 
     @Override

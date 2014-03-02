@@ -165,12 +165,11 @@ public class Players implements IRepository {
     @Override
     public String[] getTable() {
         return new String[]{"players", "playername VARCHAR(100), " +
-                "`uuid` VARCHAR(100) NULL," +
+                "`uuid` VARCHAR(100) NULL UNIQUE," +
                 "lastonline DATETIME NOT NULL, " +
                 "ipaddress VARCHAR(100), " +
                 "tps TINYINT(1) DEFAULT 1," +
-                "CONSTRAINT pk_playername PRIMARY KEY (playername)," +
-                "INDEX uq_uuid UNIQUE (uuid)"};
+                "CONSTRAINT pk_playername PRIMARY KEY (playername)"};
     }
 
     @Override
