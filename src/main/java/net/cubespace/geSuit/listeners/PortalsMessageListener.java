@@ -6,6 +6,7 @@ import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.PortalManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -35,13 +36,13 @@ public class PortalsMessageListener implements Listener {
         String task = in.readUTF();
         Server s = (Server) event.getSender();
         if (task.equals("TeleportPlayer")) {
-            PortalManager.teleportPlayer(PlayerManager.getPlayer(in.readUTF()), in.readUTF(), in.readUTF(), in.readBoolean());
+            PortalManager.teleportPlayer(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), in.readUTF(), in.readUTF(), in.readBoolean());
         } else if (task.equals("ListPortals")) {
-            PortalManager.listPortals(PlayerManager.getPlayer(in.readUTF()));
+            PortalManager.listPortals(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())));
         } else if (task.equals("DeletePortal")) {
-            PortalManager.deletePortal(PlayerManager.getPlayer(in.readUTF()), in.readUTF());
+            PortalManager.deletePortal(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), in.readUTF());
         } else if (task.equals("SetPortal")) {
-            GSPlayer sender = PlayerManager.getPlayer(in.readUTF());
+            GSPlayer sender = PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF()));
             boolean selection = in.readBoolean();
             if (!selection) {
                 sender.sendMessage(ConfigManager.messages.NO_SELECTION_MADE);

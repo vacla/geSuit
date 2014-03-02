@@ -5,6 +5,7 @@ import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Warp;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +53,7 @@ public class WarpsManager {
         return warps.containsKey(name.toLowerCase());
     }
 
-    public static void getWarpsList(String sender, boolean server, boolean global, boolean hidden, boolean bypass) {
+    public static void getWarpsList(ProxiedPlayer sender, boolean server, boolean global, boolean hidden, boolean bypass) {
         GSPlayer s = PlayerManager.getPlayer(sender);
         if (!(server || global || hidden)) {
             s.sendMessage(ChatColor.RED + "No warps to display");
@@ -93,7 +94,7 @@ public class WarpsManager {
     }
 
 
-    public static void sendPlayerToWarp(String sender, String player, String warp, boolean permission, boolean bypass) {
+    public static void sendPlayerToWarp(ProxiedPlayer sender, ProxiedPlayer player, String warp, boolean permission, boolean bypass) {
         GSPlayer s = PlayerManager.getPlayer(sender);
         GSPlayer p = PlayerManager.getPlayer(player);
         if (p == null) {

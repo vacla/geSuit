@@ -20,6 +20,8 @@ public class MainConfig extends Config {
     public Boolean NewPlayerBroadcast = true;
     public Boolean BroadcastProxyConnectionMessages = true;
     public Integer PlayerDisconnectDelay = 10;
+    @Comment("This should be true on offline Mode Server since they can't use UUIDs provided by Mojang")
+    public Boolean OverwriteUUID = false;
 
     @Comment("Do not alter this. It will be used automaticly.")
     public Boolean Inited = false;

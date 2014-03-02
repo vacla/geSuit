@@ -1,6 +1,8 @@
 package net.cubespace.geSuit.database.convert;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
+import net.cubespace.geSuit.FeatureDetector;
+import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.IRepository;
@@ -66,7 +68,7 @@ public class Converter {
                 ResultSet res = selectHomes.executeQuery();
                 while (res.next()) {
                     Location l = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
-                    DatabaseManager.homes.addHome(new Home(res.getString("player"), res.getString("home_name"), l));
+                    DatabaseManager.homes.addHome(new Home(DatabaseManager.players.loadPlayer(res.getString("player")), res.getString("home_name"), l));
                 }
                 res.close();
             } catch (SQLException e) {
@@ -146,7 +148,7 @@ public class Converter {
 
                 ResultSet res = selectBans.executeQuery();
                 while (res.next()) {
-                    DatabaseManager.bans.insertBanConvert(res.getString("banned_by"), res.getString("player"), res.getString("reason"), res.getString("type"), res.getDate("banned_on"), res.getDate("banned_until"));
+                    DatabaseManager.bans.insertBanConvert(res.getString("banned_by"), (FeatureDetector.canUseUUID()) ? Utilities.getUUID(res.getString("player")) : res.getString("player"), res.getString("reason"), res.getString("type"), res.getDate("banned_on"), res.getDate("banned_until"));
                 }
                 res.close();
             } catch (SQLException e) {

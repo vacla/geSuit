@@ -11,15 +11,18 @@ import java.util.HashMap;
 
 public class GSPlayer {
     private String playername;
+    private String uuid;
     private boolean acceptingTeleports;
+
     private HashMap<String, ArrayList<Home>> homes = new HashMap<>();
     private Location deathBackLocation;
     private Location teleportBackLocation;
     private boolean lastBack;
     private boolean firstConnect = true;
 
-    public GSPlayer(String name, boolean tps) {
+    public GSPlayer(String name, String uuid, boolean tps) {
         this.playername = name;
+        this.uuid = uuid;
         this.acceptingTeleports = tps;
     }
 
@@ -101,5 +104,9 @@ public class GSPlayer {
 
     public void connectTo( ServerInfo s ) {
         getProxiedPlayer().connect( s );
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 }

@@ -2,6 +2,7 @@ package net.cubespace.geSuit;
 
 import net.cubespace.geSuit.commands.MOTDCommand;
 import net.cubespace.geSuit.commands.ReloadCommand;
+import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
 import net.cubespace.geSuit.listeners.BansListener;
 import net.cubespace.geSuit.listeners.BansMessageListener;
@@ -28,6 +29,9 @@ public class geSuit extends Plugin {
         LoggingManager.log( ChatColor.GREEN + "Starting geSuit" );
         proxy = ProxyServer.getInstance();
         LoggingManager.log( ChatColor.GREEN + "Initialising Managers" );
+
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+        connectionHandler.release();
 
         if(ConfigManager.main.ConvertFromBungeeSuite) {
             Converter converter = new Converter();

@@ -1,11 +1,17 @@
 package net.cubespace.geSuit.database;
 
+import net.cubespace.Yamler.Config.InvalidConfigurationException;
+import net.cubespace.geSuit.FeatureDetector;
+import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
+import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +24,7 @@ public class Homes implements IRepository {
 
         try {
             PreparedStatement addHome = connectionHandler.getPreparedStatement("addHome");
-            addHome.setString(1, home.owner);
+            addHome.setString(1, (home.owner.getUuid() != null) ? home.owner.getUuid() : home.owner.getName());
             addHome.setString(2, home.name);
             addHome.setString(3, home.loc.getServer().getName());
             addHome.setString(4, home.loc.getWorld());
@@ -48,7 +54,7 @@ public class Homes implements IRepository {
             updateHome.setDouble(5, home.loc.getZ());
             updateHome.setFloat(6, home.loc.getYaw());
             updateHome.setFloat(7, home.loc.getPitch());
-            updateHome.setString(8, home.owner);
+            updateHome.setString(8, (home.owner.getUuid() != null) ? home.owner.getUuid() : home.owner.getName());
             updateHome.setString(9, home.name);
 
             updateHome.executeUpdate();
@@ -65,7 +71,7 @@ public class Homes implements IRepository {
         try {
             PreparedStatement deleteHome = connectionHandler.getPreparedStatement("deleteHome");
             deleteHome.setString(1, home.name);
-            deleteHome.setString(2, home.owner);
+            deleteHome.setString(2, (home.owner.getUuid() != null) ? home.owner.getUuid() : home.owner.getName());
 
             deleteHome.executeUpdate();
         } catch (Exception e) {
@@ -87,7 +93,7 @@ public class Homes implements IRepository {
             while (res.next()) {
                 String server = res.getString("server");
                 Location l = new Location(server, res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
-                homes.add(new Home(player, res.getString("home_name"), l));
+                homes.add(new Home(PlayerManager.getSimilarPlayer(player), res.getString("home_name"), l));
             }
             res.close();
 
@@ -113,7 +119,10 @@ public class Homes implements IRepository {
                 "yaw FLOAT, " +
                 "pitch FLOAT, " +
                 "CONSTRAINT pk_home PRIMARY KEY (player,home_name,server), " +
-                "FOREIGN KEY fk_playerhome(player) REFERENCES players (playername) ON UPDATE CASCADE ON DELETE CASCADE"};
+
+                ((FeatureDetector.canUseUUID()) ?
+                "FOREIGN KEY fk_playerhome(player) REFERENCES players (uuid) ON UPDATE CASCADE ON DELETE CASCADE" :
+                "FOREIGN KEY fk_playerhome(player) REFERENCES players (playername) ON UPDATE CASCADE ON DELETE CASCADE")};
     }
 
     @Override
@@ -121,11 +130,82 @@ public class Homes implements IRepository {
         connection.addPreparedStatement("addHome", "INSERT INTO homes (player,home_name,server,world,x,y,z,yaw,pitch) VALUES(?,?,?,?,?,?,?,?,?)");
         connection.addPreparedStatement("updateHome", "UPDATE homes SET server = ?, world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE player = ? AND home_name = ?");
         connection.addPreparedStatement("getAllHomesForPlayer", "SELECT * FROM homes WHERE player = ?");
-        connection.addPreparedStatement("deleteHome", "DELETE FROM BungeeHomes WHERE home_name = ? AND player = ?");
+        connection.addPreparedStatement("deleteHome", "DELETE FROM homes WHERE home_name = ? AND player = ?");
+        connection.addPreparedStatement("getHomes", "SELECT * FROM homes");
+        connection.addPreparedStatement("updateHomesToUUID", "UPDATE homes SET player = ? WHERE player = ?");
     }
 
     @Override
     public void checkUpdate() {
+        //What current Version of the Database is this ?
+        int installedVersion = ConfigManager.main.Version_Database_Homes;
 
+        System.out.println("Current Version of the Homes Database: " + installedVersion);
+
+        if (installedVersion < 2) {
+            // Version 2 adds UUIDs as Field
+            if (FeatureDetector.canUseUUID()) {
+
+
+                ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+                try {
+                    connectionHandler.getConnection().createStatement().execute("ALTER TABLE `homes` DROP FOREIGN KEY `homes_ibfk_1`;");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return;
+                } finally {
+                    connectionHandler.release();
+                }
+
+                connectionHandler = DatabaseManager.connectionPool.getConnection();
+                // Convert all Names to UUIDs
+                PreparedStatement getHomes = connectionHandler.getPreparedStatement("getHomes");
+                try {
+                    ResultSet res = getHomes.executeQuery();
+                    while (res.next()) {
+                        String player = res.getString("player");
+                        String uuid = Utilities.getUUID(player);
+
+                        if (uuid != null) {
+                            ConnectionHandler connectionHandler1 = DatabaseManager.connectionPool.getConnection();
+
+                            try {
+                                PreparedStatement updateHomesToUUID = connectionHandler1.getPreparedStatement("updateHomesToUUID");
+                                updateHomesToUUID.setString(1, uuid);
+                                updateHomesToUUID.setString(2, player);
+                                updateHomesToUUID.executeUpdate();
+                            } catch (SQLException e) {
+                                System.out.println("Could not update Home for update to version 2");
+                                e.printStackTrace();
+                            } finally {
+                                connectionHandler1.release();
+                            }
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.out.println("Could not get Homes for update to version 2");
+                    e.printStackTrace();
+                    return;
+                } finally {
+                    connectionHandler.release();
+                }
+
+                connectionHandler = DatabaseManager.connectionPool.getConnection();
+
+                try {
+                    connectionHandler.getConnection().createStatement().execute("ALTER TABLE `homes` ADD  CONSTRAINT `homes_ibfk_1` FOREIGN KEY (`player`) REFERENCES `test`.`players`(`uuid`) ON DELETE CASCADE ON UPDATE CASCADE;");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+        }
+
+        ConfigManager.main.Version_Database_Homes = 2;
+        try {
+            ConfigManager.main.save();
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
     }
 }

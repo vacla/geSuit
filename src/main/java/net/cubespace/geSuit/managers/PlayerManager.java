@@ -1,9 +1,9 @@
 package net.cubespace.geSuit.managers;
 
+import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
-import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -13,22 +13,32 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerManager {
-    public static HashMap<String, GSPlayer> onlinePlayers = new HashMap<>();
+    public static HashMap<ProxiedPlayer, GSPlayer> onlinePlayers = new HashMap<>();
     public static ArrayList<ProxiedPlayer> kickedPlayers = new ArrayList<>();
 
-    public static boolean playerExists(String player) {
-        return getPlayer(player) != null || DatabaseManager.players.playerExists(player);
+    public static boolean playerExists(ProxiedPlayer player, boolean uuid) {
+        return getPlayer(player) != null ||
+                (uuid) ? DatabaseManager.players.playerExists(player.getUUID()) : DatabaseManager.players.playerExists(player.getName());
     }
 
     public static void loadPlayer(ProxiedPlayer player) {
-        if (playerExists(player.getName())) {
-            boolean tps = DatabaseManager.players.getPlayerTPS(player.getName());
+        if (playerExists(player, FeatureDetector.canUseUUID())) {
+            boolean tps;
 
-            GSPlayer bsplayer = new GSPlayer(player.getName(), tps);
-            onlinePlayers.put(bsplayer.getName(), bsplayer);
-            LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", bsplayer.getName()));
+            if(FeatureDetector.canUseUUID()) {
+                tps = DatabaseManager.players.getPlayerTPS(player.getName());
+            } else {
+                tps = DatabaseManager.players.getPlayerTPS(player.getName());
+            }
 
-            HomesManager.loadPlayersHomes(bsplayer);
+            GSPlayer gsPlayer = new GSPlayer(player.getName(), (FeatureDetector.canUseUUID()) ? player.getUUID() : null, tps);
+            onlinePlayers.put(player, gsPlayer);
+
+            DatabaseManager.players.updatePlayer(gsPlayer);
+
+            LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()));
+
+            HomesManager.loadPlayersHomes(gsPlayer);
         } else {
             createNewPlayer(player);
         }
@@ -36,24 +46,25 @@ public class PlayerManager {
 
     private static void createNewPlayer(final ProxiedPlayer player) {
         String ip = player.getAddress().getAddress().toString();
+        final GSPlayer gsPlayer = new GSPlayer(player.getName(), (FeatureDetector.canUseUUID()) ? player.getUUID() : null, true);
 
-        DatabaseManager.players.insertPlayer(player.getName(), ip.substring(1, ip.length()));
+        DatabaseManager.players.insertPlayer(gsPlayer, ip.substring(1, ip.length()));
 
-        final GSPlayer bsplayer = new GSPlayer(player.getName(), true);
         if (ConfigManager.main.NewPlayerBroadcast) {
             sendBroadcast(ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getName()));
         }
 
-        onlinePlayers.put(bsplayer.getName(), bsplayer);
-        LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", bsplayer.getName()));
+        onlinePlayers.put(player, gsPlayer);
+        LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()));
 
         if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && SpawnManager.NewPlayerSpawn != null) {
             SpawnManager.newPlayers.add(player);
+
             ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {
 
                 @Override
                 public void run() {
-                    SpawnManager.sendPlayerToNewPlayerSpawn(bsplayer);
+                    SpawnManager.sendPlayerToNewPlayerSpawn(gsPlayer);
                     SpawnManager.newPlayers.remove(player);
                 }
 
@@ -61,20 +72,17 @@ public class PlayerManager {
         }
     }
 
-    public static void unloadPlayer(String player) {
+    public static void unloadPlayer(ProxiedPlayer player) {
         if (onlinePlayers.containsKey(player)) {
             onlinePlayers.remove(player);
-            LoggingManager.log(ConfigManager.messages.PLAYER_UNLOAD.replace("{player}", player));
+
+            LoggingManager.log(ConfigManager.messages.PLAYER_UNLOAD.replace("{player}", player.getName()));
         }
     }
 
-    public static void sendMessageToPlayer(String player, String message) {
-        if (player.equals("CONSOLE")) {
-            ProxyServer.getInstance().getConsole().sendMessage(message);
-        } else {
-            for (String line : message.split("\n")) {
+    public static void sendMessageToPlayer(ProxiedPlayer player, String message) {
+        for (String line : message.split("\n")) {
                 getPlayer(player).sendMessage(line);
-            }
         }
     }
 
@@ -89,20 +97,16 @@ public class PlayerManager {
     }
 
     public static GSPlayer getSimilarPlayer( String player ) {
-        if ( onlinePlayers.containsKey( player ) ) {
-            return onlinePlayers.get( player );
-        }
-
-        for ( String p : onlinePlayers.keySet() ) {
-            if ( p.toLowerCase().contains( player.toLowerCase() ) ) {
-                return onlinePlayers.get( p );
+        for ( GSPlayer p : onlinePlayers.values() ) {
+            if ( p.getName().toLowerCase().contains(player.toLowerCase()) || ( p.getUuid() != null && p.getUuid().equals(player) ) ) {
+                return p;
             }
         }
 
         return null;
     }
 
-    public static boolean isPlayerOnline(String player) {
+    public static boolean isPlayerOnline(ProxiedPlayer player) {
         return onlinePlayers.containsKey(player);
     }
 
@@ -110,11 +114,7 @@ public class PlayerManager {
         return onlinePlayers.values();
     }
 
-    public static GSPlayer getPlayer(String player) {
+    public static GSPlayer getPlayer(ProxiedPlayer player) {
         return onlinePlayers.get(player);
-    }
-
-    public static GSPlayer getPlayer(CommandSender sender) {
-        return onlinePlayers.get(sender.getName());
     }
 }

@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.managers;
 
+import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.configs.SubConfig.AnnouncementEntry;
 import net.cubespace.geSuit.tasks.GlobalAnnouncements;
@@ -73,6 +74,12 @@ public class AnnouncementManager {
 
                 check.put(server, announcementEntry);
             }
+        }
+
+        try {
+            ConfigManager.announcements.save();
+        } catch (InvalidConfigurationException e) {
+
         }
     }
 

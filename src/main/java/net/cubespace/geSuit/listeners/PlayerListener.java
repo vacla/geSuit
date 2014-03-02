@@ -19,7 +19,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void playerLogin(PostLoginEvent e) throws SQLException {
-        if (!PlayerManager.onlinePlayers.containsKey(e.getPlayer().getName())) {
+        if (!PlayerManager.onlinePlayers.containsKey(e.getPlayer())) {
             PlayerManager.loadPlayer(e.getPlayer());
         }
     }
@@ -33,7 +33,7 @@ public class PlayerListener implements Listener {
             }
 
             if (ConfigManager.main.MOTD_Enabled) {
-                PlayerManager.sendMessageToPlayer(e.getPlayer().getName(), ConfigManager.messages.MOTD.replace("{player}", p.getName()));
+                PlayerManager.sendMessageToPlayer(e.getPlayer(), ConfigManager.messages.MOTD.replace("{player}", p.getName()));
             }
 
             p.connected();
@@ -49,7 +49,7 @@ public class PlayerListener implements Listener {
 
                 @Override
                 public void run() {
-                    if (PlayerManager.isPlayerOnline(p.getName()) && ProxyServer.getInstance().getPlayer(e.getPlayer().getName()) == null) {
+                    if (PlayerManager.isPlayerOnline(p.getProxiedPlayer()) && ProxyServer.getInstance().getPlayer(e.getPlayer().getName()) == null) {
                         if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
                             if (ConfigManager.main.BroadcastProxyConnectionMessages) {
                                 PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_DISCONNECT_PROXY.replace("{player}", p.getName()));
@@ -57,13 +57,13 @@ public class PlayerListener implements Listener {
                         } else {
                             PlayerManager.kickedPlayers.remove(e.getPlayer());
                         }
-                        PlayerManager.unloadPlayer(e.getPlayer().getName());
+                        PlayerManager.unloadPlayer(e.getPlayer());
                     }
                 }
 
             }, dcTime, TimeUnit.SECONDS);
         } else {
-            if (PlayerManager.isPlayerOnline(p.getName()) && ProxyServer.getInstance().getPlayer(e.getPlayer().getName()) == null) {
+            if (PlayerManager.isPlayerOnline(p.getProxiedPlayer()) && ProxyServer.getInstance().getPlayer(e.getPlayer().getName()) == null) {
                 if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
                     if (ConfigManager.main.BroadcastProxyConnectionMessages) {
                         PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_DISCONNECT_PROXY.replace("{player}", p.getName()));
@@ -71,7 +71,7 @@ public class PlayerListener implements Listener {
                 } else {
                     PlayerManager.kickedPlayers.remove(e.getPlayer());
                 }
-                PlayerManager.unloadPlayer(e.getPlayer().getName());
+                PlayerManager.unloadPlayer(e.getPlayer());
             }
         }
     }

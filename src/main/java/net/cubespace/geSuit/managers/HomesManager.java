@@ -1,16 +1,18 @@
 package net.cubespace.geSuit.managers;
 
+import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomesManager {
-    public static void createNewHome(String player, int serverLimit, int globalLimit, String home, Location loc) {
+    public static void createNewHome(ProxiedPlayer player, int serverLimit, int globalLimit, String home, Location loc) {
         GSPlayer p = PlayerManager.getPlayer(player);
 
         if (getHome(p, home) == null) {
@@ -31,7 +33,7 @@ public class HomesManager {
                 p.getHomes().put(p.getServer().getInfo().getName(), new ArrayList<Home>());
             }
 
-            Home homeObject = new Home(p.getName(), home, loc);
+            Home homeObject = new Home(p, home, loc);
             p.getHomes().get(p.getServer().getInfo().getName()).add(homeObject);
             DatabaseManager.homes.addHome(homeObject);
 
@@ -97,7 +99,7 @@ public class HomesManager {
     }
 
     public static void loadPlayersHomes(GSPlayer player) {
-        List<Home> homes = DatabaseManager.homes.getHomesForPlayer(player.getName());
+        List<Home> homes = DatabaseManager.homes.getHomesForPlayer((FeatureDetector.canUseUUID()) ? player.getUuid() : player.getName());
 
         for(Home home : homes) {
             if (player.getHomes().get(home.loc.getServer().getName()) == null) {
@@ -135,7 +137,7 @@ public class HomesManager {
         player.sendMessage(ConfigManager.messages.SENT_HOME);
     }
 
-    public static void deleteHome(String player, String home) {
+    public static void deleteHome(ProxiedPlayer player, String home) {
         GSPlayer p = PlayerManager.getPlayer(player);
         Home h = getHome(p, home);
 

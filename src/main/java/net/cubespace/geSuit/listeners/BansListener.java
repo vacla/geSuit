@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.listeners;
 
+import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.ConfigManager;
@@ -20,8 +21,8 @@ public class BansListener implements Listener {
 
     @EventHandler
     public void banCheck(LoginEvent e) throws SQLException {
-        if (DatabaseManager.bans.isPlayerBanned(e.getConnection().getName()) || DatabaseManager.bans.isPlayerBanned(e.getConnection().getAddress().getHostString())) {
-            Ban b = DatabaseManager.bans.getBanInfo(e.getConnection().getName());
+        if (DatabaseManager.bans.isPlayerBanned((FeatureDetector.canUseUUID()) ? e.getConnection().getUUID() : e.getConnection().getName()) || DatabaseManager.bans.isPlayerBanned(e.getConnection().getAddress().getHostString())) {
+            Ban b = DatabaseManager.bans.getBanInfo((FeatureDetector.canUseUUID()) ? e.getConnection().getUUID() : e.getConnection().getName());
 
             if (b == null) {
                 b = DatabaseManager.bans.getBanInfo(e.getConnection().getAddress().getHostString());

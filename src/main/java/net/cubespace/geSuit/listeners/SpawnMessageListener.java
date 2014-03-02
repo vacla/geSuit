@@ -4,6 +4,7 @@ import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.objects.Location;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -34,17 +35,17 @@ public class SpawnMessageListener implements Listener {
         Server s = (Server) event.getSender();
 
         if (task.equals("SendToProxySpawn")) {
-            SpawnManager.sendPlayerToProxySpawn(PlayerManager.getPlayer(in.readUTF()));
+            SpawnManager.sendPlayerToProxySpawn(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())));
         } else if (task.equals("GetSpawns")) {
             SpawnManager.sendSpawns(s);
         } else if (task.equals("SetServerSpawn")) {
-            SpawnManager.setServerSpawn(PlayerManager.getPlayer(in.readUTF()), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean());
+            SpawnManager.setServerSpawn(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean());
         } else if (task.equals("SetWorldSpawn")) {
-            SpawnManager.setWorldSpawn(PlayerManager.getPlayer(in.readUTF()), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean());
+            SpawnManager.setWorldSpawn(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean());
         } else if (task.equals("SetNewPlayerSpawn")) {
-            SpawnManager.setNewPlayerSpawn(PlayerManager.getPlayer(in.readUTF()), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
+            SpawnManager.setNewPlayerSpawn(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
         } else if (task.equals("SetProxySpawn")) {
-            SpawnManager.setProxySpawn(PlayerManager.getPlayer(in.readUTF()), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
+            SpawnManager.setProxySpawn(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
         } else if (task.equals("SendVersion")) {
             LoggingManager.log(in.readUTF());
         }

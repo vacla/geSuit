@@ -1,11 +1,11 @@
 package net.cubespace.geSuit.objects;
 
 public class Home {
-    public String owner;
+    public GSPlayer owner;
     public String name;
     public Location loc;
 
-    public Home(String owner, String name, Location loc) {
+    public Home(GSPlayer owner, String name, Location loc) {
         this.owner = owner;
         this.name = name;
         this.loc = loc;

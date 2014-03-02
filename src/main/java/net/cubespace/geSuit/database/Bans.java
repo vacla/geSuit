@@ -1,5 +1,8 @@
 package net.cubespace.geSuit.database;
 
+import net.cubespace.Yamler.Config.InvalidConfigurationException;
+import net.cubespace.geSuit.FeatureDetector;
+import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.Ban;
@@ -7,6 +10,7 @@ import net.cubespace.geSuit.objects.Ban;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -136,7 +140,8 @@ public class Bans implements IRepository {
                 "type VARCHAR(100), " +
                 "banned_on DATETIME NOT NULL," +
                 "banned_until DATETIME, " +
-                "CONSTRAINT pk_banid PRIMARY KEY (id)"};
+                "CONSTRAINT pk_banid PRIMARY KEY (id)," +
+                "INDEX uq_uuid UNIQUE (uuid)"};
     }
 
     @Override
@@ -147,11 +152,64 @@ public class Bans implements IRepository {
         connection.addPreparedStatement("banInfo", "SELECT * FROM bans WHERE banned_entity = ? AND type <> 'unban'");
         connection.addPreparedStatement("tempBanPlayer", "INSERT INTO bans (display,banned_entity,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,'tempban',NOW(),?)");
         connection.addPreparedStatement("insertBanConvert", "INSERT INTO bans (display,banned_entity,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,?,?,?)");
+        connection.addPreparedStatement("getBans", "SELECT * FROM bans");
+        connection.addPreparedStatement("updateToUUID", "UPDATE bans SET banned_entity = ? WHERE id = ?");
     }
 
     @Override
     public void checkUpdate() {
         //What current Version of the Database is this ?
         int installedVersion = ConfigManager.main.Version_Database_Ban;
+
+        System.out.println("Current Version of the Ban Database: " + installedVersion);
+
+        if (installedVersion < 2) {
+            // Version 2 adds UUIDs as Field
+            if (FeatureDetector.canUseUUID()) {
+                ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+
+                // Convert all Names to UUIDs
+                PreparedStatement getBans = connectionHandler.getPreparedStatement("getBans");
+                try {
+                    ResultSet res = getBans.executeQuery();
+                    while(res.next()) {
+                        String bannedEntity = res.getString("banned_entity");
+
+                        if (!Utilities.isIPAddress(bannedEntity)) {
+                            String uuid = Utilities.getUUID(bannedEntity);
+
+                            if (uuid != null) {
+                                ConnectionHandler connectionHandler1 = DatabaseManager.connectionPool.getConnection();
+
+                                try {
+                                    PreparedStatement updateToUUID = connectionHandler1.getPreparedStatement("updateToUUID");
+                                    updateToUUID.setString(1, uuid);
+                                    updateToUUID.setInt(2, res.getInt("id"));
+                                    updateToUUID.executeUpdate();
+                                } catch (SQLException e) {
+                                    System.out.println("Could not update Ban for update to version 2");
+                                    e.printStackTrace();
+                                } finally {
+                                    connectionHandler1.release();
+                                }
+                            }
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.out.println("Could not get Bans for update to version 2");
+                    e.printStackTrace();
+                    return;
+                } finally {
+                    connectionHandler.release();
+                }
+            }
+        }
+
+        ConfigManager.main.Version_Database_Ban = 2;
+        try {
+            ConfigManager.main.save();
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
     }
 }
