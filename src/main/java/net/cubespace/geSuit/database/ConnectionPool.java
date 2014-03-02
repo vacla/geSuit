@@ -42,6 +42,7 @@ public class ConnectionPool {
                 }
             } catch (SQLException | ClassNotFoundException ex) {
                 System.out.println(ChatColor.DARK_RED + "SQL is unable to conect");
+                ex.printStackTrace();
                 throw new IllegalStateException();
             }
 
