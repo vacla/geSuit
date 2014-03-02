@@ -144,7 +144,7 @@ public class Bans implements IRepository {
         connection.addPreparedStatement("isPlayerBanned", "SELECT id FROM bans WHERE banned_entity = ? AND type <> 'unban'");
         connection.addPreparedStatement("banPlayer", "INSERT INTO bans (display,banned_entity,banned_by,reason,type,banned_on) VALUES (?,?,?,?,?,NOW());");
         connection.addPreparedStatement("unbanPlayer", "UPDATE bans SET type = 'unban' WHERE id = ?");
-        connection.addPreparedStatement("banInfo", "SELECT * FROM bans WHERE banned_entity = ?");
+        connection.addPreparedStatement("banInfo", "SELECT * FROM bans WHERE banned_entity = ? AND type <> 'unban'");
         connection.addPreparedStatement("tempBanPlayer", "INSERT INTO bans (display,banned_entity,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,'tempban',NOW(),?)");
         connection.addPreparedStatement("insertBanConvert", "INSERT INTO bans (display,banned_entity,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,?,?,?)");
     }
