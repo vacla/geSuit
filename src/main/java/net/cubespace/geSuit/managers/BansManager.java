@@ -106,7 +106,7 @@ public class BansManager {
             message = ConfigManager.messages.DEFAULT_KICK_MESSAGE;
         }
 
-        message = ConfigManager.messages.KICK_PLAYER_MESSAGE.replace("{message}", message).replace("{sender}", sender);
+        message = Utilities.colorize(ConfigManager.messages.KICK_PLAYER_MESSAGE.replace("{message}", message).replace("{sender}", sender));
 
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             disconnectPlayer(p, message);
@@ -152,9 +152,9 @@ public class BansManager {
         player = PlayerManager.getPlayer(player).getName();
 
         if (PlayerManager.isPlayerOnline(player)) {
-            disconnectPlayer(t.getName(), ConfigManager.messages.KICK_PLAYER_MESSAGE.replace("{message}", reason).replace("{sender}", sender));
+            disconnectPlayer(t.getName(), Utilities.colorize(ConfigManager.messages.KICK_PLAYER_MESSAGE.replace("{message}", reason).replace("{sender}", sender)));
             if (ConfigManager.bans.BroadcastKicks) {
-                PlayerManager.sendBroadcast(ConfigManager.messages.KICK_PLAYER_BROADCAST.replace("{message}", reason).replace("{player}", t.getName()).replace("{sender}", sender));
+                PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.KICK_PLAYER_BROADCAST.replace("{message}", reason).replace("{player}", t.getName()).replace("{sender}", sender)));
             }
         }
     }
