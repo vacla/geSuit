@@ -62,7 +62,7 @@ public class ConnectionPool {
             }
         }, 60, 60, TimeUnit.MINUTES);
 
-        if (!ConfigManager.main.Database_Inited) {
+        if (!ConfigManager.main.Inited) {
             for(IRepository repository : repositories) {
                 String[] tableInformation = repository.getTable();
 
@@ -77,7 +77,7 @@ public class ConnectionPool {
                 }
             }
 
-            ConfigManager.main.Database_Inited = true;
+            ConfigManager.main.Inited = true;
             try {
                 ConfigManager.main.save();
             } catch (InvalidConfigurationException e) {

@@ -22,7 +22,7 @@ public class MainConfig extends Config {
     public Integer PlayerDisconnectDelay = 10;
 
     @Comment("Do not alter this. It will be used automaticly.")
-    public Boolean Database_Inited = false;
+    public Boolean Inited = false;
 
     @Comment("Stored version informations. If you alter this you can damage your Database")
     public Integer Version_Database_Ban = 1;
