@@ -15,7 +15,7 @@ import java.util.Calendar;
 public class BansManager {
     public static void banPlayer(String bannedBy, String player, String reason) {
         GSPlayer p = PlayerManager.getPlayer(bannedBy);
-        GSPlayer t = PlayerManager.getPlayer(player);
+        GSPlayer t = PlayerManager.getSimilarPlayer(player);
 
         if (t != null) {
             player = t.getName();
@@ -49,7 +49,7 @@ public class BansManager {
     }
 
     public static void unbanPlayer(String sender, String player) {
-        if (!PlayerManager.playerExists(player)) {
+        if (!Utilities.isIPAddress(player) && !PlayerManager.playerExists(player)) {
             PlayerManager.sendMessageToPlayer(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
             return;
         }

@@ -17,7 +17,7 @@ public class TeleportManager {
 
     public static void requestToTeleportToPlayer(String player, String target) {
         final GSPlayer bp = PlayerManager.getPlayer(player);
-        final GSPlayer bt = PlayerManager.getPlayer(target);
+        final GSPlayer bt = PlayerManager.getSimilarPlayer(target);
         if (playerHasPendingTeleport(bp)) {
             bp.sendMessage(ConfigManager.messages.PLAYER_TELEPORT_PENDING);
             return;
@@ -58,7 +58,7 @@ public class TeleportManager {
 
     public static void requestPlayerTeleportToYou(String player, String target) {
         final GSPlayer bp = PlayerManager.getPlayer(player);
-        final GSPlayer bt = PlayerManager.getPlayer(target);
+        final GSPlayer bt = PlayerManager.getSimilarPlayer(target);
         if (playerHasPendingTeleport(bp)) {
             bp.sendMessage(ConfigManager.messages.PLAYER_TELEPORT_PENDING);
             return;
@@ -178,7 +178,7 @@ public class TeleportManager {
 
     public static void tpAll(String sender, String target) {
         GSPlayer p = PlayerManager.getPlayer(sender);
-        GSPlayer t = PlayerManager.getPlayer(target);
+        GSPlayer t = PlayerManager.getSimilarPlayer(target);
         if (t == null) {
             p.sendMessage(ConfigManager.messages.PLAYER_NOT_ONLINE);
             return;
@@ -195,8 +195,8 @@ public class TeleportManager {
 
     public static void teleportPlayerToPlayer(String sender, String player, String target, boolean silent, boolean bypass) {
         GSPlayer s = PlayerManager.getPlayer(sender);
-        GSPlayer p = PlayerManager.getPlayer(player);
-        GSPlayer t = PlayerManager.getPlayer(target);
+        GSPlayer p = PlayerManager.getSimilarPlayer(player);
+        GSPlayer t = PlayerManager.getSimilarPlayer(target);
         if (p == null || t == null) {
             s.sendMessage(ConfigManager.messages.PLAYER_NOT_ONLINE);
             return;

@@ -88,6 +88,20 @@ public class PlayerManager {
         LoggingManager.log(message);
     }
 
+    public static GSPlayer getSimilarPlayer( String player ) {
+        if ( onlinePlayers.containsKey( player ) ) {
+            return onlinePlayers.get( player );
+        }
+
+        for ( String p : onlinePlayers.keySet() ) {
+            if ( p.toLowerCase().contains( player.toLowerCase() ) ) {
+                return onlinePlayers.get( p );
+            }
+        }
+
+        return null;
+    }
+
     public static boolean isPlayerOnline(String player) {
         return onlinePlayers.containsKey(player);
     }
