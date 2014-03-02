@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.listeners;
 
+import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
@@ -36,13 +37,13 @@ public class BansListener implements Listener {
                     long hours = timeDiff / (60 * 60 * 1000);
                     long mins = timeDiff / (60 * 1000) % 60;
 
-                    e.setCancelReason(ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{time}", sdf.format(then) + " (" + hours + ":" + mins + " hours)").replace("{message}", b.getReason()));
+                    e.setCancelReason(Utilities.colorize(ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{time}", sdf.format(then) + " (" + hours + ":" + mins + " hours)").replace("{message}", b.getReason())));
                     LoggingManager.log(ChatColor.RED + e.getConnection().getName() + "'s connection refused due to being banned!");
                 }
             } else {
                 e.setCancelled(true);
 
-                e.setCancelReason(ConfigManager.messages.BAN_PLAYER_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{message}", b.getReason()));
+                e.setCancelReason(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{message}", b.getReason())));
                 LoggingManager.log(ChatColor.RED + e.getConnection().getName() + "'s connection refused due to being banned!");
             }
         }
