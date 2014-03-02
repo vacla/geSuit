@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.managers;
 
+import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.CommandSender;
@@ -80,7 +81,7 @@ public class PlayerManager {
     public static void sendBroadcast(String message) {
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             for (String line : message.split("\n")) {
-                p.sendMessage(line);
+                p.sendMessage(Utilities.colorize(line));
             }
         }
 
