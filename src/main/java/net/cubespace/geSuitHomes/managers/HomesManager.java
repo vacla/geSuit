@@ -133,9 +133,9 @@ public class HomesManager {
         try {
             out.writeUTF( "SetPlayersHome" );
             out.writeUTF( sender );
-            out.writeUTF( home );
             out.writeInt( 100 );
             out.writeInt( 300 );
+            out.writeUTF( home );
             out.writeUTF( l.getWorld().getName() );
             out.writeDouble( l.getX() );
             out.writeDouble( l.getY() );
