@@ -63,11 +63,13 @@ public class HomesManager {
     public static void importHomes( CommandSender sender ) {
         String path = "plugins/Essentials/userdata";
         File folder = new File( path );
+
         File[] listOfFiles = folder.listFiles( new FilenameFilter() {
             public boolean accept( File dir, String name ) {
                 return name.toLowerCase().endsWith( ".yml" );
             }
         } );
+
         int userCount = 0;
         int userHomeCount = 0;
         int homeCount = 0;
