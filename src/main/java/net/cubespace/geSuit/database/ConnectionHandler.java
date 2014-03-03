@@ -22,12 +22,7 @@ public class ConnectionHandler {
     }
 
     public boolean isOldConnection() {
-        if ((System.currentTimeMillis() - lastUsed) > 3600000) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return (System.currentTimeMillis() - lastUsed) > 3600000;
     }
 
     public void addPreparedStatement(String name, String query) {

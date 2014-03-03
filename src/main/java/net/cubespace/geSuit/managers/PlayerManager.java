@@ -115,6 +115,8 @@ public class PlayerManager {
     }
 
     public static GSPlayer getPlayer(ProxiedPlayer player) {
+        if (player == null) return null;
+
         return onlinePlayers.get(player);
     }
 }

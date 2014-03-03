@@ -66,7 +66,7 @@ public class WarpsManager {
                 globalString += w.getName() + ", ";
             } else if (w.isHidden()) {
                 hiddenString += w.getName() + ", ";
-            } else if (s.getServer().getInfo().equals(w.getLocation().getServer())) {
+            } else if (s.getServer().equals(w.getLocation().getServer().getName())) {
                 serverString += w.getName() + ", ";
             } else if (bypass) {
                 globalString += w.getName() + ", ";
@@ -114,7 +114,7 @@ public class WarpsManager {
         }
 
         if (!w.isGlobal() && !w.isHidden()) {
-            if (!w.getLocation().getServer().equals(p.getServer().getInfo()) && !bypass) {
+            if (!w.getLocation().getServer().getName().equals(p.getServer()) && !bypass) {
                 s.sendMessage(ConfigManager.messages.WARP_SERVER);
                 return;
             }

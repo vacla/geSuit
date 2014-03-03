@@ -12,38 +12,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomesManager {
-    public static void createNewHome(ProxiedPlayer player, int serverLimit, int globalLimit, String home, Location loc) {
-        GSPlayer p = PlayerManager.getPlayer(player);
-
-        if (getHome(p, home) == null) {
-            int globalHomeCount = getPlayersGlobalHomeCount(p);
-            int serverHomeCount = getPlayersServerHomeCount(p);
+    public static void createNewHome(GSPlayer player, int serverLimit, int globalLimit, String home, Location loc) {
+        if (getHome(player, home) == null) {
+            int globalHomeCount = getPlayersGlobalHomeCount(player);
+            int serverHomeCount = getPlayersServerHomeCount(player);
 
             if (globalHomeCount >= globalLimit) {
-                p.sendMessage(ConfigManager.messages.NO_HOMES_ALLOWED_GLOBAL);
+                player.sendMessage(ConfigManager.messages.NO_HOMES_ALLOWED_GLOBAL);
                 return;
             }
 
             if (serverHomeCount >= serverLimit) {
-                p.sendMessage(ConfigManager.messages.NO_HOMES_ALLOWED_SERVER);
+                player.sendMessage(ConfigManager.messages.NO_HOMES_ALLOWED_SERVER);
                 return;
             }
 
-            if (p.getHomes().get(p.getServer().getInfo().getName()) == null) {
-                p.getHomes().put(p.getServer().getInfo().getName(), new ArrayList<Home>());
+            if (player.getHomes().get(player.getServer()) == null) {
+                player.getHomes().put(player.getServer(), new ArrayList<Home>());
             }
 
-            Home homeObject = new Home(p, home, loc);
-            p.getHomes().get(p.getServer().getInfo().getName()).add(homeObject);
+            Home homeObject = new Home(player, home, loc);
+            player.getHomes().get(player.getServer()).add(homeObject);
             DatabaseManager.homes.addHome(homeObject);
 
-            p.sendMessage(ConfigManager.messages.HOME_SET);
+            player.sendMessage(ConfigManager.messages.HOME_SET);
         } else {
-            Home home1 = getHome(p, home);
+            Home home1 = getHome(player, home);
             home1.setLoc(loc);
             DatabaseManager.homes.updateHome(home1);
 
-            p.sendMessage(ConfigManager.messages.HOME_UPDATED);
+            player.sendMessage(ConfigManager.messages.HOME_UPDATED);
         }
     }
 
@@ -58,7 +56,7 @@ public class HomesManager {
     }
 
     private static int getPlayersServerHomeCount(GSPlayer player) {
-        ArrayList<Home> list = player.getHomes().get(player.getServer().getInfo().getName());
+        ArrayList<Home> list = player.getHomes().get(player.getServer());
 
         if (list == null) {
             return 0;
@@ -77,7 +75,7 @@ public class HomesManager {
         for (String server : player.getHomes().keySet()) {
             String homes;
 
-            if (server.equals(player.getServer().getInfo().getName())) {
+            if (server.equals(player.getServer())) {
                 homes = ChatColor.RED + server + ": " + ChatColor.BLUE;
             } else {
                 homes = ChatColor.GOLD + server + ": " + ChatColor.BLUE;

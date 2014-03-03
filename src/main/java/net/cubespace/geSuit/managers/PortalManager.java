@@ -150,7 +150,7 @@ public class PortalManager {
             }
 
             ServerInfo s = geSuit.proxy.getServerInfo(dest);
-            if (!s.equals(p.getServer().getInfo())) {
+            if (!s.getName().equals(p.getServer())) {
                 p.connectTo(s);
             }
         }

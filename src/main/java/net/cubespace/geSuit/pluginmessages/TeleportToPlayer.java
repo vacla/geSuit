@@ -3,6 +3,7 @@ package net.cubespace.geSuit.pluginmessages;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.tasks.SendPluginMessage;
+import net.md_5.bungee.api.ProxyServer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -15,8 +16,8 @@ public class TeleportToPlayer {
     public static String OUTGOING_CHANNEL = "geSuitTeleport";
 
     public static void execute(GSPlayer player, GSPlayer target) {
-        if (!player.getServer().getInfo().equals(target.getServer().getInfo())) {
-            player.getProxiedPlayer().connect(target.getServer().getInfo());
+        if (!player.getServer().equals(target.getServer())) {
+            player.getProxiedPlayer().connect(ProxyServer.getInstance().getServerInfo(target.getServer()));
         }
 
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -30,6 +31,6 @@ public class TeleportToPlayer {
             e.printStackTrace();
         }
 
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, target.getServer().getInfo(), bytes));
+        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, ProxyServer.getInstance().getServerInfo(target.getServer()), bytes));
     }
 }

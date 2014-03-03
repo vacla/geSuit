@@ -1,8 +1,12 @@
 package net.cubespace.geSuit.listeners;
 
+import net.cubespace.geSuit.FeatureDetector;
+import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.HomesManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
+import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.Server;
@@ -39,13 +43,28 @@ public class HomesMessageListener implements Listener {
         } else if ( task.equals( "SendPlayerHome" ) ) {
             HomesManager.sendPlayerToHome( PlayerManager.getPlayer( ProxyServer.getInstance().getPlayer(in.readUTF()) ), in.readUTF() );
         } else if ( task.equals( "SetPlayersHome" ) ) {
-            HomesManager.createNewHome( ProxyServer.getInstance().getPlayer(in.readUTF()), in.readInt(), in.readInt(), in.readUTF(), new Location( ( ( Server ) event.getSender() ).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat() ) );
+            String player = in.readUTF();
+            GSPlayer gsPlayer = PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(player));
+
+            if (gsPlayer == null) {
+                gsPlayer = DatabaseManager.players.loadPlayer(player);
+
+                if (gsPlayer == null) {
+                    DatabaseManager.players.insertPlayer(new GSPlayer(player, (FeatureDetector.canUseUUID()) ? Utilities.getUUID(player) : null, true), "0.0.0.0");
+                    gsPlayer = DatabaseManager.players.loadPlayer(player);
+                    gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
+                } else {
+                    gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
+                }
+            }
+
+            HomesManager.createNewHome(gsPlayer, in.readInt(), in.readInt(), in.readUTF(), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
         } else if ( task.equals( "GetHomesList" ) ) {
             HomesManager.listPlayersHomes( PlayerManager.getPlayer( ProxyServer.getInstance().getPlayer(in.readUTF()) ) );
         } else if ( task.equals( "SendVersion" ) ) {
             LoggingManager.log( in.readUTF() );
         }
-        in.close();
 
+        in.close();
     }
 }

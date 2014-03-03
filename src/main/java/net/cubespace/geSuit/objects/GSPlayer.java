@@ -4,7 +4,6 @@ import net.cubespace.geSuit.Utilities;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.connection.Server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +12,7 @@ public class GSPlayer {
     private String playername;
     private String uuid;
     private boolean acceptingTeleports;
+    private String server = null;
 
     private HashMap<String, ArrayList<Home>> homes = new HashMap<>();
     private Location deathBackLocation;
@@ -28,10 +28,6 @@ public class GSPlayer {
 
     public String getName() {
         return playername;
-    }
-
-    public void setPlayerName( String name ) {
-        this.playername = name;
     }
 
     public ProxiedPlayer getProxiedPlayer() {
@@ -86,8 +82,12 @@ public class GSPlayer {
         return teleportBackLocation;
     }
 
-    public Server getServer() {
-        return ProxyServer.getInstance().getPlayer( playername ).getServer();
+    public String getServer() {
+        if (getProxiedPlayer() == null) {
+            return server;
+        }
+
+        return getProxiedPlayer().getServer().getInfo().getName();
     }
 
     public HashMap<String, ArrayList<Home>> getHomes() {
@@ -108,5 +108,9 @@ public class GSPlayer {
 
     public String getUuid() {
         return uuid;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
     }
 }
