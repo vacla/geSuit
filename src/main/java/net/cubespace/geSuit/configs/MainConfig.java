@@ -27,11 +27,11 @@ public class MainConfig extends Config {
     public Boolean Inited = false;
 
     @Comment("Stored version informations. If you alter this you can damage your Database")
-    public Integer Version_Database_Ban = 1;
+    public Integer Version_Database_Ban = 2;
     @Comment("Stored version informations. If you alter this you can damage your Database")
-    public Integer Version_Database_Homes= 1;
+    public Integer Version_Database_Homes = 2;
     @Comment("Stored version informations. If you alter this you can damage your Database")
-    public Integer Version_Database_Players = 1;
+    public Integer Version_Database_Players = 2;
     @Comment("Stored version informations. If you alter this you can damage your Database")
     public Integer Version_Database_Portals = 1;
     @Comment("Stored version informations. If you alter this you can damage your Database")
