@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.managers;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
+import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
@@ -55,7 +56,8 @@ public class BansManager {
             return;
         }
 
-        Ban b = DatabaseManager.bans.getBanInfo(player);
+        GSPlayer p = DatabaseManager.players.loadPlayer(player);
+        Ban b = DatabaseManager.bans.getBanInfo((FeatureDetector.canUseUUID()) ? p.getUuid() : p.getName());
 
         if (b == null) {
             b = DatabaseManager.bans.getBanInfo(DatabaseManager.players.getPlayerIP(player));
