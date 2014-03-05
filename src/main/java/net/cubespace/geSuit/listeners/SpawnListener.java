@@ -14,7 +14,6 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 public class SpawnListener implements Listener {
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void sendPlayerToHub(final PostLoginEvent e) throws SQLException {
         if (ConfigManager.spawn.ForceAllPlayersToProxySpawn && !SpawnManager.newPlayers.contains(e.getPlayer())) {
@@ -26,8 +25,6 @@ public class SpawnListener implements Listener {
                 }
 
             }, 300, TimeUnit.MILLISECONDS);
-
         }
     }
-
 }

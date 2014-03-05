@@ -16,7 +16,7 @@ public class TeleportToLocation {
     public static String OUTGOING_CHANNEL = "geSuitTeleport";
 
     public static void execute(GSPlayer player, Location location) {
-        if (!player.getServer().equals(location.getServer().getName())) {
+        if (player.getServer() == null || !player.getServer().equals(location.getServer().getName())) {
             player.getProxiedPlayer().connect(location.getServer());
         }
 
