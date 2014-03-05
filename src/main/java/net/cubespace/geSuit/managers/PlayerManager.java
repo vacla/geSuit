@@ -13,11 +13,11 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerManager {
-    public static HashMap<ProxiedPlayer, GSPlayer> onlinePlayers = new HashMap<>();
+    public static HashMap<String, GSPlayer> onlinePlayers = new HashMap<>();
     public static ArrayList<ProxiedPlayer> kickedPlayers = new ArrayList<>();
 
     public static boolean playerExists(ProxiedPlayer player, boolean uuid) {
-        return getPlayer(player) != null ||
+        return getPlayer(player.getName()) != null ||
                 (uuid) ? DatabaseManager.players.playerExists(player.getUUID()) : DatabaseManager.players.playerExists(player.getName());
     }
 
@@ -32,7 +32,7 @@ public class PlayerManager {
             }
 
             GSPlayer gsPlayer = new GSPlayer(player.getName(), (FeatureDetector.canUseUUID()) ? player.getUUID() : null, tps);
-            onlinePlayers.put(player, gsPlayer);
+            onlinePlayers.put(player.getName(), gsPlayer);
 
             DatabaseManager.players.updatePlayer(gsPlayer);
 
@@ -54,7 +54,7 @@ public class PlayerManager {
             sendBroadcast(ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getName()));
         }
 
-        onlinePlayers.put(player, gsPlayer);
+        onlinePlayers.put(player.getName(), gsPlayer);
         LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()));
 
         if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && SpawnManager.NewPlayerSpawn != null) {
@@ -72,15 +72,15 @@ public class PlayerManager {
         }
     }
 
-    public static void unloadPlayer(ProxiedPlayer player) {
+    public static void unloadPlayer(String player) {
         if (onlinePlayers.containsKey(player)) {
             onlinePlayers.remove(player);
 
-            LoggingManager.log(ConfigManager.messages.PLAYER_UNLOAD.replace("{player}", player.getName()));
+            LoggingManager.log(ConfigManager.messages.PLAYER_UNLOAD.replace("{player}", player));
         }
     }
 
-    public static void sendMessageToPlayer(ProxiedPlayer player, String message) {
+    public static void sendMessageToPlayer(String player, String message) {
         for (String line : message.split("\n")) {
                 getPlayer(player).sendMessage(line);
         }
@@ -106,7 +106,7 @@ public class PlayerManager {
         return null;
     }
 
-    public static boolean isPlayerOnline(ProxiedPlayer player) {
+    public static boolean isPlayerOnline(String player) {
         return onlinePlayers.containsKey(player);
     }
 
@@ -114,9 +114,7 @@ public class PlayerManager {
         return onlinePlayers.values();
     }
 
-    public static GSPlayer getPlayer(ProxiedPlayer player) {
-        if (player == null) return null;
-
+    public static GSPlayer getPlayer(String player) {
         return onlinePlayers.get(player);
     }
 }

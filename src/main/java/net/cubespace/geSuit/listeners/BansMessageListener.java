@@ -2,7 +2,6 @@ package net.cubespace.geSuit.listeners;
 
 import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.LoggingManager;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -34,35 +33,35 @@ public class BansMessageListener implements Listener {
 
         String task = in.readUTF();
         if (task.equals("KickPlayer")) {
-            BansManager.kickPlayer(ProxyServer.getInstance().getPlayer(in.readUTF()), ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF());
+            BansManager.kickPlayer(in.readUTF(), in.readUTF(), in.readUTF());
             return;
         }
         if (task.equals("BanPlayer")) {
-            BansManager.banPlayer(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF(), in.readUTF());
+            BansManager.banPlayer(in.readUTF(), in.readUTF(), in.readUTF());
             return;
         }
         if (task.equals("TempBanPlayer")) {
-            BansManager.tempBanPlayer(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF(), in.readInt(), in.readInt(), in.readInt(), in.readUTF());
+            BansManager.tempBanPlayer(in.readUTF(), in.readUTF(), in.readInt(), in.readInt(), in.readInt(), in.readUTF());
             return;
         }
         if (task.equals("KickAll")) {
-            BansManager.kickAll(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF());
+            BansManager.kickAll(in.readUTF(), in.readUTF());
             return;
         }
         if (task.equals("UnbanPlayer")) {
-            BansManager.unbanPlayer(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF());
+            BansManager.unbanPlayer(in.readUTF(), in.readUTF());
             return;
         }
         if (task.equals("IPBanPlayer")) {
-            BansManager.banIP(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF(), in.readUTF());
+            BansManager.banIP(in.readUTF(), in.readUTF(), in.readUTF());
             return;
         }
         if (task.equals("CheckPlayerBans")) {
-            BansManager.checkPlayersBan(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF());
+            BansManager.checkPlayersBan(in.readUTF(), in.readUTF());
             return;
         }
         if (task.equals("ReloadBans")) {
-            BansManager.reloadBans(ProxyServer.getInstance().getPlayer(in.readUTF()));
+            BansManager.reloadBans(in.readUTF());
             return;
         }
         if (task.equals("SendVersion")) {

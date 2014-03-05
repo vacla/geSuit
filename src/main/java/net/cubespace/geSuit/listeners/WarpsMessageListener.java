@@ -34,22 +34,22 @@ public class WarpsMessageListener implements Listener {
         String task = in.readUTF();
 
         if (task.equals("WarpPlayer")) {
-            WarpsManager.sendPlayerToWarp(ProxyServer.getInstance().getPlayer(in.readUTF()), ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF(), in.readBoolean(), in.readBoolean());
+            WarpsManager.sendPlayerToWarp(in.readUTF(), in.readUTF(), in.readUTF(), in.readBoolean(), in.readBoolean());
             return;
         }
 
         if (task.equals("GetWarpsList")) {
-            WarpsManager.getWarpsList(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readBoolean(), in.readBoolean(), in.readBoolean(), in.readBoolean());
+            WarpsManager.getWarpsList(in.readUTF(), in.readBoolean(), in.readBoolean(), in.readBoolean(), in.readBoolean());
             return;
         }
 
         if (task.equals("SetWarp")) {
-            WarpsManager.setWarp(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), in.readUTF(), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean(), in.readBoolean());
+            WarpsManager.setWarp(PlayerManager.getPlayer(in.readUTF()), in.readUTF(), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean(), in.readBoolean());
             return;
         }
 
         if (task.equals("DeleteWarp")) {
-            WarpsManager.deleteWarp(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), in.readUTF());
+            WarpsManager.deleteWarp(PlayerManager.getPlayer(in.readUTF()), in.readUTF());
             return;
         }
 

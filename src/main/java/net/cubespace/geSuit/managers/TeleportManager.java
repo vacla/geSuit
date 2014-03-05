@@ -6,7 +6,6 @@ import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.cubespace.geSuit.pluginmessages.TeleportToPlayer;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +15,7 @@ public class TeleportManager {
     public static HashMap<GSPlayer, GSPlayer> pendingTeleportsTPAHere = new HashMap<>(); // Player ----teleported---> player
     private static int expireTime = ConfigManager.teleport.TeleportRequestExpireTime;
 
-    public static void requestToTeleportToPlayer(ProxiedPlayer player, String target) {
+    public static void requestToTeleportToPlayer(String player, String target) {
         final GSPlayer bp = PlayerManager.getPlayer(player);
         final GSPlayer bt = PlayerManager.getSimilarPlayer(target);
         if (playerHasPendingTeleport(bp)) {
@@ -57,7 +56,7 @@ public class TeleportManager {
         }, expireTime, TimeUnit.SECONDS);
     }
 
-    public static void requestPlayerTeleportToYou(ProxiedPlayer player, String target) {
+    public static void requestPlayerTeleportToYou(String player, String target) {
         final GSPlayer bp = PlayerManager.getPlayer(player);
         final GSPlayer bt = PlayerManager.getSimilarPlayer(target);
         if (playerHasPendingTeleport(bp)) {
@@ -178,7 +177,7 @@ public class TeleportManager {
         }
     }
 
-    public static void tpAll(ProxiedPlayer sender, String target) {
+    public static void tpAll(String sender, String target) {
         GSPlayer p = PlayerManager.getPlayer(sender);
         GSPlayer t = PlayerManager.getSimilarPlayer(target);
         if (t == null) {
@@ -195,7 +194,7 @@ public class TeleportManager {
         }
     }
 
-    public static void teleportPlayerToPlayer(ProxiedPlayer sender, String player, String target, boolean silent, boolean bypass) {
+    public static void teleportPlayerToPlayer(String sender, String player, String target, boolean silent, boolean bypass) {
         GSPlayer s = PlayerManager.getPlayer(sender);
         GSPlayer p = PlayerManager.getSimilarPlayer(player);
         GSPlayer t = PlayerManager.getSimilarPlayer(target);
@@ -211,7 +210,7 @@ public class TeleportManager {
             }
         }
 
-        if (!(sender.getName().equals(player) || sender.getName().equals(target))) {
+        if (!(sender.equals(player) || sender.equals(target))) {
             s.sendMessage(ConfigManager.messages.PLAYER_TELEPORTED.replace("{player}", p.getName()).replace("{target}", t.getName()));
         }
 

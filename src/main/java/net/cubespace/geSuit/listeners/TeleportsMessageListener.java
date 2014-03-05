@@ -5,7 +5,6 @@ import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.TeleportManager;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -33,57 +32,57 @@ public class TeleportsMessageListener implements Listener {
         String task = in.readUTF();
 
         if (task.equals("TpAccept")) {
-            TeleportManager.acceptTeleportRequest(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())));
+            TeleportManager.acceptTeleportRequest(PlayerManager.getPlayer(in.readUTF()));
             return;
         }
 
         if (task.equals("TeleportToLocation")) {
-            TeleportToLocation.execute(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
+            TeleportToLocation.execute(PlayerManager.getPlayer(in.readUTF()), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
             return;
         }
 
         if (task.equals("PlayersTeleportBackLocation")) {
-            TeleportManager.setPlayersTeleportBackLocation(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), new Location(((Server) event.getSender()).getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
+            TeleportManager.setPlayersTeleportBackLocation(PlayerManager.getPlayer(in.readUTF()), new Location(((Server) event.getSender()).getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
             return;
         }
 
         if (task.equals("PlayersDeathBackLocation")) {
-            TeleportManager.setPlayersDeathBackLocation(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), new Location(((Server) event.getSender()).getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
+            TeleportManager.setPlayersDeathBackLocation(PlayerManager.getPlayer(in.readUTF()), new Location(((Server) event.getSender()).getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
             return;
         }
 
         if (task.equals("TeleportToPlayer")) {
-            TeleportManager.teleportPlayerToPlayer(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF(), in.readUTF(), in.readBoolean(), in.readBoolean());
+            TeleportManager.teleportPlayerToPlayer(in.readUTF(), in.readUTF(), in.readUTF(), in.readBoolean(), in.readBoolean());
             return;
         }
 
         if (task.equals("TpaHereRequest")) {
-            TeleportManager.requestPlayerTeleportToYou(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF());
+            TeleportManager.requestPlayerTeleportToYou(in.readUTF(), in.readUTF());
             return;
         }
 
         if (task.equals("TpaRequest")) {
-            TeleportManager.requestToTeleportToPlayer(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF());
+            TeleportManager.requestToTeleportToPlayer(in.readUTF(), in.readUTF());
             return;
         }
 
         if (task.equals("TpDeny")) {
-            TeleportManager.denyTeleportRequest(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())));
+            TeleportManager.denyTeleportRequest(PlayerManager.getPlayer(in.readUTF()));
             return;
         }
 
         if (task.equals("TpAll")) {
-            TeleportManager.tpAll(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF());
+            TeleportManager.tpAll(in.readUTF(), in.readUTF());
             return;
         }
 
         if (task.equals("SendPlayerBack")) {
-            TeleportManager.sendPlayerToLastBack(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())), in.readBoolean(), in.readBoolean());
+            TeleportManager.sendPlayerToLastBack(PlayerManager.getPlayer(in.readUTF()), in.readBoolean(), in.readBoolean());
             return;
         }
 
         if (task.equals("ToggleTeleports")) {
-            TeleportManager.togglePlayersTeleports(PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(in.readUTF())));
+            TeleportManager.togglePlayersTeleports(PlayerManager.getPlayer(in.readUTF()));
             return;
         }
 

@@ -8,7 +8,6 @@ import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -39,12 +38,12 @@ public class HomesMessageListener implements Listener {
         String task = in.readUTF();
 
         if ( task.equals( "DeleteHome" ) ) {
-            HomesManager.deleteHome(ProxyServer.getInstance().getPlayer(in.readUTF()), in.readUTF() );
+            HomesManager.deleteHome(in.readUTF(), in.readUTF() );
         } else if ( task.equals( "SendPlayerHome" ) ) {
-            HomesManager.sendPlayerToHome( PlayerManager.getPlayer( ProxyServer.getInstance().getPlayer(in.readUTF()) ), in.readUTF() );
+            HomesManager.sendPlayerToHome( PlayerManager.getPlayer(in.readUTF() ), in.readUTF() );
         } else if ( task.equals( "SetPlayersHome" ) ) {
             String player = in.readUTF();
-            GSPlayer gsPlayer = PlayerManager.getPlayer(ProxyServer.getInstance().getPlayer(player));
+            GSPlayer gsPlayer = PlayerManager.getPlayer(player);
 
             if (gsPlayer == null) {
                 gsPlayer = DatabaseManager.players.loadPlayer(player);
@@ -60,7 +59,7 @@ public class HomesMessageListener implements Listener {
 
             HomesManager.createNewHome(gsPlayer, in.readInt(), in.readInt(), in.readUTF(), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
         } else if ( task.equals( "GetHomesList" ) ) {
-            HomesManager.listPlayersHomes( PlayerManager.getPlayer( ProxyServer.getInstance().getPlayer(in.readUTF()) ) );
+            HomesManager.listPlayersHomes( PlayerManager.getPlayer( in.readUTF() ) );
         } else if ( task.equals( "SendVersion" ) ) {
             LoggingManager.log( in.readUTF() );
         }

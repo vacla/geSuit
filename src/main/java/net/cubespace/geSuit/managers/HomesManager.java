@@ -6,7 +6,6 @@ import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +134,7 @@ public class HomesManager {
         player.sendMessage(ConfigManager.messages.SENT_HOME);
     }
 
-    public static void deleteHome(ProxiedPlayer player, String home) {
+    public static void deleteHome(String player, String home) {
         GSPlayer p = PlayerManager.getPlayer(player);
         Home h = getHome(p, home);
 
