@@ -24,7 +24,7 @@ public class TeleportsMessageListener implements PluginMessageListener {
             }
 
             if ( task.equals( "TeleportToLocation" ) ) {
-                TeleportsManager.teleportPlayerToLocation( in.readUTF(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble() );
+                TeleportsManager.teleportPlayerToLocation( in.readUTF(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat() );
             }
 
         } catch ( IOException e ) {

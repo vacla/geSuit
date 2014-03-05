@@ -168,8 +168,8 @@ public class TeleportsManager {
         }
     }
 
-    public static void teleportPlayerToLocation( final String player, String world, double x, double y, double z ) {
-        Location t = new Location( Bukkit.getWorld( world ), x, y, z );
+    public static void teleportPlayerToLocation( final String player, String world, double x, double y, double z, float yaw, float pitch ) {
+        Location t = new Location( Bukkit.getWorld( world ), x, y, z, yaw, pitch );
         Player p = Bukkit.getPlayer( player );
         if ( p != null ) {
             //Check if Block is safe
