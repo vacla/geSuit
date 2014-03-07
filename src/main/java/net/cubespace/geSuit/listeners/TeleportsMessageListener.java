@@ -3,6 +3,7 @@ package net.cubespace.geSuit.listeners;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.TeleportManager;
+import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.connection.Server;
@@ -37,7 +38,9 @@ public class TeleportsMessageListener implements Listener {
         }
 
         if (task.equals("TeleportToLocation")) {
-            TeleportToLocation.execute(PlayerManager.getPlayer(in.readUTF()), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
+            GSPlayer player = PlayerManager.getPlayer(in.readUTF());
+            String server = in.readUTF();
+            TeleportToLocation.execute(player, new Location((!server.equals("")) ? server : ((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
             return;
         }
 
