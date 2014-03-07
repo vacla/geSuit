@@ -106,10 +106,6 @@ public class PlayerManager {
         return null;
     }
 
-    public static boolean isPlayerOnline(String player) {
-        return onlinePlayers.containsKey(player);
-    }
-
     public static Collection<GSPlayer> getPlayers() {
         return onlinePlayers.values();
     }
