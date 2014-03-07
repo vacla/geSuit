@@ -169,7 +169,9 @@ public class Players implements IRepository {
                 "lastonline DATETIME NOT NULL, " +
                 "ipaddress VARCHAR(100), " +
                 "tps TINYINT(1) DEFAULT 1," +
-                "CONSTRAINT pk_playername PRIMARY KEY (playername)"};
+                ((FeatureDetector.canUseUUID()) ?
+                        "CONSTRAINT pk_uuid PRIMARY KEY (uuid)" :
+                        "CONSTRAINT pk_playername PRIMARY KEY (playername)")};
     }
 
     @Override
