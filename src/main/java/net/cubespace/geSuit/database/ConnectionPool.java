@@ -60,7 +60,7 @@ public class ConnectionPool {
                     }
                 }
             }
-        }, 60, 60, TimeUnit.MINUTES);
+        }, 10, 10, TimeUnit.SECONDS);
 
         if (!ConfigManager.main.Inited) {
             for(IRepository repository : repositories) {
