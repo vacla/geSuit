@@ -213,12 +213,13 @@ public class TeleportsManager {
         new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
     }
 
-    public static void teleportToLocation( String player, String world, Double x, Double y, Double z) {
+    public static void teleportToLocation( String player, String server, String world, Double x, Double y, Double z) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "TeleportToLocation" );
             out.writeUTF( player );
+            out.writeUTF( server );
             out.writeUTF( world );
             out.writeDouble( x );
             out.writeDouble( y );

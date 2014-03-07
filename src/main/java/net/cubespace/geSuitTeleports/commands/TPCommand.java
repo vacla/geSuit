@@ -24,18 +24,29 @@ public class TPCommand implements CommandExecutor {
         if ( args.length == 1 ) {
             TeleportsManager.teleportToPlayer( sender, sender.getName(), args[0] );
             return true;
+
         } else if ( args.length == 2 ) {
             TeleportsManager.teleportToPlayer( sender, args[0], args[1] );
             return true;
         }
+
         if ( args.length == 3 ) {
-            TeleportsManager.teleportToLocation(sender.getName(), ((Player) sender).getWorld().getName(), Double.valueOf(args[0]), Double.valueOf(args[1]), Double.valueOf(args[2]));
+            TeleportsManager.teleportToLocation(sender.getName(), "", ((Player) sender).getWorld().getName(), Double.valueOf(args[0]), Double.valueOf(args[1]), Double.valueOf(args[2]));
             return true;
         }
+
+        if ( args.length == 4) {
+            TeleportsManager.teleportToLocation(sender.getName(), "", args[3], Double.valueOf(args[0]), Double.valueOf(args[1]), Double.valueOf(args[2]));
+            return true;
+        }
+
         if ( args.length == 5 ) {
             if ( Bukkit.getPlayer( args[0] ) != null ) {
-                TeleportsManager.teleportToLocation( args[0], args[4], Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
+                TeleportsManager.teleportToLocation( args[0], "", args[4], Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
+            } else {
+                TeleportsManager.teleportToLocation( sender.getName(), args[0], args[1], Double.valueOf( args[2] ), Double.valueOf( args[3] ), Double.valueOf( args[4] ) );
             }
+
             return true;
         }
 

@@ -12,8 +12,9 @@ commands:
         usage: |
                /<command>  (player)
                /<command>  (player) (player)
-               /<command>  (x) (y) (z)
-               /<command>  (player) (x) (y) (z)
+               /<command>  (x) (y) (z) [world]
+               /<command>  (player) (x) (y) (z) [world]
+               /<command>  (server) (world) (x) (y) (z)
     tphere:
         description: Teleports a player to you
         aliases: [teleporthere,tptome]
