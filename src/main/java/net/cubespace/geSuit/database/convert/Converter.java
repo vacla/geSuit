@@ -36,9 +36,12 @@ public class Converter {
                 while(resultSet.next()) {
                     DatabaseManager.players.insertPlayerConvert(resultSet.getString("playername"), resultSet.getDate("lastonline"), resultSet.getString("ipaddress"), resultSet.getBoolean("tps"));
                 }
+
                 resultSet.close();
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                connectionHandler.release();
             }
         }
 
@@ -70,9 +73,12 @@ public class Converter {
                     Location l = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
                     DatabaseManager.homes.addHome(new Home(DatabaseManager.players.loadPlayer(res.getString("player")), res.getString("home_name"), l));
                 }
+
                 res.close();
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                connectionHandler.release();
             }
         }
 
@@ -117,9 +123,12 @@ public class Converter {
                     Portal p = new Portal(name, server, fill, type, dest, new Location(server, world, xmax, ymax, zmax), new Location(server, world, xmin, ymin, zmin));
                     DatabaseManager.portals.insertPortal(p);
                 }
+
                 res.close();
             } catch (SQLException e) {
                 e.printStackTrace();
+            }  finally {
+                connectionHandler.release();
             }
         }
 
@@ -150,9 +159,12 @@ public class Converter {
                 while (res.next()) {
                     DatabaseManager.bans.insertBanConvert(res.getString("banned_by"), (FeatureDetector.canUseUUID()) ? Utilities.getUUID(res.getString("player")) : res.getString("player"), res.getString("reason"), res.getString("type"), res.getDate("banned_on"), res.getDate("banned_until"));
                 }
+
                 res.close();
             } catch (SQLException e) {
                 e.printStackTrace();
+            }  finally {
+                connectionHandler.release();
             }
         }
 
@@ -184,9 +196,12 @@ public class Converter {
                     Location location = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
                     DatabaseManager.spawns.insertSpawn(new Spawn(res.getString("spawnname"), location));
                 }
+
                 res.close();
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                connectionHandler.release();
             }
         }
 
@@ -218,9 +233,12 @@ public class Converter {
                     Location location = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
                     DatabaseManager.warps.insertWarp(new Warp(res.getString("warpname"), location, res.getBoolean("hidden"), res.getBoolean("global")));
                 }
+
                 res.close();
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                connectionHandler.release();
             }
         }
 
@@ -241,34 +259,38 @@ public class Converter {
     }
 
     public void convert() {
-        Players players = new Players();
-        Homes homes = new Homes();
-        Portals portals = new Portals();
-        Bans bans = new Bans();
-        Spawns spawns = new Spawns();
-        Warps warps = new Warps();
+        new Thread(){
+            public void run() {
+                Players players = new Players();
+                Homes homes = new Homes();
+                Portals portals = new Portals();
+                Bans bans = new Bans();
+                Spawns spawns = new Spawns();
+                Warps warps = new Warps();
 
-        connectionPool.addRepository(players);
-        connectionPool.addRepository(homes);
-        connectionPool.addRepository(portals);
-        connectionPool.addRepository(bans);
-        connectionPool.addRepository(spawns);
-        connectionPool.addRepository(warps);
+                connectionPool.addRepository(players);
+                connectionPool.addRepository(homes);
+                connectionPool.addRepository(portals);
+                connectionPool.addRepository(bans);
+                connectionPool.addRepository(spawns);
+                connectionPool.addRepository(warps);
 
-        connectionPool.initialiseConnections(ConfigManager.main.BungeeSuiteDatabase);
+                connectionPool.initialiseConnections(ConfigManager.main.BungeeSuiteDatabase);
 
-        players.convert();
-        homes.convert();
-        portals.convert();
-        bans.convert();
-        spawns.convert();
-        warps.convert();
+                players.convert();
+                homes.convert();
+                portals.convert();
+                bans.convert();
+                spawns.convert();
+                warps.convert();
 
-        ConfigManager.main.ConvertFromBungeeSuite = false;
-        try {
-            ConfigManager.main.save();
-        } catch (InvalidConfigurationException e) {
+                ConfigManager.main.ConvertFromBungeeSuite = false;
+                try {
+                    ConfigManager.main.save();
+                } catch (InvalidConfigurationException e) {
 
-        }
+                }
+            }
+        }.start();
     }
 }
