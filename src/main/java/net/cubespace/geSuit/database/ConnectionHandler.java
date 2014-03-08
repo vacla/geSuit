@@ -34,6 +34,7 @@ public class ConnectionHandler {
     }
 
     public PreparedStatement getPreparedStatement(String name) {
+        this.used = true;
         return preparedStatements.get(name);
     }
 
