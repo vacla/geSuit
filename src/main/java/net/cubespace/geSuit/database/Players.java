@@ -104,6 +104,12 @@ public class Players implements IRepository {
     public void insertPlayerConvert(String player, Date lastonline, String ip, boolean tps) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
+        String uuid = (FeatureDetector.canUseUUID()) ? Utilities.getUUID(player) : null;
+
+        if (FeatureDetector.canUseUUID() && uuid == null) {
+            return;
+        }
+
         try {
             PreparedStatement insertPlayerConvert = connectionHandler.getPreparedStatement("insertPlayerConvert");
             insertPlayerConvert.setString(1, player);
