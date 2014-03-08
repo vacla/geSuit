@@ -54,7 +54,8 @@ public class ConnectionPool {
                 Iterator<ConnectionHandler> cons = connections.iterator();
                 while (cons.hasNext()) {
                     ConnectionHandler con = cons.next();
-                    if (con.isOldConnection()) {
+
+                    if (!con.isUsed() && con.isOldConnection()) {
                         con.closeConnection();
                         cons.remove();
                     }
@@ -95,7 +96,7 @@ public class ConnectionPool {
     /**
      * @return Returns a free connection from the pool of connections. Creates a new connection if there are none available
      */
-    public ConnectionHandler getConnection() {
+    public synchronized ConnectionHandler getConnection() {
         for (ConnectionHandler c : connections) {
             if (!c.isUsed()) {
                 return c;
