@@ -98,6 +98,8 @@ public class HomesManager {
     public static void loadPlayersHomes(GSPlayer player) {
         List<Home> homes = DatabaseManager.homes.getHomesForPlayer((FeatureDetector.canUseUUID()) ? player.getUuid() : player.getName());
 
+        if (homes == null) return;
+
         for(Home home : homes) {
             if (player.getHomes().get(home.loc.getServer().getName()) == null) {
                 ArrayList<Home> list = new ArrayList<>();
