@@ -105,7 +105,7 @@ public class PlayerManager {
         }
 
         for ( GSPlayer p : onlinePlayers.values() ) {
-            if ( ( p.getProxiedPlayer().getDisplayName() != null && p.getProxiedPlayer().getDisplayName().toLowerCase().startsWith( player.toLowerCase() ) ) || p.getProxiedPlayer().getName().toLowerCase().startsWith( player.toLowerCase() ) || ( p.getUuid() != null && p.getUuid().equals(player) ) ) {
+            if ( ( p.getProxiedPlayer() != null && p.getProxiedPlayer().getDisplayName() != null && p.getProxiedPlayer().getDisplayName().toLowerCase().startsWith( player.toLowerCase() ) ) || p.getName().toLowerCase().startsWith( player.toLowerCase() ) || ( p.getUuid() != null && p.getUuid().equals(player) ) ) {
                 return p;
             }
         }
