@@ -97,6 +97,13 @@ public class PlayerManager {
     }
 
     public static GSPlayer getSimilarPlayer( String player ) {
+        if (player == null) {
+            Exception exception = new Exception("test");
+            exception.printStackTrace();
+            geSuit.instance.getLogger().severe("getSimilarPlayer() player is null");
+            return null;
+        }
+
         for ( GSPlayer p : onlinePlayers.values() ) {
             if ( ( p.getProxiedPlayer().getDisplayName() != null && p.getProxiedPlayer().getDisplayName().toLowerCase().startsWith( player.toLowerCase() ) ) || p.getProxiedPlayer().getName().toLowerCase().startsWith( player.toLowerCase() ) || ( p.getUuid() != null && p.getUuid().equals(player) ) ) {
                 return p;
