@@ -23,14 +23,18 @@ public class Bans implements IRepository {
             PreparedStatement isPlayerBanned = connectionHandler.getPreparedStatement("isPlayerBanned");
             isPlayerBanned.setString(1, player);
 
-            return isPlayerBanned.executeQuery().next();
+            if (isPlayerBanned.executeQuery().next()) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             connectionHandler.release();
         }
 
-        return true;
+        return false;
     }
 
     public void banPlayer(String display, String bannedBy, String bannedEntity, String reason, String type) {
