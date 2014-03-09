@@ -41,7 +41,7 @@ public class BansMessageListener implements Listener {
             return;
         }
         if (task.equals("TempBanPlayer")) {
-            BansManager.tempBanPlayer(in.readUTF(), in.readUTF(), in.readInt(), in.readInt(), in.readInt(), in.readUTF());
+            BansManager.tempBanPlayer(in.readUTF(), in.readUTF(), in.readInt(), in.readUTF());
             return;
         }
         if (task.equals("KickAll")) {

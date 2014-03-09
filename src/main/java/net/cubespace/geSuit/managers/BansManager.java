@@ -23,7 +23,7 @@ public class BansManager {
             return;
         }
 
-        if (DatabaseManager.bans.isPlayerBanned(player) || DatabaseManager.bans.isPlayerBanned(DatabaseManager.players.getPlayerIP(player))) {
+        if (DatabaseManager.bans.isPlayerBanned(t.getName()) || DatabaseManager.bans.isPlayerBanned(DatabaseManager.players.getPlayerIP(t.getName()))) {
             p.sendMessage(ConfigManager.messages.PLAYER_ALREADY_BANNED);
             return;
         }
@@ -81,15 +81,19 @@ public class BansManager {
         if (Utilities.isIPAddress(player)) {
             ip = player;
         } else {
-            ip = DatabaseManager.players.getPlayerIP(player);
+            GSPlayer t = PlayerManager.getSimilarPlayer(player);
+            ip = DatabaseManager.players.getPlayerIP(t.getName());
         }
 
         if (!DatabaseManager.bans.isPlayerBanned(ip)) {
             DatabaseManager.bans.banPlayer(player, bannedBy, ip, reason, "ipban");
         }
 
-        if (ProxyServer.getInstance().getPlayer(player) != null) {
-            disconnectPlayer(ProxyServer.getInstance().getPlayer(player), ConfigManager.messages.IPBAN_PLAYER.replace("{message}", reason).replace("{sender}", bannedBy));
+        if (!Utilities.isIPAddress(player)) {
+            GSPlayer t = PlayerManager.getSimilarPlayer(player);
+            if (t.getProxiedPlayer() != null) {
+                disconnectPlayer(ProxyServer.getInstance().getPlayer(player), ConfigManager.messages.IPBAN_PLAYER.replace("{message}", reason).replace("{sender}", bannedBy));
+            }
         }
 
         if (ConfigManager.bans.BroadcastBans) {
@@ -168,7 +172,7 @@ public class BansManager {
         }
     }
 
-    public static void tempBanPlayer(String sender, String player, int minute, int hour, int day, String message) {
+    public static void tempBanPlayer(String sender, String player, int seconds, String message) {
         GSPlayer p = PlayerManager.getPlayer(sender);
         GSPlayer t = PlayerManager.getSimilarPlayer(player);
 
@@ -177,7 +181,7 @@ public class BansManager {
             return;
         }
 
-        if (DatabaseManager.bans.isPlayerBanned(player) || DatabaseManager.bans.isPlayerBanned(DatabaseManager.players.getPlayerIP(player))) {
+        if (DatabaseManager.bans.isPlayerBanned(t.getName()) || DatabaseManager.bans.isPlayerBanned(DatabaseManager.players.getPlayerIP(t.getName()))) {
             p.sendMessage(ConfigManager.messages.PLAYER_ALREADY_BANNED);
             return;
         }
@@ -186,15 +190,10 @@ public class BansManager {
             message = ConfigManager.messages.DEFAULT_BAN_REASON;
         }
 
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MINUTE, minute);
-        cal.add(Calendar.HOUR_OF_DAY, hour);
-        cal.add(Calendar.DATE, day);
-
-        Date sqlToday = new Date(cal.getTimeInMillis());
+        Date sqlToday = new Date(System.currentTimeMillis() + (seconds * 1000));
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("dd MMM yyyy HH:mm:ss");
-        String time = sdf.format(sqlToday) + "(" + day + " days, " + hour + " hours, " + minute + " minutes)";
+        String time = sdf.format(sqlToday);
         sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
 
         DatabaseManager.bans.tempBanPlayer(player, sender, player, message, sdf.format(sqlToday));
