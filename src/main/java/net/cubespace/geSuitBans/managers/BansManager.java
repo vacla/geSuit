@@ -2,9 +2,8 @@ package net.cubespace.geSuitBans.managers;
 
 import net.cubespace.geSuitBans.geSuitBans;
 import net.cubespace.geSuitBans.tasks.PluginMessageTask;
-import org.bukkit.Bukkit;
+import net.cubespace.geSuitBans.utils.StringUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -56,42 +55,17 @@ public class BansManager {
 
     }
 
-    public static void tempBanPlayer( String sender, String player, String timing, Command command ) {
-        String[] arg1 = timing.split( " " );
-        int minuteIncrease = 0;
-        int hourIncrease = 0;
-        int dateIncrease = 0;
-        String message = "";
-        for ( int i = 1; i < arg1.length; i++ ) {
-            try {
-                if ( arg1[i].length() > 1 ) {
-                    if ( arg1[i].substring( 0, 2 ).equalsIgnoreCase( "d:" ) ) {
-                        dateIncrease += Integer.parseInt( arg1[i].substring( 2, arg1[i].length() ) );
-                    } else if ( arg1[i].substring( 0, 2 ).equalsIgnoreCase( "h:" ) ) {
-                        hourIncrease += Integer.parseInt( arg1[i].substring( 2, arg1[i].length() ) );
-                    } else if ( arg1[i].substring( 0, 2 ).equalsIgnoreCase( "m:" ) ) {
-                        minuteIncrease += Integer.parseInt( arg1[i].substring( 2, arg1[i].length() ) );
-                    } else {
-                        message += arg1[i] + " ";
-                    }
-                } else {
-                    message += arg1[i] + " ";
-                }
-            } catch ( NumberFormatException e ) {
-                Bukkit.getPlayer( sender ).sendMessage( command.getUsage() );
-                return;
-            }
-        }
+    public static void tempBanPlayer( String sender, String player, String timing, String reason ) {
+        int seconds = StringUtils.getTime(timing);
+
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "TempBanPlayer" );
             out.writeUTF( sender );
             out.writeUTF( player );
-            out.writeInt( minuteIncrease );
-            out.writeInt( hourIncrease );
-            out.writeInt( dateIncrease );
-            out.writeUTF( message );
+            out.writeInt( seconds );
+            out.writeUTF( reason );
         } catch ( IOException e ) {
             e.printStackTrace();
         }
