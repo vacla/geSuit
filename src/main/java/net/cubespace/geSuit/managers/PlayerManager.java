@@ -98,7 +98,7 @@ public class PlayerManager {
 
     public static GSPlayer getSimilarPlayer( String player ) {
         for ( GSPlayer p : onlinePlayers.values() ) {
-            if ( p.getProxiedPlayer().getDisplayName().toLowerCase().startsWith( player.toLowerCase() ) || p.getName().toLowerCase().startsWith( player.toLowerCase() ) || ( p.getUuid() != null && p.getUuid().equals(player) ) ) {
+            if ( ( p.getProxiedPlayer().getDisplayName() != null && p.getProxiedPlayer().getDisplayName().toLowerCase().startsWith( player.toLowerCase() ) ) || p.getName().toLowerCase().startsWith( player.toLowerCase() ) || ( p.getUuid() != null && p.getUuid().equals(player) ) ) {
                 return p;
             }
         }
