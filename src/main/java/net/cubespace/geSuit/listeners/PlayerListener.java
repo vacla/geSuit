@@ -48,8 +48,6 @@ public class PlayerListener implements Listener {
             geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
                 @Override
                 public void run() {
-                    if (p.getProxiedPlayer() == null) return;
-
                     if (ProxyServer.getInstance().getPlayer(e.getPlayer().getName()) == null) {
                         if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
                             if (ConfigManager.main.BroadcastProxyConnectionMessages) {
@@ -58,6 +56,7 @@ public class PlayerListener implements Listener {
                         } else {
                             PlayerManager.kickedPlayers.remove(e.getPlayer());
                         }
+
                         PlayerManager.unloadPlayer(e.getPlayer().getName());
                     }
                 }
@@ -72,6 +71,7 @@ public class PlayerListener implements Listener {
                 } else {
                     PlayerManager.kickedPlayers.remove(e.getPlayer());
                 }
+
                 PlayerManager.unloadPlayer(e.getPlayer().getName());
             }
         }
