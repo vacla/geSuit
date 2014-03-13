@@ -20,20 +20,23 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 
-public class geSuit extends Plugin {
+public class geSuit extends Plugin
+{
+
     public static geSuit instance;
     public static ProxyServer proxy;
 
-    public void onEnable() {
+    public void onEnable()
+    {
         instance = this;
-        LoggingManager.log( ChatColor.GREEN + "Starting geSuit" );
+        LoggingManager.log(ChatColor.GREEN + "Starting geSuit");
         proxy = ProxyServer.getInstance();
-        LoggingManager.log( ChatColor.GREEN + "Initialising Managers" );
+        LoggingManager.log(ChatColor.GREEN + "Initialising Managers");
 
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         connectionHandler.release();
 
-        if(ConfigManager.main.ConvertFromBungeeSuite) {
+        if (ConfigManager.main.ConvertFromBungeeSuite) {
             Converter converter = new Converter();
             converter.convert();
         }
@@ -42,12 +45,17 @@ public class geSuit extends Plugin {
         registerCommands();
     }
 
-    private void registerCommands() {
-        proxy.getPluginManager().registerCommand( this, new MOTDCommand() );
-        proxy.getPluginManager().registerCommand( this, new ReloadCommand() );
+    private void registerCommands()
+    {
+        // A little hardcore. Prevent updating without a restart. But command squatting = bad!
+        if (ConfigManager.main.MOTD_Enabled) {
+            proxy.getPluginManager().registerCommand(this, new MOTDCommand());
+        }
+        proxy.getPluginManager().registerCommand(this, new ReloadCommand());
     }
 
-    private void registerListeners() {
+    private void registerListeners()
+    {
         getProxy().registerChannel("geSuitTeleport");       // Teleport out/in
         getProxy().registerChannel("geSuitSpawns");         // Spawns out/in
         getProxy().registerChannel("geSuitBans");           // Bans in
@@ -55,18 +63,19 @@ public class geSuit extends Plugin {
         getProxy().registerChannel("geSuitWarps");          // Warps in
         getProxy().registerChannel("geSuitHomes");          // Homes in
 
-        proxy.getPluginManager().registerListener( this, new PlayerListener() );
-        proxy.getPluginManager().registerListener( this, new BansMessageListener() );
-        proxy.getPluginManager().registerListener( this, new BansListener() );
-        proxy.getPluginManager().registerListener( this, new TeleportsMessageListener() );
-        proxy.getPluginManager().registerListener( this, new WarpsMessageListener() );
-        proxy.getPluginManager().registerListener( this, new HomesMessageListener() );
-        proxy.getPluginManager().registerListener( this, new PortalsMessageListener() );
-        proxy.getPluginManager().registerListener( this, new SpawnListener() );
-        proxy.getPluginManager().registerListener( this, new SpawnMessageListener() );
+        proxy.getPluginManager().registerListener(this, new PlayerListener());
+        proxy.getPluginManager().registerListener(this, new BansMessageListener());
+        proxy.getPluginManager().registerListener(this, new BansListener());
+        proxy.getPluginManager().registerListener(this, new TeleportsMessageListener());
+        proxy.getPluginManager().registerListener(this, new WarpsMessageListener());
+        proxy.getPluginManager().registerListener(this, new HomesMessageListener());
+        proxy.getPluginManager().registerListener(this, new PortalsMessageListener());
+        proxy.getPluginManager().registerListener(this, new SpawnListener());
+        proxy.getPluginManager().registerListener(this, new SpawnMessageListener());
     }
 
-    public void onDisable() {
+    public void onDisable()
+    {
         DatabaseManager.connectionPool.closeConnections();
     }
 }
