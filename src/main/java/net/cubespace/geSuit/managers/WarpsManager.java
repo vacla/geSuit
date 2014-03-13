@@ -1,13 +1,12 @@
 package net.cubespace.geSuit.managers;
 
+import java.util.HashMap;
+import java.util.List;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Warp;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.ChatColor;
-
-import java.util.HashMap;
-import java.util.List;
 
 public class WarpsManager {
     private static HashMap<String, Warp> warps = new HashMap<>();
@@ -108,7 +107,7 @@ public class WarpsManager {
         }
 
         if (!permission) {
-            s.sendMessage(ConfigManager.messages.WARP_NO_PERMISSION);
+            s.sendMessage(ChatColor.translateAlternateColorCodes('&',ConfigManager.messages.WARP_NO_PERMISSION));
             return;
         }
 

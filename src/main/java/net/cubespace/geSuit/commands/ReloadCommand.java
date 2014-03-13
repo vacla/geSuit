@@ -1,8 +1,9 @@
 package net.cubespace.geSuit.commands;
 
+import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.managers.AnnouncementManager;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.Yamler.Config.InvalidConfigurationException;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
@@ -20,7 +21,7 @@ public class ReloadCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender.hasPermission("gesuit.reload") || sender.hasPermission("gesuit.admin"))) {
-            sender.sendMessage(ConfigManager.messages.NO_PERMISSION);
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',ConfigManager.messages.NO_PERMISSION));
 
             return;
         }
