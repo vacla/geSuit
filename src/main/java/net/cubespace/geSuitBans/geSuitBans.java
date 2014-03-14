@@ -1,6 +1,7 @@
 package net.cubespace.geSuitBans;
 
 import net.cubespace.geSuitBans.commands.BanCommand;
+import net.cubespace.geSuitBans.commands.BanHistoryCommand;
 import net.cubespace.geSuitBans.commands.CheckBanCommand;
 import net.cubespace.geSuitBans.commands.IPBanCommand;
 import net.cubespace.geSuitBans.commands.KickAllCommand;
@@ -24,6 +25,7 @@ public class geSuitBans extends JavaPlugin {
     private void registerCommands() {
         getCommand( "ban" ).setExecutor( new BanCommand() );
         getCommand( "checkban" ).setExecutor( new CheckBanCommand() );
+        getCommand( "banhistory" ).setExecutor( new BanHistoryCommand() );
         getCommand( "ipban" ).setExecutor( new IPBanCommand() );
         getCommand( "kick" ).setExecutor( new KickCommand() );
         getCommand( "kickall" ).setExecutor( new KickAllCommand() );

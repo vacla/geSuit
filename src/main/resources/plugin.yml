@@ -18,6 +18,12 @@ commands:
         permission: gesuit.bans.command.checkban
         permission-message: §cYou do not have permission for this command
         usage: /<command>  (player)
+    banhistory:
+        description: Gets the ban history of a player
+        aliases: [bhistory]
+        permission: gesuit.bans.command.banhistory
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>  (player)
     ipban:
         description: Bans an IP from the proxy
         aliases: [banip]
@@ -55,8 +61,9 @@ commands:
         permission: gesuit.bans.command.tempban
         permission-message: §cYou do not have permission for this command
         usage: |
-               "/<command> (player) (time d:(days) h:(hours) m:(minutes))"
-               "/<command> (player) (time d:(days) h:(hours) m:(minutes)) (message)"        
+               "/<command> (player) (time) (reason)"
+               "/<command> (player) (time) (reason)"        
+               "Exemple of a (time): 2d5h"        
     unban:
         description: Unbans a player from the proxy
         aliases: [uban, removeban, pardon]
@@ -88,6 +95,7 @@ permissions:
         children:
             gesuit.bans.command.ban: true
             gesuit.bans.command.checkban: true
+            gesuit.bans.command.banhistory: true
             gesuit.bans.command.kick: true
             gesuit.bans.command.tempban: true
         

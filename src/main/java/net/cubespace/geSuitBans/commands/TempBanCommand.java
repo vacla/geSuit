@@ -1,13 +1,11 @@
 package net.cubespace.geSuitBans.commands;
 
+import java.util.Arrays;
+import net.cubespace.geSuitBans.managers.BansManager;
 import net.cubespace.geSuitBans.utils.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import net.cubespace.geSuitBans.managers.BansManager;
-
-import java.lang.reflect.Array;
-import java.util.Arrays;
 
 
 public class TempBanCommand implements CommandExecutor {
