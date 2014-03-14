@@ -1,7 +1,9 @@
 package net.cubespace.geSuit;
 
+import net.cubespace.geSuit.commands.BanCommand;
 import net.cubespace.geSuit.commands.MOTDCommand;
 import net.cubespace.geSuit.commands.ReloadCommand;
+import net.cubespace.geSuit.commands.UnbanCommand;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
 import net.cubespace.geSuit.listeners.BansListener;
@@ -51,6 +53,8 @@ public class geSuit extends Plugin
         if (ConfigManager.main.MOTD_Enabled) {
             proxy.getPluginManager().registerCommand(this, new MOTDCommand());
         }
+        proxy.getPluginManager().registerCommand(this, new UnbanCommand());
+        proxy.getPluginManager().registerCommand(this, new BanCommand());
         proxy.getPluginManager().registerCommand(this, new ReloadCommand());
     }
 

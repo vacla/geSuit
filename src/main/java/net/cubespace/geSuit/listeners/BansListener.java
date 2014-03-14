@@ -1,5 +1,8 @@
 package net.cubespace.geSuit.listeners;
 
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.BansManager;
@@ -12,20 +15,16 @@ import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class BansListener implements Listener {
     private static SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
 
     @EventHandler
     public void banCheck(LoginEvent e) throws SQLException {
-        if (DatabaseManager.bans.isPlayerBanned((FeatureDetector.canUseUUID()) ? e.getConnection().getUUID() : e.getConnection().getName()) || DatabaseManager.bans.isPlayerBanned(e.getConnection().getAddress().getHostString())) {
-            Ban b = DatabaseManager.bans.getBanInfo((FeatureDetector.canUseUUID()) ? e.getConnection().getUUID() : e.getConnection().getName());
+        if (DatabaseManager.bans.isPlayerBanned(e.getConnection().getName(), ((FeatureDetector.canUseUUID()) ? e.getConnection().getUUID() : null), e.getConnection().getAddress().getHostString())) {
+            Ban b = DatabaseManager.bans.getBanInfo(e.getConnection().getName(), ((FeatureDetector.canUseUUID()) ? e.getConnection().getUUID() : null), e.getConnection().getAddress().getHostString());
 
             if (b == null) {
-                b = DatabaseManager.bans.getBanInfo(e.getConnection().getAddress().getHostString());
+                return;
             }
 
             if (b.getType().equals("tempban")) {

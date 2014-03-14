@@ -1,10 +1,9 @@
 package net.cubespace.geSuit.configs;
 
-import net.cubespace.geSuit.geSuit;
+import java.io.File;
 import net.cubespace.Yamler.Config.Config;
 import net.cubespace.Yamler.Config.ConfigMode;
-
-import java.io.File;
+import net.cubespace.geSuit.geSuit;
 
 public class Messages extends Config {
     public Messages() {
@@ -68,10 +67,14 @@ public class Messages extends Config {
     public String SPAWN_UPDATED = "&2" + "Spawn point updated";
     public String SPAWN_SET = "&2" + "Spawn point set";
     // ban messages
+    public String BUNGEE_COMMAND_BAN_USAGE = "&c" + "Usage: !ban player|ip";
+    public String BUNGEE_COMMAND_UNBAN_USAGE = "&c" + "Usage: !unban player|uuid|ip";
+    public String UNKNOWN_PLAYER_STILL_BANNING = "&c" + "Player is unknown. Banning by name and &nmaybe&r&c by UUID.";
     public String KICK_PLAYER_MESSAGE = "&c" + "You have been kicked for: {message}, by {sender}";
     public String KICK_PLAYER_BROADCAST = "&c" + "{player} has been kicked for {message}, by {sender}!";
     public String PLAYER_ALREADY_BANNED = "&c" + "That player is already banned";
     public String PLAYER_NOT_BANNED = "&c" + "That player is not banned";
+    public String PLAYER_NEVER_BANNED = "&2" + "No ban history for {player} (sweet baby raptor jesus!)";
     public String IPBAN_PLAYER = "&c" + "You have been IP banned for: {message}, by {sender}";
     public String IPBAN_PLAYER_BROADCAST = "&c" + "{player} has been ip banned for: {message}, by {sender}";
     public String DEFAULT_BAN_REASON = "Breaking server rules";

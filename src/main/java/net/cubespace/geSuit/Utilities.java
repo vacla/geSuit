@@ -4,7 +4,9 @@ import com.google.common.net.InetAddresses;
 import com.mojang.api.profiles.HttpProfileRepository;
 import com.mojang.api.profiles.Profile;
 import com.mojang.api.profiles.ProfileCriteria;
+import net.cubespace.geSuit.tasks.DatabaseUpdateRowUUID;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 
 public class Utilities {
     private static final HttpProfileRepository profileRepository = new HttpProfileRepository();
@@ -25,5 +27,10 @@ public class Utilities {
         } else {
             return null;
         }
+    }
+    
+    public static void databaseUpdateRowUUID(int id, String playerName)
+    {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new DatabaseUpdateRowUUID(id, playerName));
     }
 }

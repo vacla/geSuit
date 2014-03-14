@@ -1,16 +1,15 @@
 package net.cubespace.geSuit.listeners;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.sql.SQLException;
 import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.sql.SQLException;
 
 public class BansMessageListener implements Listener {
 
@@ -58,6 +57,10 @@ public class BansMessageListener implements Listener {
         }
         if (task.equals("CheckPlayerBans")) {
             BansManager.checkPlayersBan(in.readUTF(), in.readUTF());
+            return;
+        }
+        if (task.equals("DisplayPlayerBanHistory")) {
+            BansManager.displayPlayerBanHistory(in.readUTF(), in.readUTF());
             return;
         }
         if (task.equals("ReloadBans")) {

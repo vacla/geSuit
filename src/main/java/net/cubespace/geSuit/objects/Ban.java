@@ -6,15 +6,19 @@ import java.util.Date;
 public class Ban {
     private int id;
     private String player;
+    private String uuid;
+    private String ip;
     private String bannedBy;
     private String reason;
     private String type;
     private Date bannedOn;
     private Date bannedUntil;
 
-    public Ban(int id, String player, String bannedBy, String reason, String type, Timestamp timestamp, Timestamp timestamp2) {
+    public Ban(int id, String player, String uuid, String ip, String bannedBy, String reason, String type, Timestamp timestamp, Timestamp timestamp2) {
         this.id = id;
         this.player = player;
+        this.uuid = uuid;
+        this.ip = ip;
         this.bannedBy = bannedBy;
         this.reason = reason;
         this.type = type;
@@ -49,4 +53,20 @@ public class Ban {
     public int getId() {
         return id;
     }
+
+    public String getUuid()
+    {
+        return uuid;
+    }
+
+    public void setUuid(String uuid)
+    {
+        this.uuid = uuid;
+    }
+
+    public String getIp()
+    {
+        return ip;
+    }
+
 }

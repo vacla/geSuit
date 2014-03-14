@@ -1,5 +1,10 @@
 package net.cubespace.geSuit.managers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
@@ -7,27 +12,27 @@ import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
+public class PlayerManager
+{
 
-public class PlayerManager {
     public static HashMap<String, GSPlayer> onlinePlayers = new HashMap<>();
     public static ArrayList<ProxiedPlayer> kickedPlayers = new ArrayList<>();
 
-    public static boolean playerExists(ProxiedPlayer player, boolean uuid) {
-        return getPlayer(player.getName()) != null ||
-                (uuid) ? DatabaseManager.players.playerExists(player.getUUID()) : DatabaseManager.players.playerExists(player.getName());
+    public static boolean playerExists(ProxiedPlayer player, boolean uuid)
+    {
+        return getPlayer(player.getName()) != null
+                || (uuid) ? DatabaseManager.players.playerExists(player.getUUID()) : DatabaseManager.players.playerExists(player.getName());
     }
 
-    public static void loadPlayer(ProxiedPlayer player) {
+    public static void loadPlayer(ProxiedPlayer player)
+    {
         if (playerExists(player, FeatureDetector.canUseUUID())) {
             boolean tps;
 
-            if(FeatureDetector.canUseUUID()) {
+            if (FeatureDetector.canUseUUID()) {
                 tps = DatabaseManager.players.getPlayerTPS(player.getName());
-            } else {
+            }
+            else {
                 tps = DatabaseManager.players.getPlayerTPS(player.getName());
             }
 
@@ -39,12 +44,14 @@ public class PlayerManager {
             LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()));
 
             HomesManager.loadPlayersHomes(gsPlayer);
-        } else {
+        }
+        else {
             createNewPlayer(player);
         }
     }
 
-    private static void createNewPlayer(final ProxiedPlayer player) {
+    private static void createNewPlayer(final ProxiedPlayer player)
+    {
         String ip = player.getAddress().getAddress().toString();
         final GSPlayer gsPlayer = new GSPlayer(player.getName(), (FeatureDetector.canUseUUID()) ? player.getUUID() : null, true);
 
@@ -60,10 +67,12 @@ public class PlayerManager {
         if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && SpawnManager.NewPlayerSpawn != null) {
             SpawnManager.newPlayers.add(player);
 
-            ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {
+            ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable()
+            {
 
                 @Override
-                public void run() {
+                public void run()
+                {
                     SpawnManager.sendPlayerToNewPlayerSpawn(gsPlayer);
                     SpawnManager.newPlayers.remove(player);
                 }
@@ -72,7 +81,8 @@ public class PlayerManager {
         }
     }
 
-    public static void unloadPlayer(String player) {
+    public static void unloadPlayer(String player)
+    {
         if (onlinePlayers.containsKey(player)) {
             onlinePlayers.remove(player);
 
@@ -80,13 +90,21 @@ public class PlayerManager {
         }
     }
 
-    public static void sendMessageToPlayer(String player, String message) {
-        for (String line : message.split("\n")) {
+    public static void sendMessageToPlayer(String player, String message)
+    {
+
+        for (String line : Utilities.colorize(message).split("\n")) {
+            if (getPlayer(player) == null) {
+                ProxyServer.getInstance().getConsole().sendMessage(line);
+            }
+            else {
                 getPlayer(player).sendMessage(line);
+            }
         }
     }
 
-    public static void sendBroadcast(String message) {
+    public static void sendBroadcast(String message)
+    {
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             for (String line : message.split("\n")) {
                 p.sendMessage(Utilities.colorize(line));
@@ -96,7 +114,8 @@ public class PlayerManager {
         LoggingManager.log(message);
     }
 
-    public static GSPlayer getSimilarPlayer( String player ) {
+    public static GSPlayer getSimilarPlayer(String player)
+    {
         if (player == null) {
             Exception exception = new Exception("test");
             exception.printStackTrace();
@@ -104,8 +123,8 @@ public class PlayerManager {
             return null;
         }
 
-        for ( GSPlayer p : onlinePlayers.values() ) {
-            if ( ( p.getProxiedPlayer() != null && p.getProxiedPlayer().getDisplayName() != null && p.getProxiedPlayer().getDisplayName().toLowerCase().startsWith( player.toLowerCase() ) ) || p.getName().toLowerCase().startsWith( player.toLowerCase() ) || ( p.getUuid() != null && p.getUuid().equals(player) ) ) {
+        for (GSPlayer p : onlinePlayers.values()) {
+            if ((p.getProxiedPlayer() != null && p.getProxiedPlayer().getDisplayName() != null && p.getProxiedPlayer().getDisplayName().toLowerCase().startsWith(player.toLowerCase())) || p.getName().toLowerCase().startsWith(player.toLowerCase()) || (p.getUuid() != null && p.getUuid().equals(player))) {
                 return p;
             }
         }
@@ -113,11 +132,32 @@ public class PlayerManager {
         return null;
     }
 
-    public static Collection<GSPlayer> getPlayers() {
+    public static List<GSPlayer> getPlayersByIP(String ip)
+    {
+        List<GSPlayer> matchingPlayers = new ArrayList<GSPlayer>();
+        if (ip == null) {
+            Exception exception = new Exception("test");
+            exception.printStackTrace();
+            geSuit.instance.getLogger().severe("getPlayersByIP() ip is null");
+            return null;
+        }
+
+        for (GSPlayer p : onlinePlayers.values()) {
+            if (p.getProxiedPlayer().getAddress().getHostString().equalsIgnoreCase(ip)) {
+                matchingPlayers.add(p);
+            }
+        }
+
+        return matchingPlayers;
+    }
+
+    public static Collection<GSPlayer> getPlayers()
+    {
         return onlinePlayers.values();
     }
 
-    public static GSPlayer getPlayer(String player) {
+    public static GSPlayer getPlayer(String player)
+    {
         return onlinePlayers.get(player);
     }
 }
