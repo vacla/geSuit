@@ -1,14 +1,13 @@
 package net.cubespace.geSuit.managers;
 
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.cubespace.geSuit.pluginmessages.TeleportToPlayer;
 import net.md_5.bungee.api.ProxyServer;
-
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 public class TeleportManager {
     public static HashMap<GSPlayer, GSPlayer> pendingTeleportsTPA = new HashMap<>(); // Player ----teleported---> player
@@ -102,33 +101,33 @@ public class TeleportManager {
         if (pendingTeleportsTPA.containsKey(player)) {
             GSPlayer target = pendingTeleportsTPA.get(player);
             target.sendMessage(ConfigManager.messages.TELEPORTED_TO_PLAYER.replace("{player}", player.getName()));
-            player.sendMessage(ConfigManager.messages.PLAYER_TELEPORTED_TO_YOU.replace("{player}", target.getName()));
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.PLAYER_TELEPORTED_TO_YOU.replace("{player}", target.getName()));
             TeleportToPlayer.execute(target, player);
             pendingTeleportsTPA.remove(player);
         } else if (pendingTeleportsTPAHere.containsKey(player)) {
             GSPlayer target = pendingTeleportsTPAHere.get(player);
-            player.sendMessage(ConfigManager.messages.TELEPORTED_TO_PLAYER.replace("{player}", target.getName()));
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.TELEPORTED_TO_PLAYER.replace("{player}", target.getName()));
             target.sendMessage(ConfigManager.messages.PLAYER_TELEPORTED_TO_YOU.replace("{player}", player.getName()));
             TeleportToPlayer.execute(player, target);
             pendingTeleportsTPAHere.remove(player);
         } else {
-            player.sendMessage(ConfigManager.messages.NO_TELEPORTS);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_TELEPORTS);
         }
     }
 
     public static void denyTeleportRequest(GSPlayer player) {
         if (pendingTeleportsTPA.containsKey(player)) {
             GSPlayer target = pendingTeleportsTPA.get(player);
-            player.sendMessage(ConfigManager.messages.TELEPORT_DENIED.replace("{player}", target.getName()));
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.TELEPORT_DENIED.replace("{player}", target.getName()));
             target.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_DENIED.replace("{player}", player.getName()));
             pendingTeleportsTPA.remove(player);
         } else if (pendingTeleportsTPAHere.containsKey(player)) {
             GSPlayer target = pendingTeleportsTPAHere.get(player);
-            player.sendMessage(ConfigManager.messages.TELEPORT_DENIED.replace("{player}", target.getName()));
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.TELEPORT_DENIED.replace("{player}", target.getName()));
             target.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_DENIED.replace("{player}", player.getName()));
             pendingTeleportsTPAHere.remove(player);
         } else {
-            player.sendMessage(ConfigManager.messages.NO_TELEPORTS);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_TELEPORTS);
         }
     }
 
@@ -152,9 +151,9 @@ public class TeleportManager {
 
     public static void sendPlayerToLastBack(GSPlayer player, boolean death, boolean teleport) {
         if (player.hasDeathBackLocation() || player.hasTeleportBackLocation()) {
-            player.sendMessage(ConfigManager.messages.SENT_BACK);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SENT_BACK);
         } else {
-            player.sendMessage(ConfigManager.messages.NO_BACK_TP);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_BACK_TP);
         }
         if (death && teleport) {
             if (player.hasDeathBackLocation() || player.hasTeleportBackLocation()) {
@@ -170,10 +169,10 @@ public class TeleportManager {
     public static void togglePlayersTeleports(GSPlayer player) {
         if (player.acceptingTeleports()) {
             player.setAcceptingTeleports(false);
-            player.sendMessage(ConfigManager.messages.TELEPORT_TOGGLE_OFF);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.TELEPORT_TOGGLE_OFF);
         } else {
             player.setAcceptingTeleports(true);
-            player.sendMessage(ConfigManager.messages.TELEPORT_TOGGLE_ON);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.TELEPORT_TOGGLE_ON);
         }
     }
 
@@ -190,7 +189,7 @@ public class TeleportManager {
                 TeleportToPlayer.execute(p, t);
             }
 
-            player.sendMessage(ConfigManager.messages.ALL_PLAYERS_TELEPORTED.replace("{player}", t.getName()));
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.ALL_PLAYERS_TELEPORTED.replace("{player}", t.getName()));
         }
     }
 

@@ -1,5 +1,9 @@
 package net.cubespace.geSuit.listeners;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.sql.SQLException;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
@@ -10,11 +14,6 @@ import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.sql.SQLException;
 
 public class PortalsMessageListener implements Listener {
 
@@ -44,7 +43,7 @@ public class PortalsMessageListener implements Listener {
             GSPlayer sender = PlayerManager.getPlayer(in.readUTF());
             boolean selection = in.readBoolean();
             if (!selection) {
-                sender.sendMessage(ConfigManager.messages.NO_SELECTION_MADE);
+                PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_SELECTION_MADE);
             } else {
                 PortalManager.setPortal(sender, in.readUTF(), in.readUTF(), in.readUTF(), in.readUTF(), new Location(s.getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()), new Location(s.getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
             }

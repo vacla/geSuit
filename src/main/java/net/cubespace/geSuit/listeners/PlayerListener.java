@@ -33,7 +33,7 @@ public class PlayerListener implements Listener {
             }
 
             if (ConfigManager.main.MOTD_Enabled) {
-                PlayerManager.sendMessageToPlayer(e.getPlayer().getName(), ConfigManager.messages.MOTD.replace("{player}", p.getName()));
+                PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.messages.MOTD.replace("{player}", p.getName()));
             }
 
             p.connected();

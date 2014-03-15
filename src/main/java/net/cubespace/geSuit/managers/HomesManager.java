@@ -1,14 +1,13 @@
 package net.cubespace.geSuit.managers;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.ChatColor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class HomesManager {
     public static void createNewHome(GSPlayer player, int serverLimit, int globalLimit, String home, Location loc) {
@@ -17,12 +16,12 @@ public class HomesManager {
             int serverHomeCount = getPlayersServerHomeCount(player);
 
             if (globalHomeCount >= globalLimit) {
-                player.sendMessage(ConfigManager.messages.NO_HOMES_ALLOWED_GLOBAL);
+                PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_HOMES_ALLOWED_GLOBAL);
                 return;
             }
 
             if (serverHomeCount >= serverLimit) {
-                player.sendMessage(ConfigManager.messages.NO_HOMES_ALLOWED_SERVER);
+                PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_HOMES_ALLOWED_SERVER);
                 return;
             }
 
@@ -34,13 +33,13 @@ public class HomesManager {
             player.getHomes().get(player.getServer()).add(homeObject);
             DatabaseManager.homes.addHome(homeObject);
 
-            player.sendMessage(ConfigManager.messages.HOME_SET);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_SET);
         } else {
             Home home1 = getHome(player, home);
             home1.setLoc(loc);
             DatabaseManager.homes.updateHome(home1);
 
-            player.sendMessage(ConfigManager.messages.HOME_UPDATED);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_UPDATED);
         }
     }
 
@@ -66,7 +65,7 @@ public class HomesManager {
 
     public static void listPlayersHomes(GSPlayer player) {
         if (player.getHomes().isEmpty()) {
-            player.sendMessage(ConfigManager.messages.NO_HOMES);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_HOMES);
             return;
         }
 
@@ -86,11 +85,11 @@ public class HomesManager {
             }
 
             if (empty) {
-                player.sendMessage(ConfigManager.messages.NO_HOMES);
+                PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_HOMES);
                 return;
             }
 
-            player.sendMessage(homes.substring(0, homes.length() - 2));
+            PlayerManager.sendMessageToTarget(player, homes.substring(0, homes.length() - 2));
         }
 
     }
@@ -125,13 +124,13 @@ public class HomesManager {
     public static void sendPlayerToHome(GSPlayer player, String home) {
         Home h = getHome(player, home);
         if (h == null) {
-            player.sendMessage(ConfigManager.messages.HOME_DOES_NOT_EXIST);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_DOES_NOT_EXIST);
             return;
         }
 
         TeleportToLocation.execute(player, h.loc);
 
-        player.sendMessage(ConfigManager.messages.SENT_HOME);
+        PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SENT_HOME);
     }
 
     public static void deleteHome(String player, String home) {
@@ -139,7 +138,7 @@ public class HomesManager {
         Home h = getHome(p, home);
 
         if (h == null) {
-            p.sendMessage(ConfigManager.messages.HOME_DOES_NOT_EXIST);
+            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.HOME_DOES_NOT_EXIST);
             return;
         }
 
@@ -152,7 +151,7 @@ public class HomesManager {
 
         DatabaseManager.homes.deleteHome(h);
 
-        p.sendMessage(ConfigManager.messages.HOME_DELETED);
+        PlayerManager.sendMessageToTarget(p, ConfigManager.messages.HOME_DELETED);
     }
 }
 

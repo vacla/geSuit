@@ -3,25 +3,26 @@ package net.cubespace.geSuit.commands;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.managers.AnnouncementManager;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.md_5.bungee.api.ChatColor;
+import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
 /**
- * Command: /gsreload
- * Permission needed: gesuit.reload or gesuit.admin
- * Arguments: none
- * What does it do: Reloads every config
+ * Command: /gsreload Permission needed: gesuit.reload or gesuit.admin Arguments: none What does it do: Reloads every config
  */
-public class ReloadCommand extends Command {
-    public ReloadCommand() {
+public class ReloadCommand extends Command
+{
+
+    public ReloadCommand()
+    {
         super("gsreload");
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args)
+    {
         if (!(sender.hasPermission("gesuit.reload") || sender.hasPermission("gesuit.admin"))) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',ConfigManager.messages.NO_PERMISSION));
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_PERMISSION);
 
             return;
         }
@@ -34,10 +35,11 @@ public class ReloadCommand extends Command {
             ConfigManager.messages.reload();
 
             AnnouncementManager.reloadAnnouncements();
-            sender.sendMessage("All Configs reloaded");
-        } catch (InvalidConfigurationException e) {
+            PlayerManager.sendMessageToTarget(sender, "All Configs reloaded");
+        }
+        catch (InvalidConfigurationException e) {
             e.printStackTrace();
-            sender.sendMessage("Could not reload. Check the logs");
+            PlayerManager.sendMessageToTarget(sender, "Could not reload. Check the logs");
         }
     }
 }

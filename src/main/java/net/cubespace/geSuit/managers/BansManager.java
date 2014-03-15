@@ -9,6 +9,7 @@ import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -21,27 +22,16 @@ public class BansManager
         GSPlayer t = PlayerManager.getSimilarPlayer(player);
 
         if (DatabaseManager.bans.isPlayerBanned(player)) {
-            if (p == null) {
-                ProxyServer.getInstance().getConsole().sendMessage(Utilities.colorize(ConfigManager.messages.PLAYER_ALREADY_BANNED));
-            }
-            else {
-                p.sendMessage(ConfigManager.messages.PLAYER_ALREADY_BANNED);
-            }
+            PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : (CommandSender) p, ConfigManager.messages.NO_SELECTION_MADE);
             return;
         }
 
         if (t == null) {
-            if (p == null) {
-                ProxyServer.getInstance().getConsole().sendMessage(Utilities.colorize(ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING));
-            }
-            else {
-                p.sendMessage(ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
-            }
+            PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : (CommandSender) p, ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
         }
 
         if (reason == null || reason.equals("")) {
-            //Even there we colorize. After all it's colored on the ban screen
-            reason = Utilities.colorize(ConfigManager.messages.DEFAULT_BAN_REASON);
+            reason = ConfigManager.messages.DEFAULT_BAN_REASON;
         }
 
         int id = DatabaseManager.bans.banPlayer(player, (t != null && t.getUuid() != null) ? t.getUuid() : null, null, bannedBy, reason, "ban");
@@ -53,15 +43,10 @@ public class BansManager
         }
 
         if (ConfigManager.bans.BroadcastBans) {
-            PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy)));
+            PlayerManager.sendBroadcast(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
         }
         else {
-            if (p == null) {
-                ProxyServer.getInstance().getConsole().sendMessage(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy)));
-            }
-            else {
-                p.sendMessage(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
-            }
+            PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : (CommandSender) p, ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
         }
 
     }
@@ -69,12 +54,12 @@ public class BansManager
     public static void unbanPlayer(String sender, String player)
     {
 //        if (!Utilities.isIPAddress(player) && !DatabaseManager.players.playerExists(player)) {
-//            PlayerManager.sendMessageToPlayer(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
+//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
 //            return;
 //        }
 
         if (!DatabaseManager.bans.isPlayerBanned(player, player, player)) {
-            PlayerManager.sendMessageToPlayer(sender, ConfigManager.messages.PLAYER_NOT_BANNED);
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_NOT_BANNED);
             return;
         }
 
@@ -86,7 +71,7 @@ public class BansManager
             PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", b.getPlayer()).replace("{sender}", sender));
         }
         else {
-            PlayerManager.sendMessageToPlayer(sender, ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", b.getPlayer()).replace("{sender}", sender));
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", b.getPlayer()).replace("{sender}", sender));
         }
     }
 
@@ -105,7 +90,7 @@ public class BansManager
         }
 
         if (ip == null) {
-            PlayerManager.sendMessageToPlayer(bannedBy, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
+            PlayerManager.sendMessageToTarget(bannedBy, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
             return;
         }
 
@@ -123,7 +108,7 @@ public class BansManager
             PlayerManager.sendBroadcast(ConfigManager.messages.IPBAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
         }
         else {
-            PlayerManager.sendMessageToPlayer(bannedBy, ConfigManager.messages.IPBAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
+            PlayerManager.sendMessageToTarget(bannedBy, ConfigManager.messages.IPBAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
         }
     }
 
@@ -146,26 +131,26 @@ public class BansManager
         Ban b = DatabaseManager.bans.getBanInfo(player);
 
         if (b == null) {
-            p.sendMessage(ConfigManager.messages.PLAYER_NOT_BANNED);
+            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.PLAYER_NOT_BANNED);
         }
         else {
             SimpleDateFormat sdf = new SimpleDateFormat();
             sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
-            p.sendMessage(ChatColor.DARK_AQUA + "--------" + ChatColor.DARK_RED + "Ban Info" + ChatColor.DARK_AQUA + "--------");
-            p.sendMessage(ChatColor.RED + "Player: " + ChatColor.AQUA + b.getPlayer());
+            PlayerManager.sendMessageToTarget(p, ChatColor.DARK_AQUA + "--------" + ChatColor.DARK_RED + "Ban Info" + ChatColor.DARK_AQUA + "--------");
+            PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Player: " + ChatColor.AQUA + b.getPlayer());
             if (b.getUuid() != null) {
-                p.sendMessage(ChatColor.RED + "UUID: " + ChatColor.AQUA + b.getUuid());
+                PlayerManager.sendMessageToTarget(p, ChatColor.RED + "UUID: " + ChatColor.AQUA + b.getUuid());
             }
-            p.sendMessage(ChatColor.RED + "Ban type: " + ChatColor.AQUA + b.getType());
-            p.sendMessage(ChatColor.RED + "Banned by: " + ChatColor.AQUA + b.getBannedBy());
-            p.sendMessage(ChatColor.RED + "Ban reason: " + ChatColor.AQUA + b.getReason());
-            p.sendMessage(ChatColor.RED + "Bannned on: " + ChatColor.AQUA + sdf.format(b.getBannedOn()));
+            PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Ban type: " + ChatColor.AQUA + b.getType());
+            PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Banned by: " + ChatColor.AQUA + b.getBannedBy());
+            PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Ban reason: " + ChatColor.AQUA + b.getReason());
+            PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Bannned on: " + ChatColor.AQUA + sdf.format(b.getBannedOn()));
 
             if (b.getBannedUntil() == null) {
-                p.sendMessage(ChatColor.RED + "Bannned until: " + ChatColor.AQUA + "-Forever-");
+                PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Bannned until: " + ChatColor.AQUA + "-Forever-");
             }
             else {
-                p.sendMessage(ChatColor.RED + "Bannned until: " + ChatColor.AQUA + sdf.format(b.getBannedUntil()));
+                PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Bannned until: " + ChatColor.AQUA + sdf.format(b.getBannedUntil()));
             }
         }
     }
@@ -176,22 +161,22 @@ public class BansManager
         List<Ban> bans = DatabaseManager.bans.getBanHistory(player);
 
         if (bans == null || bans.isEmpty()) {
-            p.sendMessage(Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_BANNED.replace("{player}", player)));
+            PlayerManager.sendMessageToTarget(p, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_BANNED.replace("{player}", player)));
             return;
         }
-        p.sendMessage(ChatColor.DARK_AQUA + "--------" + ChatColor.DARK_RED + player + "'s Ban History" + ChatColor.DARK_AQUA + "--------");
+        PlayerManager.sendMessageToTarget(p, ChatColor.DARK_AQUA + "--------" + ChatColor.DARK_RED + player + "'s Ban History" + ChatColor.DARK_AQUA + "--------");
         boolean first = true;
         for (Ban b : bans) {
             if (first) {
                 first = false;
             }
             else {
-                p.sendMessage("");
+                PlayerManager.sendMessageToTarget(p, "");
             }
             SimpleDateFormat sdf = new SimpleDateFormat();
             sdf.applyPattern("dd MMM yyyy HH:mm");
-            p.sendMessage((b.getBannedUntil() != null ? ChatColor.GOLD + "| " : ChatColor.RED + "| ") + "Date: " + ChatColor.AQUA + sdf.format(b.getBannedOn()) + ChatColor.RED + (b.getBannedUntil() != null ? ChatColor.DARK_AQUA + " > " + sdf.format(b.getBannedUntil()) : ChatColor.DARK_AQUA + " > forever"));
-            p.sendMessage((b.getBannedUntil() != null ? ChatColor.GOLD + "| " : ChatColor.RED + "| ") + "Banned by " + ChatColor.AQUA + b.getBannedBy() + ChatColor.DARK_AQUA + " (" + ChatColor.GRAY + b.getReason() + ChatColor.DARK_AQUA + ")");
+            PlayerManager.sendMessageToTarget(p, (b.getBannedUntil() != null ? ChatColor.GOLD + "| " : ChatColor.RED + "| ") + "Date: " + ChatColor.AQUA + sdf.format(b.getBannedOn()) + ChatColor.RED + (b.getBannedUntil() != null ? ChatColor.DARK_AQUA + " > " + sdf.format(b.getBannedUntil()) : ChatColor.DARK_AQUA + " > forever"));
+            PlayerManager.sendMessageToTarget(p, (b.getBannedUntil() != null ? ChatColor.GOLD + "| " : ChatColor.RED + "| ") + "Banned by " + ChatColor.AQUA + b.getBannedBy() + ChatColor.DARK_AQUA + " (" + ChatColor.GRAY + b.getReason() + ChatColor.DARK_AQUA + ")");
         }
     }
 
@@ -204,7 +189,7 @@ public class BansManager
         GSPlayer p = PlayerManager.getPlayer(sender);
         GSPlayer t = PlayerManager.getPlayer(player);
         if (t == null) {
-            p.sendMessage(ConfigManager.messages.PLAYER_NOT_ONLINE);
+            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.PLAYER_NOT_ONLINE);
             return;
         }
 
@@ -222,7 +207,7 @@ public class BansManager
 
     public static void reloadBans(String sender)
     {
-        PlayerManager.getPlayer(sender).sendMessage("Bans Reloaded");
+        PlayerManager.sendMessageToTarget(sender, "Bans Reloaded");
 
         try {
             ConfigManager.bans.reload();
@@ -238,7 +223,7 @@ public class BansManager
         GSPlayer t = PlayerManager.getSimilarPlayer(player);
 
         if (t == null) {
-            p.sendMessage(ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
+            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
 //            return;
         }
         else {
@@ -246,7 +231,7 @@ public class BansManager
         }
 
         if (DatabaseManager.bans.isPlayerBanned(player)) {
-            p.sendMessage(ConfigManager.messages.PLAYER_ALREADY_BANNED);
+            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.PLAYER_ALREADY_BANNED);
             return;
         }
 
@@ -270,7 +255,7 @@ public class BansManager
             PlayerManager.sendBroadcast(ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time));
         }
         else {
-            p.sendMessage(ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time));
+            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time));
         }
     }
 

@@ -1,5 +1,7 @@
 package net.cubespace.geSuit.managers;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Spawn;
@@ -7,9 +9,6 @@ import net.cubespace.geSuit.pluginmessages.SendSpawn;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SpawnManager {
     public static Location NewPlayerSpawn;
@@ -32,7 +31,7 @@ public class SpawnManager {
 
     public static void sendPlayerToProxySpawn(GSPlayer player) {
         if (!doesProxySpawnExist()) {
-            player.sendMessage(ConfigManager.messages.SPAWN_DOES_NOT_EXIST);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_DOES_NOT_EXIST);
             return;
         }
 
@@ -42,7 +41,7 @@ public class SpawnManager {
 
     public static void sendPlayerToNewPlayerSpawn(GSPlayer player) {
         if (!doesNewPlayerSpawnExist()) {
-            player.sendMessage(ConfigManager.messages.SPAWN_DOES_NOT_EXIST);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_DOES_NOT_EXIST);
             return;
         }
 
@@ -61,10 +60,10 @@ public class SpawnManager {
     private static void setSpawn(GSPlayer player, Spawn spawn, boolean exists) {
         if (exists) {
             DatabaseManager.spawns.updateSpawn(spawn);
-            player.sendMessage(ConfigManager.messages.SPAWN_UPDATED);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_UPDATED);
         } else {
             DatabaseManager.spawns.insertSpawn(spawn);
-            player.sendMessage(ConfigManager.messages.SPAWN_SET);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_SET);
         }
 
         SendSpawn.execute(spawn);

@@ -1,40 +1,44 @@
 package net.cubespace.geSuit.tasks;
 
+import java.util.ArrayList;
 import net.cubespace.geSuit.Utilities;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.ArrayList;
+public class ServerAnnouncements implements Runnable
+{
 
-public class ServerAnnouncements implements Runnable {
+    ArrayList<String> list = new ArrayList<String>();
+    int count = 0;
+    ServerInfo server;
 
-	ArrayList<String> list = new ArrayList<String>();
-	int count = 0;
-	ServerInfo server;
+    public ServerAnnouncements(ServerInfo server)
+    {
+        this.server = server;
+    }
 
-	public ServerAnnouncements(ServerInfo server) {
-		this.server = server;
-	}
+    public void addAnnouncement(String message)
+    {
+        list.add(Utilities.colorize(message));
+    }
 
-	public void addAnnouncement(String message) {
-		list.add(Utilities.colorize(message));
-	}
-
-	public void run() {
-		if (list.isEmpty()) {
-			return;
-		}
-		if (server.getPlayers().isEmpty()) {
-			return;
-		}
-		for(ProxiedPlayer player: server.getPlayers()){
-            for ( String line : list.get(count).split( "\n" ) ) {
-            	player.sendMessage(line);
+    public void run()
+    {
+        if (list.isEmpty()) {
+            return;
+        }
+        if (server.getPlayers().isEmpty()) {
+            return;
+        }
+        for (ProxiedPlayer player : server.getPlayers()) {
+            for (String line : list.get(count).split("\n")) {
+                // not sure if everything is thread safe. In doubt, leaving that one. It's colorized anyway.
+                player.sendMessage(line);
             }
-		}
-		count++;
-		if((count+1)>list.size()){
-			count=0;
-		}
-	}
+        }
+        count++;
+        if ((count + 1) > list.size()) {
+            count = 0;
+        }
+    }
 }

@@ -9,6 +9,7 @@ import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -90,27 +91,34 @@ public class PlayerManager
         }
     }
 
-    public static void sendMessageToPlayer(String player, String message)
+    public static void sendMessageToTarget(CommandSender target, String message)
     {
-
-        for (String line : Utilities.colorize(message).split("\n")) {
-            if (getPlayer(player) == null) {
-                ProxyServer.getInstance().getConsole().sendMessage(line);
-            }
-            else {
-                getPlayer(player).sendMessage(line);
-            }
+        // Shouldnt need it. But let's be cautious.
+        if (target == null) {
+            return;
         }
+
+        // Not exactly sure where we use the new line besides in the soon-to-be-removed MOTD...
+        for (String line : Utilities.colorize(message).split("\n")) {
+            target.sendMessage(line);
+        }
+    }
+    
+    public static void sendMessageToTarget(GSPlayer target, String message)
+    {
+        sendMessageToTarget(target.getProxiedPlayer(), message);
+    }
+
+    public static void sendMessageToTarget(String target, String message)
+    {
+        sendMessageToTarget(getPlayer(target) != null ? getPlayer(target).getProxiedPlayer() : ProxyServer.getInstance().getConsole(), message);
     }
 
     public static void sendBroadcast(String message)
     {
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-            for (String line : message.split("\n")) {
-                p.sendMessage(Utilities.colorize(line));
-            }
+            sendMessageToTarget(p.getName(), message);
         }
-
         LoggingManager.log(message);
     }
 
@@ -160,4 +168,5 @@ public class PlayerManager
     {
         return onlinePlayers.get(player);
     }
+
 }
