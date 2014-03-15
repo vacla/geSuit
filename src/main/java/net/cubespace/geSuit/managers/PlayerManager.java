@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.CommandSender;
@@ -40,7 +41,7 @@ public class PlayerManager
 
             GSPlayer gsPlayer = new GSPlayer(player.getName(), (FeatureDetector.canUseUUID()) ? player.getUUID() : null, tps, player.getAddress().getHostString());
             onlinePlayers.put(player.getName(), gsPlayer);
-            
+
             DatabaseManager.players.updatePlayer(gsPlayer);
 
             LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()));
@@ -60,7 +61,13 @@ public class PlayerManager
         DatabaseManager.players.insertPlayer(gsPlayer, ip.substring(1, ip.length()));
 
         if (ConfigManager.main.NewPlayerBroadcast) {
-            sendBroadcast(ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getName()));
+            String welcomeMsg = null;
+            sendBroadcast(welcomeMsg = ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getName()));
+            // Firing custom event
+            ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
+        }
+        else {
+            ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), "No welcome for yOU!!!"));
         }
 
         onlinePlayers.put(player.getName(), gsPlayer);
