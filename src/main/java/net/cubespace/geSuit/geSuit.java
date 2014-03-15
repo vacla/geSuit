@@ -3,6 +3,7 @@ package net.cubespace.geSuit;
 import net.cubespace.geSuit.commands.BanCommand;
 import net.cubespace.geSuit.commands.MOTDCommand;
 import net.cubespace.geSuit.commands.ReloadCommand;
+import net.cubespace.geSuit.commands.SeenCommand;
 import net.cubespace.geSuit.commands.UnbanCommand;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
@@ -52,6 +53,9 @@ public class geSuit extends Plugin
         // A little hardcore. Prevent updating without a restart. But command squatting = bad!
         if (ConfigManager.main.MOTD_Enabled) {
             proxy.getPluginManager().registerCommand(this, new MOTDCommand());
+        }
+        if (ConfigManager.main.Seen_Enabled) {
+            proxy.getPluginManager().registerCommand(this, new SeenCommand());
         }
         proxy.getPluginManager().registerCommand(this, new UnbanCommand());
         proxy.getPluginManager().registerCommand(this, new BanCommand());

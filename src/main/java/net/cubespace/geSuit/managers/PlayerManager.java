@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.managers;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,9 +38,9 @@ public class PlayerManager
                 tps = DatabaseManager.players.getPlayerTPS(player.getName());
             }
 
-            GSPlayer gsPlayer = new GSPlayer(player.getName(), (FeatureDetector.canUseUUID()) ? player.getUUID() : null, tps);
+            GSPlayer gsPlayer = new GSPlayer(player.getName(), (FeatureDetector.canUseUUID()) ? player.getUUID() : null, tps, player.getAddress().getHostString());
             onlinePlayers.put(player.getName(), gsPlayer);
-
+            
             DatabaseManager.players.updatePlayer(gsPlayer);
 
             LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()));
@@ -103,7 +104,7 @@ public class PlayerManager
             target.sendMessage(line);
         }
     }
-    
+
     public static void sendMessageToTarget(GSPlayer target, String message)
     {
         sendMessageToTarget(target.getProxiedPlayer(), message);
@@ -120,6 +121,32 @@ public class PlayerManager
             sendMessageToTarget(p.getName(), message);
         }
         LoggingManager.log(message);
+    }
+
+    public static String getLastSeeninfos(String player)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("dd MMM yyyy HH:mm");
+        GSPlayer p = getPlayer(player);
+        if (p == null) { //Offline
+            p = DatabaseManager.players.loadPlayer(player);
+            if (p == null) //Unknown player
+            {
+                return ConfigManager.messages.PLAYER_DOES_NOT_EXIST;
+            }
+            else {
+                return ConfigManager.messages.PLAYER_SEEN_OFFLINE
+                        .replace("{player}", p.getName())
+                        .replace("{ip}", p.getIp())
+                        .replace("{seen}", sdf.format(p.getLastOnline()));
+            }
+        }
+        else { //Online
+            return ConfigManager.messages.PLAYER_SEEN_ONLINE
+                    .replace("{player}", p.getName())
+                    .replace("{ip}", p.getIp())
+                    .replace("{server}", p.getServer());
+        }
     }
 
     public static GSPlayer getSimilarPlayer(String player)

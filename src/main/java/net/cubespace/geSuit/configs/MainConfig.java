@@ -1,11 +1,10 @@
 package net.cubespace.geSuit.configs;
 
+import java.io.File;
 import net.cubespace.Yamler.Config.Comment;
-import net.cubespace.geSuit.geSuit;
 import net.cubespace.Yamler.Config.Config;
 import net.cubespace.geSuit.configs.SubConfig.Database;
-
-import java.io.File;
+import net.cubespace.geSuit.geSuit;
 
 public class MainConfig extends Config {
     public MainConfig() {
@@ -16,7 +15,12 @@ public class MainConfig extends Config {
     public Boolean ConvertFromBungeeSuite = false;
     public Database BungeeSuiteDatabase = new Database();
 
+    @Comment("Turn this to false if you want to use your regular /motd comand (requires restart)")
     public Boolean MOTD_Enabled = true;
+    @Comment("Turn this to false if you want to use your your regular /seen comand (requires restart)")
+    public Boolean Seen_Enabled = false;
+    
+    @Comment()
     public Boolean NewPlayerBroadcast = true;
     public Boolean BroadcastProxyConnectionMessages = true;
     public Integer PlayerDisconnectDelay = 10;

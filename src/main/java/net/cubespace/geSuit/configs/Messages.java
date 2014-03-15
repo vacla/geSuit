@@ -12,6 +12,9 @@ public class Messages extends Config {
     }
 
     public String MOTD = "&dWelcome to the server {player}!";
+    public String PLAYER_SEEN_ONLINE = "&a| Player &2{player} &ais currently online!\n&a| ip:{ip}    Server:{server}";
+    public String PLAYER_SEEN_OFFLINE = "&c| Player &4{player}&c is offline. Last seen: {seen}!\n&c| ip:{ip}";
+    public String BUNGEE_COMMAND_SEEN_USAGE = "&cUsage: /seen <player>";
     public String PLAYER_CONNECT_PROXY = "{player}&e has joined the server!";
     public String PLAYER_DISCONNECT_PROXY = "{player}&e has left the server!";
     public String PLAYER_DOES_NOT_EXIST = "&c" + "That player does not exist";
