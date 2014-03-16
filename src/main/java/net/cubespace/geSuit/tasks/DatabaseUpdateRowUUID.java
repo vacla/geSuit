@@ -4,10 +4,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  *
@@ -32,11 +35,18 @@ public class DatabaseUpdateRowUUID implements Runnable
             ProxyServer.getInstance().getLogger().warning("Incorrect row " + rowID + " for player " + playerName);
             return;
         }
-        String uuid = Utilities.getUUID(playerName);
+
+        String uuid;
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerName);
+        if (player != null && FeatureDetector.canUseUUID()) {
+            uuid = player.getUUID();
+        } else {
+            uuid = Utilities.getUUID(playerName);
+        }
+
         if (uuid == null || uuid.isEmpty()) {
             ProxyServer.getInstance().getLogger().warning("Could not fetch UUID for player " + playerName);
-        }
-        else {
+        } else {
             ConnectionHandler connectionHandler = null;
             try {
                 connectionHandler = DatabaseManager.connectionPool.getConnection();
