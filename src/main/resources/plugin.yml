@@ -63,7 +63,7 @@ commands:
         usage: |
                "/<command> (player) (time) (reason)"
                "/<command> (player) (time) (reason)"        
-               "Exemple of a (time): 2d5h"        
+               "Example of a (time): 2d5h"
     unban:
         description: Unbans a player from the proxy
         aliases: [uban, removeban, pardon]
