@@ -66,9 +66,6 @@ public class PlayerManager
             // Firing custom event
             ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
         }
-        else {
-            ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), "No welcome for yOU!!!"));
-        }
 
         onlinePlayers.put(player.getName(), gsPlayer);
         LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()));
