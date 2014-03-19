@@ -28,7 +28,6 @@ public class BansManager
 
         if (t == null) {
             PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : (CommandSender) p.getProxiedPlayer(), ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
-            
         }
 
         if (reason == null || reason.equals("")) {
