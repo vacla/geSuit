@@ -22,7 +22,7 @@ public class BansManager
         GSPlayer t = PlayerManager.getSimilarPlayer(player);
 
         if (DatabaseManager.bans.isPlayerBanned(player)) {
-            PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : (CommandSender) p.getProxiedPlayer(), ConfigManager.messages.NO_SELECTION_MADE);
+            PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : (CommandSender) p.getProxiedPlayer(), ConfigManager.messages.PLAYER_ALREADY_BANNED);
             return;
         }
 
