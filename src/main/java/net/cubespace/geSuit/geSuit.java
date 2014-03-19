@@ -19,21 +19,22 @@ import net.cubespace.geSuit.listeners.WarpsMessageListener;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.LoggingManager;
+import net.cubespace.lib.CubespacePlugin;
+import net.cubespace.lib.Logger.Level;
+import net.cubespace.lib.Module.ModuleDescription;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 
-public class geSuit extends Plugin
-{
+import java.util.HashSet;
 
-    public static geSuit instance;
-    public static ProxyServer proxy;
+public class geSuit extends CubespacePlugin {
+    public void onEnable() {
+        getPluginLogger().setLogLevel(Level.INFO);
+        getPluginLogger().info(ChatColor.GREEN + "Starting geSuit");
 
-    public void onEnable()
-    {
-        instance = this;
-        LoggingManager.log(ChatColor.GREEN + "Starting geSuit");
-        proxy = ProxyServer.getInstance();
+        getModuleManager().registerModule(new ModuleDescription("announcements", "net.cubespace.geSuit.modules.announcements", "0.1.0", "geNAZt", new HashSet<String>(), null, null));
+
         LoggingManager.log(ChatColor.GREEN + "Initialising Managers");
 
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();

@@ -5,9 +5,13 @@
     <groupId>net.cubespace</groupId>
     <artifactId>geSuit</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>geSuit</name>
+
+    <modules>
+        <module>geSuitPlugin</module>
+    </modules>
 
     <properties>
         <build.number>${BUILD_NUMBER}</build.number>
@@ -40,6 +44,11 @@
             <groupId>net.cubespace</groupId>
             <artifactId>Yamler-Core</artifactId>
             <version>1.3.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.cubespace</groupId>
+            <artifactId>BungeeLib</artifactId>
+            <version>1.6.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
