@@ -1,0 +1,5 @@
+name: geSuitBan
+main: net.cubespace.geSuit.Module.Ban.BanModule
+version: ${version}
+author: geNAZt
+depends: []
