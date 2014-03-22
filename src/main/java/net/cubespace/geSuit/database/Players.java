@@ -1,15 +1,16 @@
 package net.cubespace.geSuit.database;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.GSPlayer;
+
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -193,7 +194,7 @@ public class Players implements IRepository
     public String[] getTable()
     {
         return new String[]{"players", "playername VARCHAR(100), "
-            + "`uuid` VARCHAR(100) NULL UNIQUE,"
+            + "uuid VARCHAR(100) NULL,"
             + "lastonline DATETIME NOT NULL, "
             + "ipaddress VARCHAR(100), "
             + "tps TINYINT(1) DEFAULT 1,"
