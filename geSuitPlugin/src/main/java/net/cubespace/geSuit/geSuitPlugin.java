@@ -1,21 +1,30 @@
 package net.cubespace.geSuit;
 
 import com.j256.ormlite.dao.DaoManager;
+import lombok.Getter;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.Config.Main;
 import net.cubespace.geSuit.Database.Table.Player;
 import net.cubespace.lib.CubespacePlugin;
 import net.cubespace.lib.Database.Database;
 import net.cubespace.lib.Module.ModuleDescription;
+import org.jdeferred.DeferredManager;
+import org.jdeferred.impl.DefaultDeferredManager;
 
 import java.io.File;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
  */
 public class geSuitPlugin extends CubespacePlugin {
+    private ExecutorService executorService = Executors.newCachedThreadPool();
+    @Getter
+    private DeferredManager dm = new DefaultDeferredManager(executorService);
+
     @Override
     public void onEnable() {
         getPermissionManager().setup();
