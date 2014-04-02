@@ -1,11 +1,5 @@
 package net.cubespace.geSuit.managers;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
@@ -14,6 +8,13 @@ import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerManager
 {
@@ -33,7 +34,7 @@ public class PlayerManager
             boolean tps;
 
             if (FeatureDetector.canUseUUID()) {
-                tps = DatabaseManager.players.getPlayerTPS(player.getName());
+                tps = DatabaseManager.players.getPlayerTPS(player.getUUID());
             }
             else {
                 tps = DatabaseManager.players.getPlayerTPS(player.getName());

@@ -11,7 +11,7 @@ public class FeatureDetector {
 
     static {
         try {
-            ProxiedPlayer.class.getMethod("getUUID", String.class);
+            ProxiedPlayer.class.getMethod("getUUID");
 
             useUUID = !ConfigManager.main.OverwriteUUID;
         } catch (NoSuchMethodException e) {
