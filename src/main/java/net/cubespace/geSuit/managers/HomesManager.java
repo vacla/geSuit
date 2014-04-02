@@ -1,13 +1,15 @@
 package net.cubespace.geSuit.managers;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.ChatColor;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class HomesManager {
     public static void createNewHome(GSPlayer player, int serverLimit, int globalLimit, String home, Location loc) {
@@ -110,15 +112,25 @@ public class HomesManager {
 
 
     public static Home getHome(GSPlayer player, String home) {
+        HashMap<String, Home> found = new HashMap<>();
+
         for (ArrayList<Home> list : player.getHomes().values()) {
             for (Home h : list) {
                 if (h.name.toLowerCase().equals(home.toLowerCase())) {
-                    return h;
+                    found.put(h.loc.getServer().getName(), h);
                 }
             }
         }
 
-        return null;
+        if (found.size() == 0) {
+            return null;
+        } else {
+            if (found.containsKey(player.getServer())) {
+                return found.get(player.getServer());
+            }
+
+            return found.values().iterator().next();
+        }
     }
 
     public static void sendPlayerToHome(GSPlayer player, String home) {
