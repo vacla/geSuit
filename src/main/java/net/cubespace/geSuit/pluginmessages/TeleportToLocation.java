@@ -1,12 +1,13 @@
 package net.cubespace.geSuit.pluginmessages;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.tasks.SendPluginMessage;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -18,6 +19,12 @@ public class TeleportToLocation
 
     public static void execute(GSPlayer player, Location location)
     {
+        if (location.getServer() == null) {
+            geSuit.instance.getLogger().severe("Location has no Server, this should never happen. Please check");
+            Exception exception = new Exception("");
+            exception.printStackTrace();
+        }
+
         if (player.getServer() == null || !player.getServer().equals(location.getServer().getName())) {
             player.getProxiedPlayer().connect(location.getServer());
         }
