@@ -5,6 +5,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import net.cubespace.geSuitPortals.commands.DeletePortalCommand;
 import net.cubespace.geSuitPortals.commands.ListPortalsCommand;
 import net.cubespace.geSuitPortals.commands.SetPortalCommand;
+import net.cubespace.geSuitPortals.listeners.AntiBurnListener;
 import net.cubespace.geSuitPortals.listeners.PhysicsListener;
 import net.cubespace.geSuitPortals.listeners.PlayerLoginListener;
 import net.cubespace.geSuitPortals.listeners.PlayerMoveListener;
@@ -59,6 +60,6 @@ public class geSuitPortals extends JavaPlugin {
         getServer().getPluginManager().registerEvents( new PlayerMoveListener(), this );
         getServer().getPluginManager().registerEvents( new PhysicsListener(), this );
         getServer().getPluginManager().registerEvents( new PlayerLoginListener(), this );
-
+        getServer().getPluginManager().registerEvents( new AntiBurnListener(), this );
     }
 }

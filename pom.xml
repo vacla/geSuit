@@ -4,7 +4,7 @@
 
     <groupId>net.cubespace</groupId>
     <artifactId>geSuitPortals</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <packaging>jar</packaging>
     <name>geSuitPortals</name>
 
@@ -26,8 +26,8 @@
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.6.2-R0.1-SNAPSHOT</version>
+            <artifactId>craftbukkit</artifactId>
+            <version>1.7.2-R0.2</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
