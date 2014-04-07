@@ -157,7 +157,7 @@ public class Converter {
 
                 ResultSet res = selectBans.executeQuery();
                 while (res.next()) {
-                    DatabaseManager.bans.insertBanConvert(res.getString("banned_by"), (FeatureDetector.canUseUUID()) ? Utilities.getUUID(res.getString("player")) : res.getString("player"), res.getString("reason"), res.getString("type"), res.getDate("banned_on"), res.getDate("banned_until"));
+                    DatabaseManager.bans.insertBanConvert(res.getString("banned_by"), res.getString("player"), (FeatureDetector.canUseUUID()) ? Utilities.getUUID(res.getString("player")) : null, null, res.getString("reason"), res.getString("type"), res.getDate("banned_on"), res.getDate("banned_until"));
                 }
 
                 res.close();
