@@ -8,6 +8,7 @@ import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.IRepository;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
+import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Portal;
@@ -34,7 +35,7 @@ public class Converter {
                 ResultSet resultSet = selectPlayers.executeQuery();
 
                 while(resultSet.next()) {
-                    DatabaseManager.players.insertPlayerConvert(resultSet.getString("playername"), resultSet.getDate("lastonline"), resultSet.getString("ipaddress"), resultSet.getBoolean("tps"));
+                    DatabaseManager.players.insertPlayerConvert(resultSet.getString("playername"), resultSet.getTimestamp("lastonline"), resultSet.getString("ipaddress"), resultSet.getBoolean("tps"));
                 }
 
                 resultSet.close();
@@ -70,8 +71,11 @@ public class Converter {
 
                 ResultSet res = selectHomes.executeQuery();
                 while (res.next()) {
+                    GSPlayer player = DatabaseManager.players.loadPlayer(res.getString("player"));
+                    if ( player == null ) continue;
+
                     Location l = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
-                    DatabaseManager.homes.addHome(new Home(DatabaseManager.players.loadPlayer(res.getString("player")), res.getString("home_name"), l));
+                    DatabaseManager.homes.addHome(new Home(player, res.getString("home_name"), l));
                 }
 
                 res.close();
@@ -157,7 +161,17 @@ public class Converter {
 
                 ResultSet res = selectBans.executeQuery();
                 while (res.next()) {
-                    DatabaseManager.bans.insertBanConvert(res.getString("banned_by"), res.getString("player"), (FeatureDetector.canUseUUID()) ? Utilities.getUUID(res.getString("player")) : null, null, res.getString("reason"), res.getString("type"), res.getDate("banned_on"), res.getDate("banned_until"));
+                    String uuid = null;
+
+                    if (FeatureDetector.canUseUUID()) {
+                        uuid = Utilities.getUUID(res.getString("player"));
+
+                        if (uuid == null) {
+                            continue;
+                        }
+                    }
+
+                    DatabaseManager.bans.insertBanConvert(res.getString("banned_by"), res.getString("player"), uuid, null, res.getString("reason"), res.getString("type"), res.getDate("banned_on"), res.getDate("banned_until"));
                 }
 
                 res.close();
