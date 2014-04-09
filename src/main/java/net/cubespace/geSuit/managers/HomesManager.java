@@ -91,7 +91,45 @@ public class HomesManager {
                 return;
             }
 
+            PlayerManager.sendMessageToTarget(player, "Showing own homes");
             PlayerManager.sendMessageToTarget(player, homes.substring(0, homes.length() - 2));
+        }
+
+    }
+    
+    public static void listOtherPlayersHomes(GSPlayer sender, GSPlayer player) {
+        if (player == null) {
+            PlayerManager.sendMessageToTarget(sender, "Player is not online.");
+            return;
+        }
+        if (player.getHomes().isEmpty()) {
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_HOMES);
+            return;
+        }
+
+        boolean empty = true;
+        for (String server : player.getHomes().keySet()) {
+            String homes;
+
+            if (server.equals(player.getServer())) {
+                homes = ChatColor.RED + server + ": " + ChatColor.BLUE;
+            } else {
+                homes = ChatColor.GOLD + server + ": " + ChatColor.BLUE;
+            }
+
+            for (Home h : player.getHomes().get(server)) {
+                homes += h.name + ", ";
+                empty = false;
+            }
+
+            if (empty) {
+                PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_HOMES);
+                return;
+            }
+
+            
+            PlayerManager.sendMessageToTarget(sender, "Showing homes for " + player.getName());
+            PlayerManager.sendMessageToTarget(sender, homes.substring(0, homes.length() - 2));
         }
 
     }
@@ -143,6 +181,22 @@ public class HomesManager {
         TeleportToLocation.execute(player, h.loc);
 
         PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SENT_HOME);
+    }
+    
+    public static void sendPlayerToOtherHome(GSPlayer sender, GSPlayer player, String home) {
+        if (player == null) {
+            PlayerManager.sendMessageToTarget(sender, "Player is not online.");
+            return;
+        }
+        Home h = getHome(player, home);
+        if (h == null) {
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.HOME_DOES_NOT_EXIST);
+            return;
+        }
+
+        TeleportToLocation.execute(sender, h.loc);
+
+        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.SENT_HOME);
     }
 
     public static void deleteHome(String player, String home) {
