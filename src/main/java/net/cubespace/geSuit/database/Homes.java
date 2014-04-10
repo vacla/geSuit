@@ -109,7 +109,7 @@ public class Homes implements IRepository {
 
     @Override
     public String[] getTable() {
-        return new String[]{"homes", "player VARCHAR(100), " +
+        return new String[]{ConfigManager.main.Table_Homes, "player VARCHAR(100), " +
                 "home_name VARCHAR(100), " +
                 "server VARCHAR(100), " +
                 "world VARCHAR(100), " +
@@ -121,18 +121,18 @@ public class Homes implements IRepository {
                 "CONSTRAINT pk_home PRIMARY KEY (player,home_name,server), " +
 
                 ((FeatureDetector.canUseUUID()) ?
-                "FOREIGN KEY fk_playerhome(player) REFERENCES players (uuid) ON UPDATE CASCADE ON DELETE CASCADE" :
-                "FOREIGN KEY fk_playerhome(player) REFERENCES players (playername) ON UPDATE CASCADE ON DELETE CASCADE")};
+                "FOREIGN KEY fk_playerhome(player) REFERENCES "+ ConfigManager.main.Table_Players +" (uuid) ON UPDATE CASCADE ON DELETE CASCADE" :
+                "FOREIGN KEY fk_playerhome(player) REFERENCES "+ ConfigManager.main.Table_Players +" (playername) ON UPDATE CASCADE ON DELETE CASCADE")};
     }
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
-        connection.addPreparedStatement("addHome", "INSERT INTO homes (player,home_name,server,world,x,y,z,yaw,pitch) VALUES(?,?,?,?,?,?,?,?,?)");
-        connection.addPreparedStatement("updateHome", "UPDATE homes SET server = ?, world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE player = ? AND home_name = ?");
-        connection.addPreparedStatement("getAllHomesForPlayer", "SELECT * FROM homes WHERE player = ?");
-        connection.addPreparedStatement("deleteHome", "DELETE FROM homes WHERE home_name = ? AND player = ?");
-        connection.addPreparedStatement("getHomes", "SELECT * FROM homes");
-        connection.addPreparedStatement("updateHomesToUUID", "UPDATE homes SET player = ? WHERE player = ?");
+        connection.addPreparedStatement("addHome", "INSERT INTO "+ ConfigManager.main.Table_Homes +" (player,home_name,server,world,x,y,z,yaw,pitch) VALUES(?,?,?,?,?,?,?,?,?)");
+        connection.addPreparedStatement("updateHome", "UPDATE "+ ConfigManager.main.Table_Homes +" SET server = ?, world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE player = ? AND home_name = ?");
+        connection.addPreparedStatement("getAllHomesForPlayer", "SELECT * FROM "+ ConfigManager.main.Table_Homes +" WHERE player = ?");
+        connection.addPreparedStatement("deleteHome", "DELETE FROM "+ ConfigManager.main.Table_Homes +" WHERE home_name = ? AND player = ?");
+        connection.addPreparedStatement("getHomes", "SELECT * FROM "+ ConfigManager.main.Table_Homes);
+        connection.addPreparedStatement("updateHomesToUUID", "UPDATE "+ ConfigManager.main.Table_Homes +" SET player = ? WHERE player = ?");
     }
 
     @Override
@@ -149,7 +149,7 @@ public class Homes implements IRepository {
 
                 ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
                 try {
-                    connectionHandler.getConnection().createStatement().execute("ALTER TABLE `homes` DROP FOREIGN KEY `homes_ibfk_1`;");
+                    connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Homes +"` DROP FOREIGN KEY `homes_ibfk_1`;");
                 } catch (SQLException e) {
                     e.printStackTrace();
                     return;
@@ -193,7 +193,7 @@ public class Homes implements IRepository {
                 connectionHandler = DatabaseManager.connectionPool.getConnection();
 
                 try {
-                    connectionHandler.getConnection().createStatement().execute("ALTER TABLE `homes` ADD  CONSTRAINT `homes_ibfk_1` FOREIGN KEY (`player`) REFERENCES `test`.`players`(`uuid`) ON DELETE CASCADE ON UPDATE CASCADE;");
+                    connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Homes +"` ADD  CONSTRAINT `homes_ibfk_1` FOREIGN KEY (`player`) REFERENCES `"+ ConfigManager.main.Table_Players +"`(`uuid`) ON DELETE CASCADE ON UPDATE CASCADE;");
                 } catch (SQLException e) {
                     e.printStackTrace();
                     return;

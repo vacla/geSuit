@@ -171,7 +171,7 @@ public class Players implements IRepository {
 
     @Override
     public String[] getTable() {
-        return new String[]{"players", "playername VARCHAR(100), "
+        return new String[]{ConfigManager.main.Table_Players, "playername VARCHAR(100), "
                 + "uuid VARCHAR(100) NULL,"
                 + "lastonline DATETIME NOT NULL, "
                 + "ipaddress VARCHAR(100), "
@@ -183,15 +183,15 @@ public class Players implements IRepository {
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
-        connection.addPreparedStatement("getPlayerIP", "SELECT ipaddress FROM players WHERE playername = ? OR uuid = ?");
-        connection.addPreparedStatement("playerExists", "SELECT playername FROM players WHERE playername = ? OR uuid = ?");
-        connection.addPreparedStatement("getPlayerTPS", "SELECT tps FROM players WHERE playername = ? OR uuid = ?");
-        connection.addPreparedStatement("getPlayer", "SELECT * FROM players WHERE playername = ? OR uuid = ?");
-        connection.addPreparedStatement("insertPlayer", "INSERT INTO players (playername,uuid,lastonline,ipaddress) VALUES (?, ?, NOW(), ?)");
-        connection.addPreparedStatement("insertPlayerConvert", "INSERT INTO players (playername,uuid,lastonline,ipaddress,tps) VALUES (?, ?, ?, ?, ?)");
-        connection.addPreparedStatement("getPlayers", "SELECT * FROM players");
-        connection.addPreparedStatement("setUUID", "UPDATE players SET uuid = ? WHERE playername = ?");
-        connection.addPreparedStatement("updatePlayer", "UPDATE players SET uuid = ?, playername = ?, lastonline = NOW() WHERE playername = ? OR uuid = ?");
+        connection.addPreparedStatement("getPlayerIP", "SELECT ipaddress FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
+        connection.addPreparedStatement("playerExists", "SELECT playername FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
+        connection.addPreparedStatement("getPlayerTPS", "SELECT tps FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
+        connection.addPreparedStatement("getPlayer", "SELECT * FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
+        connection.addPreparedStatement("insertPlayer", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,lastonline,ipaddress) VALUES (?, ?, NOW(), ?)");
+        connection.addPreparedStatement("insertPlayerConvert", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,lastonline,ipaddress,tps) VALUES (?, ?, ?, ?, ?)");
+        connection.addPreparedStatement("getPlayers", "SELECT * FROM "+ ConfigManager.main.Table_Players);
+        connection.addPreparedStatement("setUUID", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ? WHERE playername = ?");
+        connection.addPreparedStatement("updatePlayer", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ?, playername = ?, lastonline = NOW() WHERE playername = ? OR uuid = ?");
     }
 
     @Override
@@ -205,7 +205,7 @@ public class Players implements IRepository {
             ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
             try {
-                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `players` ADD `uuid` VARCHAR(100) NULL AFTER `playername`, ADD UNIQUE (`uuid`) ;");
+                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Players +"` ADD `uuid` VARCHAR(100) NULL AFTER `playername`, ADD UNIQUE (`uuid`) ;");
             } catch (SQLException e) {
                 System.out.println("Could not update the Player Database to version 2");
                 e.printStackTrace();

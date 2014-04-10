@@ -12,6 +12,20 @@ public class MainConfig extends Config {
     }
 
     public Database Database = new Database();
+
+    @Comment("This can be used if you have multiple Proxies to seperate the Homes in it")
+    public String Table_Homes = "homes";
+    @Comment("This can be used if you have multiple Proxies to seperate the Players in it")
+    public String Table_Players = "players";
+    @Comment("This can be used if you have multiple Proxies to seperate the Warps in it")
+    public String Table_Warps = "warps";
+    @Comment("This can be used if you have multiple Proxies to seperate the Bans in it")
+    public String Table_Bans = "bans";
+    @Comment("This can be used if you have multiple Proxies to seperate the Portals in it")
+    public String Table_Portals = "portals";
+    @Comment("This can be used if you have multiple Proxies to seperate the Spawns in it")
+    public String Table_Spawns = "spawns";
+
     public Boolean ConvertFromBungeeSuite = false;
     public Database BungeeSuiteDatabase = new Database();
 

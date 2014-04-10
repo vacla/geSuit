@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.database;
 
+import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Spawn;
@@ -104,7 +105,7 @@ public class Spawns implements IRepository {
 
     @Override
     public String[] getTable() {
-        return new String[]{"spawns", "spawnname VARCHAR(100), " +
+        return new String[]{ConfigManager.main.Table_Spawns, "spawnname VARCHAR(100), " +
                 "server VARCHAR(100), " +
                 "world VARCHAR(100), " +
                 "x DOUBLE, " +
@@ -117,10 +118,10 @@ public class Spawns implements IRepository {
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
-        connection.addPreparedStatement("getSpawn", "SELECT * FROM spawns WHERE spawnname=?");
-        connection.addPreparedStatement("getSpawnsForServer", "SELECT * FROM spawns WHERE server=? AND NOT (spawnname = 'NewPlayerSpawn' OR spawnname = 'ProxySpawn')");
-        connection.addPreparedStatement("insertSpawn", "INSERT INTO spawns (spawnname, server, world, x, y, z, yaw, pitch) VALUES(?,?,?,?,?,?,?,?)");
-        connection.addPreparedStatement("updateSpawn", "UPDATE spawns SET world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE spawnname = ? AND server = ?");
+        connection.addPreparedStatement("getSpawn", "SELECT * FROM "+ ConfigManager.main.Table_Spawns +" WHERE spawnname=?");
+        connection.addPreparedStatement("getSpawnsForServer", "SELECT * FROM "+ ConfigManager.main.Table_Spawns +" WHERE server=? AND NOT (spawnname = 'NewPlayerSpawn' OR spawnname = 'ProxySpawn')");
+        connection.addPreparedStatement("insertSpawn", "INSERT INTO "+ ConfigManager.main.Table_Spawns +" (spawnname, server, world, x, y, z, yaw, pitch) VALUES(?,?,?,?,?,?,?,?)");
+        connection.addPreparedStatement("updateSpawn", "UPDATE "+ ConfigManager.main.Table_Spawns +" SET world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE spawnname = ? AND server = ?");
     }
 
     @Override
