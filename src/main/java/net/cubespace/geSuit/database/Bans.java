@@ -193,12 +193,12 @@ public class Bans implements IRepository {
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
         connection.addPreparedStatement("isPlayerBanned", "SELECT id FROM bans WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type <> 'unban'");
-        connection.addPreparedStatement("banPlayer", "INSERT INTO bans (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,banned_on) VALUES (?,?,?,?,?,?,NOW());");
+        connection.addPreparedStatement("banPlayer", "INSERT INTO bans (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,banned_on) VALUES (?,?,?,?,?,?,NOW());", PreparedStatement.RETURN_GENERATED_KEYS);
         connection.addPreparedStatement("unbanPlayer", "UPDATE bans SET type = 'unban' WHERE id = ?");
         connection.addPreparedStatement("banInfo", "SELECT * FROM bans WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type <> 'unban'");
         connection.addPreparedStatement("banHistory", "SELECT * FROM bans WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) ORDER BY id ASC");
-        connection.addPreparedStatement("tempBanPlayer", "INSERT INTO bans (banned_playername,banned_uuid,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,'tempban',NOW(),?)");
-        connection.addPreparedStatement("insertBanConvert", "INSERT INTO bans (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,?,?,?,?)");
+        connection.addPreparedStatement("tempBanPlayer", "INSERT INTO bans (banned_playername,banned_uuid,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,'tempban',NOW(),?)", PreparedStatement.RETURN_GENERATED_KEYS);
+        connection.addPreparedStatement("insertBanConvert", "INSERT INTO bans (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,banned_on,banned_until) VALUES(?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
         connection.addPreparedStatement("getBans", "SELECT * FROM bans");
         connection.addPreparedStatement("updateRowUUID", "UPDATE bans SET banned_uuid = ? WHERE id = ?");
         connection.addPreparedStatement("updateToUUID", "UPDATE bans SET banned_uuid = ? WHERE id = ?");
