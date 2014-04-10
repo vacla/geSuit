@@ -45,6 +45,7 @@ public class Messages extends Config {
     public String TELEPORT_TOGGLE_ON = "&2" + "Telports have been toggled on";
     public String TELEPORT_TOGGLE_OFF = "&c" + "Telports have been toggled off";
     public String TELEPORT_UNABLE = "&c" + "You are unable to teleport to this player";
+
     // warp specific messages
     public String WARP_CREATED = "&2" + "Successfully created a warp";
     public String WARP_UPDATED = "&2" + "Successfully updated the warp";
@@ -65,10 +66,12 @@ public class Messages extends Config {
     public String PORTAL_DOES_NOT_EXIST = "&c" + "That portal does not exist";
     public String INVALID_PORTAL_TYPE = "&c" + "That is an invalid portal type. Use warp or server";
     public String NO_SELECTION_MADE = "&c" + "No world edit selection has been made";
+
     // Spawn messages
     public String SPAWN_DOES_NOT_EXIST = "&c" + "The spawn point has not been set yet";
     public String SPAWN_UPDATED = "&2" + "Spawn point updated";
     public String SPAWN_SET = "&2" + "Spawn point set";
+
     // ban messages
     public String BUNGEE_COMMAND_BAN_USAGE = "&c" + "Usage: !ban player|ip";
     public String BUNGEE_COMMAND_UNBAN_USAGE = "&c" + "Usage: !unban player|uuid|ip";
@@ -85,7 +88,7 @@ public class Messages extends Config {
     public String BAN_PLAYER_MESSAGE = "&c" + "You have been banned for: {message}, by {sender}";
     public String BAN_PLAYER_BROADCAST = "&c" + "{player} has been banned for: {message}, by {sender}";
     public String TEMP_BAN_BROADCAST = "&c" + "{player} has been temporarily banned for {message} until {time}, by {sender}!";
-    public String TEMP_BAN_MESSAGE = "&c" + "You have been temporarily until {time} for {message}, by {sender}!";
+    public String TEMP_BAN_MESSAGE = "&c" + "You have been temporarily banned until {time} for {message}, by {sender}!";
     public String PLAYER_UNBANNED = "&2" + "{player} has been unbanned by {sender}!";
 
     public String SENT_HOME = "&2" + "You have been sent home";

@@ -179,6 +179,7 @@ public class TeleportManager {
     public static void tpAll(String sender, String target) {
         GSPlayer p = PlayerManager.getPlayer(sender);
         GSPlayer t = PlayerManager.getSimilarPlayer(target);
+
         if (t == null) {
             p.sendMessage(ConfigManager.messages.PLAYER_NOT_ONLINE);
             return;
