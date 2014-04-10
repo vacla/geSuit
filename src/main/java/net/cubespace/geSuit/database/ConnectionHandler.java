@@ -25,6 +25,14 @@ public class ConnectionHandler {
         return (System.currentTimeMillis() - lastUsed) > 30000;
     }
 
+    public void addPreparedStatement(String name, String query, int mode) {
+        try {
+            preparedStatements.put(name, connection.prepareStatement(query, mode));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void addPreparedStatement(String name, String query) {
         try {
             preparedStatements.put(name, connection.prepareStatement(query));

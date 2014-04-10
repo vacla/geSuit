@@ -69,7 +69,7 @@ public class ConnectionPool {
 
                 if (!doesTableExist(tableInformation[0])) {
                     try {
-                        standardQuery("CREATE TABLE `"+ tableInformation[0] +"` (" + tableInformation[1] + ");");
+                        standardQuery("CREATE TABLE IF NOT EXISTS `"+ tableInformation[0] +"` (" + tableInformation[1] + ");");
                     } catch (SQLException e) {
                         e.printStackTrace();
                         geSuit.instance.getLogger().severe("Could not create Table");

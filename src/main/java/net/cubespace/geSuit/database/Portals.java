@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.database;
 
+import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Portal;
@@ -127,7 +128,7 @@ public class Portals implements IRepository {
 
     @Override
     public String[] getTable() {
-        return new String[]{"portals", "portalname VARCHAR(100), " +
+        return new String[]{ConfigManager.main.Table_Portals, "portalname VARCHAR(100), " +
                 "server VARCHAR(100)," +
                 "type VARCHAR(20), " +
                 "destination VARCHAR(100), " +
@@ -144,10 +145,10 @@ public class Portals implements IRepository {
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
-        connection.addPreparedStatement("getPortals", "SELECT * FROM portals");
-        connection.addPreparedStatement("deletePortal", "DELETE FROM portals WHERE portalname = ?");
-        connection.addPreparedStatement("insertPortal", "INSERT INTO portals (portalname,server,type,destination,world,filltype,xmax,xmin,ymax,ymin,zmax,zmin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
-        connection.addPreparedStatement("updatePortal", "UPDATE portals SET server=?, world=?, type =?, filltype = ?, destination = ?, xmax=?, ymax=?, zmax=?, xmin = ?, ymin = ?, zmin = ? WHERE portalname=?");
+        connection.addPreparedStatement("getPortals", "SELECT * FROM " + ConfigManager.main.Table_Portals);
+        connection.addPreparedStatement("deletePortal", "DELETE FROM "+ ConfigManager.main.Table_Portals +" WHERE portalname = ?");
+        connection.addPreparedStatement("insertPortal", "INSERT INTO "+ ConfigManager.main.Table_Portals +" (portalname,server,type,destination,world,filltype,xmax,xmin,ymax,ymin,zmax,zmin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
+        connection.addPreparedStatement("updatePortal", "UPDATE "+ ConfigManager.main.Table_Portals +" SET server=?, world=?, type =?, filltype = ?, destination = ?, xmax=?, ymax=?, zmax=?, xmin = ?, ymin = ?, zmin = ? WHERE portalname=?");
     }
 
     @Override

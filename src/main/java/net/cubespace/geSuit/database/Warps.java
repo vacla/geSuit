@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.database;
 
+import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Warp;
@@ -100,7 +101,7 @@ public class Warps implements IRepository {
 
     @Override
     public String[] getTable() {
-        return new String[]{"warps", "warpname VARCHAR(100), " +
+        return new String[]{ConfigManager.main.Table_Warps, "warpname VARCHAR(100), " +
                 "server VARCHAR(100), " +
                 "world VARCHAR(100), " +
                 "x DOUBLE, " +
@@ -115,10 +116,10 @@ public class Warps implements IRepository {
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
-        connection.addPreparedStatement("getWarps", "SELECT * FROM warps");
-        connection.addPreparedStatement("insertWarp", "INSERT INTO warps (warpname, server, world, x, y, z, yaw, pitch, hidden, global) VALUES (?,?,?,?,?,?,?,?,?,?)");
-        connection.addPreparedStatement("updateWarp", "UPDATE warps SET server=?, world=?, x=?, y=?, z=?, yaw=?, pitch=?, hidden=?, global=? WHERE warpname=?");
-        connection.addPreparedStatement("deleteWarp", "DELETE FROM warps WHERE warpname=?");
+        connection.addPreparedStatement("getWarps", "SELECT * FROM "+ ConfigManager.main.Table_Warps);
+        connection.addPreparedStatement("insertWarp", "INSERT INTO "+ ConfigManager.main.Table_Warps +" (warpname, server, world, x, y, z, yaw, pitch, hidden, global) VALUES (?,?,?,?,?,?,?,?,?,?)");
+        connection.addPreparedStatement("updateWarp", "UPDATE "+ ConfigManager.main.Table_Warps +" SET server=?, world=?, x=?, y=?, z=?, yaw=?, pitch=?, hidden=?, global=? WHERE warpname=?");
+        connection.addPreparedStatement("deleteWarp", "DELETE FROM "+ ConfigManager.main.Table_Warps +" WHERE warpname=?");
     }
 
     @Override
