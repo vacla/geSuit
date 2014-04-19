@@ -56,7 +56,11 @@ public class Bans implements IRepository {
             banPlayer.setString(5, reason);
             banPlayer.setString(6, type);
 
-            return banPlayer.executeUpdate();
+            banPlayer.executeUpdate();
+            ResultSet rs = banPlayer.getGeneratedKeys();
+            if ( rs != null && rs.next() ) {
+                return rs.getInt( 1 );
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
