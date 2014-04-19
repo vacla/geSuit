@@ -174,4 +174,27 @@ public class PlayerManager {
         return onlinePlayers.get(player);
     }
 
+    public static String getLastSeeninfosStripped(String player) {
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("dd MMM yyyy HH:mm");
+        GSPlayer p = getPlayer(player);
+        if (p == null) { //Offline
+            p = DatabaseManager.players.loadPlayer(player);
+            if (p == null) //Unknown player
+            {
+                return ConfigManager.messages.PLAYER_DOES_NOT_EXIST;
+            } else {
+                return ConfigManager.messages.PLAYER_SEEN_OFFLINE
+                        .replace("{player}", p.getName())
+                        .replace("{ip}", "[Stripped]")
+                        .replace("{seen}", sdf.format(p.getLastOnline()));
+            }
+        } else { //Online
+            return ConfigManager.messages.PLAYER_SEEN_ONLINE
+                    .replace("{player}", p.getName())
+                    .replace("{ip}","[Stripped]")
+                    .replace("{server}", p.getServer());
+        }
+    }
+
 }
