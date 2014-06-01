@@ -13,7 +13,6 @@ public class HomeCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 
-        Bukkit.getPlayer(sender.getName()).saveData();
 		if(args.length==0){
             HomesManager.getHomesList(sender);
 		}else{

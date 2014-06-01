@@ -49,6 +49,7 @@ public class HomesManager {
                 Integer lL = lastLocation.get(player).hashCode();
                 Integer cL = player.getLocation().hashCode();
                 if (lL == cL) {
+                    Bukkit.getPlayer(sender.getName()).saveData();
                     ByteArrayOutputStream b = new ByteArrayOutputStream();
                     DataOutputStream out = new DataOutputStream(b);
                     try {
