@@ -17,7 +17,6 @@ public class HomeCommand implements CommandExecutor {
 		if(args.length==0){
             HomesManager.sendHome(sender, "home");
 		}else{
-
 			HomesManager.sendHome(sender, args[0]);
 		}
 		return true;

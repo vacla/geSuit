@@ -9,7 +9,7 @@
     <name>geSuitHomes</name>
 
     <properties>
-        <build.number>${BUILD_NUMBER}</build.number>
+        <build.number>MyM-Snapshot</build.number>
     </properties>
 
     <repositories>

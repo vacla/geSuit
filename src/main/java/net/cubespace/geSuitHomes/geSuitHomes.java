@@ -37,5 +37,9 @@ public class geSuitHomes extends JavaPlugin {
 				new HomesListener(), this);
 	}
 
+    public static geSuitHomes getInstance() {
+        return instance;
+    }
+
 
 }
