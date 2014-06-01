@@ -1,6 +1,7 @@
 package net.cubespace.geSuitTeleports.commands;
 
 
+import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,10 +10,21 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.logging.Level;
+
 public class TPCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand( CommandSender sender, Command command, String label, String[] args ) {
+        try {
+            Bukkit.getPlayer(sender.getName()).saveData();
+            if (args[0] != null) {
+                Bukkit.getPlayer(args[0]).saveData();
+            }
+        } catch (Exception e) {
+            geSuitTeleports.getInstance().getLogger().log(Level.SEVERE, "Could not save player data!", e);
+        }
+
         if ( !( sender instanceof Player ) ) {
             if ( args.length == 2 ) {
                 Bukkit.getPlayer( args[0] ).teleport( Bukkit.getPlayer( args[1] ) );

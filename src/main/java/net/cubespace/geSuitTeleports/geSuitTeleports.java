@@ -50,5 +50,8 @@ public class geSuitTeleports extends JavaPlugin {
                 new TeleportsListener(), this);
     }
 
+    public static geSuitTeleports getInstance() {
+        return instance;
+    }
 
 }
