@@ -15,7 +15,7 @@ public class HomeCommand implements CommandExecutor {
 
         Bukkit.getPlayer(sender.getName()).saveData();
 		if(args.length==0){
-            HomesManager.sendHome(sender, "home");
+            HomesManager.getHomesList(sender);
 		}else{
 			HomesManager.sendHome(sender, args[0]);
 		}
