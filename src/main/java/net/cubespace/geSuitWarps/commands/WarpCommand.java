@@ -14,7 +14,6 @@ public class WarpCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
-        Bukkit.getPlayer(sender.getName()).saveData();
 		if(args.length==1){
             WarpsManager.warpPlayer(sender, sender.getName(), args[0]);
 			return true;

@@ -31,6 +31,7 @@ public class WarpsManager {
                 Integer cL = player.getLocation().hashCode();
 
                 if (lL == cL) {
+                    player.saveData();
                     ByteArrayOutputStream b = new ByteArrayOutputStream();
                     DataOutputStream out = new DataOutputStream(b);
                     try {
