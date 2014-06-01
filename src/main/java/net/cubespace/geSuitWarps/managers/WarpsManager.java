@@ -2,6 +2,7 @@ package net.cubespace.geSuitWarps.managers;
 
 import net.cubespace.geSuitWarps.geSuitWarps;
 import net.cubespace.geSuitWarps.tasks.PluginMessageTask;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -9,23 +10,48 @@ import org.bukkit.entity.Player;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 
 public class WarpsManager {
-    public static void warpPlayer( CommandSender sender, String player, String warp ) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( b );
-        try {
-            out.writeUTF( "WarpPlayer" );
-            out.writeUTF( sender.getName() );
-            out.writeUTF( player );
-            out.writeUTF( warp );
-            out.writeBoolean( sender.hasPermission( "gesuit.warps.warp." + warp.toLowerCase() ) || sender.hasPermission( "gesuit.warps.warp.*" ) );
-            out.writeBoolean( sender.hasPermission( "gesuit.warps.bypass" ) );
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitWarps.instance );
+
+    static HashMap<Player, Location> lastLocation = new HashMap<>();
+
+    public static void warpPlayer( final CommandSender sender, final String senderName, final String warp ) {
+        final Player player = Bukkit.getPlayer(sender.getName());
+        Location currentLocation = player.getLocation();
+        lastLocation.put(player, player.getLocation());
+
+        player.sendMessage("Teleportation in progress, don't move!");
+
+        geSuitWarps.getInstance().getServer().getScheduler().runTaskLater(geSuitWarps.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                Integer lL = lastLocation.get(player).hashCode();
+                Integer cL = player.getLocation().hashCode();
+
+                if (lL == cL) {
+                    ByteArrayOutputStream b = new ByteArrayOutputStream();
+                    DataOutputStream out = new DataOutputStream(b);
+                    try {
+                        out.writeUTF("WarpPlayer");
+                        out.writeUTF(sender.getName());
+                        out.writeUTF(senderName);
+                        out.writeUTF(warp);
+                        out.writeBoolean(sender.hasPermission("gesuit.warps.warp." + warp.toLowerCase()) || sender.hasPermission("gesuit.warps.warp.*"));
+                        out.writeBoolean(sender.hasPermission("gesuit.warps.bypass"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    new PluginMessageTask(b).runTaskAsynchronously(geSuitWarps.instance);
+                }
+                else {
+                    player.sendMessage("You moved, teleportation aborted!");
+                }
+            }
+        }, 100L);
+
+
     }
 
     public static void setWarp( CommandSender sender, String name, boolean hidden, boolean global ) {

@@ -35,4 +35,8 @@ public class geSuitWarps extends JavaPlugin {
 				new WarpsListener(), this);
 	}
 
+    public static geSuitWarps getInstance() {
+        return instance;
+    }
+
 }
