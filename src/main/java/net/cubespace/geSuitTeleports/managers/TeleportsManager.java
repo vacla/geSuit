@@ -178,7 +178,7 @@ public class TeleportsManager {
                     Location l = LocationUtil.getSafeDestination(p, t);
                     p.teleport(l);
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             } else {
                 p.teleport(t);
