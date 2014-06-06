@@ -21,6 +21,8 @@ public class TeleportsManager {
     public static HashMap<String, Location> pendingTeleportLocations = new HashMap<String, Location>();
     public static ArrayList<Player> ignoreTeleport = new ArrayList<Player>();
 
+    static HashMap<Player, Location> lastLocation = new HashMap<Player, Location>();
+
     public static void tpAll( CommandSender sender, String targetPlayer ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
@@ -62,18 +64,45 @@ public class TeleportsManager {
 
     }
 
-    public static void tpAccept( CommandSender sender ) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( b );
-        try {
-            out.writeUTF( "TpAccept" );
-            out.writeUTF( sender.getName() );
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+    public static void tpAccept( final CommandSender sender ) {
+        final Player player = Bukkit.getPlayer(sender.getName());
 
-    }
+        if (!player.hasPermission("gesuit.teleports.bypass.delay")) {
+            lastLocation.put(player, player.getLocation());
+            player.sendMessage("Teleportation in progress, don't move!");
+
+            geSuitTeleports.getInstance().getServer().getScheduler().runTaskLater(geSuitTeleports.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    if (lastLocation.get(player).getBlock().equals(player.getLocation().getBlock())) {
+                        player.saveData();
+                        ByteArrayOutputStream b = new ByteArrayOutputStream();
+                        DataOutputStream out = new DataOutputStream(b);
+                        try {
+                            out.writeUTF("TpAccept");
+                            out.writeUTF(sender.getName());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+                    } else {
+                        player.sendMessage("You moved, teleportation aborted!");
+                    }
+                }
+            }, 100L);
+        } else {
+            player.saveData();
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(b);
+            try {
+                out.writeUTF("TpAccept");
+                out.writeUTF(sender.getName());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+        }
+}
 
     public static void tpDeny( String sender ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -122,18 +151,48 @@ public class TeleportsManager {
         new PluginMessageTask( b, empty ).runTaskAsynchronously( geSuitTeleports.instance );
     }
 
-    public static void sendPlayerBack( CommandSender sender ) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( b );
-        try {
-            out.writeUTF( "SendPlayerBack" );
-            out.writeUTF( sender.getName() );
-            out.writeBoolean( sender.hasPermission( "gesuit.teleports.back.death" ) );
-            out.writeBoolean( sender.hasPermission( "gesuit.teleports.back.teleport" ) );
-        } catch ( IOException e ) {
-            e.printStackTrace();
+    public static void sendPlayerBack( final CommandSender sender ) {
+        final Player player = Bukkit.getPlayer(sender.getName());
+
+        if (!player.hasPermission("gesuit.teleports.bypass.delay")) {
+            lastLocation.put(player, player.getLocation());
+            player.sendMessage("Teleportation in progress, don't move!");
+
+            geSuitTeleports.getInstance().getServer().getScheduler().runTaskLater(geSuitTeleports.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    if (lastLocation.get(player).getBlock().equals(player.getLocation().getBlock())) {
+                        player.saveData();
+                        ByteArrayOutputStream b = new ByteArrayOutputStream();
+                        DataOutputStream out = new DataOutputStream(b);
+                        try {
+                            out.writeUTF("SendPlayerBack");
+                            out.writeUTF(sender.getName());
+                            out.writeBoolean(sender.hasPermission("gesuit.teleports.back.death"));
+                            out.writeBoolean(sender.hasPermission("gesuit.teleports.back.teleport"));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+                    } else {
+                        player.sendMessage("You moved, teleportation aborted!");
+                    }
+                }
+            }, 100L);
+        } else {
+            player.saveData();
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(b);
+            try {
+                out.writeUTF("SendPlayerBack");
+                out.writeUTF(sender.getName());
+                out.writeBoolean(sender.hasPermission("gesuit.teleports.back.death"));
+                out.writeBoolean(sender.hasPermission("gesuit.teleports.back.teleport"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
     }
 
     public static void toggleTeleports( String name ) {
@@ -197,20 +256,52 @@ public class TeleportsManager {
         }
     }
 
-    public static void teleportToPlayer( CommandSender sender, String player, String target ) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( b );
-        try {
-            out.writeUTF( "TeleportToPlayer" );
-            out.writeUTF( sender.getName() );
-            out.writeUTF( player );
-            out.writeUTF( target );
-            out.writeBoolean( sender.hasPermission( "gesuit.teleports.tp.silent" ) );
-            out.writeBoolean( sender.hasPermission( "gesuit.teleports.tp.bypass" ) );
-        } catch ( IOException e ) {
-            e.printStackTrace();
+    public static void teleportToPlayer( final CommandSender sender, final String playerName, final String target ) {
+        final Player player = Bukkit.getPlayer(sender.getName());
+
+        if (!player.hasPermission("gesuit.teleports.bypass.delay")) {
+            lastLocation.put(player, player.getLocation());
+            player.sendMessage("Teleportation in progress, don't move!");
+
+            geSuitTeleports.getInstance().getServer().getScheduler().runTaskLater(geSuitTeleports.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    if (lastLocation.get(player).getBlock().equals(player.getLocation().getBlock())) {
+                        player.saveData();
+                        ByteArrayOutputStream b = new ByteArrayOutputStream();
+                        DataOutputStream out = new DataOutputStream(b);
+                        try {
+                            out.writeUTF("TeleportToPlayer");
+                            out.writeUTF(sender.getName());
+                            out.writeUTF(playerName);
+                            out.writeUTF(target);
+                            out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.silent"));
+                            out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.bypass"));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+                    } else {
+                        player.sendMessage("You moved, teleportation aborted!");
+                    }
+                }
+            }, 100L);
+        } else {
+            player.saveData();
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(b);
+            try {
+                out.writeUTF("TeleportToPlayer");
+                out.writeUTF(sender.getName());
+                out.writeUTF(playerName);
+                out.writeUTF(target);
+                out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.silent"));
+                out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.bypass"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
     }
 
     public static void teleportToLocation( String player, String server, String world, Double x, Double y, Double z) {

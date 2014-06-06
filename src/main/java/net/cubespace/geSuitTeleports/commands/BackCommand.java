@@ -14,7 +14,6 @@ public class BackCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 
-        Bukkit.getPlayer(sender.getName()).saveData();
         TeleportsManager.sendPlayerBack(sender);
 			return true;
 	}
