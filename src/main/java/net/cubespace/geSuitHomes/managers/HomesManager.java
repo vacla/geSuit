@@ -20,8 +20,6 @@ import java.util.Set;
 
 public class HomesManager {
 
-    static HashMap<Player, Location> lastLocation = new HashMap<Player, Location>();
-
     public static void deleteHome( CommandSender sender, String home ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
@@ -36,36 +34,17 @@ public class HomesManager {
 
     }
 
-    public static void sendHome( final CommandSender sender, final String home ) {
-        final Player player = Bukkit.getPlayer(sender.getName());
-        Location currentLocation = player.getLocation();
-        lastLocation.put(player, player.getLocation());
-
-        player.sendMessage("Teleportation in progress, don't move!");
-
-        geSuitHomes.getInstance().getServer().getScheduler().runTaskLater(geSuitHomes.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                Integer lL = lastLocation.get(player).hashCode();
-                Integer cL = player.getLocation().hashCode();
-                if (lL == cL) {
-                    Bukkit.getPlayer(sender.getName()).saveData();
-                    ByteArrayOutputStream b = new ByteArrayOutputStream();
-                    DataOutputStream out = new DataOutputStream(b);
-                    try {
-                        out.writeUTF("SendPlayerHome");
-                        out.writeUTF(sender.getName());
-                        out.writeUTF(home);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    new PluginMessageTask(b).runTaskAsynchronously(geSuitHomes.instance);
-                }
-                else {
-                    player.sendMessage("You moved, teleportation aborted!");
-                }
+    public static void sendHome( CommandSender sender, String home ) {
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(b);
+            try {
+                out.writeUTF("SendPlayerHome");
+                out.writeUTF(sender.getName());
+                out.writeUTF(home);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }, 100L);
+            new PluginMessageTask(b).runTaskAsynchronously(geSuitHomes.instance);
     }
 
     public static void getHomesList( CommandSender sender ) {
