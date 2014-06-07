@@ -61,9 +61,11 @@ commands:
         permission: gesuit.bans.command.tempban
         permission-message: §cYou do not have permission for this command
         usage: |
-               "/<command> (player) (time) (reason)"
-               "/<command> (player) (time) (reason)"        
-               "Example of a (time): 2d5h"
+               /<command> (player) (time) (reason)
+               /<command> (player) (time) (reason)        
+               Example: /command bob 2d5h building things
+               Valid time units: s (seconds), m (minutes),
+               h (hours), d (days) and w (weeks)
     unban:
         description: Unbans a player from the proxy
         aliases: [uban, removeban, pardon]

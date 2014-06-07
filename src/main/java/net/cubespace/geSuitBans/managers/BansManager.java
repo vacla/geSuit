@@ -54,9 +54,7 @@ public class BansManager {
 
     }
 
-    public static void tempBanPlayer( String sender, String player, String timing, String reason ) {
-        int seconds = TimeParser.parseString(timing);
-
+    public static void tempBanPlayer( String sender, String player, int seconds, String reason ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -70,6 +68,17 @@ public class BansManager {
         }
         new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
     }
+
+    /**
+     *
+     * @deprecated Does not validate timing is non-zero or a valid time.
+     */
+    @Deprecated
+    public static void tempBanPlayer( String sender, String player, String timing, String reason ) {
+        int seconds = TimeParser.parseString(timing);
+        tempBanPlayer( sender, player, seconds, reason );
+    }
+
 
     public static void unbanPlayer( String sender, String player ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();

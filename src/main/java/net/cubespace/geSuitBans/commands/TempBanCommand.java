@@ -3,6 +3,7 @@ package net.cubespace.geSuitBans.commands;
 import java.util.Arrays;
 import net.cubespace.geSuitBans.managers.BansManager;
 import net.cubespace.geSuitBans.utils.StringUtils;
+import net.cubespace.geSuitBans.utils.TimeParser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,16 +11,23 @@ import org.bukkit.command.CommandSender;
 
 public class TempBanCommand implements CommandExecutor {
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command,
-			String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command,
+            String label, String[] args) {
 
-		if(args.length > 1){
-			BansManager.tempBanPlayer(sender.getName(), args[0], args[1], (args.length > 2) ? StringUtils.join(Arrays.copyOfRange(args, 2, args.length), " ") : "");
-			return true;
-		}
+        if(args.length > 1){
+            String player = args[0];
+            String timing = args[1];
+            String reason = (args.length > 2) ? StringUtils.join(Arrays.copyOfRange(args, 2, args.length), " ") : "";
+            int seconds = TimeParser.parseString(timing);
+            if (seconds == 0) {
+                return false;
+            }
+            BansManager.tempBanPlayer(sender.getName(), player, seconds, reason);
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
 }
