@@ -46,6 +46,21 @@ public class HomesManager {
             }
             new PluginMessageTask(b).runTaskAsynchronously(geSuitHomes.instance);
     }
+    
+    public static void sendOtherHome( CommandSender sender, String player, String home ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "SendOtherPlayerHome" );
+            out.writeUTF( sender.getName() );
+            out.writeUTF( player );
+            out.writeUTF( home );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
+
+    }
 
     public static void getHomesList( CommandSender sender ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -53,6 +68,20 @@ public class HomesManager {
         try {
             out.writeUTF( "GetHomesList" );
             out.writeUTF( sender.getName() );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
+
+    }
+    
+    public static void getOtherHomesList( CommandSender sender, String player ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "GetOtherHomesList" );
+            out.writeUTF( sender.getName() );
+            out.writeUTF( player );
         } catch ( IOException e ) {
             e.printStackTrace();
         }

@@ -35,7 +35,12 @@ public class HomeCommand implements CommandExecutor {
                     public void run() {
                         if (lastLocation.get(player).getBlock().equals(player.getLocation().getBlock())) {
                             player.saveData();
-                            HomesManager.sendHome(sender, args[0]);
+			    if(args.length==1){
+                                HomesManager.sendHome(sender, args[0]);
+			    } else {
+				HomesManager.sendOtherHome(sender, args[0], args[1]);
+			    }
+
                         } else {
                             player.sendMessage("You moved, teleportation aborted!");
                         }
@@ -43,7 +48,11 @@ public class HomeCommand implements CommandExecutor {
                 }, 100L);
             } else {
                 player.saveData();
-                HomesManager.sendHome(sender, args[0]);
+		if(args.length==1){
+		    HomesManager.sendHome(sender, args[0]);
+		} else {
+		    HomesManager.sendOtherHome(sender, args[0], args[1]);
+		}
             }
 		}
 		return true;

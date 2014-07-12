@@ -11,7 +11,11 @@ public class HomesCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
-		HomesManager.getHomesList(sender);
+                if (args.length == 1) {
+                    HomesManager.getOtherHomesList(sender, args[0]);
+                } else {
+                    HomesManager.getHomesList(sender);
+                }
 		return true;
 	}
 
