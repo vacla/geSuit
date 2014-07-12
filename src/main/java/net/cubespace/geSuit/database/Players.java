@@ -7,7 +7,6 @@ import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -103,13 +102,7 @@ public class Players implements IRepository {
         }
     }
 
-    public void insertPlayerConvert(String player, Timestamp lastonline, String ip, boolean tps) {
-        String uuid = (FeatureDetector.canUseUUID()) ? Utilities.getUUID(player) : null;
-
-        if (FeatureDetector.canUseUUID() && uuid == null) {
-            return;
-        }
-
+    public void insertPlayerConvert(String player, String uuid, Timestamp lastonline, String ip, boolean tps) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
             PreparedStatement insertPlayerConvert = connectionHandler.getPreparedStatement("insertPlayerConvert");

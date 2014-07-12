@@ -18,6 +18,10 @@ import net.cubespace.geSuit.objects.Warp;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -30,15 +34,34 @@ public class Converter {
             ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
-                PreparedStatement selectPlayers = connectionHandler.getPreparedStatement("selectPlayers");
-
-                ResultSet resultSet = selectPlayers.executeQuery();
-
-                while(resultSet.next()) {
-                    DatabaseManager.players.insertPlayerConvert(resultSet.getString("playername"), resultSet.getTimestamp("lastonline"), resultSet.getString("ipaddress"), resultSet.getBoolean("tps"));
+                boolean requireUuid = FeatureDetector.canUseUUID();
+                Map<String,String> playerUuids;
+                if (requireUuid) {
+                    List<String> names = new ArrayList<>();
+                    PreparedStatement selectPlayerNames = connectionHandler.getPreparedStatement("selectPlayerNames");
+                    try (ResultSet resultSet = selectPlayerNames.executeQuery()) {
+                        while (resultSet.next()) {
+                            names.add(resultSet.getString("playername"));
+                        }
+                    }
+                    
+                    playerUuids = Utilities.getUUID(names);
+                } else {
+                    playerUuids = Collections.emptyMap();
                 }
 
-                resultSet.close();
+                PreparedStatement selectPlayers = connectionHandler.getPreparedStatement("selectPlayers");
+
+                try (ResultSet resultSet = selectPlayers.executeQuery()) {
+                    while(resultSet.next()) {
+                        String playerName = resultSet.getString("playername");
+                        String uuid = playerUuids.get(playerName);
+                        if (requireUuid && uuid == null) {
+                            continue;
+                        }
+                        DatabaseManager.players.insertPlayerConvert(playerName, uuid, resultSet.getTimestamp("lastonline"), resultSet.getString("ipaddress"), resultSet.getBoolean("tps"));
+                    }
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
@@ -54,6 +77,7 @@ public class Converter {
         @Override
         public void registerPreparedStatements(ConnectionHandler connection) {
             connection.addPreparedStatement("selectPlayers", "SELECT * FROM BungeePlayers");
+            connection.addPreparedStatement("selectPlayerNames", "SELECT playername FROM BungeePlayers");
         }
 
         @Override
@@ -157,21 +181,34 @@ public class Converter {
             ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
+                boolean requireUuid = FeatureDetector.canUseUUID();
+
+                Map<String, String> playerUuid;
+                if (requireUuid) {
+                    List<String> players = new ArrayList<>();
+                    PreparedStatement selectBanPlayers = connectionHandler.getPreparedStatement("selectBanPlayers");
+                    try (ResultSet res = selectBanPlayers.executeQuery()) {
+                        while (res.next()) {
+                            players.add(res.getString("player"));
+                        }
+                    }
+                    playerUuid = Utilities.getUUID(players);
+                } else {
+                    playerUuid = Collections.emptyMap();
+                }
+
                 PreparedStatement selectBans = connectionHandler.getPreparedStatement("selectBans");
 
                 ResultSet res = selectBans.executeQuery();
                 while (res.next()) {
-                    String uuid = null;
+                    String player = res.getString("player");
+                    String uuid = playerUuid.get(player);
 
-                    if (FeatureDetector.canUseUUID()) {
-                        uuid = Utilities.getUUID(res.getString("player"));
-
-                        if (uuid == null) {
-                            continue;
-                        }
+                    if (requireUuid && uuid == null) {
+                        continue;
                     }
 
-                    DatabaseManager.bans.insertBanConvert(res.getString("banned_by"), res.getString("player"), uuid, null, res.getString("reason"), res.getString("type"), res.getDate("banned_on"), res.getDate("banned_until"));
+                    DatabaseManager.bans.insertBanConvert(res.getString("banned_by"), player, uuid, null, res.getString("reason"), res.getString("type"), res.getDate("banned_on"), res.getDate("banned_until"));
                 }
 
                 res.close();
@@ -189,6 +226,7 @@ public class Converter {
 
         @Override
         public void registerPreparedStatements(ConnectionHandler connection) {
+            connection.addPreparedStatement("selectBanPlayers", "SELECT player FROM BungeeBans");
             connection.addPreparedStatement("selectBans", "SELECT * FROM BungeeBans");
         }
 
