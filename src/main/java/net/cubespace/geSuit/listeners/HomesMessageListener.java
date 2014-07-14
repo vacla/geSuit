@@ -39,6 +39,7 @@ public class HomesMessageListener implements Listener {
 
         String task = in.readUTF();
 
+        // TODO: Add input validation! Don't assume all inputs are valid player names (or online)
         if ( task.equals( "DeleteHome" ) ) {
             HomesManager.deleteHome(in.readUTF(), in.readUTF() );
         } else if ( task.equals( "SendPlayerHome" ) ) { //SendOtherPlayerHome sendPlayerToOtherHome

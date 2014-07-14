@@ -7,6 +7,7 @@ import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.text.SimpleDateFormat;
@@ -91,20 +92,29 @@ public class PlayerManager {
     public static void sendMessageToTarget(CommandSender target, String message) {
         // Shouldnt need it. But let's be cautious.
         if (target == null) {
-            return;
+        	LoggingManager.log("WARNING: sendMessageToTarget(CommandSender, String): Target is null!");
+        	return;
         }
 
         // Not exactly sure where we use the new line besides in the soon-to-be-removed MOTD...
         for (String line : Utilities.colorize(message).split("\n")) {
-            target.sendMessage(line);
+            target.sendMessage(new TextComponent(line));
         }
     }
 
     public static void sendMessageToTarget(GSPlayer target, String message) {
+        if (target == null) {
+        	LoggingManager.log("WARNING: sendMessageToTarget(GSPlayer, String): Target is null!");
+        	return;
+        }
         sendMessageToTarget(target.getProxiedPlayer(), message);
     }
 
     public static void sendMessageToTarget(String target, String message) {
+        if ((target == null) || (target.isEmpty())) {
+        	LoggingManager.log("WARNING: sendMessageToTarget(String, String): Target is null or empty!");
+        	return;
+        }
         sendMessageToTarget(getPlayer(target) != null ? getPlayer(target).getProxiedPlayer() : ProxyServer.getInstance().getConsole(), message);
     }
 
