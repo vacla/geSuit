@@ -10,8 +10,8 @@ import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BansManager {
@@ -182,7 +182,7 @@ public class BansManager {
 
     public static void disconnectPlayer(ProxiedPlayer player, String message) {
         PlayerManager.unloadPlayer(player.getName());
-        player.disconnect(Utilities.colorize(message));
+        player.disconnect(new TextComponent(Utilities.colorize(message)));
     }
 
     public static void reloadBans(String sender) {
