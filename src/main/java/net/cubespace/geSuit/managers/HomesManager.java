@@ -88,7 +88,7 @@ public class HomesManager {
                 homes += h.name + ", ";
             }
 
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SHOWING_YOUR_HOMES);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SHOWING_YOUR_HOMES.replace("{player}", player.getName()));
             PlayerManager.sendMessageToTarget(player, homes.substring(0, homes.length() - 2));
         }
 
@@ -121,7 +121,7 @@ public class HomesManager {
                 homes += h.name + ", ";
             }
 
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.SHOWING_OTHER_HOMES.replace("{message}", player.getName()));
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.SHOWING_OTHER_HOMES.replace("{player}", player.getName()));
             PlayerManager.sendMessageToTarget(sender, homes.substring(0, homes.length() - 2));
         }
 
