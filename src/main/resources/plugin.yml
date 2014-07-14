@@ -6,15 +6,15 @@ author: geNAZt
 commands:
     tp:
         description: Teleports a player to another player or location
-        aliases: [teleport]
+        aliases: [teleport, tpo]
         permission: gesuit.teleports.command.tp
         permission-message: §cYou do not have permission for this command
         usage: |
-               /<command>  (player)
-               /<command>  (player) (player)
-               /<command>  (x) (y) (z) [world]
-               /<command>  (player) (x) (y) (z) [world]
-               /<command>  (server) (world) (x) (y) (z)
+               /<command> (player)
+               /<command> (player) (player)
+               /<command> (x) (y) (z) [world]
+               /<command> (player) (x) (y) (z) [world]
+               /<command> (server) (world) (x) (y) (z)
     tphere:
         description: Teleports a player to you
         aliases: [teleporthere,tptome]
@@ -40,7 +40,7 @@ commands:
         aliases: [tpask,teleportask,tpto]
         permission: gesuit.teleports.command.tpa
         permission-message: §cYou do not have permission for this command
-        usage: /<command>  (player)
+        usage: /<command> (player)
     tpaccept:
         description: Accepts a players teleport request
         aliases: [teleportaccept,tpyes]
