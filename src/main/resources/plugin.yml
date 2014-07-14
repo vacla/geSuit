@@ -6,7 +6,7 @@ author: geNAZt
 commands:
     tp:
         description: Teleports a player to another player or location
-        aliases: [teleport, tpo]
+        aliases: [teleport,tpo]
         permission: gesuit.teleports.command.tp
         permission-message: §cYou do not have permission for this command
         usage: |
@@ -17,7 +17,7 @@ commands:
                /<command> (server) (world) (x) (y) (z)
     tphere:
         description: Teleports a player to you
-        aliases: [teleporthere,tptome]
+        aliases: [teleporthere,tptome,tpohere]
         permission: gesuit.teleports.command.tphere
         permission-message: §cYou do not have permission for this command
         usage: /<command> (player)
