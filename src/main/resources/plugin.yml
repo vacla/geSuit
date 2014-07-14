@@ -6,7 +6,7 @@ author: geNAZt
 commands:
     ban:
         description: Bans a player from the proxy
-        aliases: [banplayer]
+        aliases: [banplayer,db]
         permission: gesuit.bans.command.ban
         permission-message: §cYou do not have permission for this command
         usage: |
@@ -17,20 +17,20 @@ commands:
         aliases: [lookupban,baninfo]
         permission: gesuit.bans.command.checkban
         permission-message: §cYou do not have permission for this command
-        usage: /<command>  (player)
+        usage: /<command> (player)
     banhistory:
         description: Gets the ban history of a player
-        aliases: [bhistory]
+        aliases: [bhistory,dst]
         permission: gesuit.bans.command.banhistory
         permission-message: §cYou do not have permission for this command
-        usage: /<command>  (player)
+        usage: /<command> (player)
     ipban:
         description: Bans an IP from the proxy
-        aliases: [banip]
+        aliases: [banip,dbip]
         permission: gesuit.bans.command.ipban
         permission-message: §cYou do not have permission for this command
         usage: |
-               /<command>  (player)
+               /<command> (player)
                /<command> (ip)
                /<command> (ip/player) (message)
     kick:
@@ -39,7 +39,7 @@ commands:
         permission: gesuit.bans.command.kick
         permission-message: §cYou do not have permission for this command
         usage: |
-               /<command>  (player)
+               /<command> (player)
                /<command> (player) (message)
     kickall:
         description: Kicks everyone from the proxy
@@ -48,7 +48,7 @@ commands:
         permission-message: §cYou do not have permission for this command
         usage: |
                /<command>
-               /<command>  (message)
+               /<command> (message)
     reloadbans:
         description: Reloads the bans config
         aliases: [bansreload, reloadban, banreload]
@@ -57,7 +57,7 @@ commands:
         usage: /<command>
     tempban:
         description: Temporarily bans a player from the proxy
-        aliases: [tban, bant, bantemp]
+        aliases: [tban,bant,bantemp,dtb]
         permission: gesuit.bans.command.tempban
         permission-message: §cYou do not have permission for this command
         usage: |
@@ -68,13 +68,13 @@ commands:
                h (hours), d (days) and w (weeks)
     unban:
         description: Unbans a player from the proxy
-        aliases: [uban, removeban, pardon]
+        aliases: [uban,removeban,pardon,dub]
         permission: gesuit.bans.command.ban
         permission-message: §cYou do not have permission for this command
         usage: /<command> (player)
     unipban:
         description: Unbans an IP from the proxy
-        aliases: [ipunban, unbanip, ipsafe, safeip]
+        aliases: [ipunban,unbanip,ipsafe,safeip,dubip]
         permission: gesuit.bans.command.ipban
         permission-message: §cYou do not have permission for this command
         usage: /<command> (ip)
