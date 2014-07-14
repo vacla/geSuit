@@ -96,7 +96,7 @@ public class Messages extends Config {
     public String NO_HOMES_ALLOWED_SERVER = "&c" + "Your are not able to set anymore homes on this server";
     public String NO_HOMES_ALLOWED_GLOBAL = "&c" + "Your are not able to set anymore homes globally";
     public String NO_HOMES = "&c" + "You do not have any set homes";
-    public String SHOWING_YOUR_HOMES = "&eShowing your homes:";
+    public String SHOWING_YOUR_HOMES = "&eYour homes:";
     public String SHOWING_OTHER_HOMES = "&eShowing homes of {player}:";
     public String HOMES_PREFIX_THIS_SERVER = "&a{server}: &9";
     public String HOMES_PREFIX_OTHER_SERVER = "&e{server}: &9";

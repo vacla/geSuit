@@ -35,7 +35,7 @@ public class HomesManager {
             player.getHomes().get(player.getServer()).add(homeObject);
             DatabaseManager.homes.addHome(homeObject);
 
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_SET);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_SET.replace("{home}", home));
         } else {
             Home home1 = getHome(player, home);
             home1.setLoc(loc);
@@ -71,6 +71,7 @@ public class HomesManager {
             return;
         }
 
+        PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SHOWING_YOUR_HOMES.replace("{player}", player.getName()));
         for (String server : player.getHomes().keySet()) {
         	// Skip if the home list for this server is empty (shouldn't happen)
         	if (player.getHomes().get(server).isEmpty()) {
@@ -88,7 +89,6 @@ public class HomesManager {
                 homes += h.name + ", ";
             }
 
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SHOWING_YOUR_HOMES.replace("{player}", player.getName()));
             PlayerManager.sendMessageToTarget(player, homes.substring(0, homes.length() - 2));
         }
 
@@ -104,6 +104,7 @@ public class HomesManager {
             return;
         }
 
+        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.SHOWING_OTHER_HOMES.replace("{player}", player.getName()));
         for (String server : player.getHomes().keySet()) {
         	// Skip if the home list for this server is empty (shouldn't happen)
         	if (player.getHomes().get(server).isEmpty()) {
@@ -121,7 +122,6 @@ public class HomesManager {
                 homes += h.name + ", ";
             }
 
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.SHOWING_OTHER_HOMES.replace("{player}", player.getName()));
             PlayerManager.sendMessageToTarget(sender, homes.substring(0, homes.length() - 2));
         }
 
