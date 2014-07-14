@@ -91,10 +91,15 @@ public class Messages extends Config {
     public String TEMP_BAN_MESSAGE = "&c" + "You have been temporarily banned until {time} for {message}, by {sender}!";
     public String PLAYER_UNBANNED = "&2" + "{player} has been unbanned by {sender}!";
 
+    // Home messages
     public String SENT_HOME = "&2" + "You have been sent home";
     public String NO_HOMES_ALLOWED_SERVER = "&c" + "Your are not able to set anymore homes on this server";
     public String NO_HOMES_ALLOWED_GLOBAL = "&c" + "Your are not able to set anymore homes globally";
     public String NO_HOMES = "&c" + "You do not have any set homes";
+    public String SHOWING_YOUR_HOMES = "&eShowing your homes:";
+    public String SHOWING_OTHER_HOMES = "&eShowing homes of {player}:";
+    public String HOMES_PREFIX_THIS_SERVER = "&a{server}: &9";
+    public String HOMES_PREFIX_OTHER_SERVER = "&e{server}: &9";
 
     public String HOME_UPDATED = "&2" + "Your home has been updated";
     public String HOME_SET = "&2" + "Your home has been set";

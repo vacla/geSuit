@@ -71,27 +71,24 @@ public class HomesManager {
             return;
         }
 
-        boolean empty = true;
         for (String server : player.getHomes().keySet()) {
-            String homes;
+        	// Skip if the home list for this server is empty (shouldn't happen)
+        	if (player.getHomes().get(server).isEmpty()) {
+            	continue;
+            }
 
+            String homes;
             if (server.equals(player.getServer())) {
-                homes = ChatColor.RED + server + ": " + ChatColor.BLUE;
+                homes = ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server);
             } else {
-                homes = ChatColor.GOLD + server + ": " + ChatColor.BLUE;
+            	homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
             }
 
             for (Home h : player.getHomes().get(server)) {
                 homes += h.name + ", ";
-                empty = false;
             }
 
-            if (empty) {
-                PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_HOMES);
-                return;
-            }
-
-            PlayerManager.sendMessageToTarget(player, "Showing own homes");
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SHOWING_YOUR_HOMES);
             PlayerManager.sendMessageToTarget(player, homes.substring(0, homes.length() - 2));
         }
 
@@ -99,7 +96,7 @@ public class HomesManager {
     
     public static void listOtherPlayersHomes(GSPlayer sender, GSPlayer player) {
         if (player == null) {
-            PlayerManager.sendMessageToTarget(sender, "Player is not online.");
+            PlayerManager.sendMessageToTarget(sender, "Player is not online (offline lookup not implemented yet).");
             return;
         }
         if (player.getHomes().isEmpty()) {
@@ -107,28 +104,24 @@ public class HomesManager {
             return;
         }
 
-        boolean empty = true;
         for (String server : player.getHomes().keySet()) {
-            String homes;
+        	// Skip if the home list for this server is empty (shouldn't happen)
+        	if (player.getHomes().get(server).isEmpty()) {
+            	continue;
+            }
 
+            String homes;
             if (server.equals(player.getServer())) {
-                homes = ChatColor.RED + server + ": " + ChatColor.BLUE;
+                homes = ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server);
             } else {
-                homes = ChatColor.GOLD + server + ": " + ChatColor.BLUE;
+            	homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
             }
 
             for (Home h : player.getHomes().get(server)) {
                 homes += h.name + ", ";
-                empty = false;
             }
 
-            if (empty) {
-                PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_HOMES);
-                return;
-            }
-
-            
-            PlayerManager.sendMessageToTarget(sender, "Showing homes for " + player.getName());
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.SHOWING_OTHER_HOMES.replace("{message}", player.getName()));
             PlayerManager.sendMessageToTarget(sender, homes.substring(0, homes.length() - 2));
         }
 
