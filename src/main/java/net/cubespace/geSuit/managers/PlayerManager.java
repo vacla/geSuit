@@ -98,7 +98,7 @@ public class PlayerManager {
 
         // Not exactly sure where we use the new line besides in the soon-to-be-removed MOTD...
         for (String line : Utilities.colorize(message).split("\n")) {
-            target.sendMessage(new TextComponent(line));
+            target.sendMessage(TextComponent.fromLegacyText(line));
         }
     }
 

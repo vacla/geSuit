@@ -3,8 +3,9 @@ package net.cubespace.geSuit.objects;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
-import net.cubespace.geSuit.Utilities;
+
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -58,7 +59,7 @@ public class GSPlayer
     public void sendMessage(String message)
     {
         for (String line : message.split("\n")) {
-            getProxiedPlayer().sendMessage(Utilities.colorize(line));
+            getProxiedPlayer().sendMessage(TextComponent.fromLegacyText(line));
         }
     }
 

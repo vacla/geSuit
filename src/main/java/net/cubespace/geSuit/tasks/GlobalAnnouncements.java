@@ -2,8 +2,10 @@ package net.cubespace.geSuit.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
 import net.cubespace.geSuit.Utilities;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class GlobalAnnouncements implements Runnable
@@ -31,7 +33,7 @@ public class GlobalAnnouncements implements Runnable
         for (ProxiedPlayer player : players) {
             for (String line : list.get(count).split("\n")) {
                 // not sure if everything is thread safe. In doubt, leaving that one. It's colorized anyway.
-                player.sendMessage(line);
+                player.sendMessage(TextComponent.fromLegacyText(line));
             }
         }
 

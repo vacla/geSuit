@@ -284,9 +284,6 @@ public class BansManager {
         int count = 0;
         for (Ban b : warns) {
         	count++;
-            if (count > 1) {
-                PlayerManager.sendMessageToTarget(p, "");
-            }
             SimpleDateFormat sdf = new SimpleDateFormat();
             sdf.applyPattern("dd MMM yyyy HH:mm");
             PlayerManager.sendMessageToTarget(p,
