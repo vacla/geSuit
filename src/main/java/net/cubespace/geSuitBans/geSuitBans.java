@@ -24,8 +24,10 @@ public class geSuitBans extends JavaPlugin {
 
     private void registerCommands() {
         getCommand( "ban" ).setExecutor( new BanCommand() );
+        getCommand( "warn" ).setExecutor( new BanCommand() );
         getCommand( "checkban" ).setExecutor( new CheckBanCommand() );
         getCommand( "banhistory" ).setExecutor( new BanHistoryCommand() );
+        getCommand( "warnhistory" ).setExecutor( new BanHistoryCommand() );
         getCommand( "ipban" ).setExecutor( new IPBanCommand() );
         getCommand( "kick" ).setExecutor( new KickCommand() );
         getCommand( "kickall" ).setExecutor( new KickAllCommand() );

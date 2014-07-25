@@ -12,6 +12,14 @@ commands:
         usage: |
                /<command> (player)
                /<command> (player) (message)
+    warn:
+        description: Issues an official warning to a player
+        aliases: [warnplayer,dw]
+        permission: gesuit.bans.command.warn
+        permission-message: §cYou do not have permission for this command
+        usage: |
+               /<command> (player)
+               /<command> (player) (message)
     checkban:
         description: Gets info about a players ban
         aliases: [lookupban,baninfo]
@@ -20,8 +28,12 @@ commands:
         usage: /<command> (player)
     banhistory:
         description: Gets the ban history of a player
-        aliases: [bhistory,dst]
         permission: gesuit.bans.command.banhistory
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
+    warnhistory:
+        description: Gets the warning history of a player
+        permission: gesuit.bans.command.warnhistory
         permission-message: §cYou do not have permission for this command
         usage: /<command> (player)
     ipban:

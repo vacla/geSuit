@@ -25,6 +25,20 @@ public class BansManager {
         new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
     }
 
+    public static void warnPlayer( String sender, String player, String msg ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "WarnPlayer" );
+            out.writeUTF( sender );
+            out.writeUTF( player );
+            out.writeUTF( msg );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+    }
+
     public static void kickAll( String sender, String msg ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
@@ -161,6 +175,18 @@ public class BansManager {
         new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
     }
 
+    public static void displayPlayerWarnHistory( String sender, String player ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "DisplayPlayerWarnHistory" );
+            out.writeUTF( sender );
+            out.writeUTF( player );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+    }
 
     public static void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
