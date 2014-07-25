@@ -10,6 +10,9 @@ import net.cubespace.geSuitBans.commands.ReloadBansCommand;
 import net.cubespace.geSuitBans.commands.TempBanCommand;
 import net.cubespace.geSuitBans.commands.UnBanIPCommand;
 import net.cubespace.geSuitBans.commands.UnbanCommand;
+import net.cubespace.geSuitBans.commands.WarnCommand;
+import net.cubespace.geSuitBans.commands.WarnHistoryCommand;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class geSuitBans extends JavaPlugin {
@@ -24,10 +27,10 @@ public class geSuitBans extends JavaPlugin {
 
     private void registerCommands() {
         getCommand( "ban" ).setExecutor( new BanCommand() );
-        getCommand( "warn" ).setExecutor( new BanCommand() );
+        getCommand( "warn" ).setExecutor( new WarnCommand() );
         getCommand( "checkban" ).setExecutor( new CheckBanCommand() );
         getCommand( "banhistory" ).setExecutor( new BanHistoryCommand() );
-        getCommand( "warnhistory" ).setExecutor( new BanHistoryCommand() );
+        getCommand( "warnhistory" ).setExecutor( new WarnHistoryCommand() );
         getCommand( "ipban" ).setExecutor( new IPBanCommand() );
         getCommand( "kick" ).setExecutor( new KickCommand() );
         getCommand( "kickall" ).setExecutor( new KickAllCommand() );
