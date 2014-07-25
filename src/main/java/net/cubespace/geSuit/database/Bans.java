@@ -254,7 +254,7 @@ public class Bans implements IRepository {
         connection.addPreparedStatement("unbanPlayer", "UPDATE "+ ConfigManager.main.Table_Bans +" SET active = 0 WHERE id = ?");
         connection.addPreparedStatement("banInfo", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban') AND active = 1");
         connection.addPreparedStatement("banHistory", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban') ORDER BY id ASC");
-        connection.addPreparedStatement("warnHistory", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type == 'warn' ORDER BY id ASC");
+        connection.addPreparedStatement("warnHistory", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type = 'warn' ORDER BY id ASC");
         connection.addPreparedStatement("tempBanPlayer", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_by,reason,type,active,banned_on,banned_until) VALUES(?,?,?,?,'tempban',1,NOW(),?)", PreparedStatement.RETURN_GENERATED_KEYS);
         connection.addPreparedStatement("insertBanConvert", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,active,banned_on,banned_until) VALUES(?,?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
         connection.addPreparedStatement("getBans", "SELECT * FROM "+ ConfigManager.main.Table_Bans);
