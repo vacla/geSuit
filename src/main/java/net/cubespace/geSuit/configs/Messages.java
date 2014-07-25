@@ -73,23 +73,28 @@ public class Messages extends Config {
     public String SPAWN_SET = "&6" + "Spawn point set";
 
     // ban messages
-    public String BUNGEE_COMMAND_BAN_USAGE = "&c" + "Usage: !ban <player|ip>";
+    public String BUNGEE_COMMAND_BAN_USAGE = "&c" + "Usage: !ban <player|ip> <reason>";
+    public String BUNGEE_COMMAND_WARN_USAGE = "&c" + "Usage: !warn <player|ip> <reason>";
     public String BUNGEE_COMMAND_UNBAN_USAGE = "&c" + "Usage: !unban <player|uuid|ip>";
     public String UNKNOWN_PLAYER_STILL_BANNING = "&c" + "Player is unknown. Banning by name and &nmaybe&r&c by UUID.";
+    public String UNKNOWN_PLAYER_STILL_WARNING = "&c" + "Player is unknown. Warning player by name and &nmaybe&r&c by UUID.";
     public String KICK_PLAYER_MESSAGE = "&c" + "You have been kicked. Reason: {message}";
     public String KICK_PLAYER_BROADCAST = "&b" + "{player} has been kicked. Reason: {message}";
     public String PLAYER_ALREADY_BANNED = "&c" + "That player is already banned!";
     public String PLAYER_NOT_BANNED = "&a" + "That player is not banned";
     public String PLAYER_NEVER_BANNED = "&a" + "No ban history for {player}";
+    public String PLAYER_NEVER_WARNED = "&a" + "No warning history for {player}";
     public String IPBAN_PLAYER = "&c" + "Your IP has been banned. Reason: {message}";
     public String IPBAN_PLAYER_BROADCAST = "&b" + "{player} has been ip banned. Reason: {message}";
     public String DEFAULT_BAN_REASON = "Unknown";
     public String DEFAULT_KICK_MESSAGE = "&cUnknown";
+    public String DEFAULT_WARN_REASON = "Unknown";
     public String BAN_PLAYER_MESSAGE = "&c" + "You have been banned. Reason: {message}";
     public String BAN_PLAYER_BROADCAST = "&b" + "{player} has been banned. Reason: {message}";
     public String TEMP_BAN_BROADCAST = "&b" + "{player} has been temporarily banned ({time}). Reason: {message}";
     public String TEMP_BAN_MESSAGE = "&c" + "You have been temporarily banned ({time}). Reason: {message}";
     public String PLAYER_UNBANNED = "&c" + "{player} has been unbanned!";
+    public String WARN_PLAYER_BROADCAST = "&b" + "{player} has received a warning. Reason: {message}";
 
     // Home messages
     public String SENT_HOME = "&6" + "You have been sent home";

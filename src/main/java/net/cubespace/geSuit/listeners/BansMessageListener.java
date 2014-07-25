@@ -39,6 +39,10 @@ public class BansMessageListener implements Listener {
             BansManager.banPlayer(in.readUTF(), in.readUTF(), in.readUTF());
             return;
         }
+        if (task.equals("WarnPlayer")) {
+            BansManager.warnPlayer(in.readUTF(), in.readUTF(), in.readUTF());
+            return;
+        }
         if (task.equals("TempBanPlayer")) {
             BansManager.tempBanPlayer(in.readUTF(), in.readUTF(), in.readInt(), in.readUTF());
             return;
@@ -61,6 +65,10 @@ public class BansMessageListener implements Listener {
         }
         if (task.equals("DisplayPlayerBanHistory")) {
             BansManager.displayPlayerBanHistory(in.readUTF(), in.readUTF());
+            return;
+        }
+        if (task.equals("DisplayPlayerWarnHistory")) {
+            BansManager.displayPlayerWarnHistory(in.readUTF(), in.readUTF());
             return;
         }
         if (task.equals("ReloadBans")) {

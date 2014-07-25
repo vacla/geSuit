@@ -11,10 +11,11 @@ public class Ban {
     private String bannedBy;
     private String reason;
     private String type;
+    private int active;
     private Date bannedOn;
     private Date bannedUntil;
 
-    public Ban(int id, String player, String uuid, String ip, String bannedBy, String reason, String type, Timestamp timestamp, Timestamp timestamp2) {
+    public Ban(int id, String player, String uuid, String ip, String bannedBy, String reason, String type, int active, Timestamp timestamp, Timestamp timestamp2) {
         this.id = id;
         this.player = player;
         this.uuid = uuid;
@@ -41,6 +42,10 @@ public class Ban {
     public String getType() {
         return type;
     }
+
+	public int getActive() {
+		return active;
+	}
 
     public Date getBannedOn() {
         return bannedOn;

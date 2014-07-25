@@ -12,6 +12,7 @@ public class BansConfig extends Config {
 
     public Boolean Enabled = true;
     public Boolean BroadcastBans = true;
+    public Boolean BroadcastWarns = true;
     public Boolean BroadcastKicks = true;
     public Boolean DetectAltAccounts = true;
     public Boolean ShowAltAccountsOnlyIfBanned = true;
