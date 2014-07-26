@@ -121,8 +121,6 @@ public class ConnectionPool {
 
         connections.add(ch);
 
-        System.out.println("Created new sql connection!");
-
         return ch;
 
     }

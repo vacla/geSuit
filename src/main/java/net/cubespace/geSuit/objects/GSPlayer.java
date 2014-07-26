@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.cubespace.geSuit.Utilities;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -38,7 +39,7 @@ public class GSPlayer
     
     public GSPlayer(String name, String uuid, boolean tps, String ip, Timestamp lastOnline)
     {
-        ProxyServer.getInstance().getLogger().info("LOADED DATA: "+name+" "+uuid+" "+tps+" "+ip+" "+lastOnline);
+        //ProxyServer.getInstance().getLogger().info("LOADED DATA: "+name+" "+uuid+" "+tps+" "+ip+" "+lastOnline);
         this.playername = name;
         this.uuid = uuid;
         this.acceptingTeleports = tps;
@@ -59,7 +60,7 @@ public class GSPlayer
     public void sendMessage(String message)
     {
         for (String line : message.split("\n")) {
-            getProxiedPlayer().sendMessage(TextComponent.fromLegacyText(line));
+            getProxiedPlayer().sendMessage(TextComponent.fromLegacyText(Utilities.colorize(line)));
         }
     }
 

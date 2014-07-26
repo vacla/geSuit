@@ -35,7 +35,7 @@ public class ServerAnnouncements implements Runnable
         for (ProxiedPlayer player : server.getPlayers()) {
             for (String line : list.get(count).split("\n")) {
                 // not sure if everything is thread safe. In doubt, leaving that one. It's colorized anyway.
-                player.sendMessage(TextComponent.fromLegacyText(line));
+                player.sendMessage(TextComponent.fromLegacyText(Utilities.colorize(line)));
             }
         }
         count++;

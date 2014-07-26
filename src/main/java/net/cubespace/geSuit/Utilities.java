@@ -18,6 +18,7 @@ public class Utilities {
     }
 
     public static String colorize(String input) {
+    	input = input.replace("{N}", "\n");
         return ChatColor.translateAlternateColorCodes('&', input);
     }
 

@@ -45,7 +45,7 @@ public class HomesMessageListener implements Listener {
         } else if ( task.equals( "SendPlayerHome" ) ) { //SendOtherPlayerHome sendPlayerToOtherHome
             HomesManager.sendPlayerToHome( PlayerManager.getPlayer(in.readUTF() ), in.readUTF() );
         } else if ( task.equals( "SendOtherPlayerHome" ) ) {
-            HomesManager.sendPlayerToOtherHome( PlayerManager.getPlayer(in.readUTF() ), PlayerManager.getPlayer( in.readUTF() ), in.readUTF() );
+            HomesManager.sendPlayerToOtherHome( PlayerManager.getPlayer(in.readUTF() ), in.readUTF(), in.readUTF() );
         } else if ( task.equals( "SetPlayersHome" ) ) {
             String player = in.readUTF();
             GSPlayer gsPlayer = PlayerManager.getPlayer(player);
@@ -66,7 +66,7 @@ public class HomesMessageListener implements Listener {
         } else if ( task.equals( "GetHomesList" ) ) {
             HomesManager.listPlayersHomes( PlayerManager.getPlayer( in.readUTF() ) );
         } else if ( task.equals( "GetOtherHomesList" ) ) {
-            HomesManager.listOtherPlayersHomes( PlayerManager.getPlayer( in.readUTF() ), PlayerManager.getPlayer( in.readUTF() ) );
+            HomesManager.listOtherPlayersHomes( PlayerManager.getPlayer( in.readUTF() ), in.readUTF() );
         } else if ( task.equals( "SendVersion" ) ) {
             LoggingManager.log( in.readUTF() );
         }

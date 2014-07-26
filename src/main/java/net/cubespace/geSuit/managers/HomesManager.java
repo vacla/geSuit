@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.managers;
 
 import net.cubespace.geSuit.FeatureDetector;
+import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
@@ -94,11 +95,16 @@ public class HomesManager {
 
     }
     
-    public static void listOtherPlayersHomes(GSPlayer sender, GSPlayer player) {
-        if (player == null) {
-            PlayerManager.sendMessageToTarget(sender, "Player is not online (offline lookup not implemented yet).");
+    public static void listOtherPlayersHomes(GSPlayer sender, String playername) {
+    	GSPlayer player = DatabaseManager.players.loadPlayer(playername);
+    	
+    	if (player == null) {
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
             return;
         }
+    	
+    	loadPlayersHomes(player);
+    	
         if (player.getHomes().isEmpty()) {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_HOMES);
             return;
@@ -112,7 +118,7 @@ public class HomesManager {
             }
 
             String homes;
-            if (server.equals(player.getServer())) {
+            if (server.equals(sender.getServer())) {
                 homes = ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server);
             } else {
             	homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
@@ -176,11 +182,15 @@ public class HomesManager {
         PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SENT_HOME);
     }
     
-    public static void sendPlayerToOtherHome(GSPlayer sender, GSPlayer player, String home) {
-        if (player == null) {
-            PlayerManager.sendMessageToTarget(sender, "Player is not online.");
+    public static void sendPlayerToOtherHome(GSPlayer sender, String playername, String home) {
+    	GSPlayer player = DatabaseManager.players.loadPlayer(playername);
+    	
+    	if (player == null) {
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
             return;
         }
+    	
+    	loadPlayersHomes(player);
         Home h = getHome(player, home);
         if (h == null) {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.HOME_DOES_NOT_EXIST);
