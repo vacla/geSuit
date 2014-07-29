@@ -59,7 +59,7 @@ public class GSPlayer
 
     public void sendMessage(String message)
     {
-        for (String line : message.split("\n")) {
+        for (String line : message.split("\n|\\n")) {
             getProxiedPlayer().sendMessage(TextComponent.fromLegacyText(Utilities.colorize(line)));
         }
     }
