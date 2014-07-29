@@ -67,7 +67,7 @@ public class TeleportManager {
             return;
         }
         if (!playerIsAcceptingTeleports(bt)) {
-            bp.sendMessage(ConfigManager.messages.TELEPORT_UNABLE);
+            bp.sendMessage(ConfigManager.messages.TELEPORT_UNABLE.replace("{player}", bt.getName()));
             return;
         }
         if (playerHasPendingTeleport(bt)) {
