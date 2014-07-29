@@ -1,8 +1,10 @@
 package net.cubespace.geSuitBans.commands;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
 import net.cubespace.geSuitBans.managers.BansManager;
 
 
@@ -13,19 +15,12 @@ public class IPBanCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 		
-		if(args.length==1){
+		if (args.length == 1) {
 			BansManager.ipBanPlayer(sender.getName(),args[0], "");
 			return true;
 		}
-		
-		if(args.length>1){
-			String msg = "";
-			for(String data: args){
-				if(!data.equals(args[0])){
-					msg+=data+" ";
-				}
-			}
-			BansManager.ipBanPlayer(sender.getName(),args[0],msg);
+		else if (args.length > 0) {
+			BansManager.ipBanPlayer(sender.getName(), args[0], StringUtils.join(args, " ", 1, args.length));
 			return true;
 		}
 

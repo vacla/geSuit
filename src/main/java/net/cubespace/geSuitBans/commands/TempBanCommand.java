@@ -1,9 +1,9 @@
 package net.cubespace.geSuitBans.commands;
 
-import java.util.Arrays;
 import net.cubespace.geSuitBans.managers.BansManager;
-import net.cubespace.geSuitBans.utils.StringUtils;
 import net.cubespace.geSuitBans.utils.TimeParser;
+
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,7 +18,7 @@ public class TempBanCommand implements CommandExecutor {
         if(args.length > 1){
             String player = args[0];
             String timing = args[1];
-            String reason = (args.length > 2) ? StringUtils.join(Arrays.copyOfRange(args, 2, args.length), " ") : "";
+            String reason = StringUtils.join(args, " ", 2, args.length);
             int seconds = TimeParser.parseString(timing);
             if (seconds == 0) {
                 return false;
