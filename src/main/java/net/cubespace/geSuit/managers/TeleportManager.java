@@ -71,7 +71,7 @@ public class TeleportManager {
             return;
         }
         if (playerHasPendingTeleport(bt)) {
-            bp.sendMessage(ConfigManager.messages.PLAYER_TELEPORT_PENDING_OTHER);
+            bp.sendMessage(ConfigManager.messages.PLAYER_TELEPORT_PENDING_OTHER.replace("{player}", bt.getName()));
             return;
         }
         pendingTeleportsTPAHere.put(bt, bp);
