@@ -42,7 +42,7 @@ public class HomesManager {
             home1.setLoc(loc);
             DatabaseManager.homes.updateHome(home1);
 
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_UPDATED);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_UPDATED.replace("{home}", home));
         }
     }
 
@@ -99,7 +99,7 @@ public class HomesManager {
     	GSPlayer player = DatabaseManager.players.loadPlayer(playername);
     	
     	if (player == null) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST.replace("{player}", playername));
             return;
         }
     	
@@ -173,13 +173,13 @@ public class HomesManager {
     public static void sendPlayerToHome(GSPlayer player, String home) {
         Home h = getHome(player, home);
         if (h == null) {
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_DOES_NOT_EXIST);
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_DOES_NOT_EXIST.replace("{home}", home));
             return;
         }
 
         TeleportToLocation.execute(player, h.loc);
 
-        PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SENT_HOME);
+        PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SENT_HOME.replace("{home}", home));
     }
     
     public static void sendPlayerToOtherHome(GSPlayer sender, String playername, String home) {
@@ -193,13 +193,13 @@ public class HomesManager {
     	loadPlayersHomes(player);
         Home h = getHome(player, home);
         if (h == null) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.HOME_DOES_NOT_EXIST);
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.HOME_DOES_NOT_EXIST.replace("{home}", home));
             return;
         }
 
         TeleportToLocation.execute(sender, h.loc);
 
-        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.SENT_HOME);
+        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.SENT_HOME.replace("{home}", home));
     }
 
     public static void deleteHome(String player, String home) {
@@ -207,7 +207,7 @@ public class HomesManager {
         Home h = getHome(p, home);
 
         if (h == null) {
-            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.HOME_DOES_NOT_EXIST);
+            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.HOME_DOES_NOT_EXIST.replace("{home}", home));
             return;
         }
 
@@ -220,7 +220,7 @@ public class HomesManager {
 
         DatabaseManager.homes.deleteHome(h);
 
-        PlayerManager.sendMessageToTarget(p, ConfigManager.messages.HOME_DELETED);
+        PlayerManager.sendMessageToTarget(p, ConfigManager.messages.HOME_DELETED.replace("{home}", home));
     }
 }
 
