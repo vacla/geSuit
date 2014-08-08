@@ -18,7 +18,8 @@ public class Messages extends Config {
     public String PLAYER_CONNECT_PROXY = "{player}&e has joined the server!";
     public String PLAYER_DISCONNECT_PROXY = "{player}&e has left the server!";
     public String PLAYER_DOES_NOT_EXIST = "&c" + "That player does not exist";
-    public String PLAYER_LOAD = "Loaded player &9{player}";
+    public String PLAYER_LOAD = "Loaded player &9{player}&7 ({uuid})";
+    public String PLAYER_CREATE = "Created player &b{player}&7 ({uuid})";
     public String PLAYER_UNLOAD = "Unloaded player &c{player}";
     public String PLAYER_NOT_ONLINE = "&c" + "That player is not online";
     public String NO_PERMISSION = "&c" + "You do not have permission to use that command";

@@ -4,6 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+
+import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
@@ -27,6 +30,12 @@ public class PortalsMessageListener implements Listener {
         if (!event.getTag().equalsIgnoreCase("geSuitPortals")) {
             return;
         }
+
+        // Message debugging (can be toggled live)
+		if (geSuit.instance.isDebugEnabled()) {
+			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
+		}
+
         event.setCancelled(true);
 
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));

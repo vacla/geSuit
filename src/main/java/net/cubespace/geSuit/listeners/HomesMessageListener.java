@@ -2,6 +2,7 @@ package net.cubespace.geSuit.listeners;
 
 import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.HomesManager;
 import net.cubespace.geSuit.managers.LoggingManager;
@@ -32,6 +33,11 @@ public class HomesMessageListener implements Listener {
         if ( !event.getTag().equalsIgnoreCase( "geSuitHomes" ) ) {
             return;
         }
+
+		// Message debugging (can be toggled live)
+		if (geSuit.instance.isDebugEnabled()) {
+			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
+		}
 
         event.setCancelled( true );
 

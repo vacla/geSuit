@@ -25,7 +25,7 @@ public class GSPlayer
     private Location teleportBackLocation;
     private boolean lastBack;
     private boolean firstConnect = true;
-    
+    private boolean joinAnnounced = false;
 
     public GSPlayer(String name, String uuid, boolean tps)
     {
@@ -164,4 +164,12 @@ public class GSPlayer
     {
         return lastOnline;
     }
+
+	public boolean hasJoinAnnounced() {
+		return joinAnnounced;
+	}
+
+	public void setJoinAnnounced(boolean joinAnnounced) {
+		this.joinAnnounced = joinAnnounced;
+	}
 }

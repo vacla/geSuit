@@ -31,6 +31,6 @@ public class TeleportToPlayer {
             e.printStackTrace();
         }
 
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, ProxyServer.getInstance().getServerInfo(target.getServer()), bytes));
+		geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, ProxyServer.getInstance().getServerInfo(target.getServer()), bytes));
     }
 }

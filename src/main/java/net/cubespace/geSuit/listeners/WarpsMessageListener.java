@@ -1,10 +1,11 @@
 package net.cubespace.geSuit.listeners;
 
+import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.WarpsManager;
 import net.cubespace.geSuit.objects.Location;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -27,6 +28,12 @@ public class WarpsMessageListener implements Listener {
         }
         if (!(event.getSender() instanceof Server))
             return;
+
+        // Message debugging (can be toggled live)
+		if (geSuit.instance.isDebugEnabled()) {
+			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
+		}
+
         event.setCancelled(true);
 
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));

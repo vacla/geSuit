@@ -4,6 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+
+import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.connection.Server;
@@ -26,6 +29,11 @@ public class BansMessageListener implements Listener {
         if (!event.getTag().equalsIgnoreCase("geSuitBans")) {
             return;
         }
+
+		// Message debugging (can be toggled live)
+		if (geSuit.instance.isDebugEnabled()) {
+			Utilities.dumpPacket(event.getTag(), "SEND", event.getData(), true);
+		}
 
         event.setCancelled(true);
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));

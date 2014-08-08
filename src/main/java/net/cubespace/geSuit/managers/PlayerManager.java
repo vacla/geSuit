@@ -27,7 +27,7 @@ public class PlayerManager {
                 || (uuid) ? DatabaseManager.players.playerExists(player.getUUID()) : DatabaseManager.players.playerExists(player.getName());
     }
 
-    public static void loadPlayer(ProxiedPlayer player) {
+    public static GSPlayer loadPlayer(ProxiedPlayer player) {
         if (playerExists(player, FeatureDetector.canUseUUID())) {
             boolean tps;
 
@@ -42,19 +42,24 @@ public class PlayerManager {
 
             DatabaseManager.players.updatePlayer(gsPlayer);
 
-            LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()));
+            LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()).replace("{uuid}", player.getUniqueId().toString()));
 
             HomesManager.loadPlayersHomes(gsPlayer);
+            
+            return gsPlayer;
         } else {
-            createNewPlayer(player);
+            return createNewPlayer(player);
         }
     }
 
-    private static void createNewPlayer(final ProxiedPlayer player) {
+    private static GSPlayer createNewPlayer(final ProxiedPlayer player) {
         String ip = player.getAddress().getAddress().toString();
         final GSPlayer gsPlayer = new GSPlayer(player.getName(), (FeatureDetector.canUseUUID()) ? player.getUUID() : null, true);
 
+        onlinePlayers.put(player.getName(), gsPlayer);
         DatabaseManager.players.insertPlayer(gsPlayer, ip.substring(1, ip.length()));
+
+        LoggingManager.log(ConfigManager.messages.PLAYER_CREATE.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
 
         if (ConfigManager.main.NewPlayerBroadcast) {
             String welcomeMsg = null;
@@ -62,9 +67,6 @@ public class PlayerManager {
             // Firing custom event
             ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
         }
-
-        onlinePlayers.put(player.getName(), gsPlayer);
-        LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()));
 
         if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && SpawnManager.NewPlayerSpawn != null) {
             SpawnManager.newPlayers.add(player);
@@ -79,6 +81,8 @@ public class PlayerManager {
 
             }, 300, TimeUnit.MILLISECONDS);
         }
+        
+        return gsPlayer;
     }
 
     public static void unloadPlayer(String player) {
@@ -98,6 +102,9 @@ public class PlayerManager {
 
         // Not exactly sure where we use the new line besides in the soon-to-be-removed MOTD...
         for (String line : Utilities.colorize(message).split("\n")) {
+            if (geSuit.instance.isDebugEnabled()) {
+    			geSuit.instance.getLogger().info("geSuit DEBUG: [SendMessage] " + target.getName() + ": " + Utilities.colorize(line));
+    		}
             target.sendMessage(TextComponent.fromLegacyText(Utilities.colorize(line)));
         }
     }

@@ -1,5 +1,7 @@
 package net.cubespace.geSuit.listeners;
 
+import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.TeleportManager;
@@ -28,6 +30,11 @@ public class TeleportsMessageListener implements Listener {
         if (!event.getTag().equalsIgnoreCase("geSuitTeleport")) {
             return;
         }
+
+		// Message debugging (can be toggled live)
+		if (geSuit.instance.isDebugEnabled()) {
+			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
+		}
 
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
         String task = in.readUTF();

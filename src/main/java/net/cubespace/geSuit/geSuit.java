@@ -1,6 +1,7 @@
 package net.cubespace.geSuit;
 
 import net.cubespace.geSuit.commands.BanCommand;
+import net.cubespace.geSuit.commands.DebugCommand;
 import net.cubespace.geSuit.commands.MOTDCommand;
 import net.cubespace.geSuit.commands.ReloadCommand;
 import net.cubespace.geSuit.commands.SeenCommand;
@@ -28,6 +29,7 @@ public class geSuit extends Plugin
 
     public static geSuit instance;
     public static ProxyServer proxy;
+    private boolean DebugEnabled = false;
 
     public void onEnable()
     {
@@ -60,6 +62,7 @@ public class geSuit extends Plugin
         proxy.getPluginManager().registerCommand(this, new UnbanCommand());
         proxy.getPluginManager().registerCommand(this, new BanCommand());
         proxy.getPluginManager().registerCommand(this, new ReloadCommand());
+        proxy.getPluginManager().registerCommand(this, new DebugCommand());
     }
 
     private void registerListeners()
@@ -86,4 +89,12 @@ public class geSuit extends Plugin
     {
         DatabaseManager.connectionPool.closeConnections();
     }
+
+	public boolean isDebugEnabled() {
+		return DebugEnabled;
+	}
+
+	public void setDebugEnabled(boolean debugEnabled) {
+		DebugEnabled = debugEnabled;
+	}
 }
