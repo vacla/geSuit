@@ -248,12 +248,12 @@ public class Bans implements IRepository {
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
-        connection.addPreparedStatement("isPlayerBanned", "SELECT id FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban') AND active = 1");
+        connection.addPreparedStatement("isPlayerBanned", "SELECT id FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban', 'ipban') AND active = 1");
         connection.addPreparedStatement("banPlayer", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,active,banned_on) VALUES (?,?,?,?,?,?,1,NOW());", PreparedStatement.RETURN_GENERATED_KEYS);
         connection.addPreparedStatement("warnPlayer", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,active,banned_on) VALUES (?,?,?,?,?,'warn',0,NOW());", PreparedStatement.RETURN_GENERATED_KEYS);
         connection.addPreparedStatement("unbanPlayer", "UPDATE "+ ConfigManager.main.Table_Bans +" SET active = 0 WHERE id = ?");
-        connection.addPreparedStatement("banInfo", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban') AND active = 1");
-        connection.addPreparedStatement("banHistory", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban') ORDER BY id ASC");
+        connection.addPreparedStatement("banInfo", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban', 'ipban') AND active = 1");
+        connection.addPreparedStatement("banHistory", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban', 'ipban') ORDER BY id ASC");
         connection.addPreparedStatement("warnHistory", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type = 'warn' ORDER BY id ASC");
         connection.addPreparedStatement("tempBanPlayer", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_by,reason,type,active,banned_on,banned_until) VALUES(?,?,?,?,'tempban',1,NOW(),?)", PreparedStatement.RETURN_GENERATED_KEYS);
         connection.addPreparedStatement("insertBanConvert", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,active,banned_on,banned_until) VALUES(?,?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
