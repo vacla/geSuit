@@ -127,8 +127,9 @@ public class Players implements IRepository {
             PreparedStatement updatePlayer = connectionHandler.getPreparedStatement("updatePlayer");
             updatePlayer.setString(1, gsPlayer.getUuid());
             updatePlayer.setString(2, gsPlayer.getName());
-            updatePlayer.setString(3, gsPlayer.getName());
-            updatePlayer.setString(4, gsPlayer.getUuid());
+            updatePlayer.setString(3, gsPlayer.getIp());
+            updatePlayer.setString(4, gsPlayer.getName());
+            updatePlayer.setString(5, gsPlayer.getUuid());
 
             updatePlayer.executeUpdate();
         } catch (Exception e) {
@@ -184,7 +185,7 @@ public class Players implements IRepository {
         connection.addPreparedStatement("insertPlayerConvert", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,lastonline,ipaddress,tps) VALUES (?, ?, ?, ?, ?)");
         connection.addPreparedStatement("getPlayers", "SELECT * FROM "+ ConfigManager.main.Table_Players);
         connection.addPreparedStatement("setUUID", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ? WHERE playername = ?");
-        connection.addPreparedStatement("updatePlayer", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ?, playername = ?, lastonline = NOW() WHERE playername = ? OR uuid = ?");
+        connection.addPreparedStatement("updatePlayer", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ?, playername = ?, lastonline = NOW(), ipaddress = ? WHERE playername = ? OR uuid = ?");
     }
 
     @Override
