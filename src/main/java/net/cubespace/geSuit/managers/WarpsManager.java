@@ -27,12 +27,12 @@ public class WarpsManager {
             w.setGlobal(global);
             w.setHidden(hidden);
             DatabaseManager.warps.updateWarp(w);
-            sender.sendMessage(ConfigManager.messages.WARP_UPDATED);
+            sender.sendMessage(ConfigManager.messages.WARP_UPDATED.replace("{warp}", name));
         } else {
             w = new Warp(name, loc, hidden, global);
             warps.put(name.toLowerCase(), w);
             DatabaseManager.warps.insertWarp(w);
-            sender.sendMessage(ConfigManager.messages.WARP_CREATED);
+            sender.sendMessage(ConfigManager.messages.WARP_CREATED.replace("{warp}", name));
         }
     }
 
@@ -40,7 +40,7 @@ public class WarpsManager {
         Warp w = getWarp(warp);
         warps.remove(w.getName().toLowerCase());
         DatabaseManager.warps.deleteWarp(w.getName());
-        sender.sendMessage(ConfigManager.messages.WARP_DELETED);
+        sender.sendMessage(ConfigManager.messages.WARP_DELETED.replace("{warp}", warp));
     }
 
     public static Warp getWarp(String name) {
@@ -102,7 +102,7 @@ public class WarpsManager {
 
         Warp w = warps.get(warp.toLowerCase());
         if (w == null) {
-            s.sendMessage(ConfigManager.messages.WARP_DOES_NOT_EXIST);
+            s.sendMessage(ConfigManager.messages.WARP_DOES_NOT_EXIST.replace("{warp}", warp));
             return;
         }
 
