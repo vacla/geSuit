@@ -1,7 +1,6 @@
 package net.cubespace.geSuit.database;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
-import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
@@ -119,10 +118,7 @@ public class Homes implements IRepository {
                 "yaw FLOAT, " +
                 "pitch FLOAT, " +
                 "CONSTRAINT pk_home PRIMARY KEY (player,home_name,server), " +
-
-                ((FeatureDetector.canUseUUID()) ?
-                "FOREIGN KEY fk_playerhome(player) REFERENCES "+ ConfigManager.main.Table_Players +" (uuid) ON UPDATE CASCADE ON DELETE CASCADE" :
-                "FOREIGN KEY fk_playerhome(player) REFERENCES "+ ConfigManager.main.Table_Players +" (playername) ON UPDATE CASCADE ON DELETE CASCADE")};
+                "FOREIGN KEY fk_playerhome(player) REFERENCES "+ ConfigManager.main.Table_Players +" (uuid) ON UPDATE CASCADE ON DELETE CASCADE"};
     }
 
     @Override
@@ -144,60 +140,56 @@ public class Homes implements IRepository {
 
         if (installedVersion < 2) {
             // Version 2 adds UUIDs as Field
-            if (FeatureDetector.canUseUUID()) {
+            ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+            try {
+                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Homes +"` DROP FOREIGN KEY `homes_ibfk_1`;");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return;
+            } finally {
+                connectionHandler.release();
+            }
 
+            connectionHandler = DatabaseManager.connectionPool.getConnection();
+            // Convert all Names to UUIDs
+            PreparedStatement getHomes = connectionHandler.getPreparedStatement("getHomes");
+            try {
+                ResultSet res = getHomes.executeQuery();
+                while (res.next()) {
+                    String player = res.getString("player");
+                    String uuid = Utilities.getUUID(player);
 
-                ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-                try {
-                    connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Homes +"` DROP FOREIGN KEY `homes_ibfk_1`;");
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    return;
-                } finally {
-                    connectionHandler.release();
-                }
+                    if (uuid != null) {
+                        ConnectionHandler connectionHandler1 = DatabaseManager.connectionPool.getConnection();
 
-                connectionHandler = DatabaseManager.connectionPool.getConnection();
-                // Convert all Names to UUIDs
-                PreparedStatement getHomes = connectionHandler.getPreparedStatement("getHomes");
-                try {
-                    ResultSet res = getHomes.executeQuery();
-                    while (res.next()) {
-                        String player = res.getString("player");
-                        String uuid = Utilities.getUUID(player);
-
-                        if (uuid != null) {
-                            ConnectionHandler connectionHandler1 = DatabaseManager.connectionPool.getConnection();
-
-                            try {
-                                PreparedStatement updateHomesToUUID = connectionHandler1.getPreparedStatement("updateHomesToUUID");
-                                updateHomesToUUID.setString(1, uuid);
-                                updateHomesToUUID.setString(2, player);
-                                updateHomesToUUID.executeUpdate();
-                            } catch (SQLException e) {
-                                System.out.println("Could not update Home for update to version 2");
-                                e.printStackTrace();
-                            } finally {
-                                connectionHandler1.release();
-                            }
+                        try {
+                            PreparedStatement updateHomesToUUID = connectionHandler1.getPreparedStatement("updateHomesToUUID");
+                            updateHomesToUUID.setString(1, uuid);
+                            updateHomesToUUID.setString(2, player);
+                            updateHomesToUUID.executeUpdate();
+                        } catch (SQLException e) {
+                            System.out.println("Could not update Home for update to version 2");
+                            e.printStackTrace();
+                        } finally {
+                            connectionHandler1.release();
                         }
                     }
-                } catch (SQLException e) {
-                    System.out.println("Could not get Homes for update to version 2");
-                    e.printStackTrace();
-                    return;
-                } finally {
-                    connectionHandler.release();
                 }
+            } catch (SQLException e) {
+                System.out.println("Could not get Homes for update to version 2");
+                e.printStackTrace();
+                return;
+            } finally {
+                connectionHandler.release();
+            }
 
-                connectionHandler = DatabaseManager.connectionPool.getConnection();
+            connectionHandler = DatabaseManager.connectionPool.getConnection();
 
-                try {
-                    connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Homes +"` ADD  CONSTRAINT `homes_ibfk_1` FOREIGN KEY (`player`) REFERENCES `"+ ConfigManager.main.Table_Players +"`(`uuid`) ON DELETE CASCADE ON UPDATE CASCADE;");
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    return;
-                }
+            try {
+                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Homes +"` ADD  CONSTRAINT `homes_ibfk_1` FOREIGN KEY (`player`) REFERENCES `"+ ConfigManager.main.Table_Players +"`(`uuid`) ON DELETE CASCADE ON UPDATE CASCADE;");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return;
             }
         }
 

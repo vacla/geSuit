@@ -1,12 +1,9 @@
 package net.cubespace.geSuit.managers;
 
-import net.cubespace.geSuit.FeatureDetector;
-import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
-import net.md_5.bungee.api.ChatColor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -134,7 +131,7 @@ public class HomesManager {
     }
 
     public static void loadPlayersHomes(GSPlayer player) {
-        List<Home> homes = DatabaseManager.homes.getHomesForPlayer((FeatureDetector.canUseUUID()) ? player.getUuid() : player.getName());
+        List<Home> homes = DatabaseManager.homes.getHomesForPlayer(player.getUuid());
 
         for(Home home : homes) {
             if (player.getHomes().get(home.loc.getServer().getName()) == null) {

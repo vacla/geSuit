@@ -1,7 +1,6 @@
 package net.cubespace.geSuit.database.convert;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
-import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.ConnectionPool;
@@ -34,21 +33,16 @@ public class Converter {
             ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
-                boolean requireUuid = FeatureDetector.canUseUUID();
                 Map<String,String> playerUuids;
-                if (requireUuid) {
-                    List<String> names = new ArrayList<>();
-                    PreparedStatement selectPlayerNames = connectionHandler.getPreparedStatement("selectPlayerNames");
-                    try (ResultSet resultSet = selectPlayerNames.executeQuery()) {
-                        while (resultSet.next()) {
-                            names.add(resultSet.getString("playername"));
-                        }
+                List<String> names = new ArrayList<>();
+                PreparedStatement selectPlayerNames = connectionHandler.getPreparedStatement("selectPlayerNames");
+                try (ResultSet resultSet = selectPlayerNames.executeQuery()) {
+                    while (resultSet.next()) {
+                        names.add(resultSet.getString("playername"));
                     }
-                    
-                    playerUuids = Utilities.getUUID(names);
-                } else {
-                    playerUuids = Collections.emptyMap();
                 }
+                
+                playerUuids = Utilities.getUUID(names);
 
                 PreparedStatement selectPlayers = connectionHandler.getPreparedStatement("selectPlayers");
 
@@ -56,7 +50,7 @@ public class Converter {
                     while(resultSet.next()) {
                         String playerName = resultSet.getString("playername");
                         String uuid = playerUuids.get(playerName);
-                        if (requireUuid && uuid == null) {
+                        if (uuid == null) {
                             continue;
                         }
                         DatabaseManager.players.insertPlayerConvert(playerName, uuid, resultSet.getTimestamp("lastonline"), resultSet.getString("ipaddress"), resultSet.getBoolean("tps"));
@@ -181,21 +175,15 @@ public class Converter {
             ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
-                boolean requireUuid = FeatureDetector.canUseUUID();
-
                 Map<String, String> playerUuid;
-                if (requireUuid) {
-                    List<String> players = new ArrayList<>();
-                    PreparedStatement selectBanPlayers = connectionHandler.getPreparedStatement("selectBanPlayers");
-                    try (ResultSet res = selectBanPlayers.executeQuery()) {
-                        while (res.next()) {
-                            players.add(res.getString("player"));
-                        }
+                List<String> players = new ArrayList<>();
+                PreparedStatement selectBanPlayers = connectionHandler.getPreparedStatement("selectBanPlayers");
+                try (ResultSet res = selectBanPlayers.executeQuery()) {
+                    while (res.next()) {
+                        players.add(res.getString("player"));
                     }
-                    playerUuid = Utilities.getUUID(players);
-                } else {
-                    playerUuid = Collections.emptyMap();
                 }
+                playerUuid = Utilities.getUUID(players);
 
                 PreparedStatement selectBans = connectionHandler.getPreparedStatement("selectBans");
 
@@ -204,7 +192,7 @@ public class Converter {
                     String player = res.getString("player");
                     String uuid = playerUuid.get(player);
 
-                    if (requireUuid && uuid == null) {
+                    if (uuid == null) {
                         continue;
                     }
 

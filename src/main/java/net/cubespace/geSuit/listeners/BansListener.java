@@ -3,7 +3,6 @@ package net.cubespace.geSuit.listeners;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.ConfigManager;
@@ -20,8 +19,8 @@ public class BansListener implements Listener {
 
     @EventHandler
     public void banCheck(LoginEvent e) throws SQLException {
-        if (DatabaseManager.bans.isPlayerBanned(e.getConnection().getName(), ((FeatureDetector.canUseUUID()) ? e.getConnection().getUUID() : null), e.getConnection().getAddress().getHostString())) {
-            Ban b = DatabaseManager.bans.getBanInfo(e.getConnection().getName(), ((FeatureDetector.canUseUUID()) ? e.getConnection().getUUID() : null), e.getConnection().getAddress().getHostString());
+        if (DatabaseManager.bans.isPlayerBanned(e.getConnection().getName(), e.getConnection().getUUID(), e.getConnection().getAddress().getHostString())) {
+            Ban b = DatabaseManager.bans.getBanInfo(e.getConnection().getName(), e.getConnection().getUUID(), e.getConnection().getAddress().getHostString());
 
             if (b == null) {
                 return;

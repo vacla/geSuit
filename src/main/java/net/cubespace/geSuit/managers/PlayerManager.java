@@ -1,6 +1,5 @@
 package net.cubespace.geSuit.managers;
 
-import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.geSuit;
@@ -22,29 +21,25 @@ public class PlayerManager {
     public static HashMap<String, GSPlayer> onlinePlayers = new HashMap<>();
     public static ArrayList<ProxiedPlayer> kickedPlayers = new ArrayList<>();
 
-    public static boolean playerExists(ProxiedPlayer player, boolean uuid) {
+    public static boolean playerExists(ProxiedPlayer player) {
         return getPlayer(player.getName()) != null
-                || (uuid) ? DatabaseManager.players.playerExists(player.getUUID()) : DatabaseManager.players.playerExists(player.getName());
+                || DatabaseManager.players.playerExists(player.getUUID());
     }
 
     public static GSPlayer loadPlayer(ProxiedPlayer player) {
-        if (playerExists(player, FeatureDetector.canUseUUID())) {
-            boolean tps;
-
-            if (FeatureDetector.canUseUUID()) {
-                tps = DatabaseManager.players.getPlayerTPS(player.getUUID());
-            } else {
-                tps = DatabaseManager.players.getPlayerTPS(player.getName());
-            }
-
-            GSPlayer gsPlayer = new GSPlayer(player.getName(), (FeatureDetector.canUseUUID()) ? player.getUUID() : null, tps, player.getAddress().getHostString());
-            onlinePlayers.put(player.getName(), gsPlayer);
+        if (playerExists(player)) {
+        	GSPlayer gsPlayer = getPlayer(player.getName());
+        	if (gsPlayer == null) {
+        		boolean tps = DatabaseManager.players.getPlayerTPS(player.getUUID());
+        		gsPlayer = new GSPlayer(player.getName(), player.getUUID(), tps, player.getAddress().getHostString());
+        		onlinePlayers.put(player.getName(), gsPlayer);
+                HomesManager.loadPlayersHomes(gsPlayer);
+                LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()).replace("{uuid}", player.getUniqueId().toString()));
+        	} else {
+                LoggingManager.log(ConfigManager.messages.PLAYER_LOAD_CACHED.replace("{player}", gsPlayer.getName()).replace("{uuid}", player.getUniqueId().toString()));
+        	}
 
             DatabaseManager.players.updatePlayer(gsPlayer);
-
-            LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()).replace("{uuid}", player.getUniqueId().toString()));
-
-            HomesManager.loadPlayersHomes(gsPlayer);
             
             return gsPlayer;
         } else {
@@ -54,7 +49,7 @@ public class PlayerManager {
 
     private static GSPlayer createNewPlayer(final ProxiedPlayer player) {
         String ip = player.getAddress().getAddress().toString();
-        final GSPlayer gsPlayer = new GSPlayer(player.getName(), (FeatureDetector.canUseUUID()) ? player.getUUID() : null, true);
+        final GSPlayer gsPlayer = new GSPlayer(player.getName(), player.getUUID(), true);
 
         onlinePlayers.put(player.getName(), gsPlayer);
         DatabaseManager.players.insertPlayer(gsPlayer, ip.substring(1, ip.length()));

@@ -1,7 +1,6 @@
 package net.cubespace.geSuit.database;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
-import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
@@ -170,9 +169,7 @@ public class Players implements IRepository {
                 + "lastonline DATETIME NOT NULL, "
                 + "ipaddress VARCHAR(100), "
                 + "tps TINYINT(1) DEFAULT 1,"
-                + ((FeatureDetector.canUseUUID())
-                ? "CONSTRAINT pk_uuid PRIMARY KEY (uuid)"
-                : "CONSTRAINT pk_playername PRIMARY KEY (playername)")};
+                + "CONSTRAINT pk_uuid PRIMARY KEY (uuid)"};
     }
 
     @Override
@@ -208,40 +205,38 @@ public class Players implements IRepository {
                 connectionHandler.release();
             }
 
-            if (FeatureDetector.canUseUUID()) {
-                connectionHandler = DatabaseManager.connectionPool.getConnection();
+            connectionHandler = DatabaseManager.connectionPool.getConnection();
 
-                // Convert all Names to UUIDs
-                PreparedStatement getPlayers = connectionHandler.getPreparedStatement("getPlayers");
-                try {
-                    ResultSet res = getPlayers.executeQuery();
-                    while (res.next()) {
-                        String playername = res.getString("playername");
-                        String uuid = Utilities.getUUID(playername);
+            // Convert all Names to UUIDs
+            PreparedStatement getPlayers = connectionHandler.getPreparedStatement("getPlayers");
+            try {
+                ResultSet res = getPlayers.executeQuery();
+                while (res.next()) {
+                    String playername = res.getString("playername");
+                    String uuid = Utilities.getUUID(playername);
 
-                        if (uuid != null) {
-                            ConnectionHandler connectionHandler1 = DatabaseManager.connectionPool.getConnection();
+                    if (uuid != null) {
+                        ConnectionHandler connectionHandler1 = DatabaseManager.connectionPool.getConnection();
 
-                            try {
-                                PreparedStatement preparedStatement = connectionHandler1.getPreparedStatement("setUUID");
-                                preparedStatement.setString(1, uuid);
-                                preparedStatement.setString(2, playername);
-                                preparedStatement.executeUpdate();
-                            } catch (SQLException e) {
-                                System.out.println("Could not update Player for update to version 2");
-                                e.printStackTrace();
-                            } finally {
-                                connectionHandler1.release();
-                            }
+                        try {
+                            PreparedStatement preparedStatement = connectionHandler1.getPreparedStatement("setUUID");
+                            preparedStatement.setString(1, uuid);
+                            preparedStatement.setString(2, playername);
+                            preparedStatement.executeUpdate();
+                        } catch (SQLException e) {
+                            System.out.println("Could not update Player for update to version 2");
+                            e.printStackTrace();
+                        } finally {
+                            connectionHandler1.release();
                         }
                     }
-                } catch (SQLException e) {
-                    System.out.println("Could not get Players for update to version 2");
-                    e.printStackTrace();
-                    return;
-                } finally {
-                    connectionHandler.release();
                 }
+            } catch (SQLException e) {
+                System.out.println("Could not get Players for update to version 2");
+                e.printStackTrace();
+                return;
+            } finally {
+                connectionHandler.release();
             }
         }
 

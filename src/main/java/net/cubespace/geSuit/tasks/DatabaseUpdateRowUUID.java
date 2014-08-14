@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.managers.DatabaseManager;
@@ -38,11 +37,7 @@ public class DatabaseUpdateRowUUID implements Runnable
 
         String uuid;
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerName);
-        if (player != null && FeatureDetector.canUseUUID()) {
-            uuid = player.getUUID();
-        } else {
-            uuid = Utilities.getUUID(playerName);
-        }
+        uuid = player.getUUID();
 
         if (uuid == null || uuid.isEmpty()) {
             ProxyServer.getInstance().getLogger().warning("Could not fetch UUID for player " + playerName);

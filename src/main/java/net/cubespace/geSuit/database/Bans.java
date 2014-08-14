@@ -10,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
-import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
@@ -274,43 +273,41 @@ public class Bans implements IRepository {
 
         if (installedVersion < 2) {
             // Version 2 adds UUIDs as Field
-            if (FeatureDetector.canUseUUID()) {
-                ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+            ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
-                // Convert all Names to UUIDs
-                PreparedStatement getBans = connectionHandler.getPreparedStatement("getBans");
-                try {
-                    ResultSet res = getBans.executeQuery();
-                    while (res.next()) {
-                        String bannedEntity = res.getString("banned_uuid");
+            // Convert all Names to UUIDs
+            PreparedStatement getBans = connectionHandler.getPreparedStatement("getBans");
+            try {
+                ResultSet res = getBans.executeQuery();
+                while (res.next()) {
+                    String bannedEntity = res.getString("banned_uuid");
 
-                        if (!Utilities.isIPAddress(bannedEntity)) {
-                            String uuid = Utilities.getUUID(bannedEntity);
+                    if (!Utilities.isIPAddress(bannedEntity)) {
+                        String uuid = Utilities.getUUID(bannedEntity);
 
-                            if (uuid != null) {
-                                ConnectionHandler connectionHandler1 = DatabaseManager.connectionPool.getConnection();
+                        if (uuid != null) {
+                            ConnectionHandler connectionHandler1 = DatabaseManager.connectionPool.getConnection();
 
-                                try {
-                                    PreparedStatement updateToUUID = connectionHandler1.getPreparedStatement("updateToUUID");
-                                    updateToUUID.setString(1, uuid);
-                                    updateToUUID.setInt(2, res.getInt("id"));
-                                    updateToUUID.executeUpdate();
-                                } catch (SQLException e) {
-                                    System.out.println("Could not update Ban for update to version 2");
-                                    e.printStackTrace();
-                                } finally {
-                                    connectionHandler1.release();
-                                }
+                            try {
+                                PreparedStatement updateToUUID = connectionHandler1.getPreparedStatement("updateToUUID");
+                                updateToUUID.setString(1, uuid);
+                                updateToUUID.setInt(2, res.getInt("id"));
+                                updateToUUID.executeUpdate();
+                            } catch (SQLException e) {
+                                System.out.println("Could not update Ban for update to version 2");
+                                e.printStackTrace();
+                            } finally {
+                                connectionHandler1.release();
                             }
                         }
                     }
-                } catch (SQLException e) {
-                    System.out.println("Could not get Bans for update to version 2");
-                    e.printStackTrace();
-                    return;
-                } finally {
-                    connectionHandler.release();
                 }
+            } catch (SQLException e) {
+                System.out.println("Could not get Bans for update to version 2");
+                e.printStackTrace();
+                return;
+            } finally {
+                connectionHandler.release();
             }
         }
 

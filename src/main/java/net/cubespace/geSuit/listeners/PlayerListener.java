@@ -18,6 +18,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void playerLogin(ServerConnectedEvent e) throws SQLException {
+    	
     	GSPlayer p = PlayerManager.loadPlayer(e.getPlayer());
 
         if (ConfigManager.main.MOTD_Enabled) {

@@ -1,6 +1,5 @@
 package net.cubespace.geSuit.listeners;
 
-import net.cubespace.geSuit.FeatureDetector;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.DatabaseManager;
@@ -60,7 +59,7 @@ public class HomesMessageListener implements Listener {
                 gsPlayer = DatabaseManager.players.loadPlayer(player);
 
                 if (gsPlayer == null) {
-                    DatabaseManager.players.insertPlayer(new GSPlayer(player, (FeatureDetector.canUseUUID()) ? Utilities.getUUID(player) : null, true), "0.0.0.0");
+                    DatabaseManager.players.insertPlayer(new GSPlayer(player, Utilities.getUUID(player), true), "0.0.0.0");
                     gsPlayer = DatabaseManager.players.loadPlayer(player);
                     gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
                 } else {
