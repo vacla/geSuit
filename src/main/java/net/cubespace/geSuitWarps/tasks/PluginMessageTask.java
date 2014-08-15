@@ -1,7 +1,10 @@
 package net.cubespace.geSuitWarps.tasks;
 
 import net.cubespace.geSuitWarps.geSuitWarps;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.ByteArrayOutputStream;
@@ -15,11 +18,15 @@ public class PluginMessageTask extends BukkitRunnable {
 	}
 	
 	public void run() {
-			Bukkit.getOnlinePlayers()[0].sendPluginMessage(
-					geSuitWarps.instance,
-					"geSuitWarps",
-					bytes.toByteArray());
-	
+		Player player = Bukkit.getOnlinePlayers().iterator().next();
+		if (player != null) {
+				player.sendPluginMessage(
+						geSuitWarps.instance,
+						"geSuitWarps",
+						bytes.toByteArray());
+			} else {
+				System.out.println(ChatColor.RED + "Unable to send Plugin Message - No players online.");
+			}
 	}
 
 }
