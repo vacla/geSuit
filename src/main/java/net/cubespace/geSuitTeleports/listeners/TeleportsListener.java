@@ -36,7 +36,7 @@ public class TeleportsListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler (ignoreCancelled = true)
 	public void playerTeleport(PlayerTeleportEvent e){
 		if(e.isCancelled()){
 			return;
@@ -60,7 +60,7 @@ public class TeleportsListener implements Listener {
 		TeleportsManager.sendTeleportBackLocation(e.getPlayer(), empty);	
 	}
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void playerDeath(PlayerDeathEvent e){
 		TeleportsManager.sendDeathBackLocation(e.getEntity());
         TeleportsManager.ignoreTeleport.add(e.getEntity());
