@@ -1,6 +1,5 @@
 package net.cubespace.geSuitPortals.listeners;
 
-import java.util.ArrayList;
 import java.util.List;
 import net.cubespace.geSuitPortals.managers.PortalsManager;
 import net.cubespace.geSuitPortals.objects.Portal;
@@ -20,7 +19,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class AntiBurnListener implements Listener {
     private static final int FIRE_SPREAD_RADIUS = 2;
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDamageEvent(EntityDamageEvent event) {
         if (!PortalsManager.RECEIVED || !(event.getEntity() instanceof Player) ||
            (!event.getCause().equals(EntityDamageEvent.DamageCause.LAVA) &&
@@ -42,6 +41,7 @@ public class AntiBurnListener implements Listener {
     }
 
     private boolean checkIfInPortal(Block block) {
+    	if (block == null) return false;
         if (canIgnite(block)) {
             List<Portal> portals = PortalsManager.PORTALS.get(block.getWorld());
             if (portals != null) {

@@ -15,7 +15,7 @@ import net.cubespace.geSuitPortals.objects.Portal;
 
 public class PlayerMoveListener implements Listener {
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void PlayerMove(PlayerMoveEvent e){
 		Block t = e.getTo().getBlock();
 		Block f = e.getFrom().getBlock();
@@ -40,7 +40,7 @@ public class PlayerMoveListener implements Listener {
 
 	}
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void PlayerMove(PlayerPortalEvent e){
 		Block b = null;
 		Block f = e.getFrom().getBlock();
