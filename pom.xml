@@ -22,24 +22,13 @@
             <id>vault-repo</id>
             <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
         </repository>
-        <repository>
-            <id>cubespace-jenkins</id>
-            <url>
-                http://jenkins.cube-space.net/job/geSuitTeleport/net.cubespace$geSuitTeleports/lastBuild/artifact/
-            </url>
-        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.6.2-R0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>net.cubespace</groupId>
-            <artifactId>geSuitTeleports</artifactId>
-            <version>0.1.0</version>
+            <version>1.7.10-R0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>
