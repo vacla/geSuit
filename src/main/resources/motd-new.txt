@@ -1,0 +1,2 @@
+&dWelcome to the server {player}!
+Please be sure to read the rules of the server

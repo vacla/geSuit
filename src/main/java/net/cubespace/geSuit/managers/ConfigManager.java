@@ -2,6 +2,7 @@ package net.cubespace.geSuit.managers;
 
 import net.cubespace.geSuit.configs.Announcements;
 import net.cubespace.geSuit.configs.BansConfig;
+import net.cubespace.geSuit.configs.MOTDFile;
 import net.cubespace.geSuit.configs.MainConfig;
 import net.cubespace.geSuit.configs.Messages;
 import net.cubespace.geSuit.configs.SpawnConfig;
@@ -18,6 +19,8 @@ public class ConfigManager {
     public static SpawnConfig spawn = new SpawnConfig();
     public static TeleportConfig teleport = new TeleportConfig();
     public static Messages messages = new Messages();
+    public static MOTDFile motd = new MOTDFile("motd.txt");
+    public static MOTDFile motdNew = new MOTDFile("motd-new.txt");
 
     static {
         try {
@@ -27,6 +30,8 @@ public class ConfigManager {
             main.init();
             spawn.init();
             teleport.init();
+            motd.init();
+            motdNew.init();
         } catch (InvalidConfigurationException e) {
             e.printStackTrace();
         }

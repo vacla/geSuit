@@ -23,7 +23,7 @@ public class MOTDCommand extends Command {
 
             return;
         }
-        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.MOTD);
+        PlayerManager.sendMessageToTarget(sender, ConfigManager.motd.getMOTD().replace("{player}", sender.getName()));
     }
 }
 

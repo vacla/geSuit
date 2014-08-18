@@ -40,6 +40,7 @@ public class PlayerManager {
         	}
 
             DatabaseManager.players.updatePlayer(gsPlayer);
+            gsPlayer.setFirstJoin(false);
             
             return gsPlayer;
         } else {
@@ -50,6 +51,7 @@ public class PlayerManager {
     private static GSPlayer createNewPlayer(final ProxiedPlayer player) {
         String ip = player.getAddress().getAddress().toString();
         final GSPlayer gsPlayer = new GSPlayer(player.getName(), player.getUUID(), true);
+        gsPlayer.setFirstJoin(true);
 
         onlinePlayers.put(player.getName(), gsPlayer);
         DatabaseManager.players.insertPlayer(gsPlayer, ip.substring(1, ip.length()));

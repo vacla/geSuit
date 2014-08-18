@@ -22,7 +22,11 @@ public class PlayerListener implements Listener {
     	GSPlayer p = PlayerManager.loadPlayer(e.getPlayer());
 
         if (ConfigManager.main.MOTD_Enabled) {
-            PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.messages.MOTD.replace("{player}", p.getName()));
+            if (p.isFirstJoin()) {
+        	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motdNew.getMOTD().replace("{player}", p.getName()));
+            } else {
+        	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motd.getMOTD().replace("{player}", p.getName()));
+            }
         }
 
         p.connected();

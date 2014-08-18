@@ -26,6 +26,7 @@ public class GSPlayer
     private boolean lastBack;
     private boolean firstConnect = true;
     private boolean joinAnnounced = false;
+    private boolean isFirstJoin = false;
 
     public GSPlayer(String name, String uuid, boolean tps)
     {
@@ -163,6 +164,16 @@ public class GSPlayer
     public Timestamp getLastOnline()
     {
         return lastOnline;
+    }
+    
+    public boolean isFirstJoin()
+    {
+	return isFirstJoin;
+    }
+    
+    public void setFirstJoin(boolean value)
+    {
+	isFirstJoin = value;
     }
 
 	public boolean hasJoinAnnounced() {
