@@ -5,7 +5,9 @@ import net.cubespace.geSuit.commands.DebugCommand;
 import net.cubespace.geSuit.commands.MOTDCommand;
 import net.cubespace.geSuit.commands.ReloadCommand;
 import net.cubespace.geSuit.commands.SeenCommand;
+import net.cubespace.geSuit.commands.TempBanCommand;
 import net.cubespace.geSuit.commands.UnbanCommand;
+import net.cubespace.geSuit.commands.WarnCommand;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
 import net.cubespace.geSuit.listeners.BansListener;
@@ -61,6 +63,8 @@ public class geSuit extends Plugin
         }
         proxy.getPluginManager().registerCommand(this, new UnbanCommand());
         proxy.getPluginManager().registerCommand(this, new BanCommand());
+        proxy.getPluginManager().registerCommand(this, new TempBanCommand());
+        proxy.getPluginManager().registerCommand(this, new WarnCommand());
         proxy.getPluginManager().registerCommand(this, new ReloadCommand());
         proxy.getPluginManager().registerCommand(this, new DebugCommand());
     }

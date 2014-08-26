@@ -75,7 +75,8 @@ public class Messages extends Config {
 
     // ban messages
     public String BUNGEE_COMMAND_BAN_USAGE = "&c" + "Usage: !ban <player|ip> <reason>";
-    public String BUNGEE_COMMAND_WARN_USAGE = "&c" + "Usage: !warn <player|ip> <reason>";
+    public String BUNGEE_COMMAND_WARN_USAGE = "&c" + "Usage: !warn <player> <reason>";
+    public String BUNGEE_COMMAND_TEMPBAN_USAGE = "&c" + "Usage: !tempban <player> <time> <reason>";
     public String BUNGEE_COMMAND_UNBAN_USAGE = "&c" + "Usage: !unban <player|uuid|ip>";
     public String UNKNOWN_PLAYER_STILL_BANNING = "&c" + "Player is unknown. Banning by name and &nmaybe&r&c by UUID.";
     public String UNKNOWN_PLAYER_STILL_WARNING = "&c" + "Player is unknown. Warning player by name and &nmaybe&r&c by UUID.";
