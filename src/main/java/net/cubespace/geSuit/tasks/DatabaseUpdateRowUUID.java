@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.md_5.bungee.api.ProxyServer;
@@ -35,9 +34,11 @@ public class DatabaseUpdateRowUUID implements Runnable
             return;
         }
 
-        String uuid;
+        String uuid = null;
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerName);
-        uuid = player.getUUID();
+        if (player != null) {
+        	uuid = player.getUUID();
+        }
 
         if (uuid == null || uuid.isEmpty()) {
             ProxyServer.getInstance().getLogger().warning("Could not fetch UUID for player " + playerName);
