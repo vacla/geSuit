@@ -220,17 +220,18 @@ public class BansManager {
         sdf.applyPattern("dd MMM yyyy HH:mm:ss");
         String time = sdf.format(sqlToday);
         sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
+        String timeDiff = Utilities.buildTimeDiffString(seconds * 1000, false);
 
         DatabaseManager.bans.tempBanPlayer(player, sender, (t != null ? t.getUuid() : null), message, sdf.format(sqlToday));
 
         if (t != null && t.getProxiedPlayer() != null) {
-            disconnectPlayer(t.getProxiedPlayer(), ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", p.getName()).replace("{time}", time).replace("{message}", message));
+            disconnectPlayer(t.getProxiedPlayer(), ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", p.getName()).replace("{time}", time).replace("{left}", timeDiff).replace("{message}", message));
         }
 
         if (ConfigManager.bans.BroadcastBans) {
-            PlayerManager.sendBroadcast(ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time));
+            PlayerManager.sendBroadcast(ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff));
         } else {
-            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time));
+            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff));
         }
     }
 

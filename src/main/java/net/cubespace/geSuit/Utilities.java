@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import net.cubespace.geSuit.profile.Profile;
 import net.cubespace.geSuit.tasks.DatabaseUpdateRowUUID;
@@ -74,4 +75,60 @@ public class Utilities {
 		}
 		return data;
 	}
+    
+    public static String buildTimeDiffString(long timeDiff, boolean includeSeconds) {
+        StringBuilder builder = new StringBuilder();
+
+        long amount = timeDiff / TimeUnit.DAYS.toMillis(1);
+        if (amount >= 1) {
+            builder.append(Long.toString(amount));
+            if (amount > 1) {
+                builder.append(" Days ");
+            } else {
+                builder.append(" Day ");
+            }
+            timeDiff -= amount * TimeUnit.DAYS.toMillis(1);
+        }
+
+        amount = timeDiff / TimeUnit.HOURS.toMillis(1);
+        if (amount >= 1) {
+            builder.append(Long.toString(amount));
+            if (amount > 1) {
+                builder.append(" Hours ");
+            } else {
+                builder.append(" Hour ");
+            }
+            timeDiff -= amount * TimeUnit.HOURS.toMillis(1);
+        }
+
+        amount = timeDiff / TimeUnit.MINUTES.toMillis(1);
+        if (amount >= 1) {
+            builder.append(Long.toString(amount));
+            if (amount > 1) {
+                builder.append(" Minutes ");
+            } else {
+                builder.append(" Minute ");
+            }
+            timeDiff -= amount * TimeUnit.MINUTES.toMillis(1);
+        }
+
+        if (includeSeconds) {
+            amount = timeDiff / TimeUnit.SECONDS.toMillis(1);
+            if (amount >= 1) {
+                builder.append(Long.toString(amount));
+                if (amount > 1) {
+                    builder.append(" Seconds ");
+                } else {
+                    builder.append(" Second ");
+                }
+                timeDiff -= amount * TimeUnit.SECONDS.toMillis(1);
+            }
+        }
+        
+        if (timeDiff < 0 && builder.length() == 0) {
+            builder.append("< 1 Second");
+        }
+
+        return builder.toString().trim();
+    }
 }
