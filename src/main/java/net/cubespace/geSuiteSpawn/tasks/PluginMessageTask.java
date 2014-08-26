@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Iterator;
 
 
 public class PluginMessageTask extends BukkitRunnable {
@@ -19,8 +20,9 @@ public class PluginMessageTask extends BukkitRunnable {
 	}
 	
 	public void run() {
-		Player player = Bukkit.getOnlinePlayers().iterator().next();
-		if (player != null) {
+	    Iterator<? extends Player> iterator = Bukkit.getOnlinePlayers().iterator();
+        if (iterator.hasNext()) {
+            Player player = iterator.next();
 				player.sendPluginMessage(
 						geSuitSpawn.INSTANCE,
 						"geSuitSpawns",
