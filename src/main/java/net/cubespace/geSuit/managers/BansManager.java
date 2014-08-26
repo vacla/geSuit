@@ -220,7 +220,7 @@ public class BansManager {
         sdf.applyPattern("dd MMM yyyy HH:mm:ss");
         String time = sdf.format(sqlToday);
         sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
-        String timeDiff = Utilities.buildTimeDiffString(seconds * 1000, false);
+        String timeDiff = Utilities.buildTimeDiffString(seconds * 1000, 2);
 
         DatabaseManager.bans.tempBanPlayer(player, sender, (t != null ? t.getUuid() : null), message, sdf.format(sqlToday));
 
