@@ -134,4 +134,47 @@ public class Utilities {
 
         return builder.toString().trim();
     }
+    
+    public static String buildShortTimeDiffString(long timeDiff, int precision) {
+        StringBuilder builder = new StringBuilder();
+        
+        int count = 0;
+        long amount = timeDiff / TimeUnit.DAYS.toMillis(1);
+        if (amount >= 1) {
+            builder.append(Long.toString(amount));
+            builder.append("d ");
+            timeDiff -= amount * TimeUnit.DAYS.toMillis(1);
+            ++count;
+        }
+
+        amount = timeDiff / TimeUnit.HOURS.toMillis(1);
+        if (count < precision && amount >= 1) {
+            builder.append(Long.toString(amount));
+            builder.append("h ");
+            timeDiff -= amount * TimeUnit.HOURS.toMillis(1);
+            ++count;
+        }
+
+        amount = timeDiff / TimeUnit.MINUTES.toMillis(1);
+        if (count < precision && amount >= 1) {
+            builder.append(Long.toString(amount));
+            builder.append("m ");
+            timeDiff -= amount * TimeUnit.MINUTES.toMillis(1);
+            ++count;
+        }
+
+        amount = timeDiff / TimeUnit.SECONDS.toMillis(1);
+        if (count < precision && amount >= 1) {
+            builder.append(Long.toString(amount));
+            builder.append("s ");
+            timeDiff -= amount * TimeUnit.SECONDS.toMillis(1);
+            ++count;
+        }
+        
+        if (timeDiff < 1000 && builder.length() == 0) {
+            builder.append("0s");
+        }
+
+        return builder.toString().trim();
+    }
 }

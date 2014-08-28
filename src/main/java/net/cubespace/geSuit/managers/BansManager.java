@@ -221,17 +221,18 @@ public class BansManager {
         String time = sdf.format(sqlToday);
         sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
         String timeDiff = Utilities.buildTimeDiffString(seconds * 1000, 2);
+        String shortTimeDiff = Utilities.buildShortTimeDiffString(seconds * 1000, 10);
 
         DatabaseManager.bans.tempBanPlayer(player, sender, (t != null ? t.getUuid() : null), message, sdf.format(sqlToday));
 
         if (t != null && t.getProxiedPlayer() != null) {
-            disconnectPlayer(t.getProxiedPlayer(), ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", p.getName()).replace("{time}", time).replace("{left}", timeDiff).replace("{message}", message));
+            disconnectPlayer(t.getProxiedPlayer(), ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", p.getName()).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff).replace("{message}", message));
         }
 
         if (ConfigManager.bans.BroadcastBans) {
-            PlayerManager.sendBroadcast(ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff));
+            PlayerManager.sendBroadcast(ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff));
         } else {
-            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff));
+            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff));
         }
     }
 
