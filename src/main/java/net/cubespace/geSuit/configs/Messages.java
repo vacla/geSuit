@@ -7,7 +7,7 @@ import net.cubespace.geSuit.geSuit;
 
 public class Messages extends Config {
     public Messages() {
-        CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "Messages.yml");
+        CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "messages.yml");
         CONFIG_MODE = ConfigMode.FIELD_IS_KEY;
     }
 

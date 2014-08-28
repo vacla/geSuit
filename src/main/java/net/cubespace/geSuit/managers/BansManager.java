@@ -59,7 +59,7 @@ public class BansManager {
 
         DatabaseManager.bans.unbanPlayer(b.getId());
 
-        if (ConfigManager.bans.BroadcastBans) {
+        if (ConfigManager.bans.BroadcastUnbans) {
             PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", b.getPlayer()).replace("{sender}", sender));
         } else {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", b.getPlayer()).replace("{sender}", sender));
