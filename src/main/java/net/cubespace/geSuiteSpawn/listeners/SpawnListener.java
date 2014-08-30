@@ -39,7 +39,7 @@ public class SpawnListener implements Listener {
 
     }
 
-    @EventHandler( priority = EventPriority.LOWEST )
+    @EventHandler( priority = EventPriority.NORMAL, ignoreCancelled=true )
     public void playerRespawn( PlayerRespawnEvent e ) {
         Player p = e.getPlayer();
         if ( p.getBedSpawnLocation() != null && p.hasPermission( "gesuit.spawns.spawn.bed" ) ) {
