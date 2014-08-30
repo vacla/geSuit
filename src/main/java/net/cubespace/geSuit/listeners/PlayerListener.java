@@ -18,18 +18,21 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void playerLogin(ServerConnectedEvent e) throws SQLException {
-    	
-    	GSPlayer p = PlayerManager.loadPlayer(e.getPlayer());
+    	GSPlayer p = PlayerManager.getPlayer(e.getPlayer().getName());
+    	if (p == null) {
+    		// Player is not already known to be "online" - Grab their profile
+    		p = PlayerManager.loadPlayer(e.getPlayer());
 
-        if (ConfigManager.main.MOTD_Enabled && p.firstConnect()) {
-            if (p.isFirstJoin()) {
-        	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motdNew.getMOTD().replace("{player}", p.getName()));
-            } else {
-        	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motd.getMOTD().replace("{player}", p.getName()));
-            }
-        }
+	        if (ConfigManager.main.MOTD_Enabled && p.firstConnect()) {
+	            if (p.isFirstJoin()) {
+	        	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motdNew.getMOTD().replace("{player}", p.getName()));
+	            } else {
+	        	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motd.getMOTD().replace("{player}", p.getName()));
+	            }
+	        }
 
-        p.connected();
+        	p.connected();
+    	}
     }
 
     @EventHandler(priority = EventPriority.LOW)
