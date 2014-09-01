@@ -69,16 +69,15 @@ public class Bans implements IRepository {
         return -1;
     }
 
-    public int warnPlayer(String banned_playername, String banned_uuid, String banned_ip, String bannedBy, String reason) {
+    public int warnPlayer(String banned_playername, String banned_uuid, String bannedBy, String reason) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
             PreparedStatement banPlayer = connectionHandler.getPreparedStatement("warnPlayer");
             banPlayer.setString(1, banned_playername);
             banPlayer.setString(2, banned_uuid);
-            banPlayer.setString(3, banned_ip);
-            banPlayer.setString(4, bannedBy);
-            banPlayer.setString(5, reason);
+            banPlayer.setString(3, bannedBy);
+            banPlayer.setString(4, reason);
 
             banPlayer.executeUpdate();
             ResultSet rs = banPlayer.getGeneratedKeys();
@@ -94,7 +93,7 @@ public class Bans implements IRepository {
         return -1;
     }
 
-    public void tempBanPlayer(String banned_playername, String banned_by, String banned_uuid, String reason, String till) {
+    public void tempBanPlayer(String banned_playername, String banned_uuid, String banned_by, String reason, String till) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
@@ -138,15 +137,14 @@ public class Bans implements IRepository {
         return bans;
     }
 
-    public List<Ban> getWarnHistory(String lookup) {
+    public List<Ban> getWarnHistory(String player, String uuid) {
         List<Ban> bans = new ArrayList<>();
 
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
             PreparedStatement banInfo = connectionHandler.getPreparedStatement("warnHistory");
-            banInfo.setString(1, lookup);
-            banInfo.setString(2, lookup);
-            banInfo.setString(3, lookup);
+            banInfo.setString(1, player);
+            banInfo.setString(2, uuid);
 
             ResultSet res = banInfo.executeQuery();
             while (res.next()) {
@@ -179,7 +177,7 @@ public class Bans implements IRepository {
             banInfo.setString(3, ip);
 
             ResultSet res = banInfo.executeQuery();
-            while (res.next()) {
+            if (res.next()) {
                 b = new Ban(res.getInt("id"), res.getString("banned_playername"), res.getString("banned_uuid"), res.getString("banned_ip"), res.getString("banned_by"), res.getString("reason"), res.getString("type"), res.getInt("active"), res.getTimestamp("banned_on"), res.getTimestamp("banned_until"));
             }
 
@@ -247,13 +245,13 @@ public class Bans implements IRepository {
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
-        connection.addPreparedStatement("isPlayerBanned", "SELECT id FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban', 'ipban') AND active = 1");
+        connection.addPreparedStatement("isPlayerBanned", "SELECT id FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'ipban', 'tempban') AND active = 1");
         connection.addPreparedStatement("banPlayer", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,active,banned_on) VALUES (?,?,?,?,?,?,1,NOW());", PreparedStatement.RETURN_GENERATED_KEYS);
-        connection.addPreparedStatement("warnPlayer", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,active,banned_on) VALUES (?,?,?,?,?,'warn',0,NOW());", PreparedStatement.RETURN_GENERATED_KEYS);
+        connection.addPreparedStatement("warnPlayer", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_by,reason,type,active,banned_on) VALUES (?,?,?,?,'warn',0,NOW());", PreparedStatement.RETURN_GENERATED_KEYS);
         connection.addPreparedStatement("unbanPlayer", "UPDATE "+ ConfigManager.main.Table_Bans +" SET active = 0 WHERE id = ?");
-        connection.addPreparedStatement("banInfo", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban', 'ipban') AND active = 1");
-        connection.addPreparedStatement("banHistory", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'tempban', 'ipban') ORDER BY id ASC");
-        connection.addPreparedStatement("warnHistory", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type = 'warn' ORDER BY id ASC");
+        connection.addPreparedStatement("banInfo", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'ipban', 'tempban') AND active = 1 ORDER BY type");
+        connection.addPreparedStatement("banHistory", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? OR banned_ip = ?) AND type in ('ban', 'ipban', 'tempban') ORDER BY id ASC");
+        connection.addPreparedStatement("warnHistory", "SELECT * FROM "+ ConfigManager.main.Table_Bans +" WHERE (banned_playername = ? OR banned_uuid = ? ) AND type = 'warn' ORDER BY id ASC");
         connection.addPreparedStatement("tempBanPlayer", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_by,reason,type,active,banned_on,banned_until) VALUES(?,?,?,?,'tempban',1,NOW(),?)", PreparedStatement.RETURN_GENERATED_KEYS);
         connection.addPreparedStatement("insertBanConvert", "INSERT INTO "+ ConfigManager.main.Table_Bans +" (banned_playername,banned_uuid,banned_ip,banned_by,reason,type,active,banned_on,banned_until) VALUES(?,?,?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
         connection.addPreparedStatement("getBans", "SELECT * FROM "+ ConfigManager.main.Table_Bans);

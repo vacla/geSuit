@@ -92,7 +92,7 @@ public class Homes implements IRepository {
             while (res.next()) {
                 String server = res.getString("server");
                 Location l = new Location(server, res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
-                homes.add(new Home(PlayerManager.getSimilarPlayer(player), res.getString("home_name"), l));
+                homes.add(new Home(PlayerManager.matchOnlinePlayer(player), res.getString("home_name"), l));
             }
             res.close();
 

@@ -4,6 +4,7 @@ import net.cubespace.geSuit.geSuit;
 import net.cubespace.Yamler.Config.Config;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class BansConfig extends Config {
     public BansConfig() {
@@ -17,4 +18,6 @@ public class BansConfig extends Config {
     public Boolean BroadcastKicks = true;
     public Boolean DetectAltAccounts = true;
     public Boolean ShowAltAccountsOnlyIfBanned = true;
+    
+    public HashMap<Integer, String> Actions;
 }

@@ -32,7 +32,7 @@ public class PlayerManager {
         	if (gsPlayer == null) {
         		boolean tps = DatabaseManager.players.getPlayerTPS(player.getUUID());
         		gsPlayer = new GSPlayer(player.getName(), player.getUUID(), tps, player.getAddress().getHostString());
-        		onlinePlayers.put(player.getName(), gsPlayer);
+        		onlinePlayers.put(player.getName().toLowerCase(), gsPlayer);
                 HomesManager.loadPlayersHomes(gsPlayer);
                 LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()).replace("{uuid}", player.getUniqueId().toString()));
         	} else {
@@ -53,7 +53,7 @@ public class PlayerManager {
         final GSPlayer gsPlayer = new GSPlayer(player.getName(), player.getUUID(), true);
         gsPlayer.setFirstJoin(true);
 
-        onlinePlayers.put(player.getName(), gsPlayer);
+        onlinePlayers.put(player.getName().toLowerCase(), gsPlayer);
         DatabaseManager.players.insertPlayer(gsPlayer, ip.substring(1, ip.length()));
 
         LoggingManager.log(ConfigManager.messages.PLAYER_CREATE.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
@@ -124,7 +124,7 @@ public class PlayerManager {
 
     public static void sendBroadcast(String message) {
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-            sendMessageToTarget(p.getName(), message);
+        	sendMessageToTarget(p.getName(), message);
         }
         LoggingManager.log(message);
     }
@@ -152,14 +152,41 @@ public class PlayerManager {
         }
     }
 
-    public static GSPlayer getSimilarPlayer(String player) {
-        for (GSPlayer p : onlinePlayers.values()) {
-            if ((p.getProxiedPlayer() != null && p.getProxiedPlayer().getDisplayName() != null && p.getProxiedPlayer().getDisplayName().toLowerCase().startsWith(player.toLowerCase())) || p.getName().toLowerCase().startsWith(player.toLowerCase()) || (p.getUuid() != null && p.getUuid().equals(player))) {
-                return p;
-            }
-        }
+    public static GSPlayer matchOnlinePlayer(String player) {
+    	// Try exact match first (real name, not display name)
+    	GSPlayer match = getPlayer(player);
+    	if (match != null)
+    		return match;
 
-        return null;
+    	// Try fuzzy match (including display name)
+    	GSPlayer fuzzymatch = null;
+    	for (GSPlayer p : onlinePlayers.values()) {
+        	ProxiedPlayer pp = p.getProxiedPlayer();
+        	// Match exact display name (full match)
+        	if ((pp != null) && (pp.getDisplayName() != null) && pp.getDisplayName().equalsIgnoreCase(player))
+        		return p;
+        	
+        	// Match exact UUID if one was given
+        	if ((p.getUuid() != null) && (p.getUuid().equals(player)))
+        		return p;
+
+        	// Remember this "beginning" match in case we don't find a full match
+        	// (it's important to check displayname + name, incase their name was changed during this session)
+        	if ((p.getName().toLowerCase().startsWith(player)) || (pp.getDisplayName().toLowerCase().startsWith(player)))
+        		match = p;
+        	
+        	// Remember this "fuzzy" match in case we don't find a full match or a "beginning" match)
+        	// (it's important to check displayname + name, incase their name was changed during this session)
+        	if ((p.getName().toLowerCase().contains(player)) || (pp.getDisplayName().toLowerCase().contains(player)))
+        		fuzzymatch = p;
+    	}
+
+		// Always return a "beginning" match first if we have one
+    	if (match != null) {
+    		return match;
+    	} else {
+    		return fuzzymatch;
+    	}
     }
 
     public static List<GSPlayer> getPlayersByIP(String ip) {
@@ -185,7 +212,7 @@ public class PlayerManager {
     }
 
     public static GSPlayer getPlayer(String player) {
-        return onlinePlayers.get(player);
+        return onlinePlayers.get(player.toLowerCase());
     }
 
     public static String getLastSeeninfosStripped(String player) {

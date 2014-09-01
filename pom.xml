@@ -48,6 +48,11 @@
             <version>1.7-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-chat</artifactId>
+            <version>1.7-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>net.cubespace</groupId>
             <artifactId>Yamler-Core</artifactId>
             <version>2.2.3-SNAPSHOT</version>

@@ -33,8 +33,6 @@ public class BansListener implements Listener {
                     Date then = b.getBannedUntil();
                     Date now = new Date();
                     long timeDiff = then.getTime() - now.getTime();
-                    long hours = timeDiff / (60 * 60 * 1000);
-                    long mins = timeDiff / (60 * 1000) % 60;
                     
                     e.setCancelReason(Utilities.colorize(ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{time}", sdf.format(then)).replace("{left}", Utilities.buildTimeDiffString(timeDiff, 2)).replace("{shortleft}", Utilities.buildShortTimeDiffString(timeDiff, 10)).replace("{message}", b.getReason())));
                     LoggingManager.log(ChatColor.RED + e.getConnection().getName() + "'s connection refused due to being banned!");

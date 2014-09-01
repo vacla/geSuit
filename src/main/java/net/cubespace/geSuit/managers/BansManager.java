@@ -6,10 +6,12 @@ import java.util.Calendar;
 import java.util.List;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
+import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -17,56 +19,76 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class BansManager {
 
     public static void banPlayer(String bannedBy, String player, String reason) {
-        GSPlayer p = PlayerManager.getPlayer(bannedBy);
-        GSPlayer t = PlayerManager.getSimilarPlayer(player);
+    	banPlayer(bannedBy, player, reason, false);
+    }
 
-        if (DatabaseManager.bans.isPlayerBanned(player)) {
-            PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : p.getProxiedPlayer(), ConfigManager.messages.PLAYER_ALREADY_BANNED);
-            return;
-        }
+    public static void banPlayer(String bannedBy, String player, String reason, Boolean auto) {
+        GSPlayer s = PlayerManager.getPlayer(bannedBy);
+        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
-        if (t == null) {
-            PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : p.getProxiedPlayer(), ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
+        BanTarget t = getBanTarget(player);
+        if (t.gsp == null)
+        	PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
+
+        Ban b = DatabaseManager.bans.getBanInfo(t.name, t.uuid, null);
+        if (b != null) {
+        	if (b.getType().equals("tempban")) {
+        		// We don't want tempbans AND bans in place.. it could cause issues!
+        		DatabaseManager.bans.unbanPlayer(b.getId());
+        	} else {
+	            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_ALREADY_BANNED);
+	            return;
+        	}
         }
 
         if (reason == null || reason.equals("")) {
             reason = ConfigManager.messages.DEFAULT_BAN_REASON;
         }
 
-        int id = DatabaseManager.bans.banPlayer(player, (t != null && t.getUuid() != null) ? t.getUuid() : null, null, bannedBy, reason, "ban");
+        DatabaseManager.bans.banPlayer(t.name, t.uuid, null, bannedBy, reason, "ban");
 
-        Utilities.databaseUpdateRowUUID(id, player);
-
-        if (t != null && t.getProxiedPlayer() != null) {
-            disconnectPlayer(t.getProxiedPlayer(), Utilities.colorize(ConfigManager.messages.BAN_PLAYER_MESSAGE.replace("{message}", reason).replace("{sender}", bannedBy)));
+        // Player is online so kick them
+        if ((t.gsp != null) && (t.gsp.getProxiedPlayer() != null)) {
+            disconnectPlayer(t.gsp.getProxiedPlayer(), Utilities.colorize(ConfigManager.messages.BAN_PLAYER_MESSAGE.replace("{message}", reason).replace("{sender}", bannedBy)));
         }
 
         if (ConfigManager.bans.BroadcastBans) {
-            PlayerManager.sendBroadcast(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
+            if (auto) {
+            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName())));
+            } else {
+            	PlayerManager.sendBroadcast(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", t.dispname).replace("{message}", reason).replace("{sender}", bannedBy));
+            }
         } else {
-            PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : p.getProxiedPlayer(), ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", t.dispname).replace("{message}", reason).replace("{sender}", bannedBy));
         }
 
     }
 
-    public static void unbanPlayer(String sender, String player) {
-        if (!DatabaseManager.bans.isPlayerBanned(player, player, player)) {
+    public static void unbanPlayer(String sentBy, String player) {
+        GSPlayer s = PlayerManager.getPlayer(sentBy);
+        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+        BanTarget t = getBanTarget(player);
+        if (!DatabaseManager.bans.isPlayerBanned(t.name, t.uuid, player)) {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_NOT_BANNED);
             return;
         }
 
-        Ban b = DatabaseManager.bans.getBanInfo(player);
+        Ban b = DatabaseManager.bans.getBanInfo(t.name, t.uuid, player);
 
         DatabaseManager.bans.unbanPlayer(b.getId());
 
         if (ConfigManager.bans.BroadcastUnbans) {
-            PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", b.getPlayer()).replace("{sender}", sender));
+            PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", t.dispname).replace("{sender}", sender.getName()));
         } else {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", b.getPlayer()).replace("{sender}", sender));
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", t.dispname).replace("{sender}", sender.getName()));
         }
     }
 
     public static void banIP(String bannedBy, String player, String reason) {
+        GSPlayer s = PlayerManager.getPlayer(bannedBy);
+        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
         if (reason.equals("")) {
             reason = Utilities.colorize(ConfigManager.messages.DEFAULT_BAN_REASON);
         }
@@ -79,7 +101,7 @@ public class BansManager {
         }
 
         if (ip == null) {
-            PlayerManager.sendMessageToTarget(bannedBy, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
             return;
         }
 
@@ -96,7 +118,7 @@ public class BansManager {
         if (ConfigManager.bans.BroadcastBans) {
             PlayerManager.sendBroadcast(ConfigManager.messages.IPBAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
         } else {
-            PlayerManager.sendMessageToTarget(bannedBy, ConfigManager.messages.IPBAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.IPBAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
         }
     }
 
@@ -112,71 +134,88 @@ public class BansManager {
         }
     }
 
-    public static void checkPlayersBan(String sender, String player) {
-        GSPlayer p = PlayerManager.getPlayer(sender);
-        Ban b = DatabaseManager.bans.getBanInfo(player);
+    public static void checkPlayersBan(String sentBy, String player) {
+        GSPlayer s = PlayerManager.getPlayer(sentBy);
+        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+        BanTarget t = getBanTarget(player);
+        Ban b = DatabaseManager.bans.getBanInfo(t.name);
 
         if (b == null) {
-            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.PLAYER_NOT_BANNED);
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_NOT_BANNED);
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat();
             sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
-            PlayerManager.sendMessageToTarget(p, ChatColor.DARK_AQUA + "--------" + ChatColor.DARK_RED + "Ban Info" + ChatColor.DARK_AQUA + "--------");
-            PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Player: " + ChatColor.AQUA + b.getPlayer());
+            PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "--------" + ChatColor.DARK_RED + "Ban Info" + ChatColor.DARK_AQUA + "--------");
+            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Player: " + ChatColor.AQUA + b.getPlayer());
             if (b.getUuid() != null) {
-                PlayerManager.sendMessageToTarget(p, ChatColor.RED + "UUID: " + ChatColor.AQUA + b.getUuid());
+                PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "UUID: " + ChatColor.AQUA + b.getUuid());
             }
-            PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Ban type: " + ChatColor.AQUA + b.getType());
-            PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Banned by: " + ChatColor.AQUA + b.getBannedBy());
-            PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Ban reason: " + ChatColor.AQUA + b.getReason());
-            PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Bannned on: " + ChatColor.AQUA + sdf.format(b.getBannedOn()));
+            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Ban type: " + ChatColor.AQUA + b.getType());
+            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Banned by: " + ChatColor.AQUA + b.getBannedBy());
+            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Ban reason: " + ChatColor.AQUA + b.getReason());
+            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Bannned on: " + ChatColor.AQUA + sdf.format(b.getBannedOn()));
 
             if (b.getBannedUntil() == null) {
-                PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Bannned until: " + ChatColor.AQUA + "-Forever-");
+                PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Bannned until: " + ChatColor.AQUA + "-Forever-");
             } else {
-                PlayerManager.sendMessageToTarget(p, ChatColor.RED + "Bannned until: " + ChatColor.AQUA + sdf.format(b.getBannedUntil()));
+                PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Bannned until: " + ChatColor.AQUA + sdf.format(b.getBannedUntil()));
             }
         }
     }
 
-    public static void displayPlayerBanHistory(String sender, String player) {
-        GSPlayer p = PlayerManager.getPlayer(sender);
-        List<Ban> bans = DatabaseManager.bans.getBanHistory(player);
+    public static void displayPlayerBanHistory(String sentBy, String player) {
+        GSPlayer s = PlayerManager.getPlayer(sentBy);
+        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+        BanTarget t = getBanTarget(player);
+        List<Ban> bans = DatabaseManager.bans.getBanHistory(t.name);
 
         if (bans == null || bans.isEmpty()) {
-            PlayerManager.sendMessageToTarget(p, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_BANNED.replace("{player}", player)));
+            PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_BANNED.replace("{player}", t.dispname)));
             return;
         }
-        PlayerManager.sendMessageToTarget(p, ChatColor.DARK_AQUA + "--------" + ChatColor.DARK_RED + player + "'s Ban History" + ChatColor.DARK_AQUA + "--------");
+        PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "--------" + ChatColor.DARK_RED + player + "'s Ban History" + ChatColor.DARK_AQUA + "--------");
         boolean first = true;
         for (Ban b : bans) {
             if (first) {
                 first = false;
             } else {
-                PlayerManager.sendMessageToTarget(p, "");
+                PlayerManager.sendMessageToTarget(sender, "");
             }
             SimpleDateFormat sdf = new SimpleDateFormat();
             sdf.applyPattern("dd MMM yyyy HH:mm");
-            PlayerManager.sendMessageToTarget(p, (b.getBannedUntil() != null ? ChatColor.GOLD + "| " : ChatColor.RED + "| ") + "Date: " + ChatColor.AQUA + sdf.format(b.getBannedOn()) + ChatColor.RED + (b.getBannedUntil() != null ? ChatColor.DARK_AQUA + " > " + sdf.format(b.getBannedUntil()) : ChatColor.DARK_AQUA + " > forever"));
-            PlayerManager.sendMessageToTarget(p, (b.getBannedUntil() != null ? ChatColor.GOLD + "| " : ChatColor.RED + "| ") + "Banned by " + ChatColor.AQUA + b.getBannedBy() + ChatColor.DARK_AQUA + " (" + ChatColor.GRAY + b.getReason() + ChatColor.DARK_AQUA + ")");
+            PlayerManager.sendMessageToTarget(sender, (b.getBannedUntil() != null ? ChatColor.GOLD + "| " : ChatColor.RED + "| ") + "Date: " + ChatColor.AQUA + sdf.format(b.getBannedOn()) + ChatColor.RED + (b.getBannedUntil() != null ? ChatColor.DARK_AQUA + " > " + sdf.format(b.getBannedUntil()) : ChatColor.DARK_AQUA + " > forever"));
+            PlayerManager.sendMessageToTarget(sender, (b.getBannedUntil() != null ? ChatColor.GOLD + "| " : ChatColor.RED + "| ") + "Banned by " + ChatColor.AQUA + b.getBannedBy() + ChatColor.DARK_AQUA + " (" + ChatColor.GRAY + b.getReason() + ChatColor.DARK_AQUA + ")");
         }
     }
 
-    public static void kickPlayer(String sender, String player, String reason) {
-        if (reason.equals("")) {
+    public static void kickPlayer(String kickedBy, String player, String reason) {
+    	kickPlayer(kickedBy, player, reason, false);
+    }
+
+    public static void kickPlayer(String kickedBy, String player, String reason, Boolean auto) {
+        GSPlayer s = PlayerManager.getPlayer(kickedBy);
+        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+        BanTarget t = getBanTarget(player);
+        if ((t.gsp == null) || (t.gsp.getProxiedPlayer() == null)) {
+        	PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_NOT_ONLINE);
+        	return;
+        }
+
+        if (reason.isEmpty()) {
             reason = ConfigManager.messages.DEFAULT_KICK_MESSAGE;
         }
 
-        GSPlayer p = PlayerManager.getPlayer(sender);
-        GSPlayer t = PlayerManager.getPlayer(player);
-        if (t == null) {
-            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.PLAYER_NOT_ONLINE);
-            return;
-        }
-
-        disconnectPlayer(t.getProxiedPlayer(), Utilities.colorize(ConfigManager.messages.KICK_PLAYER_MESSAGE.replace("{message}", reason).replace("{sender}", sender)));
+        disconnectPlayer(t.gsp.getProxiedPlayer(), Utilities.colorize(ConfigManager.messages.KICK_PLAYER_MESSAGE.replace("{message}", reason).replace("{sender}", sender.getName())));
+        	
         if (ConfigManager.bans.BroadcastKicks) {
-            PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.KICK_PLAYER_BROADCAST.replace("{message}", reason).replace("{player}", t.getName()).replace("{sender}", sender)));
+            if (auto) {
+            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.KICK_PLAYER_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName())));
+            } else {
+            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.KICK_PLAYER_BROADCAST.replace("{message}", reason).replace("{player}", t.dispname).replace("{sender}", sender.getName())));
+            }
         }
     }
 
@@ -195,20 +234,27 @@ public class BansManager {
         }
     }
 
-    public static void tempBanPlayer(String sender, String player, int seconds, String message) {
-        GSPlayer p = PlayerManager.getPlayer(sender);
-        GSPlayer t = PlayerManager.getSimilarPlayer(player);
+    public static void tempBanPlayer(String bannedBy, String player, int seconds, String message) {
+    	tempBanPlayer(bannedBy, player, seconds, message, false);
+    }
 
-        if (t == null) {
-            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
-//            return;
-        } else {
-            player = t.getName();
-        }
+    public static void tempBanPlayer(String bannedBy, String player, int seconds, String message, Boolean auto) {
+        GSPlayer s = PlayerManager.getPlayer(bannedBy);
+        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
-        if (DatabaseManager.bans.isPlayerBanned(player)) {
-            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.PLAYER_ALREADY_BANNED);
-            return;
+        BanTarget t = getBanTarget(player);
+        if (t.gsp == null)
+        	PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
+
+        Ban b = DatabaseManager.bans.getBanInfo(t.name, t.uuid, null);
+        if (b != null) {
+        	if (b.getType().equals("tempban")) {
+        		// We don't want tempbans AND bans in place.. it could cause issues!
+        		DatabaseManager.bans.unbanPlayer(b.getId());
+        	} else {
+                PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_ALREADY_BANNED);
+	            return;
+        	}
         }
 
         if (message.equals("")) {
@@ -223,16 +269,20 @@ public class BansManager {
         String timeDiff = Utilities.buildTimeDiffString(seconds * 1000, 2);
         String shortTimeDiff = Utilities.buildShortTimeDiffString(seconds * 1000, 10);
 
-        DatabaseManager.bans.tempBanPlayer(player, sender, (t != null ? t.getUuid() : null), message, sdf.format(sqlToday));
+        DatabaseManager.bans.tempBanPlayer(t.name, t.uuid, bannedBy, message, sdf.format(sqlToday));
 
-        if (t != null && t.getProxiedPlayer() != null) {
-            disconnectPlayer(t.getProxiedPlayer(), ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", p.getName()).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff).replace("{message}", message));
+        if ((t.gsp != null) && (t.gsp.getProxiedPlayer() != null)) {
+            disconnectPlayer(t.gsp.getProxiedPlayer(), ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", t.dispname).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff).replace("{message}", message));
         }
 
         if (ConfigManager.bans.BroadcastBans) {
-            PlayerManager.sendBroadcast(ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff));
+            if (auto) {
+            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.TEMP_BAN_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName()).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff)));
+            } else {
+            	PlayerManager.sendBroadcast(ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff));
+            }
         } else {
-            PlayerManager.sendMessageToTarget(p, ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", player).replace("{sender}", p.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff));
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff));
         }
     }
 
@@ -248,34 +298,59 @@ public class BansManager {
         return true;
     }
 
-    // TODO: Add auto-punishment system
-    public static void warnPlayer(String bannedBy, String player, String reason) {
-        GSPlayer p = PlayerManager.getPlayer(bannedBy);
-        GSPlayer t = PlayerManager.getSimilarPlayer(player);
+    public static void warnPlayer(String warnedBy, String player, String reason) {
+        GSPlayer s = PlayerManager.getPlayer(warnedBy);
+        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
-        if (t == null) {
-            PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : p.getProxiedPlayer(), ConfigManager.messages.UNKNOWN_PLAYER_STILL_WARNING);
-        }
-
-        if (reason == null || reason.equals("")) {
+        BanTarget t = getBanTarget(player);
+        if (t.gsp == null) {
+        	PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.UNKNOWN_PLAYER_NOT_WARNING);
+        	return;
+    	}
+        
+        if (reason == null || reason.isEmpty()) {
             reason = ConfigManager.messages.DEFAULT_WARN_REASON;
         }
 
-        int id = DatabaseManager.bans.warnPlayer(player, (t != null && t.getUuid() != null) ? t.getUuid() : null, null, bannedBy, reason);
-
-        Utilities.databaseUpdateRowUUID(id, player);
+        DatabaseManager.bans.warnPlayer(t.name, t.uuid, warnedBy, reason);
 
         if (ConfigManager.bans.BroadcastWarns) {
-            PlayerManager.sendBroadcast(ConfigManager.messages.WARN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
+            PlayerManager.sendBroadcast(ConfigManager.messages.WARN_PLAYER_BROADCAST.replace("{player}", t.dispname).replace("{message}", reason).replace("{sender}", warnedBy));
         } else {
-            PlayerManager.sendMessageToTarget(p == null ? ProxyServer.getInstance().getConsole() : p.getProxiedPlayer(), ConfigManager.messages.WARN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.WARN_PLAYER_BROADCAST.replace("{player}", t.dispname).replace("{message}", reason).replace("{sender}", warnedBy));
         }
 
+        // Check if we have warning actions defined
+        if (ConfigManager.bans.Actions != null) {
+        	List<Ban> warnings = DatabaseManager.bans.getWarnHistory(t.name, t.uuid);
+        	Integer warncount = warnings.size();
+        	if (ConfigManager.bans.Actions.containsKey(warncount)) {
+        		String fullaction = ConfigManager.bans.Actions.get(warncount);
+        		String[] parts = fullaction.split(" ");
+
+        		String action = parts[0];
+        		if (action.equals("kick")) {
+        			if ((t.gsp != null) && (t.gsp.getProxiedPlayer() != null)) {
+        				kickPlayer(warnedBy, t.name, reason, true);
+        			}
+        		}
+        		else if (action.equals("tempban")) {
+        	        int seconds = TimeParser.parseString(parts[1]);
+        			tempBanPlayer(warnedBy, t.name, seconds, reason, true);
+        		}
+        		else if (action.equals("ban")) {
+        			banPlayer(warnedBy, t.name, reason, true);
+        		} else {
+                	PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Warning action of \"" + fullaction + "\" is invalid!");
+        			LoggingManager.log(ChatColor.RED + "Warning action of \"" + fullaction + "\" is invalid!");
+        		}
+        	}
+        }
     }
 
     public static void displayPlayerWarnHistory(String sender, String player) {
         GSPlayer p = PlayerManager.getPlayer(sender);
-        List<Ban> warns = DatabaseManager.bans.getWarnHistory(player);
+        List<Ban> warns = DatabaseManager.bans.getWarnHistory(player, player);
 
         if (warns == null || warns.isEmpty()) {
             PlayerManager.sendMessageToTarget(p, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED.replace("{player}", player)));
@@ -298,4 +373,44 @@ public class BansManager {
         }
     }
 
+    private static class BanTarget {
+    	String name = null;
+    	String dispname = null;
+		String uuid = null;
+    	GSPlayer gsp = null;
+    }
+    
+    private static BanTarget getBanTarget(String player) {
+    	BanTarget target = new BanTarget();
+
+    	// Try to find the player online
+    	GSPlayer t = PlayerManager.matchOnlinePlayer(player);
+        
+        // If they are not online, try to find them as an offline player
+        if (t == null) {
+        	t = DatabaseManager.players.loadPlayer(player);
+        }
+
+        // Set up the target + display name we should use
+        if (t == null) {
+        	// Can't find this player so just use whatever player string was given to us
+    		target.name = player;
+    		target.dispname = player;
+        } else {
+        	// Get their real name, UUID and display name (alias)
+        	if ((t.getUuid() != null) && (!t.getUuid().isEmpty())) {
+        		target.uuid = t.getUuid();
+        	}
+        	target.name = t.getName();
+
+        	// Get their display name (used for broadcasts and messages)
+        	if (t.getProxiedPlayer() != null) {
+        		target.dispname = t.getProxiedPlayer().getDisplayName();
+        	} else {
+        		target.dispname = t.getName();
+        	}
+        	target.gsp = t;
+        }
+    	return target;
+    }
 }
