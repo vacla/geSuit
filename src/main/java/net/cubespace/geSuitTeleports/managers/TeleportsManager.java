@@ -67,6 +67,32 @@ public class TeleportsManager {
     public static void tpAccept( final CommandSender sender ) {
         final Player player = Bukkit.getPlayer(sender.getName());
 
+        player.saveData();
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("TpAccept");
+            out.writeUTF(sender.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+    }
+
+    public static void tpDeny( String sender ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "TpDeny" );
+            out.writeUTF( sender );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+
+    }
+
+    public static void finishTPA( final Player player, final String target ) {
         if (!player.hasPermission("gesuit.teleports.bypass.delay")) {
             lastLocation.put(player, player.getLocation());
             player.sendMessage("Teleportation in progress, don't move!");
@@ -79,8 +105,12 @@ public class TeleportsManager {
                         ByteArrayOutputStream b = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(b);
                         try {
-                            out.writeUTF("TpAccept");
-                            out.writeUTF(sender.getName());
+                            out.writeUTF("TeleportToPlayer");
+                            out.writeUTF(player.getName());
+                            out.writeUTF(player.getName());
+                            out.writeUTF(target);
+                            out.writeBoolean(false);
+                            out.writeBoolean(true);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -95,26 +125,17 @@ public class TeleportsManager {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             try {
-                out.writeUTF("TpAccept");
-                out.writeUTF(sender.getName());
+                out.writeUTF("TeleportToPlayer");
+                out.writeUTF(player.getName());
+                out.writeUTF(player.getName());
+                out.writeUTF(target);
+                out.writeBoolean(false);
+                out.writeBoolean(true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
         }
-}
-
-    public static void tpDeny( String sender ) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( b );
-        try {
-            out.writeUTF( "TpDeny" );
-            out.writeUTF( sender );
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
-
     }
 
     public static void sendDeathBackLocation( Player p ) {
