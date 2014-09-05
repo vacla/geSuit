@@ -2,9 +2,11 @@ package net.cubespace.geSuit.managers;
 
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
+import net.cubespace.geSuit.pluginmessages.TPAFinalise;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.cubespace.geSuit.pluginmessages.TeleportToPlayer;
 import net.md_5.bungee.api.ProxyServer;
@@ -100,15 +102,11 @@ public class TeleportManager {
     public static void acceptTeleportRequest(GSPlayer player) {
         if (pendingTeleportsTPA.containsKey(player)) {
             GSPlayer target = pendingTeleportsTPA.get(player);
-            target.sendMessage(ConfigManager.messages.TELEPORTED_TO_PLAYER.replace("{player}", player.getName()));
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.PLAYER_TELEPORTED_TO_YOU.replace("{player}", target.getName()));
-            TeleportToPlayer.execute(target, player);
+            TPAFinalise.execute(target, player);
             pendingTeleportsTPA.remove(player);
         } else if (pendingTeleportsTPAHere.containsKey(player)) {
             GSPlayer target = pendingTeleportsTPAHere.get(player);
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.TELEPORTED_TO_PLAYER.replace("{player}", target.getName()));
-            target.sendMessage(ConfigManager.messages.PLAYER_TELEPORTED_TO_YOU.replace("{player}", player.getName()));
-            TeleportToPlayer.execute(player, target);
+            TPAFinalise.execute(player, target);
             pendingTeleportsTPAHere.remove(player);
         } else {
             PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_TELEPORTS);
