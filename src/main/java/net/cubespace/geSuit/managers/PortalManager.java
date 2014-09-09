@@ -135,7 +135,7 @@ public class PortalManager {
         }
 
         if (type.equalsIgnoreCase("warp")) {
-            Warp w = WarpsManager.getWarp(dest);
+            Warp w = WarpsManager.getWarp(dest.toLowerCase());
 
             if (w == null) {
                 p.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);

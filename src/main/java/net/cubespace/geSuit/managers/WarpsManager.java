@@ -22,7 +22,7 @@ public class WarpsManager {
     public static void setWarp(GSPlayer sender, String name, Location loc, boolean hidden, boolean global) {
         Warp w;
         if (doesWarpExist(name)) {
-            w = warps.get(name);
+            w = warps.get(name.toLowerCase());
             w.setLocation(loc);
             w.setGlobal(global);
             w.setHidden(hidden);
@@ -44,7 +44,7 @@ public class WarpsManager {
     }
 
     public static Warp getWarp(String name) {
-        return warps.get(name);
+        return warps.get(name.toLowerCase());
     }
 
     public static boolean doesWarpExist(String name) {
