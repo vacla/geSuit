@@ -34,6 +34,8 @@ public class Messages extends Config {
     public String PLAYER_TELEPORTED = "&6" + "{player} has teleported to {target}";
     public String PLAYER_REQUESTS_TO_TELEPORT_TO_YOU = "&6" + "{player} has requested to teleport to you. Type /tpaccept to allow";
     public String PLAYER_REQUESTS_YOU_TELEPORT_TO_THEM = "&6" + "{player} has requested you teleport to them. Type /tpaccept to allow";
+    public String TELEPORT_ACCEPTED = "&6" + "You accepted {player}'s teleport request";
+    public String TELEPORT_REQUEST_ACCEPTED = "&6" + "{player} accepted your teleport request";
     public String TELEPORT_DENIED = "&c" + "You denied {player}'s teleport request";
     public String TELEPORT_REQUEST_DENIED = "&c" + "{player} denied your teleport request";
     public String NO_TELEPORTS = "&c" + "You do not have any pending teleports";

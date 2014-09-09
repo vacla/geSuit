@@ -24,11 +24,11 @@ public class TeleportManager {
             return;
         }
         if (bt == null) {
-            bp.sendMessage(ConfigManager.messages.PLAYER_NOT_ONLINE);
+            bp.sendMessage(ConfigManager.messages.PLAYER_NOT_ONLINE.replace("{player}", bp.getName()));
             return;
         }
         if (!playerIsAcceptingTeleports(bt)) {
-            bp.sendMessage(ConfigManager.messages.TELEPORT_UNABLE);
+            bp.sendMessage(ConfigManager.messages.TELEPORT_UNABLE.replace("{player}", bp.getName()));
             return;
         }
         if (playerHasPendingTeleport(bt)) {
@@ -65,7 +65,7 @@ public class TeleportManager {
             return;
         }
         if (bt == null) {
-            bp.sendMessage(ConfigManager.messages.PLAYER_NOT_ONLINE);
+            bp.sendMessage(ConfigManager.messages.PLAYER_NOT_ONLINE.replace("{player}", bp.getName()));
             return;
         }
         if (!playerIsAcceptingTeleports(bt)) {
@@ -77,7 +77,7 @@ public class TeleportManager {
             return;
         }
         pendingTeleportsTPAHere.put(bt, bp);
-        bp.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_SENT);
+        bp.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", bp.getName()));
         bt.sendMessage(ConfigManager.messages.PLAYER_REQUESTS_YOU_TELEPORT_TO_THEM.replace("{player}", bp.getName()));
 
         ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {
@@ -102,10 +102,14 @@ public class TeleportManager {
     public static void acceptTeleportRequest(GSPlayer player) {
         if (pendingTeleportsTPA.containsKey(player)) {
             GSPlayer target = pendingTeleportsTPA.get(player);
+            player.sendMessage(ConfigManager.messages.TELEPORT_ACCEPTED.replace("{player}", target.getName()));
+            target.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_ACCEPTED.replace("{player}", player.getName()));
             TPAFinalise.execute(target, player);
             pendingTeleportsTPA.remove(player);
         } else if (pendingTeleportsTPAHere.containsKey(player)) {
             GSPlayer target = pendingTeleportsTPAHere.get(player);
+            player.sendMessage(ConfigManager.messages.TELEPORT_ACCEPTED.replace("{player}", target.getName()));
+            target.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_ACCEPTED.replace("{player}", player.getName()));
             TPAFinalise.execute(player, target);
             pendingTeleportsTPAHere.remove(player);
         } else {
