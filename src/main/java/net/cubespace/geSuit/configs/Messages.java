@@ -84,7 +84,7 @@ public class Messages extends Config {
     public String UNKNOWN_PLAYER_NOT_WARNING = "&c" + "ERROR: Player is unknown, refusing to give warning.";
     public String KICK_PLAYER_MESSAGE = "&c" + "You have been kicked. Reason: {message}";
     public String KICK_PLAYER_BROADCAST = "&b" + "{player} has been kicked. Reason: {message}";
-    public String KICK_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto-kicked.";
+    public String KICK_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto kicked.";
     public String PLAYER_ALREADY_BANNED = "&c" + "That player is already banned!";
     public String PLAYER_NOT_BANNED = "&a" + "That player is not banned";
     public String PLAYER_NEVER_BANNED = "&a" + "No ban history for {player}";
@@ -96,10 +96,10 @@ public class Messages extends Config {
     public String DEFAULT_WARN_REASON = "Unknown";
     public String BAN_PLAYER_MESSAGE = "&c" + "You have been banned. Reason: {message}";
     public String BAN_PLAYER_BROADCAST = "&b" + "{player} has been banned. Reason: {message}";
-    public String BAN_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto-banned.";
-    public String TEMP_BAN_MESSAGE = "&c" + "You have been temporarily banned ({smallleft}). Reason: {message}";
-    public String TEMP_BAN_BROADCAST = "&b" + "{player} has been temporarily banned ({smallleft}). Reason: {message}";
-    public String TEMP_BAN_AUTO_BROADCAST = "&b" + "{player} has been auto temp-banned ({smallleft}).";
+    public String BAN_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto banned.";
+    public String TEMP_BAN_MESSAGE = "&c" + "You have been temporarily banned ({shortleft}). Reason: {message}";
+    public String TEMP_BAN_BROADCAST = "&b" + "{player} has been temporarily banned ({shortleft}). Reason: {message}";
+    public String TEMP_BAN_AUTO_BROADCAST = "&b" + "{player} has been auto temp-banned ({shortleft}).";
     public String PLAYER_UNBANNED = "&c" + "{player} has been unbanned!";
     public String WARN_PLAYER_BROADCAST = "&b" + "{player} has received a warning. Reason: {message}";
 
