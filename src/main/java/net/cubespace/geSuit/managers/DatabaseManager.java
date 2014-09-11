@@ -6,6 +6,7 @@ import net.cubespace.geSuit.database.Homes;
 import net.cubespace.geSuit.database.Players;
 import net.cubespace.geSuit.database.Portals;
 import net.cubespace.geSuit.database.Spawns;
+import net.cubespace.geSuit.database.Tracking;
 import net.cubespace.geSuit.database.Warps;
 
 /**
@@ -19,6 +20,7 @@ public class DatabaseManager {
     public static Portals portals;
     public static Spawns spawns;
     public static Warps warps;
+    public static Tracking tracking;
 
     static {
         players = new Players();
@@ -27,6 +29,7 @@ public class DatabaseManager {
         portals = new Portals();
         spawns = new Spawns();
         warps = new Warps();
+        tracking = new Tracking();
 
         connectionPool = new ConnectionPool();
         connectionPool.addRepository(players);
@@ -35,6 +38,7 @@ public class DatabaseManager {
         connectionPool.addRepository(portals);
         connectionPool.addRepository(spawns);
         connectionPool.addRepository(warps);
+        connectionPool.addRepository(tracking);
         connectionPool.initialiseConnections(ConfigManager.main.Database);
 
         AnnouncementManager.loadAnnouncements();

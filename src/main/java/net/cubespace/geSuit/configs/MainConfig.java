@@ -25,6 +25,8 @@ public class MainConfig extends Config {
     public String Table_Portals = "portals";
     @Comment("This can be used if you have multiple Proxies to seperate the Spawns in it")
     public String Table_Spawns = "spawns";
+    @Comment("This can be used if you have multiple Proxies to seperate the Tracking in it")
+    public String Table_Tracking = "tracking";
 
     public Boolean ConvertFromBungeeSuite = false;
     public Database BungeeSuiteDatabase = new Database();
@@ -56,4 +58,6 @@ public class MainConfig extends Config {
     public Integer Version_Database_Spawns = 1;
     @Comment("Stored version informations. If you alter this you can damage your Database")
     public Integer Version_Database_Warps = 1;
+    @Comment("Stored version informations. If you alter this you can damage your Database")
+    public Integer Version_Database_Tracking = 1;
 }

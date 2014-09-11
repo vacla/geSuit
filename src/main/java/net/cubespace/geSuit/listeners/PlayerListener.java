@@ -33,6 +33,15 @@ public class PlayerListener implements Listener {
 
         	p.connected();
     	}
+    	
+    	// Update player tracking
+    	final GSPlayer fp = p;
+    	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
+			@Override
+			public void run() {
+				PlayerManager.updateTracking(fp);
+			}
+    	}, 10, TimeUnit.MILLISECONDS); 
     }
 
     @EventHandler(priority = EventPriority.LOW)

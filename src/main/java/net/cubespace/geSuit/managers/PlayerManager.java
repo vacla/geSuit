@@ -237,5 +237,9 @@ public class PlayerManager {
                     .replace("{server}", p.getServer());
         }
     }
+    
+    public static void updateTracking(GSPlayer player) {
+    	DatabaseManager.tracking.insertTracking(player.getName(), player.getUuid(), player.getIp());
+    }
 
 }
