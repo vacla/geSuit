@@ -172,12 +172,14 @@ public class PlayerManager {
 
         	// Remember this "beginning" match in case we don't find a full match
         	// (it's important to check displayname + name, incase their name was changed during this session)
-        	if ((p.getName().toLowerCase().startsWith(player)) || (pp.getDisplayName().toLowerCase().startsWith(player)))
+        	if ((p.getName().toLowerCase().startsWith(player)) ||
+        			((pp != null) && (pp.getDisplayName() != null) && (pp.getDisplayName().toLowerCase().startsWith(player))))
         		match = p;
         	
         	// Remember this "fuzzy" match in case we don't find a full match or a "beginning" match)
         	// (it's important to check displayname + name, incase their name was changed during this session)
-        	if ((p.getName().toLowerCase().contains(player)) || (pp.getDisplayName().toLowerCase().contains(player)))
+        	if ((p.getName().toLowerCase().contains(player)) ||
+        			((pp != null) && (pp.getDisplayName() != null) && (pp.getDisplayName().toLowerCase().contains(player))))
         		fuzzymatch = p;
     	}
 
