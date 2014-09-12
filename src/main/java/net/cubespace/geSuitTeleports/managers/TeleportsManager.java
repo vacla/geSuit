@@ -3,9 +3,11 @@ package net.cubespace.geSuitTeleports.managers;
 import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.tasks.PluginMessageTask;
 import net.cubespace.geSuitTeleports.utils.LocationUtil;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -249,7 +251,15 @@ public class TeleportsManager {
     }
 
     public static void teleportPlayerToLocation( final String player, String world, double x, double y, double z, float yaw, float pitch ) {
-        Location t = new Location( Bukkit.getWorld( world ), x, y, z, yaw, pitch );
+        World w = Bukkit.getWorld( world );
+        Location t;
+        
+        if (w != null) {
+            t = new Location( w, x, y, z, yaw, pitch );
+        } else {
+            w = Bukkit.getWorlds().get(0);
+            t = w.getSpawnLocation();
+        }
         Player p = Bukkit.getPlayer( player );
         if ( p != null ) {
             //Check if Block is safe
