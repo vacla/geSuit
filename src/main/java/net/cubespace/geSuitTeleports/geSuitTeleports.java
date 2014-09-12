@@ -12,6 +12,7 @@ import net.cubespace.geSuitTeleports.commands.TPCommand;
 import net.cubespace.geSuitTeleports.commands.TPDenyCommand;
 import net.cubespace.geSuitTeleports.commands.TPHereCommand;
 import net.cubespace.geSuitTeleports.commands.ToggleCommand;
+import net.cubespace.geSuitTeleports.commands.TopCommand;
 import net.cubespace.geSuitTeleports.listeners.TeleportsListener;
 import net.cubespace.geSuitTeleports.listeners.TeleportsMessageListener;
 
@@ -36,6 +37,7 @@ public class geSuitTeleports extends JavaPlugin {
         getCommand("tpdeny").setExecutor(new TPDenyCommand());
         getCommand("back").setExecutor(new BackCommand());
         getCommand("tptoggle").setExecutor(new ToggleCommand());
+        getCommand("top").setExecutor(new TopCommand());
     }
 
     private void registerChannels() {

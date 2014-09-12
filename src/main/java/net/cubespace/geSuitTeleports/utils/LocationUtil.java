@@ -147,7 +147,7 @@ public class LocationUtil {
         return new Location(world, x + 0.5, y, z + 0.5, loc.getYaw(), loc.getPitch());
     }
 
-    public static Location getSafeDestination(final Player player, final Location loc) throws Exception {
+    public static Location getSafeDestination(final Player player, final Location loc) {
         if (loc.getWorld().equals(player.getWorld())
                 && (player.getGameMode() == GameMode.CREATIVE)) {
             return getRoundedDestination(loc);
@@ -156,7 +156,7 @@ public class LocationUtil {
         return getSafeDestination(loc);
     }
 
-    public static Location getSafeDestination(final Location loc) throws Exception {
+    public static Location getSafeDestination(final Location loc) {
         if (loc == null || loc.getWorld() == null) {
             return null;
         }

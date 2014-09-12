@@ -63,6 +63,11 @@ commands:
         permission: gesuit.teleports.command.tptoggle
         permission-message: §cYou do not have permission for this command
         usage: /<command>
+    top:
+        description: Teleport to the highest block at your current position.
+        permission: gesuit.teleports.command.top
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
 
 permissions:
     gesuit.teleports.*:
@@ -83,6 +88,7 @@ permissions:
         decsription: Gives access to all gesuitTeleport vip commands
         children:
             gesuit.teleports.command.tptoggle: true
+            gesuit.teleports.command.top: true
             gesuit.teleports.back.*: true
             gesuit.teleports.user: true
     gesuit.teleports.user:
