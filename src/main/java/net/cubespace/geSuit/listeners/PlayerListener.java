@@ -4,7 +4,6 @@ import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.objects.GSPlayer;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -52,32 +51,28 @@ public class PlayerListener implements Listener {
             geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
                 @Override
                 public void run() {
-                    if (ProxyServer.getInstance().getPlayer(e.getPlayer().getName()) == null) {
-                        if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
-                            if (ConfigManager.main.BroadcastProxyConnectionMessages) {
-                                PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_DISCONNECT_PROXY.replace("{player}", p.getName()));
-                            }
-                        } else {
-                            PlayerManager.kickedPlayers.remove(e.getPlayer());
+                    if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
+                        if (ConfigManager.main.BroadcastProxyConnectionMessages) {
+                            PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_DISCONNECT_PROXY.replace("{player}", p.getName()));
                         }
-
-                        PlayerManager.unloadPlayer(e.getPlayer().getName());
+                    } else {
+                        PlayerManager.kickedPlayers.remove(e.getPlayer());
                     }
+
+                    PlayerManager.unloadPlayer(e.getPlayer().getName());
                 }
 
             }, dcTime, TimeUnit.SECONDS);
         } else {
-            if (ProxyServer.getInstance().getPlayer(e.getPlayer().getName()) == null) {
-                if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
-                    if (ConfigManager.main.BroadcastProxyConnectionMessages) {
-                        PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_DISCONNECT_PROXY.replace("{player}", p.getName()));
-                    }
-                } else {
-                    PlayerManager.kickedPlayers.remove(e.getPlayer());
+            if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
+                if (ConfigManager.main.BroadcastProxyConnectionMessages) {
+                    PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_DISCONNECT_PROXY.replace("{player}", p.getName()));
                 }
-
-                PlayerManager.unloadPlayer(e.getPlayer().getName());
+            } else {
+                PlayerManager.kickedPlayers.remove(e.getPlayer());
             }
+
+            PlayerManager.unloadPlayer(e.getPlayer().getName());
         }
     }
 }
