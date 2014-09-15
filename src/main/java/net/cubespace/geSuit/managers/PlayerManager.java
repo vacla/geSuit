@@ -83,8 +83,8 @@ public class PlayerManager {
     }
 
     public static void unloadPlayer(String player) {
-        if (onlinePlayers.containsKey(player)) {
-            onlinePlayers.remove(player);
+    	if (onlinePlayers.containsKey(player.toLowerCase())) {
+            onlinePlayers.remove(player.toLowerCase());
 
             LoggingManager.log(ConfigManager.messages.PLAYER_UNLOAD.replace("{player}", player));
         }
