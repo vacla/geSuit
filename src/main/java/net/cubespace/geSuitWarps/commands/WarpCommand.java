@@ -25,19 +25,20 @@ public class WarpCommand implements CommandExecutor {
             if (!player.hasPermission("gesuit.warps.bypass.delay")) {
                 lastLocation.put(player, player.getLocation());
 
-                player.sendMessage("Teleportation in progress, don't move!");
+                player.sendMessage("&6Teleportation will commence in &c3 seconds&6. Don't move.");
 
                 geSuitWarps.getInstance().getServer().getScheduler().runTaskLater(geSuitWarps.getInstance(), new Runnable() {
                     @Override
                     public void run() {
 
                     if (lastLocation.get(player).getBlock().equals(player.getLocation().getBlock())) {
+                        player.sendMessage("&6Teleportation commencing...");
                         WarpsManager.warpPlayer(sender, sender.getName(), args[0]);
                     } else {
-                        player.sendMessage("You moved, teleportation aborted!");
+                        player.sendMessage("&cTeleportation aborted because you moved.");
                     }
                     }
-                }, 100L);
+                }, 60L);
                 return true;
             } else {
                 WarpsManager.warpPlayer(sender, sender.getName(), args[0]);
