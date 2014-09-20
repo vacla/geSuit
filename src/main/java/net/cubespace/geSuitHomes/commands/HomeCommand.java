@@ -50,13 +50,13 @@ public class HomeCommand implements CommandExecutor {
             } else {
 	            if (!player.hasPermission("gesuit.homes.bypass.delay")) {
 	                lastLocation.put(player, player.getLocation());
-	                player.sendMessage("&6Teleportation will commence in &c3 seconds&6. Don't move.");
+	                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Teleportation will commence in &c3 seconds&6. Don't move."));
 	
 	                geSuitHomes.getInstance().getServer().getScheduler().runTaskLater(geSuitHomes.getInstance(), new Runnable() {
 	                    @Override
 	                    public void run() {
 	                        if (lastLocation.get(player).getBlock().equals(player.getLocation().getBlock())) {
-	                            player.sendMessage("&6Teleportation commencing...");
+	                            player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
 	                            player.saveData();
 	                            if (pname == null) {
 	                                HomesManager.sendHome(sender, homename);
@@ -64,7 +64,7 @@ public class HomeCommand implements CommandExecutor {
 	                            	HomesManager.sendOtherHome(sender, pname, homename);
 	                            }
 	                        } else {
-	                            player.sendMessage("&cTeleportation aborted because you moved.");
+	                            player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
 	                        }
 	                    }
 	                }, 60L);
