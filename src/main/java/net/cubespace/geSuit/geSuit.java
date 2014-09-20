@@ -8,7 +8,6 @@ import net.cubespace.geSuit.commands.SeenCommand;
 import net.cubespace.geSuit.commands.TempBanCommand;
 import net.cubespace.geSuit.commands.UnbanCommand;
 import net.cubespace.geSuit.commands.WarnCommand;
-import net.cubespace.geSuit.configs.MainConfig;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
 import net.cubespace.geSuit.listeners.BansListener;
@@ -101,5 +100,11 @@ public class geSuit extends Plugin
 
 	public void setDebugEnabled(boolean debugEnabled) {
 		DebugEnabled = debugEnabled;
+	}
+	
+	public void DebugMsg(String msg) {
+		if (isDebugEnabled()) {
+			geSuit.instance.getLogger().info("geSuit DEBUG: " + msg);
+		}
 	}
 }
