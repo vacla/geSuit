@@ -149,7 +149,7 @@ public class Players implements IRepository {
 
             ResultSet res = getPlayer.executeQuery();
             while (res.next()) {
-                player1 = new GSPlayer(res.getString("playername"), res.getString("uuid"), res.getBoolean("tps"), res.getString("ipaddress"), res.getTimestamp("lastonline"));
+                player1 = new GSPlayer(res.getString("playername"), res.getString("uuid"), res.getBoolean("tps"), res.getBoolean("newspawn"), res.getString("ipaddress"), res.getTimestamp("lastonline"));
             }
 
             res.close();
@@ -169,6 +169,7 @@ public class Players implements IRepository {
                 + "lastonline DATETIME NOT NULL, "
                 + "ipaddress VARCHAR(100), "
                 + "tps TINYINT(1) DEFAULT 1,"
+                + "newspawn TINYINT(1) DEFAULT 0,"
                 + "CONSTRAINT pk_uuid PRIMARY KEY (uuid)"};
     }
 

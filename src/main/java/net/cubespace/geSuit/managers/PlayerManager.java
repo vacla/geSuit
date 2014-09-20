@@ -30,8 +30,9 @@ public class PlayerManager {
         if (playerExists(player)) {
         	GSPlayer gsPlayer = getPlayer(player.getName());
         	if (gsPlayer == null) {
-        		boolean tps = DatabaseManager.players.getPlayerTPS(player.getUUID());
-        		gsPlayer = new GSPlayer(player.getName(), player.getUUID(), tps, player.getAddress().getHostString());
+        		gsPlayer = DatabaseManager.players.loadPlayer(player.getUUID());
+        		gsPlayer.setName(player.getName());
+        		gsPlayer.setIp(player.getAddress().getHostString());
         		onlinePlayers.put(player.getName().toLowerCase(), gsPlayer);
                 HomesManager.loadPlayersHomes(gsPlayer);
                 LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()).replace("{uuid}", player.getUniqueId().toString()));

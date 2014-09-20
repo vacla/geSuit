@@ -27,6 +27,7 @@ public class GSPlayer
     private boolean firstConnect = true;
     private boolean joinAnnounced = false;
     private boolean isFirstJoin = false;
+    private boolean newSpawn = false;
 
     public GSPlayer(String name, String uuid, boolean tps)
     {
@@ -35,10 +36,10 @@ public class GSPlayer
 
     public GSPlayer(String name, String uuid, boolean tps, String ip)
     {
-        this(name, uuid, tps, ip, null);
+        this(name, uuid, tps, false, ip, null);
     }
     
-    public GSPlayer(String name, String uuid, boolean tps, String ip, Timestamp lastOnline)
+    public GSPlayer(String name, String uuid, boolean tps, boolean newspawn, String ip, Timestamp lastOnline)
     {
         //ProxyServer.getInstance().getLogger().info("LOADED DATA: "+name+" "+uuid+" "+tps+" "+ip+" "+lastOnline);
         this.playername = name;
@@ -46,11 +47,17 @@ public class GSPlayer
         this.acceptingTeleports = tps;
         this.ip = ip;
         this.lastOnline = lastOnline;
+        this.newSpawn = newspawn;
     }
 
     public String getName()
     {
         return playername;
+    }
+
+    public void setName(String newPlayerName)
+    {
+        playername = newPlayerName;
     }
 
     public ProxiedPlayer getProxiedPlayer()
@@ -161,6 +168,11 @@ public class GSPlayer
         return ip;
     }
 
+    public void setIp(String ipAddress)
+    {
+        ip = ipAddress;
+    }
+
     public Timestamp getLastOnline()
     {
         return lastOnline;
@@ -168,12 +180,12 @@ public class GSPlayer
     
     public boolean isFirstJoin()
     {
-	return isFirstJoin;
+    	return isFirstJoin;
     }
     
     public void setFirstJoin(boolean value)
     {
-	isFirstJoin = value;
+    	isFirstJoin = value;
     }
 
 	public boolean hasJoinAnnounced() {
@@ -182,5 +194,13 @@ public class GSPlayer
 
 	public void setJoinAnnounced(boolean joinAnnounced) {
 		this.joinAnnounced = joinAnnounced;
+	}
+
+	public boolean isNewSpawn() {
+		return newSpawn;
+	}
+
+	public void setNewSpawn(boolean newSpawn) {
+		this.newSpawn = newSpawn;
 	}
 }

@@ -3,6 +3,7 @@ package net.cubespace.geSuit.listeners;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
+import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
@@ -31,8 +32,13 @@ public class PlayerListener implements Listener {
 	        }
 
         	p.connected();
+    	} else {
+    		if (p.isNewSpawn()) {
+    			// Send player to new spawn location if their player record has the "newspawn" flag
+    			SpawnManager.sendPlayerToNewPlayerSpawn(p);
+    		}
     	}
-    	
+
     	// Update player tracking
     	final GSPlayer fp = p;
     	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
