@@ -22,6 +22,16 @@
             <id>vault-repo</id>
             <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
         </repository>
+        <repository>
+          <id>addstar-snapshot-repo</id>
+          <url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
+          <snapshots>
+          	<enabled>true</enabled>
+          </snapshots>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+        </repository>
     </repositories>
 
     <dependencies>
