@@ -1,6 +1,7 @@
 package net.cubespace.geSuiteSpawn.commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,15 +21,15 @@ public class SpawnCommand implements CommandExecutor {
         if (!player.hasPermission("gesuit.warps.bypass.delay")) {
             final Location loc = player.getLocation();
 
-            player.sendMessage("&6Teleportation will commence in &c3 seconds&6. Don't move.");
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Teleportation will commence in &c3 seconds&6. Don't move."));
             Bukkit.getServer().getScheduler().runTaskLater(geSuitSpawn.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
                     if (loc.getBlock().equals(player.getLocation().getBlock())) {
-                        player.sendMessage("&6Teleportation commencing...");
+                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
             			SpawnManager.sendPlayerToSpawn(player);
                     } else {
-                        player.sendMessage("&cTeleportation aborted because you moved.");
+                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
                     }
                 }
             }, 60L);
