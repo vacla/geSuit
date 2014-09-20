@@ -175,7 +175,7 @@ public class BansManager {
             PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_BANNED.replace("{player}", t.dispname)));
             return;
         }
-        PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "--------" + ChatColor.DARK_RED + player + "'s Ban History" + ChatColor.DARK_AQUA + "--------");
+        PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + player + "'s Ban History" + ChatColor.DARK_AQUA + " --------");
         boolean first = true;
         for (Ban b : bans) {
             if (first) {
@@ -185,8 +185,18 @@ public class BansManager {
             }
             SimpleDateFormat sdf = new SimpleDateFormat();
             sdf.applyPattern("dd MMM yyyy HH:mm");
-            PlayerManager.sendMessageToTarget(sender, (b.getBannedUntil() != null ? ChatColor.GOLD + "| " : ChatColor.RED + "| ") + "Date: " + ChatColor.AQUA + sdf.format(b.getBannedOn()) + ChatColor.RED + (b.getBannedUntil() != null ? ChatColor.DARK_AQUA + " > " + sdf.format(b.getBannedUntil()) : ChatColor.DARK_AQUA + " > forever"));
-            PlayerManager.sendMessageToTarget(sender, (b.getBannedUntil() != null ? ChatColor.GOLD + "| " : ChatColor.RED + "| ") + "Banned by " + ChatColor.AQUA + b.getBannedBy() + ChatColor.DARK_AQUA + " (" + ChatColor.GRAY + b.getReason() + ChatColor.DARK_AQUA + ")");
+
+            PlayerManager.sendMessageToTarget(sender,
+            		(b.getBannedUntil() != null ? ChatColor.GOLD : ChatColor.RED) + "Date: " +
+            		ChatColor.GREEN + sdf.format(b.getBannedOn()) +
+            		(b.getBannedUntil() != null ?
+            				ChatColor.GOLD + " > " + sdf.format(b.getBannedUntil()) :
+            				ChatColor.RED + " > permban"));
+
+            PlayerManager.sendMessageToTarget(sender,
+            		(b.getBannedUntil() != null ? ChatColor.GOLD : ChatColor.RED) + "Banned by " +
+            		ChatColor.AQUA + b.getBannedBy() +
+            		ChatColor.DARK_AQUA + " (" + ChatColor.GRAY + b.getReason() + ChatColor.DARK_AQUA + ")");
         }
     }
 
