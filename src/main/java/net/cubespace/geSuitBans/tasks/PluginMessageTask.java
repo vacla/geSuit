@@ -1,6 +1,7 @@
 package net.cubespace.geSuitBans.tasks;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Iterator;
 
 import net.cubespace.geSuitBans.geSuitBans;
 
@@ -21,8 +22,9 @@ public class PluginMessageTask extends BukkitRunnable
 
     public void run()
     {
-		Player player = Bukkit.getOnlinePlayers().iterator().next();
-		if (player != null) {
+        Iterator<? extends Player> iterator = Bukkit.getOnlinePlayers().iterator();
+		if (iterator.hasNext()) {
+		    Player player = iterator.next();
 			player.sendPluginMessage(
 					geSuitBans.instance,
 					"geSuitBans",
