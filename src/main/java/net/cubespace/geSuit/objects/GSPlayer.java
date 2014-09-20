@@ -126,7 +126,7 @@ public class GSPlayer
 
     public String getServer()
     {
-        if (getProxiedPlayer() == null) {
+        if ((getProxiedPlayer() == null) || (getProxiedPlayer().getServer() == null)){
             return server;
         }
 
