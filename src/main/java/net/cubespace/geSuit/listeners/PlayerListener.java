@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
     				@Override
     				public void run() {
     					if (ProxyServer.getInstance().getPlayer(p.getProxiedPlayer().getUniqueId()) != null) {
-	    					if (p.isFirstJoin()) {
+	    					if (p.isFirstJoin() || p.isNewSpawn()) {
 	    		            	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motdNew.getMOTD().replace("{player}", p.getName()));
 	    		            } else {
 	    		            	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motd.getMOTD().replace("{player}", p.getName()));
