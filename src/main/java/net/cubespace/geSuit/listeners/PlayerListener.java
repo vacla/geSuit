@@ -38,7 +38,7 @@ public class PlayerListener implements Listener {
     		}
 
     		// Launch the MOTD message scheduler
-    		if (ConfigManager.main.MOTD_Enabled && p.firstConnect()) {
+    		if (ConfigManager.main.MOTD_Enabled && (p.firstConnect() || p.isNewSpawn())) {
     	    	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
     				@Override
     				public void run() {
