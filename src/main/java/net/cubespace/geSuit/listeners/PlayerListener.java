@@ -27,23 +27,23 @@ public class PlayerListener implements Listener {
     		// NOTE: This event is called each time the player changes server
     		// This check ensures this is only handled when the player is first connecting to the proxy
     		final GSPlayer p = PlayerManager.loadPlayer(e.getPlayer());
+    		final boolean newspawn = p.isNewSpawn();
     		p.setServer(e.getServer().getInfo().getName());
 
 			// Check if an existing player has a "newspawn" flag... send them to new player spawn
-    		if ((!p.isFirstJoin()) && (p.isNewSpawn())) {
+    		if ((!p.isFirstJoin()) && (newspawn)) {
     	    	SpawnManager.sendPlayerToNewPlayerSpawn(p);
     			p.setNewSpawn(false);
 	            DatabaseManager.players.updatePlayer(p);
-	            
     		}
 
     		// Launch the MOTD message scheduler
-    		if (ConfigManager.main.MOTD_Enabled && (p.firstConnect() || p.isNewSpawn())) {
+    		if (ConfigManager.main.MOTD_Enabled && (p.firstConnect() || newspawn)) {
     	    	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
     				@Override
     				public void run() {
     					if (ProxyServer.getInstance().getPlayer(p.getProxiedPlayer().getUniqueId()) != null) {
-	    					if (p.isFirstJoin() || p.isNewSpawn()) {
+	    					if (p.isFirstJoin() || newspawn) {
 	    		            	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motdNew.getMOTD().replace("{player}", p.getName()));
 	    		            } else {
 	    		            	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motd.getMOTD().replace("{player}", p.getName()));
