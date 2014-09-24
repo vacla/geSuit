@@ -104,7 +104,7 @@ public class geSuit extends Plugin
 	
 	public void DebugMsg(String msg) {
 		if (isDebugEnabled()) {
-			geSuit.instance.getLogger().info("geSuit DEBUG: " + msg);
+			geSuit.instance.getLogger().info("DEBUG: " + msg);
 		}
 	}
 }

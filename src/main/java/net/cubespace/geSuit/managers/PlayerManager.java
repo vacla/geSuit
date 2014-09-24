@@ -101,7 +101,7 @@ public class PlayerManager {
         // Not exactly sure where we use the new line besides in the soon-to-be-removed MOTD...
         for (String line : Utilities.colorize(message).split("\n")) {
             if (geSuit.instance.isDebugEnabled()) {
-    			geSuit.instance.getLogger().info("geSuit DEBUG: [SendMessage] " + target.getName() + ": " + Utilities.colorize(line));
+    			geSuit.instance.getLogger().info("DEBUG: [SendMessage] " + target.getName() + ": " + Utilities.colorize(line));
     		}
             target.sendMessage(TextComponent.fromLegacyText(Utilities.colorize(line)));
         }

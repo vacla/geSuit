@@ -71,7 +71,7 @@ public class Utilities {
 		}
 		
 		if (consoleOutput) {
-			geSuit.instance.getLogger().info("geSuit DEBUG: [" + channel + "] " + direction + ": " + data);
+			geSuit.instance.getLogger().info("DEBUG: [" + channel + "] " + direction + ": " + data);
 		}
 		return data;
 	}
