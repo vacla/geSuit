@@ -5,7 +5,6 @@ import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
-import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
