@@ -1,9 +1,11 @@
 package net.cubespace.geSuit.managers;
 
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
+import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -134,7 +136,12 @@ public class HomesManager {
         List<Home> homes = DatabaseManager.homes.getHomesForPlayer(player.getUuid());
 
         for(Home home : homes) {
-            if (player.getHomes().get(home.loc.getServer().getName()) == null) {
+        	if (home.loc.getServer() == null) {
+        		geSuit.instance.getLogger().warning("Invalid server for home \"" + home.name + "\" of player " + player.getName() + "!");
+        		continue;
+        	}
+
+        	if (player.getHomes().get(home.loc.getServer().getName()) == null) {
                 ArrayList<Home> list = new ArrayList<>();
                 list.add(home);
                 player.getHomes().put(home.loc.getServer().getName(), list);
