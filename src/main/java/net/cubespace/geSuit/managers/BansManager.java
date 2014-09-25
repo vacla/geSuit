@@ -377,9 +377,7 @@ public class BansManager {
             PlayerManager.sendMessageToTarget(p,
             		ChatColor.YELLOW + String.valueOf(count) + ": " +
             		ChatColor.GREEN + sdf.format(b.getBannedOn()) +
-            		ChatColor.YELLOW + " - " +
-            		ChatColor.AQUA + b.getBannedBy() +            		
-            		ChatColor.YELLOW + " - " +
+            		ChatColor.YELLOW + " (" + ChatColor.GRAY + b.getBannedBy() + ChatColor.YELLOW + ") " +
             		ChatColor.AQUA + b.getReason());            		
         }
     }
