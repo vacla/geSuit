@@ -12,6 +12,7 @@ import net.cubespace.geSuitBans.commands.UnBanIPCommand;
 import net.cubespace.geSuitBans.commands.UnbanCommand;
 import net.cubespace.geSuitBans.commands.WarnCommand;
 import net.cubespace.geSuitBans.commands.WarnHistoryCommand;
+import net.cubespace.geSuitBans.commands.WhereCommand;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,6 +32,7 @@ public class geSuitBans extends JavaPlugin {
         getCommand( "checkban" ).setExecutor( new CheckBanCommand() );
         getCommand( "banhistory" ).setExecutor( new BanHistoryCommand() );
         getCommand( "warnhistory" ).setExecutor( new WarnHistoryCommand() );
+        getCommand( "where" ).setExecutor( new WhereCommand() );
         getCommand( "ipban" ).setExecutor( new IPBanCommand() );
         getCommand( "kick" ).setExecutor( new KickCommand() );
         getCommand( "kickall" ).setExecutor( new KickAllCommand() );

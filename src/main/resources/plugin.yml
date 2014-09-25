@@ -37,6 +37,12 @@ commands:
         permission: gesuit.bans.command.warnhistory
         permission-message: §cYou do not have permission for this command
         usage: /<command> (player)
+    where:
+        description: Gets the login history of IPs, players and UUIDs
+        aliases: [wherehistory]
+        permission: gesuit.bans.command.where
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
     ipban:
         description: Bans an IP from the proxy
         aliases: [banip,dbip]

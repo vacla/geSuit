@@ -188,6 +188,20 @@ public class BansManager {
         new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
     }
 
+    public static void displayWhereHistory( String sender, String options, String search ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "DisplayWhereHistory" );
+            out.writeUTF( sender );
+            out.writeUTF( options );
+            out.writeUTF( search );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+    }
+
     public static void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
