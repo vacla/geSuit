@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -164,6 +166,30 @@ public class Players implements IRepository {
         return player1;
     }
 
+    public List<String> matchPlayers(String player) {
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+
+        List<String> players = new ArrayList<String>();
+        try {
+            PreparedStatement getPlayer = connectionHandler.getPreparedStatement("matchPlayers");
+            getPlayer.setString(1, "%" + player + "%");
+            getPlayer.setString(2, player);
+
+            ResultSet res = getPlayer.executeQuery();
+            while (res.next()) {
+                players.add(res.getString("playername"));
+            }
+
+            res.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connectionHandler.release();
+        }
+
+        return players;
+    }
+
     @Override
     public String[] getTable() {
         return new String[]{ConfigManager.main.Table_Players, "playername VARCHAR(100), "
@@ -181,6 +207,7 @@ public class Players implements IRepository {
         connection.addPreparedStatement("playerExists", "SELECT playername FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
         connection.addPreparedStatement("getPlayerTPS", "SELECT tps FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
         connection.addPreparedStatement("getPlayer", "SELECT * FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
+        connection.addPreparedStatement("matchPlayers", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE playername like ? OR uuid like ? ORDER BY lastonline LIMIT 20");
         connection.addPreparedStatement("insertPlayer", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,lastonline,ipaddress) VALUES (?, ?, NOW(), ?)");
         connection.addPreparedStatement("insertPlayerConvert", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,lastonline,ipaddress,tps) VALUES (?, ?, ?, ?, ?)");
         connection.addPreparedStatement("getPlayers", "SELECT * FROM "+ ConfigManager.main.Table_Players);

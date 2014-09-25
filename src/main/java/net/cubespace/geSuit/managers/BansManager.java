@@ -10,6 +10,7 @@ import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
+import net.cubespace.geSuit.objects.Track;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -380,6 +381,75 @@ public class BansManager {
             		ChatColor.AQUA + b.getBannedBy() +            		
             		ChatColor.YELLOW + " - " +
             		ChatColor.AQUA + b.getReason());            		
+        }
+    }
+
+    public static void displayWhereHistory(String sentBy, String options, String search) {
+        GSPlayer s = PlayerManager.getPlayer(sentBy);
+        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+        List<Track> tracking = null;
+    	if (search.contains(".")) {
+    		tracking = DatabaseManager.tracking.getPlayerTracking(search, "ip");
+    		if (tracking.isEmpty()) { 
+                PlayerManager.sendMessageToTarget(sender,
+                		ChatColor.RED + "[Tracker] No known accounts match or contain \"" + search + "\"");
+                return;
+    		} else {
+    			PlayerManager.sendMessageToTarget(sender,
+            		ChatColor.GREEN + "[Tracker] IP address \"" + search + "\" associated with " + tracking.size() + " accounts:");
+    		}
+    	} else {
+    		String type;
+    		if (search.length() > 20) {
+    			type = "uuid";
+    			search = search.replace("-", "");
+    		} else {
+    			type = "name";
+    		}
+
+    		if (!DatabaseManager.players.playerExists(search)) {
+    			// No exact match... do a partial match
+                PlayerManager.sendMessageToTarget(sender,
+                		ChatColor.AQUA + "[Tracker] No accounts matched exactly \"" + search + "\", trying wildcard search..");
+
+                List<String> matches = DatabaseManager.players.matchPlayers(search);
+	    		if (matches.isEmpty()) { 
+	                PlayerManager.sendMessageToTarget(sender,
+	                		ChatColor.RED + "[Tracker] No known accounts match or contain \"" + search + "\"");
+	                return;
+	    		}
+	    		else if (matches.size() == 1) {
+		    		if (search.length() < 20) {
+		    			search = matches.get(0);
+		    		}
+	    		} else {
+	    			// Matched too many names, show list of names instead
+	                PlayerManager.sendMessageToTarget(sender,
+	                		ChatColor.RED + "[Tracker] More than one player matched \"" + search + "\":");
+	    	    	for (String m : matches) {
+	    	            PlayerManager.sendMessageToTarget(sender,
+	    	            		ChatColor.AQUA + " - " + m);
+	    	        }
+	                return;
+	    		}
+    		}
+    		
+    		tracking = DatabaseManager.tracking.getPlayerTracking(search, type);
+    		if (tracking.isEmpty()) { 
+                PlayerManager.sendMessageToTarget(sender,
+                		ChatColor.GREEN + "[Tracker] No known accounts match or contain \"" + search + "\"");
+                return;
+    		} else {
+    			PlayerManager.sendMessageToTarget(sender,
+            		ChatColor.GREEN + "[Tracker] Player \"" + search + "\" associated with " + tracking.size() + " accounts:");
+    		}
+    	}
+
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    	for (Track t : tracking) {
+            PlayerManager.sendMessageToTarget(sender,
+            		ChatColor.DARK_GREEN + " - " + t.getPlayer() + " " + ChatColor.DARK_AQUA + t.getIp() + ChatColor.GRAY + " (" + sdf.format(t.getLastSeen()) + ")");
         }
     }
 
