@@ -147,20 +147,20 @@ public class BansManager {
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat();
             sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
-            PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "--------" + ChatColor.DARK_RED + "Ban Info" + ChatColor.DARK_AQUA + "--------");
+            PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.RED + "Ban Info" + ChatColor.DARK_AQUA + " --------");
             PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Player: " + ChatColor.AQUA + b.getPlayer());
             if (b.getUuid() != null) {
                 PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "UUID: " + ChatColor.AQUA + b.getUuid());
             }
-            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Ban type: " + ChatColor.AQUA + b.getType());
-            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Banned by: " + ChatColor.AQUA + b.getBannedBy());
-            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Ban reason: " + ChatColor.AQUA + b.getReason());
-            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Bannned on: " + ChatColor.AQUA + sdf.format(b.getBannedOn()));
+            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Type: " + ChatColor.AQUA + b.getType());
+            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "By: " + ChatColor.AQUA + b.getBannedBy());
+            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Reason: " + ChatColor.AQUA + b.getReason());
+            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Date: " + ChatColor.AQUA + sdf.format(b.getBannedOn()));
 
             if (b.getBannedUntil() == null) {
-                PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Bannned until: " + ChatColor.AQUA + "-Forever-");
+                PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Until: " + ChatColor.AQUA + "-Forever-");
             } else {
-                PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Bannned until: " + ChatColor.AQUA + sdf.format(b.getBannedUntil()));
+                PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Until: " + ChatColor.AQUA + sdf.format(b.getBannedUntil()));
             }
         }
     }
@@ -195,7 +195,7 @@ public class BansManager {
             				ChatColor.RED + " > permban"));
 
             PlayerManager.sendMessageToTarget(sender,
-            		(b.getBannedUntil() != null ? ChatColor.GOLD : ChatColor.RED) + "Banned by " +
+            		(b.getBannedUntil() != null ? ChatColor.GOLD : ChatColor.RED) + "By: " +
             		ChatColor.AQUA + b.getBannedBy() +
             		ChatColor.DARK_AQUA + " (" + ChatColor.GRAY + b.getReason() + ChatColor.DARK_AQUA + ")");
         }
