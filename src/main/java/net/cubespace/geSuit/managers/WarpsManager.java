@@ -2,6 +2,9 @@ package net.cubespace.geSuit.managers;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Warp;
@@ -59,7 +62,9 @@ public class WarpsManager {
         String serverString = ChatColor.GOLD + "Server warps: \n";
         String globalString = ChatColor.GOLD + "Global warps: \n";
         String hiddenString = ChatColor.GOLD + "Hidden warps: \n";
-        for (Warp w : warps.values()) {
+
+        Map<String, Warp> sorted = new TreeMap<String, Warp>(warps);
+        for (Warp w : sorted.values()) {
             if (w.isGlobal()) {
                 globalString += w.getName() + ", ";
             } else if (w.isHidden()) {

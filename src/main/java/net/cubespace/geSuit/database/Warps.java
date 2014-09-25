@@ -116,7 +116,7 @@ public class Warps implements IRepository {
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
-        connection.addPreparedStatement("getWarps", "SELECT * FROM "+ ConfigManager.main.Table_Warps);
+        connection.addPreparedStatement("getWarps", "SELECT * FROM "+ ConfigManager.main.Table_Warps + " ORDER BY warpname");
         connection.addPreparedStatement("insertWarp", "INSERT INTO "+ ConfigManager.main.Table_Warps +" (warpname, server, world, x, y, z, yaw, pitch, hidden, global) VALUES (?,?,?,?,?,?,?,?,?,?)");
         connection.addPreparedStatement("updateWarp", "UPDATE "+ ConfigManager.main.Table_Warps +" SET server=?, world=?, x=?, y=?, z=?, yaw=?, pitch=?, hidden=?, global=? WHERE warpname=?");
         connection.addPreparedStatement("deleteWarp", "DELETE FROM "+ ConfigManager.main.Table_Warps +" WHERE warpname=?");
