@@ -86,6 +86,37 @@ public class Players implements IRepository {
         return true;
     }
 
+    public String getAltPlayer(String uuid, String ip) {
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+
+        try {
+            PreparedStatement getAltPlayer = connectionHandler.getPreparedStatement("getAltPlayer");
+            getAltPlayer.setString(1, ip);
+
+            String altname = "";
+            String altuuid = uuid;
+            
+            ResultSet res = getAltPlayer.executeQuery();
+            while (res.next()) {
+                altname = res.getString("playername");
+                altuuid = res.getString("uuid");
+            }
+            res.close();
+
+            if (!uuid.equals(altuuid)) {
+            	return altname;
+            } else {
+            	return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connectionHandler.release();
+        }
+
+        return null;
+    }
+
     public void insertPlayer(GSPlayer player, String ip) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
@@ -207,6 +238,7 @@ public class Players implements IRepository {
         connection.addPreparedStatement("playerExists", "SELECT playername FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
         connection.addPreparedStatement("getPlayerTPS", "SELECT tps FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
         connection.addPreparedStatement("getPlayer", "SELECT * FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
+        connection.addPreparedStatement("getAltPlayer", "SELECT playername, uuid FROM "+ ConfigManager.main.Table_Players +" WHERE ipaddress = ? ORDER BY lastonline DESC LIMIT 1");
         connection.addPreparedStatement("matchPlayers", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE playername like ? OR uuid like ? ORDER BY lastonline LIMIT 20");
         connection.addPreparedStatement("insertPlayer", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,lastonline,ipaddress) VALUES (?, ?, NOW(), ?)");
         connection.addPreparedStatement("insertPlayerConvert", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,lastonline,ipaddress,tps) VALUES (?, ?, ?, ?, ?)");

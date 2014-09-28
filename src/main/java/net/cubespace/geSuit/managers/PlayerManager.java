@@ -39,8 +39,6 @@ public class PlayerManager {
         	} else {
                 LoggingManager.log(ConfigManager.messages.PLAYER_LOAD_CACHED.replace("{player}", gsPlayer.getName()).replace("{uuid}", player.getUniqueId().toString()));
         	}
-
-            DatabaseManager.players.updatePlayer(gsPlayer);
             gsPlayer.setFirstJoin(false);
             
             return gsPlayer;

@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.listeners;
 
+import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
@@ -7,15 +8,12 @@ import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.scheduler.GroupedThreadFactory.BungeeGroup;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import java.lang.reflect.Proxy;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
@@ -30,13 +28,23 @@ public class PlayerListener implements Listener {
     		final boolean newspawn = p.isNewSpawn();
     		p.setServer(e.getServer().getInfo().getName());
 
+    		// Check for alt accounts and notify staff
+    		String alt = DatabaseManager.players.getAltPlayer(p.getUuid(), p.getIp());
+    		if (alt != null) {
+    			String msg = ConfigManager.messages.PLAYER_ALT_JOIN.
+    					replace("{player}", p.getName()).
+    					replace("{alt}", alt).
+    					replace("{ip}", p.getIp());
+    			Utilities.doBungeeChatMirror("StaffNotice", msg);
+    		}
+
 			// Check if an existing player has a "newspawn" flag... send them to new player spawn
     		if ((!p.isFirstJoin()) && (newspawn)) {
     	    	SpawnManager.sendPlayerToNewPlayerSpawn(p);
     			p.setNewSpawn(false);
-	            DatabaseManager.players.updatePlayer(p);
     		}
-
+            DatabaseManager.players.updatePlayer(p);
+    		
     		// Launch the MOTD message scheduler
     		if (ConfigManager.main.MOTD_Enabled && (p.firstConnect() || newspawn)) {
     	    	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {

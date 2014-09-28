@@ -64,6 +64,11 @@
             <version>2.2.4</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>au.com.addstar</groupId>
+            <artifactId>BungeeChat-Proxy</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

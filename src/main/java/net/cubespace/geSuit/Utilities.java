@@ -1,10 +1,11 @@
 package net.cubespace.geSuit;
 
+import au.com.addstar.bc.BungeeChat;
+
 import com.google.common.net.InetAddresses;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.EOFException;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -176,5 +177,20 @@ public class Utilities {
         }
 
         return builder.toString().trim();
+    }
+    
+    public static boolean doBungeeChatMirror(String channel, String msg) {
+		ByteArrayOutputStream ostream = new ByteArrayOutputStream();
+		DataOutputStream out = new DataOutputStream(ostream);
+		try {
+			out.writeUTF("Mirror");
+			out.writeUTF(channel);
+			out.writeUTF(ChatColor.translateAlternateColorCodes('&', msg));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+		BungeeChat.instance.getComLink().broadcastMessage("BungeeChat", ostream.toByteArray());
+		return true;
     }
 }
