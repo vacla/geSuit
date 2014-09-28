@@ -27,7 +27,7 @@ public class SpawnListener implements Listener {
         }
 
         Player p = e.getPlayer();
-        if ( !p.hasPlayedBefore() ) {
+        if (!p.hasPlayedBefore() && !p.isOp()) {
             if ( SpawnManager.hasWorldSpawn( p.getWorld() ) && p.hasPermission( "gesuit.spawns.new.world" ) ) {
                 SpawnManager.sendPlayerToWorldSpawn( p );
             } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "gesuit.spawns.new.server" ) ) {
