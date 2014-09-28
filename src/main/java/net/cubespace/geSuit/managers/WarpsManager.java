@@ -104,6 +104,9 @@ public class WarpsManager {
             s.sendMessage(ConfigManager.messages.PLAYER_NOT_ONLINE);
             return;
         }
+        if (s == null) {
+        	s = p;	// If sending from console, pretend the player executed the command
+        }
 
         Warp w = warps.get(warp.toLowerCase());
         if (w == null) {
@@ -125,7 +128,7 @@ public class WarpsManager {
 
         Location l = w.getLocation();
         p.sendMessage(ConfigManager.messages.PLAYER_WARPED.replace("{warp}", w.getName()));
-        if (!p.equals(s)) {
+        if ((!p.equals(s)) && (s != null)) {
             s.sendMessage(ConfigManager.messages.PLAYER_WARPED_OTHER.replace("{player}", p.getName()).replace("{warp}", w.getName()));
         }
 
