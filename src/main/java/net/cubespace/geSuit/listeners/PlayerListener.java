@@ -28,6 +28,12 @@ public class PlayerListener implements Listener {
     		final boolean newspawn = p.isNewSpawn();
     		p.setServer(e.getServer().getInfo().getName());
 
+			// Check if an existing player has a "newspawn" flag... send them to new player spawn
+    		if ((!p.isFirstJoin()) && (newspawn)) {
+    	    	SpawnManager.sendPlayerToNewPlayerSpawn(p);
+    			p.setNewSpawn(false);
+    		}
+
     		// Check for alt accounts and notify staff
     		String alt = DatabaseManager.players.getAltPlayer(p.getUuid(), p.getIp());
     		if (alt != null) {
@@ -38,11 +44,6 @@ public class PlayerListener implements Listener {
     			Utilities.doBungeeChatMirror("StaffNotice", msg);
     		}
 
-			// Check if an existing player has a "newspawn" flag... send them to new player spawn
-    		if ((!p.isFirstJoin()) && (newspawn)) {
-    	    	SpawnManager.sendPlayerToNewPlayerSpawn(p);
-    			p.setNewSpawn(false);
-    		}
             DatabaseManager.players.updatePlayer(p);
     		
     		// Launch the MOTD message scheduler
