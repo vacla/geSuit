@@ -27,6 +27,10 @@ public class TeleportManager {
             bp.sendMessage(ConfigManager.messages.PLAYER_NOT_ONLINE.replace("{player}", bp.getName()));
             return;
         }
+        if (bp.getName().equals(bt.getName())) {
+            bp.sendMessage(ConfigManager.messages.TELEPORT_UNABLE.replace("{player}", bp.getName()));
+            return;
+        }
         if (!playerIsAcceptingTeleports(bt)) {
             bp.sendMessage(ConfigManager.messages.TELEPORT_UNABLE.replace("{player}", bp.getName()));
             return;
