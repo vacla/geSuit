@@ -4,6 +4,7 @@ import net.cubespace.geSuit.geSuit;
 import net.cubespace.Yamler.Config.Config;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class TeleportConfig extends Config {
     public TeleportConfig() {
@@ -11,4 +12,6 @@ public class TeleportConfig extends Config {
     }
 
     public Integer TeleportRequestExpireTime = 10;
+
+    public ArrayList<String> TPAWhitelist = new ArrayList<String>();
 }

@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.managers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +40,20 @@ public class TeleportManager {
             bp.sendMessage(ConfigManager.messages.PLAYER_TELEPORT_PENDING_OTHER);
             return;
         }
+
+        // Cross TPA server whitelist handling
+        if (!bp.getServer().equals(bt.getServer())) {
+	        ArrayList<String> wl = ConfigManager.teleport.TPAWhitelist;
+
+	        if ((!wl.isEmpty()) &&
+	        		(!wl.contains(bp.getServer() + ":" + bt.getServer())) &&            // SRC:DST
+	        		(!wl.contains(bp.getServer() + ":ALL")) &&                          // SRC:ALL
+	        		(!wl.contains("ALL:" + bt.getServer()))) {                          // ALL:DST
+	            bp.sendMessage(ConfigManager.messages.PLAYER_TELEPORT_WRONG_SERVER);
+	            return;
+	        }
+        }
+
         pendingTeleportsTPA.put(bt, bp);
         bp.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", bt.getName()));
         bt.sendMessage(ConfigManager.messages.PLAYER_REQUESTS_TO_TELEPORT_TO_YOU.replace("{player}", bp.getName()));

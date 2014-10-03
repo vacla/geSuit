@@ -31,6 +31,7 @@ public class Messages extends Config {
     public String TELEPORTED_TO_PLAYER = "&6" + "You have been teleported to {player}";
     public String PLAYER_TELEPORT_PENDING = "&c" + "You already have a teleport pending";
     public String PLAYER_TELEPORT_PENDING_OTHER = "&c" + "That player already has a teleport pending";
+    public String PLAYER_TELEPORT_WRONG_SERVER = "&c" + "You are not allowed to teleport to that player from here.";
     public String PLAYER_TELEPORTED_TO_YOU = "&6" + "{player} has teleported to you";
     public String PLAYER_TELEPORTED = "&6" + "{player} has teleported to {target}";
     public String PLAYER_REQUESTS_TO_TELEPORT_TO_YOU = "&6" + "{player} has requested to teleport to you. Type /tpaccept to allow";
