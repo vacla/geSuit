@@ -33,6 +33,7 @@ public class ReloadCommand extends Command
             ConfigManager.main.reload();
             ConfigManager.spawn.reload();
             ConfigManager.messages.reload();
+            ConfigManager.teleport.reload();
 
             AnnouncementManager.reloadAnnouncements();
             PlayerManager.sendMessageToTarget(sender, "All Configs reloaded");
