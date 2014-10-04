@@ -48,12 +48,13 @@ public class PlayerManager {
     }
 
     private static GSPlayer createNewPlayer(final ProxiedPlayer player) {
-        String ip = player.getAddress().getAddress().toString();
+        String ip = player.getAddress().getHostString();
         final GSPlayer gsPlayer = new GSPlayer(player.getName(), player.getUUID(), true);
+        gsPlayer.setIp(ip);
         gsPlayer.setFirstJoin(true);
 
         onlinePlayers.put(player.getName().toLowerCase(), gsPlayer);
-        DatabaseManager.players.insertPlayer(gsPlayer, ip.substring(1, ip.length()));
+        DatabaseManager.players.insertPlayer(gsPlayer, ip);
 
         LoggingManager.log(ConfigManager.messages.PLAYER_CREATE.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
 
