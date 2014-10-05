@@ -33,6 +33,7 @@ public class TeleportsMessageListener implements PluginMessageListener {
 
         } catch ( IOException e ) {
             e.printStackTrace();
+            return;
         }
         if ( task.equals( "GetVersion" ) ) {
             String name = null;
