@@ -149,6 +149,7 @@ public class ConnectionPool {
             dbm = connection.getMetaData();
         } catch (SQLException e2) {
             e2.printStackTrace();
+            return false;
         }
 
         ResultSet tables = null;
@@ -156,6 +157,7 @@ public class ConnectionPool {
             tables = dbm.getTables(null, null, table, null);
         } catch (SQLException e1) {
             e1.printStackTrace();
+            return false;
         }
 
         boolean check = false;
@@ -163,6 +165,7 @@ public class ConnectionPool {
             check = tables.next();
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
 
         return check;

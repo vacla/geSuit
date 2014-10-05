@@ -38,12 +38,12 @@ public class Tracking implements IRepository {
         try {
         	PreparedStatement trackInfo;
         	
-        	if (type == "ip") {
+        	if (type.equals("ip")) {
         		// Lookup by IP
             	trackInfo = connectionHandler.getPreparedStatement("getIPTracking");
                 trackInfo.setString(1, search);
         	}
-        	else if (type == "uuid") {
+        	else if (type.equals("uuid")) {
         		// Lookup by IP
             	trackInfo = connectionHandler.getPreparedStatement("getUUIDTracking");
                 trackInfo.setString(1, search);
