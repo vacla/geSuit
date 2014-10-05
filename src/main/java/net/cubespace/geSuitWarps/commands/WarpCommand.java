@@ -39,6 +39,7 @@ public class WarpCommand implements CommandExecutor {
                     } else {
                         player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
                     }
+                    lastLocation.remove(player);
                     }
                 }, 60L);
                 return true;

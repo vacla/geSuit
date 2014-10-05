@@ -15,8 +15,7 @@ import java.io.IOException;
 public class WarpsManager {
 
     public static void warpPlayer( final CommandSender sender, final String senderName, final String warp ) {
-
-        Bukkit.getPlayer(sender.getName()).saveData();
+    	Player p = Bukkit.getPlayer(sender.getName());
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {
