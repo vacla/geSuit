@@ -57,7 +57,8 @@ public class TeleportsListener implements Listener {
 		if(Bukkit.getOnlinePlayers().length==1){
 			empty = true;
 		}
-		TeleportsManager.sendTeleportBackLocation(e.getPlayer(), empty);	
+		TeleportsManager.sendTeleportBackLocation(e.getPlayer(), empty);
+		TeleportsManager.RemovePlayer(e.getPlayer());
 	}
 	
 	@EventHandler(ignoreCancelled = true)

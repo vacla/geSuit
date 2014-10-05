@@ -24,6 +24,13 @@ public class TeleportsManager {
     public static ArrayList<Player> ignoreTeleport = new ArrayList<Player>();
 
     static HashMap<Player, Location> lastLocation = new HashMap<Player, Location>();
+    
+    public static void RemovePlayer(Player player) {
+    	pendingTeleports.remove(player.getName());
+    	pendingTeleportLocations.remove(player.getName());
+    	ignoreTeleport.remove(player);
+    	lastLocation.remove(player);
+    }
 
     public static void tpAll( CommandSender sender, String targetPlayer ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
