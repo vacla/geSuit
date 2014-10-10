@@ -131,7 +131,10 @@ public class BansManager {
         message = Utilities.colorize(ConfigManager.messages.KICK_PLAYER_MESSAGE.replace("{message}", message).replace("{sender}", sender));
 
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-            disconnectPlayer(p, message);
+        	// Don't kick the player executing the command or anyone with bypass permission
+        	if ((!p.hasPermission("gesuit.bypass.kickall")) && (!p.getName().equals(sender))) {
+        		disconnectPlayer(p, message);
+        	}
         }
     }
 
