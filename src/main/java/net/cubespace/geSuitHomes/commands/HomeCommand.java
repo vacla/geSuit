@@ -55,18 +55,21 @@ public class HomeCommand implements CommandExecutor {
 	                geSuitHomes.getInstance().getServer().getScheduler().runTaskLater(geSuitHomes.getInstance(), new Runnable() {
 	                    @Override
 	                    public void run() {
-	                        if (lastLocation.get(player).getBlock().equals(player.getLocation().getBlock())) {
-	                            player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
-	                            player.saveData();
-	                            if (pname == null) {
-	                                HomesManager.sendHome(sender, homename);
-	                            } else {
-	                            	HomesManager.sendOtherHome(sender, pname, homename);
-	                            }
-	                        } else {
-	                            player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
-	                        }
-	                        lastLocation.remove(player);
+	                    	if (player.isOnline()) {
+		                    	Location loc = lastLocation.get(player);
+		                        if ((loc != null) && (loc.getBlock().equals(player.getLocation().getBlock()))) {
+		                            player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
+		                            player.saveData();
+		                            if (pname == null) {
+		                                HomesManager.sendHome(sender, homename);
+		                            } else {
+		                            	HomesManager.sendOtherHome(sender, pname, homename);
+		                            }
+		                        } else {
+		                            player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
+		                        }
+		                        lastLocation.remove(player);
+	                    	}
 	                    }
 	                }, 60L);
 	            } else {
