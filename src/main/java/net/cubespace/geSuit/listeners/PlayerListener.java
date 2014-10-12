@@ -91,6 +91,7 @@ public class PlayerListener implements Listener {
                     }
 
                     PlayerManager.unloadPlayer(e.getPlayer().getName());
+                    DatabaseManager.players.updatePlayer(p);
                 }
 
             }, dcTime, TimeUnit.SECONDS);
@@ -102,8 +103,15 @@ public class PlayerListener implements Listener {
             } else {
                 PlayerManager.kickedPlayers.remove(e.getPlayer());
             }
-
             PlayerManager.unloadPlayer(e.getPlayer().getName());
+
+            geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
+                @Override
+                public void run() {
+                	// Always update the player record when they disconnect
+                	DatabaseManager.players.updatePlayer(p);
+                }
+            }, 1, TimeUnit.MILLISECONDS);
         }
     }
 }
