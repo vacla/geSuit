@@ -275,7 +275,11 @@ public class TeleportsManager {
             if (LocationUtil.isBlockUnsafe(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ())) {
                 try {
                     Location l = LocationUtil.getSafeDestination(p, t);
-                    p.teleport(l);
+                    if (l != null) {
+                    	p.teleport(l);
+                    } else {
+                        p.sendMessage(ChatColor.RED + "Unable to find a safe location for teleport.");
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

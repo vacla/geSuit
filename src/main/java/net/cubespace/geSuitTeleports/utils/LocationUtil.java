@@ -149,7 +149,7 @@ public class LocationUtil {
 
     public static Location getSafeDestination(final Player player, final Location loc) {
         if (loc.getWorld().equals(player.getWorld())
-                && (player.getGameMode() == GameMode.CREATIVE)) {
+                && ((player.getGameMode() == GameMode.CREATIVE) || (player.isFlying()))) {
             return getRoundedDestination(loc);
         }
 
