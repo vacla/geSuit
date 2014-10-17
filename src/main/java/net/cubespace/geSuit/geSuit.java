@@ -22,6 +22,7 @@ import net.cubespace.geSuit.listeners.TeleportsMessageListener;
 import net.cubespace.geSuit.listeners.WarpsMessageListener;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
+import net.cubespace.geSuit.managers.GeoIPManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -51,6 +52,7 @@ public class geSuit extends Plugin
 
         registerListeners();
         registerCommands();
+        GeoIPManager.initialize();
     }
 
     private void registerCommands()

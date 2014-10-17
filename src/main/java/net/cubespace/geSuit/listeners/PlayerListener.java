@@ -4,6 +4,7 @@ import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
+import net.cubespace.geSuit.managers.GeoIPManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.objects.GSPlayer;
@@ -42,6 +43,21 @@ public class PlayerListener implements Listener {
     					replace("{alt}", alt).
     					replace("{ip}", p.getIp());
     			Utilities.doBungeeChatMirror("StaffNotice", msg);
+    		}
+    		
+    		if (ConfigManager.bans.GeoIP.ShowOnLogin) {
+    		    geSuit.proxy.getScheduler().runAsync(geSuit.instance, new Runnable() {
+                    @Override
+                    public void run() {
+                        String location = GeoIPManager.lookup(e.getPlayer().getAddress().getAddress());
+                        if (location != null) {
+                            String msg = ConfigManager.messages.PLAYER_GEOIP.
+                                    replace("{player}", p.getName()).
+                                    replace("{location}", location);
+                            Utilities.doBungeeChatMirror("StaffNotice", msg);
+                        }
+                    }
+                });
     		}
 
             DatabaseManager.players.updatePlayer(p);

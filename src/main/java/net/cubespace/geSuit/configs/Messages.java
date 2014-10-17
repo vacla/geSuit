@@ -25,6 +25,7 @@ public class Messages extends Config {
     public String NO_PERMISSION = "&c" + "You do not have permission to use that command";
     public String NEW_PLAYER_BROADCAST = "&eNotice to everyone: &b{player} &ahas just joined this server for the first time. Please make them feel welcome!";
     public String PLAYER_ALT_JOIN = "&b{player} same IP ({ip}) as {alt}";
+    public String PLAYER_GEOIP = "&8{player} is from {location}";
 
     // teleport specific messages
     public String ALL_PLAYERS_TELEPORTED = "&6" + "All players have been teleported to {player}";

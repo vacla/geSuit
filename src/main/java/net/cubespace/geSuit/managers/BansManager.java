@@ -8,6 +8,7 @@ import java.util.List;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Track;
@@ -387,7 +388,7 @@ public class BansManager {
 
     public static void displayWhereHistory(String sentBy, String options, String search) {
         GSPlayer s = PlayerManager.getPlayer(sentBy);
-        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+        final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
         List<Track> tracking = null;
     	if (search.contains(".")) {
@@ -444,6 +445,19 @@ public class BansManager {
     		} else {
     			PlayerManager.sendMessageToTarget(sender,
             		ChatColor.GREEN + "[Tracker] Player \"" + search + "\" associated with " + tracking.size() + " accounts:");
+    			
+    			if (geSuit.proxy.getPlayer(search) != null) {
+    			    final ProxiedPlayer player = geSuit.proxy.getPlayer(search);
+    			    geSuit.proxy.getScheduler().runAsync(geSuit.instance, new Runnable() {
+    		            @Override
+    		            public void run() {
+    		                String location = GeoIPManager.lookup(player.getAddress().getAddress());
+    		                if (location != null) {
+    		                    PlayerManager.sendMessageToTarget(sender, ChatColor.GREEN + "[Tracker] Player " + player.getName() + "'s IP resolves to " + location); 
+    		                }
+    		            }
+    		        });
+    			}
     		}
     	}
 

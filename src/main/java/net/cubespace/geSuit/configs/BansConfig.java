@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.configs;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.configs.SubConfig.GeoIPSettings;
 import net.cubespace.Yamler.Config.Config;
 
 import java.io.File;
@@ -20,4 +21,6 @@ public class BansConfig extends Config {
     public Boolean ShowAltAccountsOnlyIfBanned = true;
     
     public HashMap<Integer, String> Actions;
+    
+    public GeoIPSettings GeoIP = new GeoIPSettings();
 }
