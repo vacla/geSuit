@@ -5,9 +5,11 @@ import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.GeoIPManager;
+import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.objects.GSPlayer;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
@@ -25,6 +27,11 @@ public class PlayerListener implements Listener {
     	if (PlayerManager.getPlayer(e.getPlayer().getName()) == null) {
     		// NOTE: This event is called each time the player changes server
     		// This check ensures this is only handled when the player is first connecting to the proxy
+    		if (ProxyServer.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
+    			LoggingManager.log(ChatColor.RED + "Warning: ServerConnectedEvent called but player is not online any more.");
+    			return;		// Do nothing if the player is offline
+    		}
+
     		final GSPlayer p = PlayerManager.loadPlayer(e.getPlayer());
     		final boolean newspawn = p.isNewSpawn();
     		p.setServer(e.getServer().getInfo().getName());
@@ -67,7 +74,7 @@ public class PlayerListener implements Listener {
     	    	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
     				@Override
     				public void run() {
-    					if (ProxyServer.getInstance().getPlayer(p.getProxiedPlayer().getUniqueId()) != null) {
+    					if (ProxyServer.getInstance().getPlayer(e.getPlayer().getUniqueId()) != null) {	// Check if player is still online
 	    					if (p.isFirstJoin() || newspawn) {
 	    		            	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motdNew.getMOTD().replace("{player}", p.getName()));
 	    		            } else {
