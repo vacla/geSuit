@@ -17,8 +17,6 @@ import java.util.HashMap;
 
 public class HomeCommand implements CommandExecutor {
 
-    static HashMap<Player, Location> lastLocation = new HashMap<Player, Location>();
-
 	@Override
 	public boolean onCommand(final CommandSender sender, Command command,
 			String label, final String[] args) {
@@ -49,15 +47,17 @@ public class HomeCommand implements CommandExecutor {
             	return true;
             } else {
 	            if (!player.hasPermission("gesuit.homes.bypass.delay")) {
-	                lastLocation.put(player, player.getLocation());
+	                final Location lastLocation = player.getLocation();
 	                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Teleportation will commence in &c3 seconds&6. Don't move."));
 	
 	                geSuitHomes.getInstance().getServer().getScheduler().runTaskLater(geSuitHomes.getInstance(), new Runnable() {
 	                    @Override
 	                    public void run() {
 	                    	if (player.isOnline()) {
-		                    	Location loc = lastLocation.get(player);
-		                        if ((loc != null) && (loc.getBlock().equals(player.getLocation().getBlock()))) {
+	                    		if ((lastLocation == null) || (lastLocation.getBlock() == null))
+	                    			return;
+	                    		
+		                        if (lastLocation.getBlock().equals(player.getLocation().getBlock())) {
 		                            player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
 		                            player.saveData();
 		                            if (pname == null) {
@@ -68,7 +68,6 @@ public class HomeCommand implements CommandExecutor {
 		                        } else {
 		                            player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
 		                        }
-		                        lastLocation.remove(player);
 	                    	}
 	                    }
 	                }, 60L);
