@@ -109,25 +109,29 @@ public class TeleportsManager {
             geSuitTeleports.getInstance().getServer().getScheduler().runTaskLater(geSuitTeleports.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    if (lastLocation.get(player).getBlock().equals(player.getLocation().getBlock())) {
-                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
-                        player.saveData();
-                        ByteArrayOutputStream b = new ByteArrayOutputStream();
-                        DataOutputStream out = new DataOutputStream(b);
-                        try {
-                            out.writeUTF("TeleportToPlayer");
-                            out.writeUTF(player.getName());
-                            out.writeUTF(player.getName());
-                            out.writeUTF(target);
-                            out.writeBoolean(false);
-                            out.writeBoolean(true);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
-                    } else {
-                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
-                    }
+                	Location loc = lastLocation.get(player);
+                	lastLocation.remove(player);
+                	if (player.isOnline()) {
+                        if ((loc != null) && (loc.getBlock().equals(player.getLocation().getBlock()))) {
+	                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
+	                        player.saveData();
+	                        ByteArrayOutputStream b = new ByteArrayOutputStream();
+	                        DataOutputStream out = new DataOutputStream(b);
+	                        try {
+	                            out.writeUTF("TeleportToPlayer");
+	                            out.writeUTF(player.getName());
+	                            out.writeUTF(player.getName());
+	                            out.writeUTF(target);
+	                            out.writeBoolean(false);
+	                            out.writeBoolean(true);
+	                        } catch (IOException e) {
+	                            e.printStackTrace();
+	                        }
+	                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+	                    } else {
+	                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
+	                    }
+                	}
                 }
             }, 60L);
         } else {
@@ -192,23 +196,27 @@ public class TeleportsManager {
             geSuitTeleports.getInstance().getServer().getScheduler().runTaskLater(geSuitTeleports.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    if (lastLocation.get(player).getBlock().equals(player.getLocation().getBlock())) {
-                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
-                        player.saveData();
-                        ByteArrayOutputStream b = new ByteArrayOutputStream();
-                        DataOutputStream out = new DataOutputStream(b);
-                        try {
-                            out.writeUTF("SendPlayerBack");
-                            out.writeUTF(sender.getName());
-                            out.writeBoolean(sender.hasPermission("gesuit.teleports.back.death"));
-                            out.writeBoolean(sender.hasPermission("gesuit.teleports.back.teleport"));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
-                    } else {
-                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
-                    }
+                	Location loc = lastLocation.get(player);
+                	lastLocation.remove(player);
+                	if (player.isOnline()) {
+                        if ((loc != null) && (loc.getBlock().equals(player.getLocation().getBlock()))) {
+	                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
+	                        player.saveData();
+	                        ByteArrayOutputStream b = new ByteArrayOutputStream();
+	                        DataOutputStream out = new DataOutputStream(b);
+	                        try {
+	                            out.writeUTF("SendPlayerBack");
+	                            out.writeUTF(sender.getName());
+	                            out.writeBoolean(sender.hasPermission("gesuit.teleports.back.death"));
+	                            out.writeBoolean(sender.hasPermission("gesuit.teleports.back.teleport"));
+	                        } catch (IOException e) {
+	                            e.printStackTrace();
+	                        }
+	                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+	                    } else {
+	                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
+	                    }
+                	}
                 }
             }, 60L);
         } else {
@@ -255,7 +263,7 @@ public class TeleportsManager {
                     }
 
                 }
-            }, 100 );
+            }, 100L);
         }
     }
 
@@ -296,7 +304,7 @@ public class TeleportsManager {
                         pendingTeleportLocations.remove( player );
                     }
                 }
-            }, 100 );
+            }, 100L);
         }
     }
 
@@ -310,25 +318,29 @@ public class TeleportsManager {
             geSuitTeleports.getInstance().getServer().getScheduler().runTaskLater(geSuitTeleports.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    if (lastLocation.get(player).getBlock().equals(player.getLocation().getBlock())) {
-                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
-                        player.saveData();
-                        ByteArrayOutputStream b = new ByteArrayOutputStream();
-                        DataOutputStream out = new DataOutputStream(b);
-                        try {
-                            out.writeUTF("TeleportToPlayer");
-                            out.writeUTF(sender.getName());
-                            out.writeUTF(playerName);
-                            out.writeUTF(target);
-                            out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.silent"));
-                            out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.bypass"));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
-                    } else {
-                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
-                    }
+                	Location loc = lastLocation.get(player);
+                	lastLocation.remove(player);
+                	if (player.isOnline()) {
+                        if ((loc != null) && (loc.getBlock().equals(player.getLocation().getBlock()))) {
+		                    player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
+		                    player.saveData();
+		                    ByteArrayOutputStream b = new ByteArrayOutputStream();
+		                    DataOutputStream out = new DataOutputStream(b);
+		                    try {
+		                        out.writeUTF("TeleportToPlayer");
+		                        out.writeUTF(sender.getName());
+		                        out.writeUTF(playerName);
+		                        out.writeUTF(target);
+		                        out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.silent"));
+		                        out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.bypass"));
+		                    } catch (IOException e) {
+		                        e.printStackTrace();
+		                    }
+		                    new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+		                } else {
+		                    player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
+		                }
+                	}
                 }
             }, 60L);
         } else {
