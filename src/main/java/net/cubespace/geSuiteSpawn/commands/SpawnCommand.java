@@ -19,18 +19,23 @@ public class SpawnCommand implements CommandExecutor {
 
 		final Player player = Bukkit.getPlayer(sender.getName());
         if (!player.hasPermission("gesuit.warps.bypass.delay")) {
-            final Location loc = player.getLocation();
+            final Location lastLocation = player.getLocation();
 
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Teleportation will commence in &c3 seconds&6. Don't move."));
             Bukkit.getServer().getScheduler().runTaskLater(geSuitSpawn.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    if (loc.getBlock().equals(player.getLocation().getBlock())) {
-                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
-            			SpawnManager.sendPlayerToSpawn(player);
-                    } else {
-                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
-                    }
+                	if (player.isOnline()) {
+                		if ((lastLocation == null) || (lastLocation.getBlock() == null))
+                			return;
+                		
+	                    if (lastLocation.getBlock().equals(player.getLocation().getBlock())) {
+	                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
+	            			SpawnManager.sendPlayerToSpawn(player);
+	                    } else {
+	                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
+	                    }
+                	}
                 }
             }, 60L);
             return true;
