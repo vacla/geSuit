@@ -11,8 +11,6 @@ public class Messages extends Config {
         CONFIG_MODE = ConfigMode.FIELD_IS_KEY;
     }
 
-    public String PLAYER_SEEN_ONLINE = "&a| Player &2{player} &ais currently online!\n&a| ip:{ip}    Server:{server}";
-    public String PLAYER_SEEN_OFFLINE = "&c| Player &4{player}&c is offline. Last seen: {seen}!\n&c| ip:{ip}";
     public String BUNGEE_COMMAND_SEEN_USAGE = "&cUsage: /seen <player>";
     public String PLAYER_CONNECT_PROXY = "{player}&e has joined the server!";
     public String PLAYER_DISCONNECT_PROXY = "{player}&e has left the server!";
@@ -121,4 +119,9 @@ public class Messages extends Config {
     public String HOME_SET = "&6" + "Your home \"{home}\" has been set";
     public String HOME_DOES_NOT_EXIST = "&c" + "That home does not exist";
     public String HOME_DELETED = "&c" + "Your home \"{home}\" has been deleted";
+    
+    // Seen messages
+    public String PLAYER_SEEN_ONLINE = "&6Player &c{player} &6is currently online!";
+    public String PLAYER_SEEN_OFFLINE = "&6Player &c{player} &6is &4offline&6 since {timediff}\n&6 {date}";
+    public String PLAYER_SEEN_ITEM_FORMAT = "&6 - {name}: &r{value}";
 }

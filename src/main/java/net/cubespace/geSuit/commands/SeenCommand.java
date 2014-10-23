@@ -29,9 +29,6 @@ public class SeenCommand extends Command {
             return;
         }
 
-        if (sender.hasPermission("gesuit.seen.extra"))
-            PlayerManager.sendMessageToTarget(sender, PlayerManager.getLastSeeninfos(args[0]));
-        else
-            PlayerManager.sendMessageToTarget(sender, PlayerManager.getLastSeeninfosStripped(args[0]));
+        PlayerManager.sendMessageToTarget(sender, PlayerManager.getLastSeeninfos(args[0], sender.hasPermission("gesuit.seen.extra"), sender.hasPermission("gesuit.seen.vanish")));
     }
 }

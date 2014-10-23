@@ -3,18 +3,25 @@ package net.cubespace.geSuit.managers;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.text.SimpleDateFormat;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+
+import au.com.addstar.bc.BungeeChat;
 
 public class PlayerManager {
 
@@ -129,27 +136,88 @@ public class PlayerManager {
         LoggingManager.log(message);
     }
 
-    public static String getLastSeeninfos(String player) {
-        SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.applyPattern("dd MMM yyyy HH:mm");
+    public static String getLastSeeninfos(String player, boolean full, boolean seeVanished) {
         GSPlayer p = getPlayer(player);
-        if (p == null) { //Offline
+        LinkedHashMap<String, String> items = new LinkedHashMap<String, String>();
+        
+        boolean online = (p != null && p.getProxiedPlayer() != null);
+        
+        if (p == null) {
+            // Player is offline, load data
             p = DatabaseManager.players.loadPlayer(player);
-            if (p == null) //Unknown player
-            {
-                return ConfigManager.messages.PLAYER_DOES_NOT_EXIST;
-            } else {
-                return ConfigManager.messages.PLAYER_SEEN_OFFLINE
-                        .replace("{player}", p.getName())
-                        .replace("{ip}", p.getIp())
-                        .replace("{seen}", sdf.format(p.getLastOnline()));
-            }
-        } else { //Online
-            return ConfigManager.messages.PLAYER_SEEN_ONLINE
-                    .replace("{player}", p.getName())
-                    .replace("{ip}", p.getIp())
-                    .replace("{server}", p.getServer());
         }
+        
+        if (p == null) { // Unknown player
+            return ConfigManager.messages.PLAYER_DOES_NOT_EXIST;
+        }
+        
+        // Vanished and not online
+        if (BungeeChat.instance.getSyncManager().getPropertyBoolean(p.getProxiedPlayer(), "VNP:vanished", false) 
+                && !BungeeChat.instance.getSyncManager().getPropertyBoolean(p.getProxiedPlayer(), "VNP:online", true)) {
+            online = false;
+        }
+        
+        // Do a ban check
+        Ban b = DatabaseManager.bans.getBanInfo(p.getName(), p.getUuid(), null);
+        if (b != null) {
+            if (b.getType().equals("tempban")) {
+                if (b.getBannedUntil().getTime() > System.currentTimeMillis()) {
+                    items.put("Temp Banned", Utilities.buildShortTimeDiffString(b.getBannedUntil().getTime() - System.currentTimeMillis(), 3) + " remaining");
+                    items.put("Ban Reason", b.getReason());
+                    if (full) {
+                        items.put("Banned By", b.getBannedBy());
+                    }
+                }
+            } else {
+                items.put("Banned", b.getReason());
+                if (full) {
+                    items.put("Banned By", b.getBannedBy());
+                }
+            }
+        }
+        
+        if (full) {
+            if (online && p.getProxiedPlayer().getServer() != null) {
+                items.put("Server", p.getProxiedPlayer().getServer().getInfo().getName());
+            }
+            items.put("IP", p.getIp());
+
+            // Do GeoIP lookup
+            String location = null;
+            try {
+                InetAddress address = InetAddress.getByName(p.getIp());
+                location = GeoIPManager.lookup(address);
+            } catch(UnknownHostException e) {
+            }
+            
+            if (location != null) {
+                items.put("Location", location);
+            }
+        }
+        
+        String message = (online ? ConfigManager.messages.PLAYER_SEEN_ONLINE : ConfigManager.messages.PLAYER_SEEN_OFFLINE);
+        message = message.replace("{player}", p.getName());
+        
+        if (p.getLastOnline() != null) {
+            String fullDate = String.format("%s @ %s", DateFormat.getDateInstance(DateFormat.MEDIUM).format(p.getLastOnline()), DateFormat.getTimeInstance(DateFormat.MEDIUM).format(p.getLastOnline()));
+            String diff = Utilities.buildTimeDiffString(System.currentTimeMillis() - p.getLastOnline().getTime(), 2);
+            message = message.replace("{timediff}", diff);
+            message = message.replace("{date}", fullDate);
+        } else {
+            message = message.replace("{timediff}", "Never");
+            message = message.replace("{date}", "Never");
+        }
+        
+        StringBuilder builder = new StringBuilder();
+        builder.append(message);
+        for(Entry<String, String> item : items.entrySet()) {
+            builder.append('\n');
+            builder.append(ConfigManager.messages.PLAYER_SEEN_ITEM_FORMAT
+                    .replace("{name}", item.getKey())
+                    .replace("{value}", item.getValue()));
+        }
+        
+        return builder.toString();
     }
 
     public static GSPlayer matchOnlinePlayer(String player) {
@@ -215,29 +283,6 @@ public class PlayerManager {
 
     public static GSPlayer getPlayer(String player) {
         return onlinePlayers.get(player.toLowerCase());
-    }
-
-    public static String getLastSeeninfosStripped(String player) {
-        SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.applyPattern("dd MMM yyyy HH:mm");
-        GSPlayer p = getPlayer(player);
-        if (p == null) { //Offline
-            p = DatabaseManager.players.loadPlayer(player);
-            if (p == null) //Unknown player
-            {
-                return ConfigManager.messages.PLAYER_DOES_NOT_EXIST;
-            } else {
-                return ConfigManager.messages.PLAYER_SEEN_OFFLINE
-                        .replace("{player}", p.getName())
-                        .replace("{ip}", "[Stripped]")
-                        .replace("{seen}", sdf.format(p.getLastOnline()));
-            }
-        } else { //Online
-            return ConfigManager.messages.PLAYER_SEEN_ONLINE
-                    .replace("{player}", p.getName())
-                    .replace("{ip}","[Stripped]")
-                    .replace("{server}", p.getServer());
-        }
     }
     
     public static void updateTracking(GSPlayer player) {
