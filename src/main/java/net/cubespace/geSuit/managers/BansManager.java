@@ -1,8 +1,8 @@
 package net.cubespace.geSuit.managers;
 
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
@@ -338,7 +338,16 @@ public class BansManager {
         // Check if we have warning actions defined
         if (ConfigManager.bans.Actions != null) {
         	List<Ban> warnings = DatabaseManager.bans.getWarnHistory(t.name, t.uuid);
-        	Integer warncount = warnings.size();
+        	Integer warncount = 0;
+            for (Ban w : warnings) {
+            	// Only count warnings that have not expired
+            	Date now = new Date(); 
+	            int age = (int) ((now.getTime() - w.getBannedOn().getTime()) / 1000 / 86400);
+	        	if (age < ConfigManager.bans.WarningExpiryDays) {
+	        		warncount++;
+	        	}
+            }
+
         	if (ConfigManager.bans.Actions.containsKey(warncount)) {
         		String fullaction = ConfigManager.bans.Actions.get(warncount);
         		String[] parts = fullaction.split(" ");
@@ -363,26 +372,38 @@ public class BansManager {
         }
     }
 
-    public static void displayPlayerWarnHistory(String sender, String player) {
-        GSPlayer p = PlayerManager.getPlayer(sender);
-        List<Ban> warns = DatabaseManager.bans.getWarnHistory(player, player);
+    public static void displayPlayerWarnHistory(String sentBy, String player) {
+        GSPlayer s = PlayerManager.getPlayer(sentBy);
+        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
+        List<Ban> warns = DatabaseManager.bans.getWarnHistory(player, player);
         if (warns == null || warns.isEmpty()) {
-            PlayerManager.sendMessageToTarget(p, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED.replace("{player}", player)));
+            PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED.replace("{player}", player)));
             return;
         }
-        PlayerManager.sendMessageToTarget(p, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + player + "'s Warning History" + ChatColor.DARK_AQUA + " --------");
+        PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + player + "'s Warning History" + ChatColor.DARK_AQUA + " --------");
         
         int count = 0;
         for (Ban b : warns) {
-        	count++;
             SimpleDateFormat sdf = new SimpleDateFormat();
             sdf.applyPattern("dd MMM yyyy HH:mm");
-            PlayerManager.sendMessageToTarget(p,
-            		ChatColor.YELLOW + String.valueOf(count) + ": " +
-            		ChatColor.GREEN + sdf.format(b.getBannedOn()) +
-            		ChatColor.YELLOW + " (" + ChatColor.GRAY + b.getBannedBy() + ChatColor.YELLOW + ") " +
-            		ChatColor.AQUA + b.getReason());            		
+
+            Date now = new Date(); 
+            int age = (int) ((now.getTime() - b.getBannedOn().getTime()) / 1000 / 86400);
+        	if (age >= ConfigManager.bans.WarningExpiryDays) {
+	            PlayerManager.sendMessageToTarget(sender,
+	            		ChatColor.GRAY + "- " +
+	            		ChatColor.DARK_GRAY + sdf.format(b.getBannedOn()) +
+	            		ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + b.getBannedBy() + ChatColor.DARK_GRAY + ") " +
+	            		ChatColor.DARK_GRAY + b.getReason());
+        	} else {
+        		count++;
+	            PlayerManager.sendMessageToTarget(sender,
+	            		ChatColor.YELLOW + String.valueOf(count) + ": " +
+	            		ChatColor.GREEN + sdf.format(b.getBannedOn()) +
+	            		ChatColor.YELLOW + " (" + ChatColor.GRAY + b.getBannedBy() + ChatColor.YELLOW + ") " +
+	            		ChatColor.AQUA + b.getReason());
+        	}
         }
     }
 

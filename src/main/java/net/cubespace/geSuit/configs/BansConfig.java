@@ -19,7 +19,9 @@ public class BansConfig extends Config {
     public Boolean BroadcastKicks = true;
     public Boolean DetectAltAccounts = true;
     public Boolean ShowAltAccountsOnlyIfBanned = true;
-    
+
+    public int WarningExpiryDays = 180;
+
     public HashMap<Integer, String> Actions;
     
     public GeoIPSettings GeoIP = new GeoIPSettings();
