@@ -8,6 +8,7 @@ import net.cubespace.geSuit.commands.SeenCommand;
 import net.cubespace.geSuit.commands.TempBanCommand;
 import net.cubespace.geSuit.commands.UnbanCommand;
 import net.cubespace.geSuit.commands.WarnCommand;
+import net.cubespace.geSuit.commands.WarnHistoryCommand;
 import net.cubespace.geSuit.commands.WhereCommand;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
@@ -71,6 +72,7 @@ public class geSuit extends Plugin
         proxy.getPluginManager().registerCommand(this, new WhereCommand());
         proxy.getPluginManager().registerCommand(this, new ReloadCommand());
         proxy.getPluginManager().registerCommand(this, new DebugCommand());
+        proxy.getPluginManager().registerCommand(this, new WarnHistoryCommand());
     }
 
     private void registerListeners()
