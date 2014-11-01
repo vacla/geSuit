@@ -235,7 +235,6 @@ public class BansManager {
     }
 
     public static void disconnectPlayer(ProxiedPlayer player, String message) {
-        PlayerManager.unloadPlayer(player.getName());
         player.disconnect(new TextComponent(Utilities.colorize(message)));
     }
 
