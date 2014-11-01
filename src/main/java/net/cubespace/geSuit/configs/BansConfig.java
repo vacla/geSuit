@@ -22,7 +22,7 @@ public class BansConfig extends Config {
 
     public int WarningExpiryDays = 180;
 
-    public HashMap<Integer, String> Actions;
+    public HashMap<Integer, String> Actions = new HashMap<Integer, String>();
     
     public GeoIPSettings GeoIP = new GeoIPSettings();
 }
