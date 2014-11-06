@@ -14,14 +14,14 @@ import org.bukkit.entity.Player;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 
 public class TeleportsManager {
     public static HashMap<String, Player> pendingTeleports = new HashMap<String, Player>();
     public static HashMap<String, Location> pendingTeleportLocations = new HashMap<String, Location>();
-    public static ArrayList<Player> ignoreTeleport = new ArrayList<Player>();
+    public static HashSet<Player> ignoreTeleport = new HashSet<Player>();
 
     static HashMap<Player, Location> lastLocation = new HashMap<Player, Location>();
     
