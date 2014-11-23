@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
     		}
 
     		// Check for alt accounts and notify staff
-    		String alt = DatabaseManager.players.getAltPlayer(p.getUuid(), p.getIp());
+    		String alt = DatabaseManager.players.getAltPlayer(p.getUuid(), p.getIp(), p.isFirstJoin());
     		if (alt != null) {
     			String msg = ConfigManager.messages.PLAYER_ALT_JOIN.
     					replace("{player}", p.getName()).
