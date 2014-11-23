@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.profile.Profile;
 import net.cubespace.geSuit.tasks.DatabaseUpdateRowUUID;
 import net.md_5.bungee.api.ChatColor;
@@ -180,6 +181,7 @@ public class Utilities {
     }
     
     public static boolean doBungeeChatMirror(String channel, String msg) {
+		LoggingManager.log(ChatColor.translateAlternateColorCodes('&', msg));
 		ByteArrayOutputStream ostream = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(ostream);
 		try {
