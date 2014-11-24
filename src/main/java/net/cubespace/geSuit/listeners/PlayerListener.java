@@ -12,6 +12,7 @@ import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -22,8 +23,16 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerListener implements Listener {
 
+	@EventHandler(priority = EventPriority.LOW)
+	public void playerPostLogin(final PostLoginEvent e) {
+		String ip = e.getPlayer().getAddress().getHostString();
+		String name = e.getPlayer().getName();
+		String uuid = e.getPlayer().getUniqueId().toString();
+		LoggingManager.log("Player " + name + " (" + uuid + ") connected from " + ip);
+	}
+
     @EventHandler(priority = EventPriority.LOW)
-    public void playerLogin(final ServerConnectedEvent e) throws SQLException {
+    public void playerServerConnected(final ServerConnectedEvent e) throws SQLException {
     	if (PlayerManager.getPlayer(e.getPlayer().getName()) == null) {
     		// NOTE: This event is called each time the player changes server
     		// This check ensures this is only handled when the player is first connecting to the proxy
