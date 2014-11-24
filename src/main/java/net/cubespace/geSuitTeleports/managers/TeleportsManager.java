@@ -151,6 +151,14 @@ public class TeleportsManager {
             new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
         }
     }
+    
+    public static void doLeaveServer( Player p ) {
+        if (p == null) {
+            return;
+        }
+        
+        sendTeleportBackLocation(p, false);
+    }
 
     public static void sendDeathBackLocation( Player p ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -163,6 +171,8 @@ public class TeleportsManager {
             out.writeDouble( l.getX() );
             out.writeDouble( l.getY() );
             out.writeDouble( l.getZ() );
+            out.writeFloat( l.getYaw() );
+            out.writeFloat( l.getPitch() );
         } catch ( IOException e ) {
             e.printStackTrace();
         }
@@ -180,6 +190,8 @@ public class TeleportsManager {
             out.writeDouble( l.getX() );
             out.writeDouble( l.getY() );
             out.writeDouble( l.getZ() );
+            out.writeFloat( l.getYaw() );
+            out.writeFloat( l.getPitch() );
         } catch ( IOException e ) {
             e.printStackTrace();
         }

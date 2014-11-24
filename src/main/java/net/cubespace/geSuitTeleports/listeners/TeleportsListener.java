@@ -1,5 +1,6 @@
 package net.cubespace.geSuitTeleports.listeners;
 
+import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.PermissionsManager;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 
@@ -10,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -41,9 +43,10 @@ public class TeleportsListener implements Listener {
 		if(e.isCancelled()){
 			return;
 		}
-		if(!e.getCause().equals(TeleportCause.PLUGIN)){
+		if(e.getCause() != TeleportCause.PLUGIN && e.getCause() != TeleportCause.COMMAND){
 			return;
 		}
+		
 		if(TeleportsManager.ignoreTeleport.contains(e.getPlayer())){
 			TeleportsManager.ignoreTeleport.remove(e.getPlayer());
 			return;
@@ -81,5 +84,15 @@ public class TeleportsListener implements Listener {
 		}
 	}
 
-	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void playerJoin(final PlayerJoinEvent event) {
+	    // This is to prevent recording the back location when teleporting across servers, on the destination server
+	    TeleportsManager.ignoreTeleport.add(event.getPlayer());
+	    Bukkit.getScheduler().runTaskLaterAsynchronously( geSuitTeleports.instance, new Runnable() {
+            @Override
+            public void run() {
+                TeleportsManager.ignoreTeleport.remove(event.getPlayer());
+            }
+        }, 20 );
+	}
 }

@@ -30,6 +30,10 @@ public class TeleportsMessageListener implements PluginMessageListener {
             if ( task.equals( "TeleportAccept" ) ) {
                 TeleportsManager.finishTPA(Bukkit.getPlayerExact(in.readUTF()), in.readUTF());
             }
+            
+            if ( task.equals( "LeavingServer" ) ) {
+                TeleportsManager.doLeaveServer(Bukkit.getPlayerExact(in.readUTF()));
+            }
 
         } catch ( IOException e ) {
             e.printStackTrace();
