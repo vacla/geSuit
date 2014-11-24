@@ -18,7 +18,8 @@ public class BansConfig extends Config {
     public Boolean BroadcastWarns = true;
     public Boolean BroadcastKicks = true;
     public Boolean DetectAltAccounts = true;
-    public Boolean ShowAltAccountsOnlyIfBanned = true;
+    public Boolean ShowAltAccounts = true;
+    public Boolean ShowBannedAltAccounts = true;
 
     public int WarningExpiryDays = 180;
 

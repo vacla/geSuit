@@ -86,7 +86,7 @@ public class Players implements IRepository {
         return true;
     }
 
-    public String getAltPlayer(String uuid, String ip, boolean ignoreSelf) {
+    public String[] getAltPlayer(String uuid, String ip, boolean ignoreSelf) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
@@ -110,7 +110,7 @@ public class Players implements IRepository {
             res.close();
 
             if (!uuid.equals(altuuid)) {
-            	return altname;
+            	return new String[]{altname, altuuid};
             } else {
             	return null;
             }

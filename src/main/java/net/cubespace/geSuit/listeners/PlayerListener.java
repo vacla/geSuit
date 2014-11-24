@@ -51,31 +51,12 @@ public class PlayerListener implements Listener {
     			p.setNewSpawn(false);
     		}
 
-    		// Check for alt accounts and notify staff
-    		String alt = DatabaseManager.players.getAltPlayer(p.getUuid(), p.getIp(), p.isFirstJoin());
-    		if (alt != null) {
-    			String msg = ConfigManager.messages.PLAYER_ALT_JOIN.
-    					replace("{player}", p.getName()).
-    					replace("{alt}", alt).
-    					replace("{ip}", p.getIp());
-    			Utilities.doBungeeChatMirror("StaffNotice", msg);
+    		// Check for alt accounts and notify staff (used later)
+    		String[] alt = null;
+    		if (ConfigManager.bans.ShowAltAccounts) {
+    			alt = DatabaseManager.players.getAltPlayer(p.getUuid(), p.getIp(), p.isFirstJoin());
     		}
     		
-    		if (ConfigManager.bans.GeoIP.ShowOnLogin) {
-    		    geSuit.proxy.getScheduler().runAsync(geSuit.instance, new Runnable() {
-                    @Override
-                    public void run() {
-                        String location = GeoIPManager.lookup(e.getPlayer().getAddress().getAddress());
-                        if (location != null) {
-                            String msg = ConfigManager.messages.PLAYER_GEOIP.
-                                    replace("{player}", p.getName()).
-                                    replace("{location}", location);
-                            Utilities.doBungeeChatMirror("StaffNotice", msg);
-                        }
-                    }
-                });
-    		}
-
             DatabaseManager.players.updatePlayer(p);
     		
     		// Launch the MOTD message scheduler
@@ -96,10 +77,47 @@ public class PlayerListener implements Listener {
 
     		p.connected();
 
-    		// Update player tracking information
+    		final String[] fAlt = alt;
         	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
-    			@Override
+        		@Override
     			public void run() {
+        			// Show alt account logins for this player (if enabled)
+        			if ((ConfigManager.bans.ShowAltAccounts) && (fAlt != null)) {
+        				boolean bannedAlt = false;
+        				if (ConfigManager.bans.ShowBannedAltAccounts) {
+        					if (DatabaseManager.bans.isPlayerBanned(fAlt[0], fAlt[1], null))	// Check if alt is banned (by name or UUID)
+        						bannedAlt = true;
+        				}
+
+        				if (bannedAlt) {
+        					// Alt player is banned
+        					String msg = ConfigManager.messages.PLAYER_BANNED_ALT_JOIN.
+	    	    					replace("{player}", p.getName()).
+	    	    					replace("{alt}", fAlt[0]).
+	    	    					replace("{ip}", p.getIp());
+	    	    			Utilities.doBungeeChatMirror("StaffNotice", msg);
+        				} else {
+        					// Alt player is NOT banned
+	        				String msg = ConfigManager.messages.PLAYER_ALT_JOIN.
+	    	    					replace("{player}", p.getName()).
+	    	    					replace("{alt}", fAlt[0]).
+	    	    					replace("{ip}", p.getIp());
+	    	    			Utilities.doBungeeChatMirror("StaffNotice", msg);
+        				}
+    	    		}
+
+    	    		// Show Geo location notifications for player (if enabled)
+    	    		if (ConfigManager.bans.GeoIP.ShowOnLogin) {
+                        String location = GeoIPManager.lookup(e.getPlayer().getAddress().getAddress());
+                        if (location != null) {
+                            String msg = ConfigManager.messages.PLAYER_GEOIP.
+                                    replace("{player}", p.getName()).
+                                    replace("{location}", location);
+                            Utilities.doBungeeChatMirror("StaffNotice", msg);
+                        }
+    	    		}
+
+    				// Update player tracking information
     				PlayerManager.updateTracking(p);
     			}
         	}, 100, TimeUnit.MILLISECONDS); 
