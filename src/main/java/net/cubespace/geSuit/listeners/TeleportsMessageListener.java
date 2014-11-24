@@ -52,12 +52,12 @@ public class TeleportsMessageListener implements Listener {
         }
 
         if (task.equals("PlayersTeleportBackLocation")) {
-            TeleportManager.setPlayersTeleportBackLocation(PlayerManager.getPlayer(in.readUTF()), new Location(((Server) event.getSender()).getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
+            TeleportManager.setPlayersTeleportBackLocation(PlayerManager.getPlayer(in.readUTF()), new Location(((Server) event.getSender()).getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
             return;
         }
 
         if (task.equals("PlayersDeathBackLocation")) {
-            TeleportManager.setPlayersDeathBackLocation(PlayerManager.getPlayer(in.readUTF()), new Location(((Server) event.getSender()).getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
+            TeleportManager.setPlayersDeathBackLocation(PlayerManager.getPlayer(in.readUTF()), new Location(((Server) event.getSender()).getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
             return;
         }
 

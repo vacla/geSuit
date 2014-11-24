@@ -43,6 +43,16 @@ public class Location {
         yaw = 0;
         pitch = 0;
     }
+    
+    public Location(ServerInfo serverInfo, String world, double x, double y, double z, float yaw, float pitch) {
+        this.server = serverInfo;
+        this.world = world;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.yaw = yaw;
+        this.pitch = pitch;
+    }
 
     public Location(String serverInfo, String world, double x, double y, double z) {
         this.server = geSuit.proxy.getServerInfo(serverInfo);
