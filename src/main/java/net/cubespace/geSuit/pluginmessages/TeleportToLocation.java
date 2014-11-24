@@ -1,9 +1,11 @@
 package net.cubespace.geSuit.pluginmessages;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.tasks.SendPluginMessage;
+import net.md_5.bungee.api.ChatColor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -21,10 +23,16 @@ public class TeleportToLocation
     {
         if (location.getServer() == null) {
             geSuit.instance.getLogger().severe("Location has no Server, this should never happen. Please check");
-            Exception exception = new Exception("");
-            exception.printStackTrace();
+            new Exception("").printStackTrace();
+            return;
         }
 
+        if (player == null) {
+        	LoggingManager.log(ChatColor.RED + "Warning! Teleport called but player is null!");
+            new Exception("").printStackTrace();
+        	return;
+        }
+        
         if (player.getServer() == null || !player.getServer().equals(location.getServer().getName())) {
             player.getProxiedPlayer().connect(location.getServer());
         }
