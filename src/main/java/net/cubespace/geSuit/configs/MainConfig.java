@@ -27,6 +27,8 @@ public class MainConfig extends Config {
     public String Table_Spawns = "spawns";
     @Comment("This can be used if you have multiple Proxies to seperate the Tracking in it")
     public String Table_Tracking = "tracking";
+    @Comment("This can be used if you have multiple Proxies to seperate the Ontime in it")
+    public String Table_OnTime = "ontime";
 
     public Boolean ConvertFromBungeeSuite = false;
     public Database BungeeSuiteDatabase = new Database();

@@ -3,6 +3,7 @@ package net.cubespace.geSuit.managers;
 import net.cubespace.geSuit.database.Bans;
 import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.Homes;
+import net.cubespace.geSuit.database.OnTime;
 import net.cubespace.geSuit.database.Players;
 import net.cubespace.geSuit.database.Portals;
 import net.cubespace.geSuit.database.Spawns;
@@ -21,6 +22,7 @@ public class DatabaseManager {
     public static Spawns spawns;
     public static Warps warps;
     public static Tracking tracking;
+    public static OnTime ontime;
 
     static {
         players = new Players();
@@ -30,6 +32,7 @@ public class DatabaseManager {
         spawns = new Spawns();
         warps = new Warps();
         tracking = new Tracking();
+        ontime = new OnTime();
 
         connectionPool = new ConnectionPool();
         connectionPool.addRepository(players);
@@ -39,6 +42,7 @@ public class DatabaseManager {
         connectionPool.addRepository(spawns);
         connectionPool.addRepository(warps);
         connectionPool.addRepository(tracking);
+        connectionPool.addRepository(ontime);
         connectionPool.initialiseConnections(ConfigManager.main.Database);
 
         AnnouncementManager.loadAnnouncements();

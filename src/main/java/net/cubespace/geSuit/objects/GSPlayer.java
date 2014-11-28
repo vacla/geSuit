@@ -2,6 +2,7 @@ package net.cubespace.geSuit.objects;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import net.cubespace.geSuit.Utilities;
@@ -28,6 +29,7 @@ public class GSPlayer
     private boolean joinAnnounced = false;
     private boolean isFirstJoin = false;
     private boolean newSpawn = false;
+    private long loginTime;
 
     public GSPlayer(String name, String uuid, boolean tps)
     {
@@ -48,6 +50,7 @@ public class GSPlayer
         this.ip = ip;
         this.lastOnline = lastOnline;
         this.newSpawn = newspawn;
+        this.loginTime = new Date().getTime();
     }
 
     public String getName()
@@ -202,5 +205,13 @@ public class GSPlayer
 
 	public void setNewSpawn(boolean newSpawn) {
 		this.newSpawn = newSpawn;
+	}
+
+	public long getLoginTime() {
+		return loginTime;
+	}
+
+	public void setLoginTime(long loginTime) {
+		this.loginTime = loginTime;
 	}
 }

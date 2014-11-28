@@ -19,6 +19,7 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerListener implements Listener {
@@ -142,6 +143,11 @@ public class PlayerListener implements Listener {
 
                     PlayerManager.unloadPlayer(e.getPlayer().getName());
                     DatabaseManager.players.updatePlayer(p);
+
+                    // Update time tracking (if enabled)
+                	if (ConfigManager.bans.TrackOnTime) {
+                		DatabaseManager.ontime.updatePlayerOnTime(p.getName(), p.getUuid(), p.getLoginTime(), new Date().getTime());
+                	}
                 }
 
             }, dcTime, TimeUnit.SECONDS);
@@ -160,6 +166,11 @@ public class PlayerListener implements Listener {
                 public void run() {
                 	// Always update the player record when they disconnect
                 	DatabaseManager.players.updatePlayer(p);
+
+                	// Update time tracking (if enabled)
+                	if (ConfigManager.bans.TrackOnTime) {
+                		DatabaseManager.ontime.updatePlayerOnTime(p.getName(), p.getUuid(), p.getLoginTime(), new Date().getTime());
+                	}
                 }
             }, 1, TimeUnit.MILLISECONDS);
         }
