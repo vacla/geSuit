@@ -53,7 +53,7 @@ public class MainConfig extends Config {
     @Comment("Stored version informations. If you alter this you can damage your Database")
     public Integer Version_Database_Homes = 2;
     @Comment("Stored version informations. If you alter this you can damage your Database")
-    public Integer Version_Database_Players = 2;
+    public Integer Version_Database_Players = 3;
     @Comment("Stored version informations. If you alter this you can damage your Database")
     public Integer Version_Database_Portals = 1;
     @Comment("Stored version informations. If you alter this you can damage your Database")

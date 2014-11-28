@@ -9,6 +9,7 @@ import net.cubespace.geSuit.objects.GSPlayer;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -190,7 +191,7 @@ public class Players implements IRepository {
 
             ResultSet res = getPlayer.executeQuery();
             while (res.next()) {
-                player1 = new GSPlayer(res.getString("playername"), res.getString("uuid"), res.getBoolean("tps"), res.getBoolean("newspawn"), res.getString("ipaddress"), res.getTimestamp("lastonline"));
+                player1 = new GSPlayer(res.getString("playername"), res.getString("uuid"), res.getBoolean("tps"), res.getBoolean("newspawn"), res.getString("ipaddress"), res.getTimestamp("lastonline"), res.getTimestamp("firstonline"));
             }
 
             res.close();
@@ -231,6 +232,7 @@ public class Players implements IRepository {
     public String[] getTable() {
         return new String[]{ConfigManager.main.Table_Players, "playername VARCHAR(100), "
                 + "uuid VARCHAR(100) NULL,"
+                + "firstonline DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                 + "lastonline DATETIME NOT NULL, "
                 + "ipaddress VARCHAR(100), "
                 + "tps TINYINT(1) DEFAULT 1,"
@@ -307,8 +309,37 @@ public class Players implements IRepository {
                 connectionHandler.release();
             }
         }
+        if (installedVersion < 3) {
+            // Version 3 adds "firstonline" field
+            ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+            try {
+                System.out.println("Upgrading Player Database to version 3...");
+                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Players +"` ADD `firstonline` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `uuid`;");
+            } catch (SQLException e) {
+                System.out.println("Could not update the Player Database to version 3");
+                e.printStackTrace();
+                return;
+            } finally {
+                connectionHandler.release();
+            }
 
-        ConfigManager.main.Version_Database_Players = 2;
+            // Convert any existing "firstonline" values to the current "lastonline" values
+            connectionHandler = DatabaseManager.connectionPool.getConnection();
+            Statement stmt = null; 
+            try {
+            	stmt = connectionHandler.getConnection().createStatement();
+            	stmt.executeUpdate("UPDATE `"+ ConfigManager.main.Table_Players +"` SET firstonline=lastonline");
+            	stmt.close();
+            } catch (SQLException e) {
+                System.out.println("Could not upgrade firstonline values of existing players");
+                e.printStackTrace();
+                return;
+            } finally {
+                connectionHandler.release();
+            }
+        }
+
+        ConfigManager.main.Version_Database_Players = 3;
         try {
             ConfigManager.main.save();
         } catch (InvalidConfigurationException e) {

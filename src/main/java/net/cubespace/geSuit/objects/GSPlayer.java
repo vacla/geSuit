@@ -20,6 +20,7 @@ public class GSPlayer
     private String server = null;
     private String ip;
     private Timestamp lastOnline;
+    private Timestamp firstOnline;
 
     private HashMap<String, ArrayList<Home>> homes = new HashMap<>();
     private Location deathBackLocation;
@@ -38,10 +39,10 @@ public class GSPlayer
 
     public GSPlayer(String name, String uuid, boolean tps, String ip)
     {
-        this(name, uuid, tps, false, ip, null);
+        this(name, uuid, tps, false, ip, null, null);
     }
     
-    public GSPlayer(String name, String uuid, boolean tps, boolean newspawn, String ip, Timestamp lastOnline)
+    public GSPlayer(String name, String uuid, boolean tps, boolean newspawn, String ip, Timestamp lastOnline, Timestamp firstOnline)
     {
         //ProxyServer.getInstance().getLogger().info("LOADED DATA: "+name+" "+uuid+" "+tps+" "+ip+" "+lastOnline);
         this.playername = name;
@@ -49,6 +50,7 @@ public class GSPlayer
         this.acceptingTeleports = tps;
         this.ip = ip;
         this.lastOnline = lastOnline;
+        this.firstOnline = firstOnline;
         this.newSpawn = newspawn;
         this.loginTime = new Date().getTime();
     }
@@ -179,6 +181,11 @@ public class GSPlayer
     public Timestamp getLastOnline()
     {
         return lastOnline;
+    }
+    
+    public Timestamp getFirstOnline()
+    {
+        return firstOnline;
     }
     
     public boolean isFirstJoin()
