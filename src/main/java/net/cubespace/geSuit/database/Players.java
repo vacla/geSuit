@@ -232,7 +232,7 @@ public class Players implements IRepository {
     public String[] getTable() {
         return new String[]{ConfigManager.main.Table_Players, "playername VARCHAR(100), "
                 + "uuid VARCHAR(100) NULL,"
-                + "firstonline DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                + "firstonline DATETIME NOT NULL, "
                 + "lastonline DATETIME NOT NULL, "
                 + "ipaddress VARCHAR(100), "
                 + "tps TINYINT(1) DEFAULT 1,"
@@ -248,7 +248,7 @@ public class Players implements IRepository {
         connection.addPreparedStatement("getPlayer", "SELECT * FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
         connection.addPreparedStatement("getAltPlayer", "SELECT playername, uuid FROM "+ ConfigManager.main.Table_Players +" WHERE ipaddress = ? ORDER BY lastonline DESC LIMIT 2");
         connection.addPreparedStatement("matchPlayers", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE playername like ? OR uuid like ? ORDER BY lastonline LIMIT 20");
-        connection.addPreparedStatement("insertPlayer", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,lastonline,ipaddress) VALUES (?, ?, NOW(), ?)");
+        connection.addPreparedStatement("insertPlayer", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,firstonline,lastonline,ipaddress) VALUES (?, ?, NOW(), NOW(), ?)");
         connection.addPreparedStatement("insertPlayerConvert", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,lastonline,ipaddress,tps) VALUES (?, ?, ?, ?, ?)");
         connection.addPreparedStatement("getPlayers", "SELECT * FROM "+ ConfigManager.main.Table_Players);
         connection.addPreparedStatement("setUUID", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ? WHERE playername = ?");
