@@ -314,7 +314,7 @@ public class Players implements IRepository {
             ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
             try {
                 System.out.println("Upgrading Player Database to version 3...");
-                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Players +"` ADD `firstonline` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `uuid`;");
+                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Players +"` ADD `firstonline` DATETIME NOT NULL AFTER `uuid`;");
             } catch (SQLException e) {
                 System.out.println("Could not update the Player Database to version 3");
                 e.printStackTrace();
