@@ -87,7 +87,7 @@ public class BansManager {
         }
     }
 
-    public static void banIP(String bannedBy, String player, String reason) {
+    public static void banIP(String bannedBy, String target, String reason) {
         GSPlayer s = PlayerManager.getPlayer(bannedBy);
         CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
@@ -95,20 +95,29 @@ public class BansManager {
             reason = Utilities.colorize(ConfigManager.messages.DEFAULT_BAN_REASON);
         }
 
-        String ip;
-        if (Utilities.isIPAddress(player)) {
-            ip = player;
+        String ip = null;
+        String uuid = null;
+        String player = null;
+        if (Utilities.isIPAddress(target)) {
+        	// Target is just an IP address.. we don't know which player/uuid so keep them null
+            ip = target;
         } else {
-            ip = DatabaseManager.players.getPlayerIP(player);
+        	// Target is a player name or uuid.. grab the player details and record it all
+            GSPlayer gs = DatabaseManager.players.loadPlayer(target);
+            if (gs != null) {
+	            ip = gs.getIp();
+	            uuid = gs.getUuid();
+	            player = gs.getName();
+            }
         }
 
-        if (ip == null) {
+        if ((ip == null) || (ip.isEmpty())) {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
             return;
         }
 
         if (!DatabaseManager.bans.isPlayerBanned(ip)) {
-            DatabaseManager.bans.banPlayer(player, null, ip, bannedBy, reason, "ipban");
+            DatabaseManager.bans.banPlayer(player, uuid, ip, bannedBy, reason, "ipban");
         }
 
         for (GSPlayer p : PlayerManager.getPlayersByIP(ip)) {
