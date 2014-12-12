@@ -231,7 +231,7 @@ public class Players implements IRepository {
     @Override
     public String[] getTable() {
         return new String[]{ConfigManager.main.Table_Players, "playername VARCHAR(100), "
-                + "uuid VARCHAR(100) NULL,"
+                + "uuid VARCHAR(100) NOT NULL,"
                 + "firstonline DATETIME NOT NULL, "
                 + "lastonline DATETIME NOT NULL, "
                 + "ipaddress VARCHAR(100), "
