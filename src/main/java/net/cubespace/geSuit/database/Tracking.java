@@ -60,7 +60,11 @@ public class Tracking implements IRepository {
                 		res.getString("uuid"),
                 		res.getString("ip"),
                 		res.getTimestamp("firstseen"),
-                		res.getTimestamp("lastseen")
+                		res.getTimestamp("lastseen"),
+                		res.getString("type"),
+                		res.getString("banned_playername"),
+                		res.getString("banned_uuid"),
+                		res.getString("banned_ip")
                 ));
             }
 
@@ -87,9 +91,9 @@ public class Tracking implements IRepository {
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
         connection.addPreparedStatement("insertTracking", "INSERT INTO "+ ConfigManager.main.Table_Tracking +" (player,uuid,ip,firstseen,lastseen) VALUES (?, ?, ?, NOW(), NOW()) ON DUPLICATE KEY UPDATE lastseen=NOW()");
-        connection.addPreparedStatement("getPlayerTracking", "SELECT t2.ip, t2.player, t2.uuid, t2.firstseen, t2.lastseen FROM "+ ConfigManager.main.Table_Tracking +" AS t1 JOIN tracking AS t2 ON t1.ip=t2.ip WHERE t1.player=? ORDER BY t2.lastseen");
-        connection.addPreparedStatement("getUUIDTracking", "SELECT t2.ip, t2.player, t2.uuid, t2.firstseen, t2.lastseen FROM "+ ConfigManager.main.Table_Tracking +" AS t1 JOIN tracking AS t2 ON t1.ip=t2.ip WHERE t1.uuid=? ORDER BY t2.lastseen");
-        connection.addPreparedStatement("getIPTracking", "SELECT ip, player, uuid, firstseen, lastseen FROM "+ ConfigManager.main.Table_Tracking +" WHERE ip=? ORDER BY lastseen");
+        connection.addPreparedStatement("getPlayerTracking", "SELECT t2.ip, t2.player, t2.uuid, t2.firstseen, t2.lastseen, b.type, b.banned_playername, b.banned_uuid, b.banned_ip FROM "+ ConfigManager.main.Table_Tracking +" AS t1 JOIN "+ ConfigManager.main.Table_Tracking +" AS t2 ON t1.ip=t2.ip LEFT JOIN " + ConfigManager.main.Table_Bans + " AS b ON (t2.ip=b.banned_ip OR t2.player=b.banned_playername OR t2.uuid=b.banned_uuid) AND b.type != 'warn' AND b.active=1 WHERE t1.player=? GROUP BY t2.player,t2.uuid,t2.ip ORDER BY t2.lastseen;");
+        connection.addPreparedStatement("getUUIDTracking", "SELECT t2.ip, t2.player, t2.uuid, t2.firstseen, t2.lastseen, b.type, b.banned_playername, b.banned_uuid, b.banned_ip FROM "+ ConfigManager.main.Table_Tracking +" AS t1 JOIN "+ ConfigManager.main.Table_Tracking +" AS t2 ON t1.ip=t2.ip LEFT JOIN " + ConfigManager.main.Table_Bans + " AS b ON (t2.ip=b.banned_ip OR t2.player=b.banned_playername OR t2.uuid=b.banned_uuid) AND b.type != 'warn' AND b.active=1 WHERE t1.uuid=? GROUP BY t2.player,t2.uuid,t2.ip ORDER BY t2.lastseen;");
+        connection.addPreparedStatement("getIPTracking", "SELECT t.ip, t.player, t.uuid, t.firstseen, t.lastseen, b.type, b.banned_playername, b.banned_uuid, b.banned_ip FROM "+ ConfigManager.main.Table_Tracking +" AS t LEFT JOIN "+ ConfigManager.main.Table_Bans +" AS b ON (t.ip=b.banned_ip OR t.player=b.banned_playername OR t.uuid=b.banned_uuid) AND b.type != 'warn' AND b.active=1 WHERE t.ip=? GROUP BY t.player,t.uuid,t.ip ORDER BY t.lastseen;");
     }
 
 	@Override

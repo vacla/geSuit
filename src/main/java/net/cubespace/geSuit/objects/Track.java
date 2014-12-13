@@ -9,13 +9,31 @@ public class Track {
     private String ip;
     private Date firstseen;
     private Date lastseen;
+    private boolean nameBanned;
+    private boolean ipBanned;
+    private String banType;
 
-    public Track(String player, String uuid, String ip, Timestamp firstseen, Timestamp lastseen) {
+    public Track(String player, String uuid, String ip, Timestamp firstseen, Timestamp lastseen, String banType, String bannedName, String bannedId, String bannedIp) {
         this.player = player;
         this.uuid = uuid;
         this.ip = ip;
         this.firstseen = firstseen;
         this.lastseen = lastseen;
+        
+        if ("ipban".equals(banType)) {
+            // Could just be a name match
+            if (ip.equals(bannedIp)) {
+                this.ipBanned = true;
+            }
+            // If the name matches, treat it as a normal ban too 
+            if (uuid.equals(bannedId) || player.equals(bannedName)) {
+                this.banType = "ban";
+                this.nameBanned = true;
+            }
+        } else if (banType != null) {
+            this.nameBanned = true;
+            this.banType = banType;
+        }
     }
 
     public String getPlayer() {
@@ -43,5 +61,17 @@ public class Track {
     public String getIp()
     {
         return ip;
+    }
+    
+    public boolean isIpBanned() {
+        return ipBanned;
+    }
+    
+    public boolean isNameBanned() {
+        return nameBanned;
+    }
+    
+    public String getBanType() {
+        return banType;
     }
 }
