@@ -44,6 +44,9 @@ public class MainConfig extends Config {
     public Integer PlayerDisconnectDelay = 0;
     @Comment("This should be true on offline Mode Server since they can't use UUIDs provided by Mojang")
     public Boolean OverwriteUUID = false;
+    
+    @Comment("Enable this if you want to use BungeeChat with geSuit.")
+    public Boolean EnableBungeeChatIntegration = false;
 
     @Comment("Do not alter this. It will be used automaticly.")
     public Boolean Inited = false;

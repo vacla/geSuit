@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.profile.Profile;
 import net.cubespace.geSuit.tasks.DatabaseUpdateRowUUID;
@@ -192,7 +193,12 @@ public class Utilities {
 			e1.printStackTrace();
 			return false;
 		}
-		BungeeChat.instance.getComLink().broadcastMessage("BungeeChat", ostream.toByteArray());
-		return true;
+		if (ConfigManager.main.EnableBungeeChatIntegration) {
+			BungeeChat.instance.getComLink().broadcastMessage("BungeeChat", ostream.toByteArray());
+			return true;
+		}else{
+			return false;
+		}
+		
     }
 }
