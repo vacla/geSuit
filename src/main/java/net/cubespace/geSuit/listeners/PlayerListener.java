@@ -96,7 +96,7 @@ public class PlayerListener implements Listener {
 	    	    					replace("{player}", p.getName()).
 	    	    					replace("{alt}", fAlt[0]).
 	    	    					replace("{ip}", p.getIp());
-	    	    			Utilities.doBungeeChatMirror("StaffNotice", msg);
+        					Utilities.doBungeeChatMirror("StaffNotice", msg);
         				} else {
         					// Alt player is NOT banned
 	        				String msg = ConfigManager.messages.PLAYER_ALT_JOIN.

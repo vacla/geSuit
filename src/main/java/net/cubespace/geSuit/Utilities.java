@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.profile.Profile;
 import net.cubespace.geSuit.tasks.DatabaseUpdateRowUUID;
@@ -182,6 +183,11 @@ public class Utilities {
     
     public static boolean doBungeeChatMirror(String channel, String msg) {
 		LoggingManager.log(ChatColor.translateAlternateColorCodes('&', msg));
+
+		// If BungeeChat integration is disabled, just log the message and exit
+		if (!ConfigManager.main.EnableBungeeChatIntegration)
+			return true;
+
 		ByteArrayOutputStream ostream = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(ostream);
 		try {
