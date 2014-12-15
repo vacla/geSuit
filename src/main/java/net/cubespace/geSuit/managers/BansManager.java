@@ -91,7 +91,7 @@ public class BansManager {
         GSPlayer s = PlayerManager.getPlayer(bannedBy);
         CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
-        if (reason.equals("")) {
+        if (reason == null || reason.equals("")) {
             reason = Utilities.colorize(ConfigManager.messages.DEFAULT_BAN_REASON);
         }
 

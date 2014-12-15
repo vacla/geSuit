@@ -25,6 +25,7 @@ public class Ban {
         this.type = type;
         this.bannedOn = timestamp;
         this.bannedUntil = timestamp2;
+        this.active = active;
     }
 
     public String getPlayer() {
