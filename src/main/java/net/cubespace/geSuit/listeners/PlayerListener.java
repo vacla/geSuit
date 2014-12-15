@@ -96,14 +96,18 @@ public class PlayerListener implements Listener {
 	    	    					replace("{player}", p.getName()).
 	    	    					replace("{alt}", fAlt[0]).
 	    	    					replace("{ip}", p.getIp());
-	    	    			Utilities.doBungeeChatMirror("StaffNotice", msg);
+    					if (ConfigManager.main.EnableBungeeChatIntegration) {
+        					Utilities.doBungeeChatMirror("StaffNotice", msg);
+    					}
         				} else {
         					// Alt player is NOT banned
 	        				String msg = ConfigManager.messages.PLAYER_ALT_JOIN.
 	    	    					replace("{player}", p.getName()).
 	    	    					replace("{alt}", fAlt[0]).
 	    	    					replace("{ip}", p.getIp());
+        				if (ConfigManager.main.EnableBungeeChatIntegration) {
 	    	    			Utilities.doBungeeChatMirror("StaffNotice", msg);
+        				}
         				}
     	    		}
 
@@ -114,7 +118,9 @@ public class PlayerListener implements Listener {
                             String msg = ConfigManager.messages.PLAYER_GEOIP.
                                     replace("{player}", p.getName()).
                                     replace("{location}", location);
+                        if (ConfigManager.main.EnableBungeeChatIntegration) {
                             Utilities.doBungeeChatMirror("StaffNotice", msg);
+                        }
                         }
     	    		}
 
