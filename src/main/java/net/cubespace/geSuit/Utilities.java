@@ -185,7 +185,7 @@ public class Utilities {
 		LoggingManager.log(ChatColor.translateAlternateColorCodes('&', msg));
 
 		// If BungeeChat integration is disabled, just log the message and exit
-		if (!ConfigManager.main.EnableBungeeChatIntegration)
+		if (!ConfigManager.main.BungeeChatIntegration)
 			return true;
 
 		ByteArrayOutputStream ostream = new ByteArrayOutputStream();

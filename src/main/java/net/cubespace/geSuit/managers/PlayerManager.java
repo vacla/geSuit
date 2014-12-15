@@ -152,7 +152,7 @@ public class PlayerManager {
         }
         
         // Vanished and not online
-        if (ConfigManager.main.EnableBungeeChatIntegration) {
+        if (ConfigManager.main.BungeeChatIntegration) {
 	        if (BungeeChat.instance.getSyncManager().getPropertyBoolean(p.getProxiedPlayer(), "VNP:vanished", false) 
 	                && !BungeeChat.instance.getSyncManager().getPropertyBoolean(p.getProxiedPlayer(), "VNP:online", true)) {
 	            online = false;

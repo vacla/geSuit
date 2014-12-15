@@ -46,7 +46,7 @@ public class MainConfig extends Config {
     public Boolean OverwriteUUID = false;
     
     @Comment("Enable this if you want to use BungeeChat with geSuit.")
-    public Boolean EnableBungeeChatIntegration = false;
+    public Boolean BungeeChatIntegration = false;
 
     @Comment("Do not alter this. It will be used automaticly.")
     public Boolean Inited = false;
