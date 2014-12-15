@@ -72,6 +72,11 @@ public class GSPlayer
 
     public void sendMessage(String message)
     {
+    	// Allow messages to be "silenced" by providing an empty string
+    	// (if you really must send a blank line for some reason, use a formatting code on its own, eg. "&f")
+    	if (message == null || message.isEmpty())
+    		return;
+
         for (String line : message.split("\n|\\{N\\}")) {
             getProxiedPlayer().sendMessage(TextComponent.fromLegacyText(Utilities.colorize(line)));
         }
