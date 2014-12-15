@@ -183,6 +183,11 @@ public class Utilities {
     
     public static boolean doBungeeChatMirror(String channel, String msg) {
 		LoggingManager.log(ChatColor.translateAlternateColorCodes('&', msg));
+
+		// If BungeeChat integration is disabled, just log the message and exit
+		if (!ConfigManager.main.EnableBungeeChatIntegration)
+			return true;
+
 		ByteArrayOutputStream ostream = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(ostream);
 		try {
@@ -193,12 +198,7 @@ public class Utilities {
 			e1.printStackTrace();
 			return false;
 		}
-		if (ConfigManager.main.EnableBungeeChatIntegration) {
-			BungeeChat.instance.getComLink().broadcastMessage("BungeeChat", ostream.toByteArray());
-			return true;
-		}else{
-			return false;
-		}
-		
+		BungeeChat.instance.getComLink().broadcastMessage("BungeeChat", ostream.toByteArray());
+		return true;
     }
 }
