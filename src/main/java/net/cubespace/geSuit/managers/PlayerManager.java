@@ -199,15 +199,26 @@ public class PlayerManager {
         
         String message = (online ? ConfigManager.messages.PLAYER_SEEN_ONLINE : ConfigManager.messages.PLAYER_SEEN_OFFLINE);
         message = message.replace("{player}", p.getName());
-        
-        if (p.getLastOnline() != null) {
-            String fullDate = String.format("%s @ %s", DateFormat.getDateInstance(DateFormat.MEDIUM).format(p.getLastOnline()), DateFormat.getTimeInstance(DateFormat.MEDIUM).format(p.getLastOnline()));
-            String diff = Utilities.buildTimeDiffString(System.currentTimeMillis() - p.getLastOnline().getTime(), 2);
+
+        if (online) {
+            String fullDate = String.format("%s @ %s",
+            		DateFormat.getDateInstance(DateFormat.MEDIUM).format(p.getLoginTime()),
+            		DateFormat.getTimeInstance(DateFormat.MEDIUM).format(p.getLoginTime()));
+            String diff = Utilities.buildTimeDiffString(System.currentTimeMillis() - p.getLoginTime(), 2);
             message = message.replace("{timediff}", diff);
             message = message.replace("{date}", fullDate);
         } else {
-            message = message.replace("{timediff}", "Never");
-            message = message.replace("{date}", "Never");
+	        if (p.getLastOnline() != null) {
+	            String fullDate = String.format("%s @ %s",
+	            		DateFormat.getDateInstance(DateFormat.MEDIUM).format(p.getLastOnline()),
+	            		DateFormat.getTimeInstance(DateFormat.MEDIUM).format(p.getLastOnline()));
+	            String diff = Utilities.buildTimeDiffString(System.currentTimeMillis() - p.getLastOnline().getTime(), 2);
+	            message = message.replace("{timediff}", diff);
+	            message = message.replace("{date}", fullDate);
+	        } else {
+	            message = message.replace("{timediff}", "Never");
+	            message = message.replace("{date}", "Never");
+	        }
         }
         
         StringBuilder builder = new StringBuilder();

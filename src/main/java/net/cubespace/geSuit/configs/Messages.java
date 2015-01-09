@@ -123,7 +123,7 @@ public class Messages extends Config {
     public String HOME_DELETED = "&c" + "Your home \"{home}\" has been deleted";
     
     // Seen messages
-    public String PLAYER_SEEN_ONLINE = "&6Player &c{player} &6is currently online!";
+    public String PLAYER_SEEN_ONLINE = "&6Player &c{player} &6is &aonline&6 since {timediff}\n&6 {date}";
     public String PLAYER_SEEN_OFFLINE = "&6Player &c{player} &6is &4offline&6 since {timediff}\n&6 {date}";
     public String PLAYER_SEEN_ITEM_FORMAT = "&6 - {name}: &r{value}";
 }
