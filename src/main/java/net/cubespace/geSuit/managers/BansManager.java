@@ -567,7 +567,7 @@ public class BansManager {
             	String firstjoin = String.format("%s %s",
                 		DateFormat.getDateInstance(DateFormat.MEDIUM).format(bt.gsp.getFirstOnline()),
                 		DateFormat.getTimeInstance(DateFormat.SHORT).format(bt.gsp.getFirstOnline()));
-                String days = Long.toString(Math.floorDiv(System.currentTimeMillis() - bt.gsp.getFirstOnline().getTime(), TimeUnit.DAYS.toMillis(1)));
+                String days = Integer.toString((int) Math.floor((System.currentTimeMillis() - bt.gsp.getFirstOnline().getTime()) / TimeUnit.DAYS.toMillis(1)));
             	PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_FIRST_JOINED
             			.replace("{date}", firstjoin)
             			.replace("{days}", days));
