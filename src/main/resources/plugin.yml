@@ -43,6 +43,11 @@ commands:
         permission: gesuit.bans.command.where
         permission-message: §cYou do not have permission for this command
         usage: /<command> (player)
+    ontime:
+        description: Gets the ontime statistics of a player
+        permission: gesuit.bans.command.ontime
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
     ipban:
         description: Bans an IP from the proxy
         aliases: [banip,dbip]
