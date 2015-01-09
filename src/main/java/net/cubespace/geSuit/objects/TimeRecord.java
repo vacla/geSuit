@@ -4,9 +4,11 @@ public class TimeRecord {
     private String uuid;
 
 	private long timeTotal;
-    private long timeDaily;
-    private long timeWeekly;
-    private long timeMonthly;
+	private long timeSession;
+    private long timeToday;
+    private long timeWeek;
+    private long timeMonth;
+    private long timeYear;
 
     public TimeRecord(String uuid) {
         this.uuid = uuid;
@@ -28,27 +30,43 @@ public class TimeRecord {
 		this.timeTotal = timeTotal;
 	}
 
-	public long getTimeDaily() {
-		return timeDaily;
+	public long getTimeSession() {
+		return timeSession;
 	}
 
-	public void setTimeDaily(long timeDaily) {
-		this.timeDaily = timeDaily;
+	public void setTimeSession(long timeSession) {
+		this.timeSession = timeSession;
 	}
 
-	public long getTimeWeekly() {
-		return timeWeekly;
+	public long getTimeToday() {
+		return timeToday;
 	}
 
-	public void setTimeWeekly(long timeWeekly) {
-		this.timeWeekly = timeWeekly;
+	public void setTimeToday(long timeToday) {
+		this.timeToday = timeToday;
 	}
 
-	public long getTimeMonthly() {
-		return timeMonthly;
+	public long getTimeWeek() {
+		return timeWeek;
 	}
 
-	public void setTimeMonthly(long timeMonthly) {
-		this.timeMonthly = timeMonthly;
+	public void setTimeWeek(long timeWeek) {
+		this.timeWeek = timeWeek;
+	}
+
+	public long getTimeMonth() {
+		return timeMonth;
+	}
+
+	public void setTimeMonth(long timeMonth) {
+		this.timeMonth = timeMonth;
+	}
+
+	public long getTimeYear() {
+		return timeYear;
+	}
+
+	public void setTimeYear(long timeYear) {
+		this.timeYear = timeYear;
 	}
 }
