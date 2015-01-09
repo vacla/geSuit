@@ -4,8 +4,12 @@ import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.LoggingManager;
+import net.cubespace.geSuit.objects.TimeRecord;
+import net.cubespace.geSuit.objects.Track;
 import net.md_5.bungee.api.ChatColor;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
@@ -117,6 +121,57 @@ public class OnTime implements IRepository {
         }
     }
 
+    public TimeRecord getPlayerOnTime(String uuid) {
+        TimeRecord trec = new TimeRecord(uuid);
+
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+        try {
+        	PreparedStatement timeInfo = null;
+        	ResultSet res = null;
+        	
+        	// Time today
+        	timeInfo = connectionHandler.getPreparedStatement("getOnTimeToday");
+            timeInfo.setString(1, uuid);
+            res = timeInfo.executeQuery();
+            if (res.next()) trec.setTimeToday(res.getLong(1) * 1000);
+            res.close();
+
+        	// Time this week
+        	timeInfo = connectionHandler.getPreparedStatement("getOnTimeWeek");
+            timeInfo.setString(1, uuid);
+            res = timeInfo.executeQuery();
+            if (res.next()) trec.setTimeWeek(res.getLong(1) * 1000);
+            res.close();
+
+        	// Time this month
+        	timeInfo = connectionHandler.getPreparedStatement("getOnTimeMonth");
+            timeInfo.setString(1, uuid);
+            res = timeInfo.executeQuery();
+            if (res.next()) trec.setTimeMonth(res.getLong(1) * 1000);
+            res.close();
+
+        	// Time this year
+        	timeInfo = connectionHandler.getPreparedStatement("getOnTimeYear");
+            timeInfo.setString(1, uuid);
+            res = timeInfo.executeQuery();
+            if (res.next()) trec.setTimeYear(res.getLong(1) * 1000);
+            res.close();
+
+        	// Total time
+        	timeInfo = connectionHandler.getPreparedStatement("getOnTimeTotal");
+            timeInfo.setString(1, uuid);
+            res = timeInfo.executeQuery();
+            if (res.next()) trec.setTimeTotal(res.getLong(1) * 1000);
+            res.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connectionHandler.release();
+        }
+
+        return trec;
+    }    
+
     @Override
     public String[] getTable() {
     	return new String[]{ConfigManager.main.Table_OnTime,
@@ -128,6 +183,11 @@ public class OnTime implements IRepository {
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
+        connection.addPreparedStatement("getOnTimeToday", "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=? AND timeslot >= CURRENT_DATE()");
+        connection.addPreparedStatement("getOnTimeWeek",  "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=? AND timeslot >= STR_TO_DATE(CONCAT(YEARWEEK(NOW()), ' Sunday'), '%X%V %W')");
+        connection.addPreparedStatement("getOnTimeMonth", "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=? AND timeslot >= DATE_FORMAT(NOW(), '%Y-%m-01')");
+        connection.addPreparedStatement("getOnTimeYear",  "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=? AND timeslot > DATE_FORMAT(NOW(), '%Y-01-01')");
+        connection.addPreparedStatement("getOnTimeTotal", "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=?");
     }
 
 	@Override

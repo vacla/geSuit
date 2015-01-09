@@ -1,16 +1,20 @@
 package net.cubespace.geSuit.managers;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.database.OnTime;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
+import net.cubespace.geSuit.objects.TimeRecord;
 import net.cubespace.geSuit.objects.Track;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -531,6 +535,52 @@ public class BansManager {
             	    
                     PlayerManager.sendMessageToTarget(sender, builder.toString());
                 }
+            }
+        });
+    }
+
+    public static void displayPlayerOnTime(final String sentBy, final String player) {
+        final GSPlayer s = PlayerManager.getPlayer(sentBy);
+        final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+            @Override
+            public void run() {
+            	BanTarget bt = getBanTarget(player);
+            	if ((bt == null) || (bt.gsp == null)) {
+            		PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
+            		return;
+            	}
+
+            	// Get time records and set online time (if player is online)
+            	TimeRecord tr = DatabaseManager.ontime.getPlayerOnTime(bt.uuid);
+            	boolean online = (bt.gsp.getProxiedPlayer() != null);
+            	if (online) {
+            		tr.setTimeSession(System.currentTimeMillis() - bt.gsp.getLoginTime());
+            	} else {
+            		tr.setTimeSession(-1);
+            	}
+            	
+            	PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + bt.dispname + "'s OnTime Statistics" + ChatColor.DARK_AQUA + " --------");
+
+            	// Player join date/time + number of days
+            	String firstjoin = String.format("%s %s",
+                		DateFormat.getDateInstance(DateFormat.MEDIUM).format(bt.gsp.getFirstOnline()),
+                		DateFormat.getTimeInstance(DateFormat.SHORT).format(bt.gsp.getFirstOnline()));
+                String days = Long.toString(Math.floorDiv(System.currentTimeMillis() - bt.gsp.getFirstOnline().getTime(), TimeUnit.DAYS.toMillis(1)));
+            	PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_FIRST_JOINED
+            			.replace("{date}", firstjoin)
+            			.replace("{days}", days));
+
+            	// Current session length 
+		        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_SESSION
+		        		.replace("{diff}", (tr.getTimeSession() == -1) ? ChatColor.RED + "Offline" : Utilities.buildTimeDiffString(tr.getTimeSession(), 3)));
+
+		        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_TODAY.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeToday() + tr.getTimeSession(), 3)));
+		        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_WEEK.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeWeek() + tr.getTimeSession(), 3)));
+		        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_MONTH.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeMonth() + tr.getTimeSession(), 3)));
+		        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_YEAR.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeYear() + tr.getTimeSession(), 3)));
+		        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_TOTAL.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeTotal() + tr.getTimeSession(), 3)));
             }
         });
     }

@@ -126,4 +126,14 @@ public class Messages extends Config {
     public String PLAYER_SEEN_ONLINE = "&6Player &c{player} &6is &aonline&6 since {timediff}\n&6 {date}";
     public String PLAYER_SEEN_OFFLINE = "&6Player &c{player} &6is &4offline&6 since {timediff}\n&6 {date}";
     public String PLAYER_SEEN_ITEM_FORMAT = "&6 - {name}: &r{value}";
+    
+    // OnTime messages
+    public String BUNGEE_COMMAND_ONTIME_USAGE = "&c" + "Usage: !ontime <player>";
+    public String ONTIME_FIRST_JOINED = "&6First joined:&f {date} ({days} days)";
+    public String ONTIME_TIME_SESSION = "&6This login:&f {diff}";
+    public String ONTIME_TIME_TODAY = "&6Today:&f {diff}";
+    public String ONTIME_TIME_WEEK = "&6This week:&f {diff}";
+    public String ONTIME_TIME_MONTH = "&6This month:&f {diff}";
+    public String ONTIME_TIME_YEAR = "&6This year:&f {diff}";
+    public String ONTIME_TIME_TOTAL = "&6Total ontime:&f {diff}";
 }

@@ -3,6 +3,7 @@ package net.cubespace.geSuit;
 import net.cubespace.geSuit.commands.BanCommand;
 import net.cubespace.geSuit.commands.DebugCommand;
 import net.cubespace.geSuit.commands.MOTDCommand;
+import net.cubespace.geSuit.commands.OnTimeCommand;
 import net.cubespace.geSuit.commands.ReloadCommand;
 import net.cubespace.geSuit.commands.SeenCommand;
 import net.cubespace.geSuit.commands.TempBanCommand;
@@ -74,6 +75,9 @@ public class geSuit extends Plugin
         proxy.getPluginManager().registerCommand(this, new ReloadCommand());
         proxy.getPluginManager().registerCommand(this, new DebugCommand());
         proxy.getPluginManager().registerCommand(this, new WarnHistoryCommand());
+        if (ConfigManager.bans.TrackOnTime) {
+        	proxy.getPluginManager().registerCommand(this, new OnTimeCommand());
+        }
     }
 
     private void registerListeners()

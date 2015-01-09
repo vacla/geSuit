@@ -111,9 +111,9 @@ public class Utilities {
         if (count < precision && amount >= 1) {
             builder.append(Long.toString(amount));
             if (amount > 1) {
-                builder.append(" Minutes ");
+                builder.append(" Mins ");
             } else {
-                builder.append(" Minute ");
+                builder.append(" Min ");
             }
             timeDiff -= amount * TimeUnit.MINUTES.toMillis(1);
             ++count;
@@ -123,16 +123,16 @@ public class Utilities {
         if (count < precision && amount >= 1) {
             builder.append(Long.toString(amount));
             if (amount > 1) {
-                builder.append(" Seconds ");
+                builder.append(" Secs ");
             } else {
-                builder.append(" Second ");
+                builder.append(" Sec ");
             }
             timeDiff -= amount * TimeUnit.SECONDS.toMillis(1);
             ++count;
         }
         
         if (timeDiff < 1000 && builder.length() == 0) {
-            builder.append("< 1 Second");
+            builder.append("0 Secs");
         }
 
         return builder.toString().trim();

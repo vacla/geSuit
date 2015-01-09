@@ -83,12 +83,17 @@ public class BansMessageListener implements Listener {
             BansManager.displayWhereHistory(in.readUTF(), in.readUTF(), in.readUTF());
             return;
         }
+        if (task.equals("DisplayOnTimeHistory")) {
+            BansManager.displayPlayerOnTime(in.readUTF(), in.readUTF());
+            return;
+        }
         if (task.equals("ReloadBans")) {
             BansManager.reloadBans(in.readUTF());
             return;
         }
         if (task.equals("SendVersion")) {
             LoggingManager.log(in.readUTF());
+            return;
         }
     }
 
