@@ -74,9 +74,15 @@ public class HomeCommand implements CommandExecutor {
 	            } else {
 	                player.saveData();
 	                if (pname == null) {
+	                	// Teleport to own player home
 	                	HomesManager.sendHome(sender, homename);
 	                } else {
-	                	HomesManager.sendOtherHome(sender, pname, homename);
+	                	// Teleport player to other player home
+	                    if (sender.hasPermission("gesuit.homes.commands.homes.other")) {
+	                    	HomesManager.sendOtherHome(sender, pname, homename);
+	                    } else {
+	                    	sender.sendMessage(ChatColor.RED + "You do not have permission to do this.");
+	                    }
 	                }
 	            }
             }
