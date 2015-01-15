@@ -13,8 +13,6 @@ import net.cubespace.geSuitHomes.managers.HomesManager;
 
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-
 public class HomeCommand implements CommandExecutor {
 
 	@Override
@@ -27,6 +25,11 @@ public class HomeCommand implements CommandExecutor {
             final Player player = Bukkit.getPlayer(sender.getName());
             final String pname;
             final String homename;
+
+            if (player == null) {
+                sender.sendMessage(ChatColor.RED + "This command cannot be run from console.");
+                return true;
+            }
 
             if (args[0].contains(":")) {
             	String[] parts = args[0].split(":");
