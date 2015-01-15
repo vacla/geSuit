@@ -37,13 +37,15 @@ public class HomeCommand implements CommandExecutor {
            		pname = null;
             }
 
+            // Check perms if listing player homes or attempting to teleport to one
+            if ((pname != null) && (!sender.hasPermission("gesuit.homes.commands.homes.other"))) {
+            	sender.sendMessage(ChatColor.RED + "You do not have permission to do this.");
+            	return true;
+            }
+
             if ((homename == null) && (pname != null)) {
                 // Syntax: "/home player:home"
-                if (sender.hasPermission("gesuit.homes.commands.homes.other")) {
-                	HomesManager.getOtherHomesList(sender, pname);
-                } else {
-                	sender.sendMessage(ChatColor.RED + "You do not have permission to do this.");
-                }
+            	HomesManager.getOtherHomesList(sender, pname);
             	return true;
             } else {
 	            if (!player.hasPermission("gesuit.homes.bypass.delay")) {
@@ -78,11 +80,7 @@ public class HomeCommand implements CommandExecutor {
 	                	HomesManager.sendHome(sender, homename);
 	                } else {
 	                	// Teleport player to other player home
-	                    if (sender.hasPermission("gesuit.homes.commands.homes.other")) {
-	                    	HomesManager.sendOtherHome(sender, pname, homename);
-	                    } else {
-	                    	sender.sendMessage(ChatColor.RED + "You do not have permission to do this.");
-	                    }
+                    	HomesManager.sendOtherHome(sender, pname, homename);
 	                }
 	            }
             }
