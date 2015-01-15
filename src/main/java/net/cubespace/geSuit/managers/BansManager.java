@@ -5,13 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
-import net.cubespace.geSuit.database.OnTime;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.TimeRecord;
@@ -581,6 +581,42 @@ public class BansManager {
 		        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_MONTH.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeMonth() + tr.getTimeSession(), 3)));
 		        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_YEAR.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeYear() + tr.getTimeSession(), 3)));
 		        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_TOTAL.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeTotal() + tr.getTimeSession(), 3)));
+            }
+        });
+    }
+
+    public static void displayOnTimeTop(final String sentBy, final String page) {
+        final GSPlayer s = PlayerManager.getPlayer(sentBy);
+        final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+            @Override
+            public void run() {
+                int pagenum;
+                try {
+                    pagenum = Integer.parseInt(page);
+                    if (pagenum > 20) {
+                        PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Sorry, maximum page number is 20.");
+                        return;
+                    }
+                }
+                catch (NumberFormatException e) {
+                    PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "You specified an invalid page number.");
+                    return;
+                }
+
+                // Get time records and set online time (if player is online)
+                Map<String, Long> results = DatabaseManager.ontime.getOnTimeTop(pagenum);
+                PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + "OnTime Top Statistics" + ChatColor.DARK_AQUA + " (page " + page + ") --------");
+                int offset = (pagenum < 1) ? 0 : (pagenum - 1) * 10;	// Offset = Page number x 10 (but starts at 0 and no less than 0
+                for (String name : results.keySet()) {
+                    offset++;
+                    String line = ConfigManager.messages.ONTIME_TIME_TOP
+                            .replace("{num}", String.format("%1$2s", offset))
+                            .replace("{time}", Utilities.buildTimeDiffString(results.get(name)*1000, 2))
+                            .replace("{player}", name);
+                    PlayerManager.sendMessageToTarget(sender, line);
+                }
             }
         });
     }

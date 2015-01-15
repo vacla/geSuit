@@ -136,4 +136,5 @@ public class Messages extends Config {
     public String ONTIME_TIME_MONTH = "&6This month:&f {diff}";
     public String ONTIME_TIME_YEAR = "&6This year:&f {diff}";
     public String ONTIME_TIME_TOTAL = "&6Total ontime:&f {diff}";
+    public String ONTIME_TIME_TOP = "&e{num}: &b{time}&a {player}";
 }

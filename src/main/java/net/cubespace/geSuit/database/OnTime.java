@@ -5,7 +5,6 @@ import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.objects.TimeRecord;
-import net.cubespace.geSuit.objects.Track;
 import net.md_5.bungee.api.ChatColor;
 
 import java.sql.PreparedStatement;
@@ -16,7 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -172,6 +173,35 @@ public class OnTime implements IRepository {
         return trec;
     }    
 
+    public Map<String, Long> getOnTimeTop(int pagenum) {
+        LinkedHashMap<String, Long> results = null;
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+        try {
+            PreparedStatement top = null;
+            ResultSet res = null;
+            top = connectionHandler.getPreparedStatement("getOnTimeTop");
+
+            results = new LinkedHashMap<String, Long>();
+            int offset = (pagenum < 1) ? 0 : (pagenum - 1) * 10;	// Offset = Page number x 10 (but starts at 0 and no less than 0
+            top.setInt(1, offset);
+            res = top.executeQuery();
+
+            // Build current page of results
+            while (res.next()) {
+                String name = res.getString("pname");
+                Long time = res.getLong("totaltime");
+                results.put(name, time);
+            }
+            res.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connectionHandler.release();
+        }
+
+        return results;
+    }
+
     @Override
     public String[] getTable() {
     	return new String[]{ConfigManager.main.Table_OnTime,
@@ -188,6 +218,7 @@ public class OnTime implements IRepository {
         connection.addPreparedStatement("getOnTimeMonth", "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=? AND timeslot >= DATE_FORMAT(NOW(), '%Y-%m-01')");
         connection.addPreparedStatement("getOnTimeYear",  "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=? AND timeslot > DATE_FORMAT(NOW(), '%Y-01-01')");
         connection.addPreparedStatement("getOnTimeTotal", "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=?");
+        connection.addPreparedStatement("getOnTimeTop",   "SELECT players.playername AS pname, ontime.uuid AS puuid, SUM(time) AS totaltime FROM ontime JOIN players ON ontime.uuid=players.uuid GROUP BY ontime.uuid ORDER BY totaltime DESC LIMIT 10 OFFSET ?");
     }
 
 	@Override
