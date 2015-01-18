@@ -13,6 +13,7 @@ import net.cubespace.geSuit.commands.WarnHistoryCommand;
 import net.cubespace.geSuit.commands.WhereCommand;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
+import net.cubespace.geSuit.listeners.APIMessageListener;
 import net.cubespace.geSuit.listeners.BansListener;
 import net.cubespace.geSuit.listeners.BansMessageListener;
 import net.cubespace.geSuit.listeners.HomesMessageListener;
@@ -88,6 +89,7 @@ public class geSuit extends Plugin
         getProxy().registerChannel("geSuitPortals");        // Portals out/in
         getProxy().registerChannel("geSuitWarps");          // Warps in
         getProxy().registerChannel("geSuitHomes");          // Homes in
+        getProxy().registerChannel("geSuitAPI");            // API messages in
 
         proxy.getPluginManager().registerListener(this, new PlayerListener());
         proxy.getPluginManager().registerListener(this, new BansMessageListener());
@@ -99,6 +101,7 @@ public class geSuit extends Plugin
         proxy.getPluginManager().registerListener(this, new PortalsMessageListener());
         proxy.getPluginManager().registerListener(this, new SpawnListener());
         proxy.getPluginManager().registerListener(this, new SpawnMessageListener());
+        proxy.getPluginManager().registerListener(this, new APIMessageListener());
     }
 
     public void onDisable()
