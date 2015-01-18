@@ -32,7 +32,7 @@ public class BansMessageListener implements Listener {
 
 		// Message debugging (can be toggled live)
 		if (geSuit.instance.isDebugEnabled()) {
-			Utilities.dumpPacket(event.getTag(), "SEND", event.getData(), true);
+			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
 		}
 
         event.setCancelled(true);
