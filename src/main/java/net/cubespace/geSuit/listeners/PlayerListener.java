@@ -11,6 +11,7 @@ import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
@@ -23,6 +24,16 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerListener implements Listener {
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerLoginEvent(final LoginEvent e) {
+        e.registerIntent(geSuit.instance);
+    	geSuit.proxy.getScheduler().runAsync(geSuit.instance, new Runnable() {
+			@Override
+			public void run() {
+				
+    		}
+    	});
+    }
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void playerPostLogin(final PostLoginEvent e) {

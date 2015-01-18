@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import au.com.addstar.bc.BungeeChat;
@@ -26,6 +28,7 @@ import au.com.addstar.bc.BungeeChat;
 public class PlayerManager {
 
     public static HashMap<String, GSPlayer> onlinePlayers = new HashMap<>();
+    public static ConcurrentHashMap<UUID, GSPlayer> connectingPlayers = new ConcurrentHashMap<>();
     public static ArrayList<ProxiedPlayer> kickedPlayers = new ArrayList<>();
 
     public static boolean playerExists(ProxiedPlayer player) {
@@ -33,11 +36,16 @@ public class PlayerManager {
                 || DatabaseManager.players.playerExists(player.getUUID());
     }
 
-    public static GSPlayer loadPlayer(ProxiedPlayer player) {
-        if (playerExists(player)) {
+	public static GSPlayer loadPlayer(ProxiedPlayer player) {
+		GSPlayer gs = loadPlayer(player.getUniqueId());
+		return gs;
+	}
+
+    public static GSPlayer loadPlayer(UUID playerUUID) {
+        if (playerExists(playerUUID)) {
         	GSPlayer gsPlayer = getPlayer(player.getName());
         	if (gsPlayer == null) {
-        		gsPlayer = DatabaseManager.players.loadPlayer(player.getUUID());
+        		gsPlayer = DatabaseManager.players.loadPlayer(playerUUID);
         		gsPlayer.setName(player.getName());
         		gsPlayer.setIp(player.getAddress().getHostString());
         		onlinePlayers.put(player.getName().toLowerCase(), gsPlayer);
@@ -296,6 +304,10 @@ public class PlayerManager {
 
     public static GSPlayer getPlayer(String player) {
         return onlinePlayers.get(player.toLowerCase());
+    }
+    
+    public static GSPlayer getConnectingPlayer(UUID playerUUID) {
+        return connectingPlayers.get(playerUUID);
     }
     
     public static void updateTracking(GSPlayer player) {

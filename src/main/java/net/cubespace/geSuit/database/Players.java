@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -180,6 +181,13 @@ public class Players implements IRepository {
         }
     }
 
+    // Player loading by UUID
+    public GSPlayer loadPlayer(UUID playerUUID) {
+    	String uuid = playerUUID.toString().replace("-", "");
+    	return loadPlayer(uuid);
+    }
+
+    // Player loading by player name
     public GSPlayer loadPlayer(String player) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
