@@ -12,7 +12,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import com.google.common.collect.Maps;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -227,6 +233,108 @@ public class Players implements IRepository {
 
         return players;
     }
+    
+    public Map<String, UUID> resolvePlayerNames(Collection<String> names) {
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+
+        Map<String, UUID> resolved = Maps.newHashMapWithExpectedSize(names.size());
+        try {
+            int maxBatch = 40;
+            int count = 0;
+            StringBuilder builder = new StringBuilder();
+            for (String name : names) {
+                ++count;
+                if (builder.length() != 0) {
+                    builder.append(",");
+                }
+                
+                builder.append(name);
+                
+                if (count >= maxBatch) {
+                    PreparedStatement statement = connectionHandler.getPreparedStatement("resolvePlayerName");
+                    statement.setString(1, builder.toString());
+                    
+                    ResultSet results = statement.executeQuery();
+                    while(results.next()) {
+                        resolved.put(results.getString("playername"), Utilities.makeUUID(results.getString("uuid")));
+                    }
+                    results.close();
+                    
+                    builder.setLength(0);
+                    count = 0;
+                }
+            }
+            
+            if (count > 0) {
+                PreparedStatement statement = connectionHandler.getPreparedStatement("resolvePlayerName");
+                statement.setString(1, builder.toString());
+                
+                ResultSet results = statement.executeQuery();
+                while(results.next()) {
+                    resolved.put(results.getString("playername"), Utilities.makeUUID(results.getString("uuid")));
+                }
+                results.close();
+            }
+            
+            return resolved;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyMap();
+        } finally {
+            connectionHandler.release();
+        }
+    }
+    
+    public Map<UUID, String> resolveUUIDs(Collection<UUID> ids) {
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+
+        Map<UUID, String> resolved = Maps.newHashMapWithExpectedSize(ids.size());
+        try {
+            int maxBatch = 40;
+            int count = 0;
+            StringBuilder builder = new StringBuilder();
+            for (UUID id : ids) {
+                ++count;
+                if (builder.length() != 0) {
+                    builder.append(",");
+                }
+                
+                builder.append(id.toString().replace("-", ""));
+                
+                if (count >= maxBatch) {
+                    PreparedStatement statement = connectionHandler.getPreparedStatement("resolveUUID");
+                    statement.setString(1, builder.toString());
+                    
+                    ResultSet results = statement.executeQuery();
+                    while(results.next()) {
+                        resolved.put(Utilities.makeUUID(results.getString("uuid")), results.getString("playername"));
+                    }
+                    results.close();
+                    
+                    builder.setLength(0);
+                    count = 0;
+                }
+            }
+            
+            if (count > 0) {
+                PreparedStatement statement = connectionHandler.getPreparedStatement("resolveUUID");
+                statement.setString(1, builder.toString());
+                
+                ResultSet results = statement.executeQuery();
+                while(results.next()) {
+                    resolved.put(Utilities.makeUUID(results.getString("uuid")), results.getString("playername"));
+                }
+                results.close();
+            }
+            
+            return resolved;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyMap();
+        } finally {
+            connectionHandler.release();
+        }
+    }
 
     @Override
     public String[] getTable() {
@@ -253,6 +361,8 @@ public class Players implements IRepository {
         connection.addPreparedStatement("getPlayers", "SELECT * FROM "+ ConfigManager.main.Table_Players);
         connection.addPreparedStatement("setUUID", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ? WHERE playername = ?");
         connection.addPreparedStatement("updatePlayer", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ?, playername = ?, lastonline = NOW(), ipaddress = ?, tps = ?, newspawn = ? WHERE playername = ? OR uuid = ?");
+        connection.addPreparedStatement("resolvePlayerName", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE FIND_IN_SET(playername, ?)");
+        connection.addPreparedStatement("resolveUUID", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE FIND_IN_SET(uuid, ?)");
     }
 
     @Override

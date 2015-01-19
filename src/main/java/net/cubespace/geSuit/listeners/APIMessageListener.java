@@ -4,9 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.managers.APIManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -35,12 +35,15 @@ public class APIMessageListener implements Listener {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
         String task = in.readUTF();
+        
         switch (task) {
-        	case "UUIDToNamePlayer":
+        	case "UUIDToPlayerName":
         		// Convert a list of UUIDs to player names
+        	    APIManager.doResolveIDs(((Server)event.getSender()).getInfo(), in.readInt(), in.readUTF());
         		break;
         	case "PlayerNameToUUID":
         		// Convert a list of player names to UUIDs
+        	    APIManager.doResolveNames(((Server)event.getSender()).getInfo(), in.readInt(), in.readUTF());
         		break;
         	case "PlayerNameHistory":
         		// Fetch the history of player names for a specified UUID

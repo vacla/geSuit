@@ -201,4 +201,12 @@ public class Utilities {
 		BungeeChat.instance.getComLink().broadcastMessage("BungeeChat", ostream.toByteArray());
 		return true;
     }
+    
+    public static UUID makeUUID(String uuid) {
+        if (!uuid.contains("-")) {
+            return UUID.fromString(String.format("%s-%s-%s-%s-%s", uuid.substring(0, 8), uuid.substring(8, 12), uuid.substring(12, 16), uuid.substring(16, 20), uuid.substring(20)));
+        } else {
+            return UUID.fromString(uuid);
+        }
+    }
 }
