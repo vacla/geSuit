@@ -15,6 +15,7 @@ import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
 import net.cubespace.geSuit.listeners.APIMessageListener;
 import net.cubespace.geSuit.listeners.BansMessageListener;
+import net.cubespace.geSuit.listeners.BungeeChatListener;
 import net.cubespace.geSuit.listeners.HomesMessageListener;
 import net.cubespace.geSuit.listeners.PlayerListener;
 import net.cubespace.geSuit.listeners.PortalsMessageListener;
@@ -100,6 +101,9 @@ public class geSuit extends Plugin
         proxy.getPluginManager().registerListener(this, new SpawnListener());
         proxy.getPluginManager().registerListener(this, new SpawnMessageListener());
         proxy.getPluginManager().registerListener(this, new APIMessageListener());
+        if (ConfigManager.main.BungeeChatIntegration) {
+            proxy.getPluginManager().registerListener(this, new BungeeChatListener());
+        }
     }
 
     public void onDisable()

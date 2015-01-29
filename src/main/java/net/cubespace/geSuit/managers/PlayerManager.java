@@ -361,6 +361,14 @@ public class PlayerManager {
         return onlinePlayers.get(player.toLowerCase());
     }
     
+    public static GSPlayer getPlayer(UUID id) {
+        return cachedPlayers.get(id);
+    }
+    
+    public static GSPlayer getPlayer(ProxiedPlayer player) {
+        return cachedPlayers.get(player.getUniqueId());
+    }
+    
     public static void updateTracking(GSPlayer player) {
     	DatabaseManager.tracking.insertTracking(player.getName(), player.getUuid(), player.getIp());
     }
