@@ -14,7 +14,6 @@ import net.cubespace.geSuit.commands.WhereCommand;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
 import net.cubespace.geSuit.listeners.APIMessageListener;
-import net.cubespace.geSuit.listeners.BansListener;
 import net.cubespace.geSuit.listeners.BansMessageListener;
 import net.cubespace.geSuit.listeners.HomesMessageListener;
 import net.cubespace.geSuit.listeners.PlayerListener;
@@ -93,7 +92,6 @@ public class geSuit extends Plugin
 
         proxy.getPluginManager().registerListener(this, new PlayerListener());
         proxy.getPluginManager().registerListener(this, new BansMessageListener());
-        proxy.getPluginManager().registerListener(this, new BansListener());
         proxy.getPluginManager().registerListener(this, new TeleportsListener());
         proxy.getPluginManager().registerListener(this, new TeleportsMessageListener());
         proxy.getPluginManager().registerListener(this, new WarpsMessageListener());

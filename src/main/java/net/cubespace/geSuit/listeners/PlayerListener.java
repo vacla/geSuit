@@ -11,6 +11,7 @@ import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
@@ -24,6 +25,12 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerListener implements Listener {
 
+    @EventHandler(priority = EventPriority.LOW)
+    public void playerLogin(LoginEvent event) {
+        event.registerIntent(geSuit.instance);
+        PlayerManager.initPlayer(event.getConnection(), event);
+    }
+    
 	@EventHandler(priority = EventPriority.LOW)
 	public void playerPostLogin(final PostLoginEvent e) {
 		String ip = e.getPlayer().getAddress().getHostString();
@@ -42,9 +49,10 @@ public class PlayerListener implements Listener {
     			return;		// Do nothing if the player is offline
     		}
 
-    		final GSPlayer p = PlayerManager.loadPlayer(e.getPlayer());
-    		final boolean newspawn = p.isNewSpawn();
+    		final GSPlayer p = PlayerManager.confirmJoin(e.getPlayer());
     		p.setServer(e.getServer().getInfo().getName());
+    		
+    		final boolean newspawn = p.isNewSpawn();
 
 			// Check if an existing player has a "newspawn" flag... send them to new player spawn
     		if ((!p.isFirstJoin()) && (newspawn)) {
@@ -128,7 +136,8 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void playerLogout(final PlayerDisconnectEvent e) {
         int dcTime = ConfigManager.main.PlayerDisconnectDelay;
-        final GSPlayer p = PlayerManager.getPlayer(e.getPlayer().getName());
+        
+        final GSPlayer p = PlayerManager.cachedPlayers.remove(e.getPlayer().getUniqueId());
         if (dcTime > 0) {
             geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
                 @Override

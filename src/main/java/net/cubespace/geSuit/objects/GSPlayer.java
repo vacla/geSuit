@@ -148,11 +148,17 @@ public class GSPlayer
         return homes;
     }
 
+    /**
+     * Will the next server connect be the first server to be joined in this session
+     */
     public boolean firstConnect()
     {
         return firstConnect;
     }
 
+    /**
+     * Called in ServerConnectedEvent to signify that it has connected to a server
+     */
     public void connected()
     {
         firstConnect = false;
@@ -193,6 +199,9 @@ public class GSPlayer
         return firstOnline;
     }
     
+    /**
+     * Is this player a new player (as in the first time they have ever joined the proxy)
+     */
     public boolean isFirstJoin()
     {
     	return isFirstJoin;
@@ -211,6 +220,9 @@ public class GSPlayer
 		this.joinAnnounced = joinAnnounced;
 	}
 
+	/**
+	 * Signifies that this player must be taken to the new player spawn upon first connect
+	 */
 	public boolean isNewSpawn() {
 		return newSpawn;
 	}
