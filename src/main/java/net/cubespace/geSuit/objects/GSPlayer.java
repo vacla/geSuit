@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-
 import net.cubespace.geSuit.Utilities;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -23,6 +22,7 @@ public class GSPlayer
     private Timestamp firstOnline;
 
     private HashMap<String, ArrayList<Home>> homes = new HashMap<>();
+    private Track previousName;
     private Location deathBackLocation;
     private Location teleportBackLocation;
     private boolean lastBack;
@@ -237,5 +237,13 @@ public class GSPlayer
 
 	public void setLoginTime(long loginTime) {
 		this.loginTime = loginTime;
+	}
+	
+	public void setLastName(Track track) {
+	    previousName = track;
+	}
+	
+	public Track getLastName() {
+	    return previousName;
 	}
 }

@@ -5,6 +5,7 @@ import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
+import net.cubespace.geSuit.objects.Track;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -100,6 +101,12 @@ public class PlayerManager {
                 }
                 
                 gsPlayer.setIp(connection.getAddress().getHostString());
+                
+                List<Track> history = DatabaseManager.tracking.getNameHistory(connection.getUniqueId());
+                if (history.size() > 1) {
+                    System.out.println("Last name " + history.get(1));
+                    gsPlayer.setLastName(history.get(1));
+                }
                 
                 cachedPlayers.put(connection.getUniqueId(), gsPlayer);
                 

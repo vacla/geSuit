@@ -74,4 +74,9 @@ public class Track {
     public String getBanType() {
         return banType;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("n: %s id: %s ip: %s date: %s", player, uuid, ip, lastseen.toString());
+    }
 }
