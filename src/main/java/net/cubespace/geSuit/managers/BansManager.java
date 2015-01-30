@@ -2,11 +2,15 @@ package net.cubespace.geSuit.managers;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import com.google.common.collect.Iterables;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.TimeParser;
@@ -616,6 +620,50 @@ public class BansManager {
                             .replace("{time}", Utilities.buildTimeDiffString(results.get(name)*1000, 2))
                             .replace("{player}", name);
                     PlayerManager.sendMessageToTarget(sender, line);
+                }
+            }
+        });
+    }
+    
+    public static void displayNameHistory(final String sentBy, final String nameOrId) {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+            @Override
+            public void run() {
+                GSPlayer s = PlayerManager.getPlayer(sentBy);
+                final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+                
+                UUID id;
+                try {
+                    id = Utilities.makeUUID(nameOrId);
+                } catch (IllegalArgumentException e) {
+                    Map<String, UUID> result = APIManager.resolveNames(Arrays.asList(nameOrId));
+                    if (result.isEmpty()) {
+                        PlayerManager.sendMessageToTarget(sender,
+                                ChatColor.RED + "Unknown player " + nameOrId);
+                        return;
+                    } else {
+                        id = Iterables.getFirst(result.values(), null);
+                    }
+                }
+        
+                List<Track> names = DatabaseManager.tracking.getNameHistory(id);
+                
+                PlayerManager.sendMessageToTarget(sender,
+                    ChatColor.GREEN + "Player " + nameOrId + " has had " + names.size() + " different names:");
+                
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                for (Track t : names) {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(ChatColor.DARK_GREEN);
+                    builder.append(" - ");
+                    builder.append(t.getPlayer());
+                    
+                    builder.append(' ');
+                    
+                    builder.append(ChatColor.GRAY);
+                    builder.append(sdf.format(t.getLastSeen()));
+                    
+                    PlayerManager.sendMessageToTarget(sender, builder.toString());
                 }
             }
         });

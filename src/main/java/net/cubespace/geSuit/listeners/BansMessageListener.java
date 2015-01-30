@@ -99,6 +99,10 @@ public class BansMessageListener implements Listener {
             LoggingManager.log(in.readUTF());
             return;
         }
+        if (task.equals("DisplayNameHistory")) {
+            BansManager.displayNameHistory(in.readUTF(), in.readUTF());
+            return;
+        }
     }
 
 }
