@@ -47,6 +47,7 @@ public class APIMessageListener implements Listener {
         		break;
         	case "PlayerNameHistory":
         		// Fetch the history of player names for a specified UUID
+        	    APIManager.doNameHistory(((Server)event.getSender()).getInfo(), in.readInt(), in.readUTF());
         		break;
         	default:
         		// Unknown API command
