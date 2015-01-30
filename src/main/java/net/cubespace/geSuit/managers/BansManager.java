@@ -636,7 +636,7 @@ public class BansManager {
                 try {
                     id = Utilities.makeUUID(nameOrId);
                 } catch (IllegalArgumentException e) {
-                    Map<String, UUID> result = APIManager.resolveNames(Arrays.asList(nameOrId));
+                    Map<String, UUID> result = DatabaseManager.players.resolvePlayerNamesHistoric(Arrays.asList(nameOrId));
                     if (result.isEmpty()) {
                         PlayerManager.sendMessageToTarget(sender,
                                 ChatColor.RED + "Unknown player " + nameOrId);

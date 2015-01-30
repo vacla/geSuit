@@ -285,6 +285,62 @@ public class Players implements IRepository {
         }
     }
     
+    /**
+     * Resolves a player name using the tracking table instead of the players table. This allows it to resolve old names for players
+     * @param names
+     * @return
+     */
+    public Map<String, UUID> resolvePlayerNamesHistoric(Collection<String> names) {
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+
+        Map<String, UUID> resolved = Maps.newHashMapWithExpectedSize(names.size());
+        try {
+            int maxBatch = 40;
+            int count = 0;
+            StringBuilder builder = new StringBuilder();
+            for (String name : names) {
+                ++count;
+                if (builder.length() != 0) {
+                    builder.append(",");
+                }
+                
+                builder.append(name);
+                
+                if (count >= maxBatch) {
+                    PreparedStatement statement = connectionHandler.getPreparedStatement("resolveOldPlayerName");
+                    statement.setString(1, builder.toString());
+                    
+                    ResultSet results = statement.executeQuery();
+                    while(results.next()) {
+                        resolved.put(results.getString("player"), Utilities.makeUUID(results.getString("uuid")));
+                    }
+                    results.close();
+                    
+                    builder.setLength(0);
+                    count = 0;
+                }
+            }
+            
+            if (count > 0) {
+                PreparedStatement statement = connectionHandler.getPreparedStatement("resolveOldPlayerName");
+                statement.setString(1, builder.toString());
+                
+                ResultSet results = statement.executeQuery();
+                while(results.next()) {
+                    resolved.put(results.getString("player"), Utilities.makeUUID(results.getString("uuid")));
+                }
+                results.close();
+            }
+            
+            return resolved;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyMap();
+        } finally {
+            connectionHandler.release();
+        }
+    }
+    
     public Map<UUID, String> resolveUUIDs(Collection<UUID> ids) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
@@ -362,6 +418,7 @@ public class Players implements IRepository {
         connection.addPreparedStatement("setUUID", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ? WHERE playername = ?");
         connection.addPreparedStatement("updatePlayer", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ?, playername = ?, lastonline = NOW(), ipaddress = ?, tps = ?, newspawn = ? WHERE playername = ? OR uuid = ?");
         connection.addPreparedStatement("resolvePlayerName", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE FIND_IN_SET(playername, ?)");
+        connection.addPreparedStatement("resolveOldPlayerName", "SELECT player,uuid FROM "+ ConfigManager.main.Table_Tracking +" WHERE FIND_IN_SET(player, ?) GROUP BY player");
         connection.addPreparedStatement("resolveUUID", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE FIND_IN_SET(uuid, ?)");
     }
 
