@@ -23,11 +23,25 @@ public class BanCommand extends Command {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BUNGEE_COMMAND_BAN_USAGE);
             return;
         }
-
+        
+        String reason = null;
+        if (args.length > 1) {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 1; i < args.length; ++i) {
+                if (i != 1) {
+                    builder.append(' ');
+                }
+                
+                builder.append(args[i]);
+            }
+            
+            reason = builder.toString();
+        }
+        
         if (Utilities.isIPAddress(args[0])) {
-            BansManager.banIP(sender.getName(), args[0], null);
+            BansManager.banIP(sender.getName(), args[0], reason);
         } else {
-            BansManager.banPlayer(sender.getName(), args[0], null);
+            BansManager.banPlayer(sender.getName(), args[0], reason);
         }
     }
 }
