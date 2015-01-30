@@ -102,6 +102,12 @@ commands:
         permission: gesuit.bans.command.ipban
         permission-message: §cYou do not have permission for this command
         usage: /<command> (ip)
+    namehistory:
+        description: Gets the name history of a player
+        aliases: [names]
+        permission: gesuit.bans.command.namehistory
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
 
 permissions:
     gesuit.bans.*:
@@ -124,3 +130,4 @@ permissions:
             gesuit.bans.command.banhistory: true
             gesuit.bans.command.kick: true
             gesuit.bans.command.tempban: true
+            gesuit.bans.command.namehistory: true

@@ -6,6 +6,7 @@ import net.cubespace.geSuitBans.commands.CheckBanCommand;
 import net.cubespace.geSuitBans.commands.IPBanCommand;
 import net.cubespace.geSuitBans.commands.KickAllCommand;
 import net.cubespace.geSuitBans.commands.KickCommand;
+import net.cubespace.geSuitBans.commands.NameHistoryCommand;
 import net.cubespace.geSuitBans.commands.OnTimeCommand;
 import net.cubespace.geSuitBans.commands.ReloadBansCommand;
 import net.cubespace.geSuitBans.commands.TempBanCommand;
@@ -42,6 +43,7 @@ public class geSuitBans extends JavaPlugin {
         getCommand( "unban" ).setExecutor( new UnbanCommand() );
         getCommand( "unipban" ).setExecutor( new UnBanIPCommand() );
         getCommand( "ontime" ).setExecutor( new OnTimeCommand() );
+        getCommand( "namehistory" ).setExecutor( new NameHistoryCommand() );
     }
 
     private void registerChannels() {
