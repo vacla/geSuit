@@ -64,9 +64,9 @@ public class BansManager {
 
         if (ConfigManager.bans.BroadcastBans) {
             if (auto) {
-            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName())));
+            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName())), t.name);
             } else {
-            	PlayerManager.sendBroadcast(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", t.dispname).replace("{message}", reason).replace("{sender}", bannedBy));
+            	PlayerManager.sendBroadcast(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", t.dispname).replace("{message}", reason).replace("{sender}", bannedBy), t.name);
             }
         } else {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", t.dispname).replace("{message}", reason).replace("{sender}", bannedBy));
@@ -244,9 +244,9 @@ public class BansManager {
         	
         if (ConfigManager.bans.BroadcastKicks) {
             if (auto) {
-            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.KICK_PLAYER_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName())));
+            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.KICK_PLAYER_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName())), t.name);
             } else {
-            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.KICK_PLAYER_BROADCAST.replace("{message}", reason).replace("{player}", t.dispname).replace("{sender}", sender.getName())));
+            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.KICK_PLAYER_BROADCAST.replace("{message}", reason).replace("{player}", t.dispname).replace("{sender}", sender.getName())), t.name);
             }
         }
     }
