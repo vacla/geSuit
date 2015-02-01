@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import au.com.addstar.bc.BungeeChat;
 
@@ -122,7 +123,7 @@ public class PlayerManager {
      * @return The GSPlayer instance for efficiency
      */
     public static GSPlayer confirmJoin(final ProxiedPlayer player) {
-        final GSPlayer gsPlayer = cachedPlayers.get(player.getUniqueId());
+    	final GSPlayer gsPlayer = cachedPlayers.get(player.getUniqueId());
         if (gsPlayer.firstConnect()) {
             // Do new player stuff
             if (gsPlayer.isFirstJoin()) {
@@ -132,7 +133,7 @@ public class PlayerManager {
 
                 if (ConfigManager.main.NewPlayerBroadcast) {
                     String welcomeMsg = null;
-                    sendBroadcast(welcomeMsg = ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getName()));
+                    sendBroadcast(welcomeMsg = ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getName()), player.getName());
                     // Firing custom event
                     ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
                 }
@@ -199,7 +200,12 @@ public class PlayerManager {
     }
 
     public static void sendBroadcast(String message) {
+    	sendBroadcast(message, null);
+    }
+
+    public static void sendBroadcast(String message, String excludedPlayer) {
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
+        	if ((excludedPlayer != null) && (excludedPlayer.equals(p.getName()))) continue;
         	sendMessageToTarget(p.getName(), message);
         }
         LoggingManager.log(message);
