@@ -369,6 +369,10 @@ public class PlayerManager {
         return onlinePlayers.values();
     }
 
+    public static Collection<GSPlayer> cachedPlayers() {
+        return cachedPlayers.values();
+    }
+
     public static GSPlayer getPlayer(String player) {
         return onlinePlayers.get(player.toLowerCase());
     }
