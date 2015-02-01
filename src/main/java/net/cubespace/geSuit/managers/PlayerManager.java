@@ -102,10 +102,10 @@ public class PlayerManager {
                 
                 gsPlayer.setIp(connection.getAddress().getHostString());
                 
-                List<Track> history = DatabaseManager.tracking.getNameHistory(connection.getUniqueId());
-                if (history.size() > 1) {
-                    System.out.println("Last name " + history.get(1));
-                    gsPlayer.setLastName(history.get(1));
+                Track history = DatabaseManager.tracking.checkNameChange(connection.getUniqueId(), connection.getName());
+                if (history != null) {
+                    System.out.println("Last name " + history.getPlayer());
+                    gsPlayer.setLastName(history);
                 }
                 
                 cachedPlayers.put(connection.getUniqueId(), gsPlayer);

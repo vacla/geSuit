@@ -114,6 +114,41 @@ public class Tracking implements IRepository {
         return tracking;
     }
 
+    public Track checkNameChange(UUID id, String playername) {
+        Track tracking = null;
+
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+        try {
+            PreparedStatement statement = connectionHandler.getPreparedStatement("checkNameChange");
+            String uuid = id.toString().replace("-", "");
+            statement.setString(1, uuid);
+            statement.setString(2, playername);
+            
+            ResultSet res = statement.executeQuery();
+            if (res.next()) {
+                tracking = new Track(
+                        res.getString("player"),
+                        res.getString("uuid"),
+                        res.getString("ip"),
+                        res.getTimestamp("firstseen"),
+                        res.getTimestamp("lastseen"),
+                        null,
+                        null,
+                        null,
+                        null
+                );
+            }
+
+            res.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connectionHandler.release();
+        }
+
+        return tracking;
+    }
+
     @Override
     public String[] getTable() {
     	return new String[]{ConfigManager.main.Table_Tracking, "player varchar(20) NOT NULL, "
@@ -131,6 +166,7 @@ public class Tracking implements IRepository {
         connection.addPreparedStatement("getUUIDTracking", "SELECT t2.ip, t2.player, t2.uuid, t2.firstseen, t2.lastseen, b.type, b.banned_playername, b.banned_uuid, b.banned_ip FROM "+ ConfigManager.main.Table_Tracking +" AS t1 JOIN "+ ConfigManager.main.Table_Tracking +" AS t2 ON t1.ip=t2.ip LEFT JOIN " + ConfigManager.main.Table_Bans + " AS b ON (t2.ip=b.banned_ip OR t2.player=b.banned_playername OR t2.uuid=b.banned_uuid) AND b.type != 'warn' AND b.active=1 WHERE t1.uuid=? GROUP BY t2.player,t2.uuid,t2.ip ORDER BY t2.lastseen;");
         connection.addPreparedStatement("getIPTracking", "SELECT t.ip, t.player, t.uuid, t.firstseen, t.lastseen, b.type, b.banned_playername, b.banned_uuid, b.banned_ip FROM "+ ConfigManager.main.Table_Tracking +" AS t LEFT JOIN "+ ConfigManager.main.Table_Bans +" AS b ON (t.ip=b.banned_ip OR t.player=b.banned_playername OR t.uuid=b.banned_uuid) AND b.type != 'warn' AND b.active=1 WHERE t.ip=? GROUP BY t.player,t.uuid,t.ip ORDER BY t.lastseen;");
         connection.addPreparedStatement("getNameHistory", "SELECT p1.* FROM " + ConfigManager.main.Table_Tracking + " p1 INNER JOIN ( SELECT max(lastseen) LastSeen, player FROM " + ConfigManager.main.Table_Tracking + " WHERE uuid=? GROUP BY player) p2 ON p1.player = p2.player AND p1.lastseen = p2.LastSeen WHERE p1.uuid=? order by p1.lastseen desc;");
+        connection.addPreparedStatement("checkNameChange", "SELECT * FROM " + ConfigManager.main.Table_Tracking + " WHERE uuid=? AND player!=? ORDER BY lastseen DESC;");
     }
 
 	@Override
