@@ -104,7 +104,6 @@ public class PlayerManager {
                 
                 Track history = DatabaseManager.tracking.checkNameChange(connection.getUniqueId(), connection.getName());
                 if (history != null) {
-                    System.out.println("Last name " + history.getPlayer());
                     gsPlayer.setLastName(history);
                 }
                 
