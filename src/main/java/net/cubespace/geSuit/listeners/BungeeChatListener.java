@@ -7,6 +7,7 @@ import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Track;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -26,7 +27,7 @@ public class BungeeChatListener implements Listener {
                 if (event.getPlayer().getName().equals(event.getPlayer().getDisplayName())) {
                     // Display the last name if it changed less than the config value days ago
                     if (System.currentTimeMillis() - lastName.getLastSeen().getTime() < TimeUnit.DAYS.toMillis(ConfigManager.bans.NameChangeNotifyTime)) {
-                        event.setJoinMessage(ConfigManager.messages.PLAYER_JOIN_NAMECHANGE.replace("{player}", event.getPlayer().getDisplayName()).replace("{old}", lastName.getPlayer()));
+                        event.setJoinMessage(ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_JOIN_NAMECHANGE.replace("{player}", event.getPlayer().getDisplayName()).replace("{old}", lastName.getPlayer())));
                     }
                 }
             }
