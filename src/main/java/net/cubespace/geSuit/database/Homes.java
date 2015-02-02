@@ -5,6 +5,7 @@ import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.PlayerManager;
+import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 
@@ -80,19 +81,19 @@ public class Homes implements IRepository {
         }
     }
 
-    public List<Home> getHomesForPlayer(String player) {
+    public List<Home> getHomesForPlayer(GSPlayer player) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         List<Home> homes = new ArrayList<>();
 
         try {
             PreparedStatement getAllHomesForPlayer = connectionHandler.getPreparedStatement("getAllHomesForPlayer");
-            getAllHomesForPlayer.setString(1, player);
+            getAllHomesForPlayer.setString(1, (player.getUuid() != null) ? player.getUuid() : player.getName());
 
             ResultSet res = getAllHomesForPlayer.executeQuery();
             while (res.next()) {
                 String server = res.getString("server");
                 Location l = new Location(server, res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
-                homes.add(new Home(PlayerManager.matchOnlinePlayer(player), res.getString("home_name"), l));
+                homes.add(new Home(player, res.getString("home_name"), l));
             }
             res.close();
 

@@ -132,7 +132,7 @@ public class HomesManager {
     }
 
     public static void loadPlayersHomes(GSPlayer player) {
-        List<Home> homes = DatabaseManager.homes.getHomesForPlayer(player.getUuid());
+        List<Home> homes = DatabaseManager.homes.getHomesForPlayer(player);
 
         for(Home home : homes) {
         	if (home.loc.getServer() == null) {
