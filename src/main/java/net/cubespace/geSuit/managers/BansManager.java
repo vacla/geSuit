@@ -388,39 +388,60 @@ public class BansManager {
         }
     }
 
-    public static void displayPlayerWarnHistory(String sentBy, String player) {
-        GSPlayer s = PlayerManager.getPlayer(sentBy);
-        CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
-
-        List<Ban> warns = DatabaseManager.bans.getWarnHistory(player, player);
-        if (warns == null || warns.isEmpty()) {
-            PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED.replace("{player}", player)));
-            return;
-        }
-        PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + player + "'s Warning History" + ChatColor.DARK_AQUA + " --------");
+    public static void displayPlayerWarnHistory(final String sentBy, final String player) {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+            @Override
+            public void run() {
+                GSPlayer s = PlayerManager.getPlayer(sentBy);
+                
+                CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+                
+                // Resolve the target player
+                GSPlayer target = PlayerManager.getPlayer(player);
+                String targetId;
+                if (target == null) {
+                    Map<String, UUID> ids = DatabaseManager.players.resolvePlayerNamesHistoric(Arrays.asList(player));
+                    UUID id = Iterables.getFirst(ids.values(), null);
+                    if (id == null) {
+                        PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED.replace("{player}", player)));
+                        return;
+                    }
+                    targetId = id.toString().replace("-", "");
+                } else {
+                    targetId = target.getUuid();
+                }
+                
+                List<Ban> warns = DatabaseManager.bans.getWarnHistory(player, targetId);
+                if (warns == null || warns.isEmpty()) {
+                    PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED.replace("{player}", player)));
+                    return;
+                }
+                PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + player + "'s Warning History" + ChatColor.DARK_AQUA + " --------");
+                
+                int count = 0;
+                for (Ban b : warns) {
+                    SimpleDateFormat sdf = new SimpleDateFormat();
+                    sdf.applyPattern("dd MMM yyyy HH:mm");
         
-        int count = 0;
-        for (Ban b : warns) {
-            SimpleDateFormat sdf = new SimpleDateFormat();
-            sdf.applyPattern("dd MMM yyyy HH:mm");
-
-            Date now = new Date(); 
-            int age = (int) ((now.getTime() - b.getBannedOn().getTime()) / 1000 / 86400);
-        	if (age >= ConfigManager.bans.WarningExpiryDays) {
-	            PlayerManager.sendMessageToTarget(sender,
-	            		ChatColor.GRAY + "- " +
-	            		ChatColor.DARK_GRAY + sdf.format(b.getBannedOn()) +
-	            		ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + b.getBannedBy() + ChatColor.DARK_GRAY + ") " +
-	            		ChatColor.DARK_GRAY + b.getReason());
-        	} else {
-        		count++;
-	            PlayerManager.sendMessageToTarget(sender,
-	            		ChatColor.YELLOW + String.valueOf(count) + ": " +
-	            		ChatColor.GREEN + sdf.format(b.getBannedOn()) +
-	            		ChatColor.YELLOW + " (" + ChatColor.GRAY + b.getBannedBy() + ChatColor.YELLOW + ") " +
-	            		ChatColor.AQUA + b.getReason());
-        	}
-        }
+                    Date now = new Date(); 
+                    int age = (int) ((now.getTime() - b.getBannedOn().getTime()) / 1000 / 86400);
+                	if (age >= ConfigManager.bans.WarningExpiryDays) {
+        	            PlayerManager.sendMessageToTarget(sender,
+        	            		ChatColor.GRAY + "- " +
+        	            		ChatColor.DARK_GRAY + sdf.format(b.getBannedOn()) +
+        	            		ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + b.getBannedBy() + ChatColor.DARK_GRAY + ") " +
+        	            		ChatColor.DARK_GRAY + b.getReason());
+                	} else {
+                		count++;
+        	            PlayerManager.sendMessageToTarget(sender,
+        	            		ChatColor.YELLOW + String.valueOf(count) + ": " +
+        	            		ChatColor.GREEN + sdf.format(b.getBannedOn()) +
+        	            		ChatColor.YELLOW + " (" + ChatColor.GRAY + b.getBannedBy() + ChatColor.YELLOW + ") " +
+        	            		ChatColor.AQUA + b.getReason());
+                	}
+                }
+            }
+        });
     }
 
     public static void displayWhereHistory(final String sentBy, final String options, final String search) {
