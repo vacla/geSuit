@@ -1,9 +1,11 @@
 package net.cubespace.geSuit.configs;
 
 import java.io.File;
+
 import net.cubespace.Yamler.Config.Comment;
 import net.cubespace.Yamler.Config.Config;
 import net.cubespace.geSuit.configs.SubConfig.Database;
+import net.cubespace.geSuit.configs.SubConfig.Redis;
 import net.cubespace.geSuit.geSuit;
 
 public class MainConfig extends Config {
@@ -12,6 +14,7 @@ public class MainConfig extends Config {
     }
 
     public Database Database = new Database();
+    public Redis Redis = new Redis();
 
     @Comment("This can be used if you have multiple Proxies to seperate the Homes in it")
     public String Table_Homes = "homes";

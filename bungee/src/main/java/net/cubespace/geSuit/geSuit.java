@@ -1,5 +1,9 @@
 package net.cubespace.geSuit;
 
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
+
 import net.cubespace.geSuit.commands.BanCommand;
 import net.cubespace.geSuit.commands.DebugCommand;
 import net.cubespace.geSuit.commands.MOTDCommand;
@@ -12,6 +16,11 @@ import net.cubespace.geSuit.commands.UnbanCommand;
 import net.cubespace.geSuit.commands.WarnCommand;
 import net.cubespace.geSuit.commands.WarnHistoryCommand;
 import net.cubespace.geSuit.commands.WhereCommand;
+import net.cubespace.geSuit.configs.SubConfig.Redis;
+import net.cubespace.geSuit.core.ConnectionNotifier;
+import net.cubespace.geSuit.core.channel.ChannelManager;
+import net.cubespace.geSuit.core.channel.RedisChannelManager;
+import net.cubespace.geSuit.core.channel.RedisConnection;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
 import net.cubespace.geSuit.listeners.APIMessageListener;
@@ -33,12 +42,14 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 
-public class geSuit extends Plugin
+public class geSuit extends Plugin implements ConnectionNotifier
 {
 
     public static geSuit instance;
     public static ProxyServer proxy;
     private boolean DebugEnabled = false;
+    private RedisConnection redis;
+    private RedisChannelManager channelManager;
 
     public void onEnable()
     {
@@ -54,6 +65,13 @@ public class geSuit extends Plugin
             Converter converter = new Converter();
             converter.convert();
         }
+        
+        if (!initializeRedis()) {
+            LoggingManager.log("Unable to connect to redis");
+            return;
+        }
+        
+        channelManager = new RedisChannelManager(redis, getLogger());
 
         registerListeners();
         registerCommands();
@@ -107,6 +125,32 @@ public class geSuit extends Plugin
             proxy.getPluginManager().registerListener(this, new BungeeChatListener());
         }
     }
+    
+    private boolean initializeRedis() {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        getProxy().getScheduler().runAsync(this, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Redis config = ConfigManager.main.Redis;
+                    redis = new RedisConnection(config.host, config.port, config.password);
+                    redis.setNotifier(geSuit.this);
+                } catch (IOException e) {
+                    getLogger().log(Level.SEVERE, "Unable to connect to Redis:", e);
+                } finally {
+                    latch.countDown();
+                }
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+        }
+
+        return redis != null;
+    }
 
     public void onDisable()
     {
@@ -125,5 +169,19 @@ public class geSuit extends Plugin
 		if (isDebugEnabled()) {
 			geSuit.instance.getLogger().info("DEBUG: " + msg);
 		}
+	}
+	
+	public ChannelManager getChannelManager() {
+	    return channelManager;
+	}
+	
+	@Override
+	public void onConnectionLost(Throwable e) {
+	    getLogger().log(Level.WARNING, "Connection to redis has been lost. Most geSuit functions will be unavailable until it is restored.", e);
+	}
+	
+	@Override
+	public void onConnectionRestored() {
+	    getLogger().info("Connection to redis has been restored.");
 	}
 }
