@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Portal;
@@ -54,7 +54,7 @@ public class PortalManager {
                 return;
             }
         } else {
-            if (geSuit.proxy.getServerInfo(dest) == null) {
+            if (geSuitPlugin.proxy.getServerInfo(dest) == null) {
                 sender.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);
                 return;
             }
@@ -143,12 +143,12 @@ public class PortalManager {
                 TeleportToLocation.execute(p, w.getLocation());
             }
         } else {
-            if (geSuit.proxy.getServerInfo(dest) == null) {
+            if (geSuitPlugin.proxy.getServerInfo(dest) == null) {
                 p.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);
                 return;
             }
 
-            ServerInfo s = geSuit.proxy.getServerInfo(dest);
+            ServerInfo s = geSuitPlugin.proxy.getServerInfo(dest);
             if (!s.getName().equals(p.getServer())) {
                 p.connectTo(s);
             }

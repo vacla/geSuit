@@ -1,6 +1,6 @@
 package net.cubespace.geSuit.objects;
 
-import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 
@@ -55,7 +55,7 @@ public class Location {
     }
 
     public Location(String serverInfo, String world, double x, double y, double z) {
-        this.server = geSuit.proxy.getServerInfo(serverInfo);
+        this.server = geSuitPlugin.proxy.getServerInfo(serverInfo);
         this.world = world;
         this.x = x;
         this.y = y;

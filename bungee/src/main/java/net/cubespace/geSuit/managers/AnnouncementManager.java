@@ -2,6 +2,7 @@ package net.cubespace.geSuit.managers;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.configs.SubConfig.AnnouncementEntry;
 import net.cubespace.geSuit.tasks.GlobalAnnouncements;
 import net.cubespace.geSuit.tasks.ServerAnnouncements;
@@ -31,7 +32,7 @@ public class AnnouncementManager {
                     for (String messages : global) {
                         g.addAnnouncement(messages);
                     }
-                    ScheduledTask t = proxy.getScheduler().schedule(geSuit.instance, g, interval, interval, TimeUnit.SECONDS);
+                    ScheduledTask t = proxy.getScheduler().schedule(geSuit.getPlugin(), g, interval, interval, TimeUnit.SECONDS);
                     announcementTasks.add(t);
                 }
             }
@@ -46,7 +47,7 @@ public class AnnouncementManager {
                         for (String messages : servermes) {
                             s.addAnnouncement(messages);
                         }
-                        ScheduledTask t = proxy.getScheduler().schedule(geSuit.instance, s, interval, interval, TimeUnit.SECONDS);
+                        ScheduledTask t = proxy.getScheduler().schedule(geSuit.getPlugin(), s, interval, interval, TimeUnit.SECONDS);
                         announcementTasks.add(t);
                     }
                 }

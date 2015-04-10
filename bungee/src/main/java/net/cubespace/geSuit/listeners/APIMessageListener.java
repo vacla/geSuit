@@ -4,8 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.managers.APIManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.connection.Server;
@@ -27,7 +29,7 @@ public class APIMessageListener implements Listener {
         }
 
 		// Message debugging (can be toggled live)
-		if (geSuit.instance.isDebugEnabled()) {
+		if (geSuit.getPlugin().isDebugEnabled()) {
 			Utilities.dumpPacket(event.getTag(), "SEND", event.getData(), true);
 		}
 

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TPAFinalise;
@@ -57,7 +58,7 @@ public class TeleportManager {
         pendingTeleportsTPA.put(bt, bp);
         bp.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", bt.getName()));
         bt.sendMessage(ConfigManager.messages.PLAYER_REQUESTS_TO_TELEPORT_TO_YOU.replace("{player}", bp.getName()));
-        ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 if (pendingTeleportsTPA.containsKey(bt)) {
@@ -99,7 +100,7 @@ public class TeleportManager {
         bp.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", bp.getName()));
         bt.sendMessage(ConfigManager.messages.PLAYER_REQUESTS_YOU_TELEPORT_TO_THEM.replace("{player}", bp.getName()));
 
-        ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 if (pendingTeleportsTPAHere.containsKey(bt)) {

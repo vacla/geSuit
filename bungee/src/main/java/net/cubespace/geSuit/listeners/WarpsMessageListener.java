@@ -2,6 +2,7 @@ package net.cubespace.geSuit.listeners;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.WarpsManager;
@@ -30,7 +31,7 @@ public class WarpsMessageListener implements Listener {
             return;
 
         // Message debugging (can be toggled live)
-		if (geSuit.instance.isDebugEnabled()) {
+		if (geSuit.getPlugin().isDebugEnabled()) {
 			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
 		}
 

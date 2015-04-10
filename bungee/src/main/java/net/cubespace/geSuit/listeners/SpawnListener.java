@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.listeners;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.managers.SpawnManager;
@@ -18,7 +19,7 @@ public class SpawnListener implements Listener {
             if (SpawnManager.doesProxySpawnExist()) {
                 SpawnManager.sendPlayerToProxySpawn(PlayerManager.getPlayer(e.getPlayer().getName()));
             } else {
-                geSuit.instance.getLogger().warning("Wanted to use ForceAllPlayersToProxySpawn without a Proxy Spawn set");
+                geSuit.getLogger().warning("Wanted to use ForceAllPlayersToProxySpawn without a Proxy Spawn set");
             }
         }
     }

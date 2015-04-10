@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.configs;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.configs.SubConfig.GeoIPSettings;
 import net.cubespace.Yamler.Config.Config;
 
@@ -9,7 +10,7 @@ import java.util.HashMap;
 
 public class BansConfig extends Config {
     public BansConfig() {
-        CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "bans.yml");
+        CONFIG_FILE = geSuit.getFile("bans.yml");
     }
 
     public Boolean Enabled = true;

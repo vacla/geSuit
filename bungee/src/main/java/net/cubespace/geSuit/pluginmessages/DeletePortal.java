@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.pluginmessages;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.objects.Portal;
 import net.cubespace.geSuit.tasks.SendPluginMessage;
 
@@ -25,6 +26,6 @@ public class DeletePortal {
             e.printStackTrace();
         }
 
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, p.getServer(), bytes));
+        geSuitPlugin.proxy.getScheduler().runAsync(geSuit.getPlugin(), new SendPluginMessage(OUTGOING_CHANNEL, p.getServer(), bytes));
     }
 }

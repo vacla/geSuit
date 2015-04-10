@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.objects.Track;
 import net.cubespace.geSuit.tasks.SendPluginMessage;
 import net.md_5.bungee.api.ProxyServer;
@@ -23,7 +24,7 @@ public class APIManager {
     public static void doResolveNames(final ServerInfo server, final int id, String strList) {
         final String[] names = strList.split(";");
         
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 try {
@@ -67,7 +68,7 @@ public class APIManager {
             ids.add(Utilities.makeUUID(rawId));
         }
         
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 try {
@@ -106,7 +107,7 @@ public class APIManager {
     public static void doNameHistory(final ServerInfo server, final int id, String raw) {
         final UUID uuid = Utilities.makeUUID(raw);
         
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 try {

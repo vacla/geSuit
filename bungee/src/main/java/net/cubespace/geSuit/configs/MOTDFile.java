@@ -8,20 +8,21 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 
 public class MOTDFile {
     private File mFile;
     private String mMOTD;
 
     public MOTDFile( String name ) {
-        mFile = new File(geSuit.instance.getDataFolder(), name);
+        mFile = geSuit.getFile(name);
     }
     
     public void init() {
 	try {
 	    // Save the default motd file
             if (!mFile.exists()) {
-                InputStream stream = geSuit.instance.getResourceAsStream(mFile.getName());
+                InputStream stream = geSuit.getResource(mFile.getName());
                 FileOutputStream out = new FileOutputStream(mFile);
                 byte[] buffer = new byte[2048];
                 int read = 0;

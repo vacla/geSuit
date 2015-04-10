@@ -1,8 +1,9 @@
 package net.cubespace.geSuit.managers;
 
 import net.cubespace.geSuit.Utilities;
-import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.events.NewPlayerJoinEvent;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Track;
@@ -48,7 +49,7 @@ public class PlayerManager {
     }
 
     public static void initPlayer(final PendingConnection connection, final LoginEvent event) {
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 // Do ban check
@@ -79,7 +80,7 @@ public class PlayerManager {
                         
                         if (banned) {
                             // Dont load this player as they wont be joining
-                            event.completeIntent(geSuit.instance);
+                            event.completeIntent(geSuit.getPlugin());
                             return;
                         }
                     }
@@ -111,7 +112,7 @@ public class PlayerManager {
                 cachedPlayers.put(connection.getUniqueId(), gsPlayer);
                 
                 // TODO: All database retrieval must be done here for this player
-                event.completeIntent(geSuit.instance);
+                event.completeIntent(geSuit.getPlugin());
             }
         });
     }
@@ -141,7 +142,7 @@ public class PlayerManager {
                 if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && SpawnManager.NewPlayerSpawn != null) {
                     SpawnManager.newPlayers.add(player);
 
-                    ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {
+                    ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
 
                         @Override
                         public void run() {
@@ -176,8 +177,8 @@ public class PlayerManager {
 
         // Not exactly sure where we use the new line besides in the soon-to-be-removed MOTD...
         for (String line : Utilities.colorize(message).split("\n")) {
-            if (geSuit.instance.isDebugEnabled()) {
-    			geSuit.instance.getLogger().info("DEBUG: [SendMessage] " + target.getName() + ": " + Utilities.colorize(line));
+            if (geSuit.getPlugin().isDebugEnabled()) {
+                geSuit.getPlugin().DebugMsg("[SendMessage] " + target.getName() + ": " + Utilities.colorize(line));
     		}
             target.sendMessage(TextComponent.fromLegacyText(Utilities.colorize(line)));
         }
@@ -352,7 +353,7 @@ public class PlayerManager {
         if (ip == null) {
             Exception exception = new Exception("test");
             exception.printStackTrace();
-            geSuit.instance.getLogger().severe("getPlayersByIP() ip is null");
+            geSuit.getLogger().severe("getPlayersByIP() ip is null");
             return null;
         }
 

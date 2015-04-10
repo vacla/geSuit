@@ -2,6 +2,7 @@ package net.cubespace.geSuit.listeners;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.GeoIPManager;
@@ -27,7 +28,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void playerLogin(LoginEvent event) {
-        event.registerIntent(geSuit.instance);
+        event.registerIntent(geSuit.getPlugin());
         PlayerManager.initPlayer(event.getConnection(), event);
     }
     
@@ -73,7 +74,7 @@ public class PlayerListener implements Listener {
     		
     		// Launch the MOTD message scheduler
     		if (ConfigManager.main.MOTD_Enabled && (p.firstConnect() || newspawn)) {
-    	    	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
+    	    	geSuitPlugin.proxy.getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
     				@Override
     				public void run() {
     					if (ProxyServer.getInstance().getPlayer(e.getPlayer().getUniqueId()) != null) {	// Check if player is still online
@@ -90,7 +91,7 @@ public class PlayerListener implements Listener {
     		p.connected();
 
     		final String[] fAlt = alt;
-        	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
+        	geSuitPlugin.proxy.getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
         		@Override
     			public void run() {
         			// Show alt account logins for this player (if enabled)
@@ -142,7 +143,7 @@ public class PlayerListener implements Listener {
         
         final GSPlayer p = PlayerManager.cachedPlayers.remove(e.getPlayer().getUniqueId());
         if (dcTime > 0) {
-            geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
+            geSuitPlugin.proxy.getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
                     if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
@@ -173,7 +174,7 @@ public class PlayerListener implements Listener {
             }
             PlayerManager.unloadPlayer(e.getPlayer().getName());
 
-            geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
+            geSuitPlugin.proxy.getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
                 	// Always update the player record when they disconnect

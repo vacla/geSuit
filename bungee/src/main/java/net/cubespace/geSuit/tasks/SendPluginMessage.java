@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.md_5.bungee.api.config.ServerInfo;
 
 public class SendPluginMessage implements Runnable {
@@ -20,7 +21,7 @@ public class SendPluginMessage implements Runnable {
 
 	    public void run() {
 			// Message debugging (can be toggled live)
-			if (geSuit.instance.isDebugEnabled()) {
+			if (geSuit.getPlugin().isDebugEnabled()) {
 				Utilities.dumpPacket(channel, "SEND", bytes.toByteArray(), true);
 			}
 

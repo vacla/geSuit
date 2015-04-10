@@ -56,7 +56,7 @@ public class Utilities {
     
     public static void databaseUpdateRowUUID(int id, String playerName)
     {
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new DatabaseUpdateRowUUID(id, playerName));
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new DatabaseUpdateRowUUID(id, playerName));
     }
 
     public static String dumpPacket(String channel, String direction, byte[] bytes, boolean consoleOutput) {
@@ -74,7 +74,7 @@ public class Utilities {
 		}
 		
 		if (consoleOutput) {
-			geSuit.instance.getLogger().info("DEBUG: [" + channel + "] " + direction + ": " + data);
+			geSuit.getLogger().info("DEBUG: [" + channel + "] " + direction + ": " + data);
 		}
 		return data;
 	}

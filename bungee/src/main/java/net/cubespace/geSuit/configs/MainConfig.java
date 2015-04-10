@@ -7,10 +7,11 @@ import net.cubespace.Yamler.Config.Config;
 import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.configs.SubConfig.Redis;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 
 public class MainConfig extends Config {
     public MainConfig() {
-        CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "config.yml");
+        CONFIG_FILE = geSuit.getFile("config.yml");
     }
 
     public Database Database = new Database();

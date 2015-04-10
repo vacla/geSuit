@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.pluginmessages;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.tasks.SendPluginMessage;
 
@@ -15,7 +16,7 @@ public class LeavingServer
     public static void execute(GSPlayer player)
     {
         if (player.getServer() == null) {
-            geSuit.instance.getLogger().severe("Player has no Server, this should never happen. Please check");
+            geSuit.getLogger().severe("Player has no Server, this should never happen. Please check");
             new Throwable().printStackTrace();
             return;
         }
@@ -31,6 +32,6 @@ public class LeavingServer
             e.printStackTrace();
         }
 
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, player.getProxiedPlayer().getServer().getInfo(), bytes));
+        geSuitPlugin.proxy.getScheduler().runAsync(geSuit.getPlugin(), new SendPluginMessage(OUTGOING_CHANNEL, player.getProxiedPlayer().getServer().getInfo(), bytes));
     }
 }

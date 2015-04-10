@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.pluginmessages;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.tasks.SendPluginMessage;
 import net.md_5.bungee.api.ProxyServer;
@@ -31,6 +32,6 @@ public class TeleportToPlayer {
             e.printStackTrace();
         }
 
-		geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, ProxyServer.getInstance().getServerInfo(target.getServer()), bytes));
+		geSuitPlugin.proxy.getScheduler().runAsync(geSuit.getPlugin(), new SendPluginMessage(OUTGOING_CHANNEL, ProxyServer.getInstance().getServerInfo(target.getServer()), bytes));
     }
 }

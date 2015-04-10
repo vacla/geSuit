@@ -17,6 +17,7 @@ import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.events.BanPlayerEvent;
 import net.cubespace.geSuit.events.UnbanPlayerEvent;
 import net.cubespace.geSuit.events.WarnPlayerEvent;
@@ -409,7 +410,7 @@ public class BansManager {
     }
 
     public static void displayPlayerWarnHistory(final String sentBy, final String player) {
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 GSPlayer s = PlayerManager.getPlayer(sentBy);
@@ -465,7 +466,7 @@ public class BansManager {
     }
 
     public static void displayWhereHistory(final String sentBy, final String options, final String search) {
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 GSPlayer s = PlayerManager.getPlayer(sentBy);
@@ -528,9 +529,9 @@ public class BansManager {
             			PlayerManager.sendMessageToTarget(sender,
                     		ChatColor.GREEN + "[Tracker] Player \"" + searchString + "\" associated with " + tracking.size() + " accounts:");
             			
-            			if (geSuit.proxy.getPlayer(searchString) != null) {
-            			    final ProxiedPlayer player = geSuit.proxy.getPlayer(searchString);
-            			    geSuit.proxy.getScheduler().runAsync(geSuit.instance, new Runnable() {
+            			if (geSuitPlugin.proxy.getPlayer(searchString) != null) {
+            			    final ProxiedPlayer player = geSuitPlugin.proxy.getPlayer(searchString);
+            			    geSuitPlugin.proxy.getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             		            @Override
             		            public void run() {
             		                String location = GeoIPManager.lookup(player.getAddress().getAddress());
@@ -588,7 +589,7 @@ public class BansManager {
         final GSPlayer s = PlayerManager.getPlayer(sentBy);
         final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
             	BanTarget bt = getBanTarget(player);
@@ -634,7 +635,7 @@ public class BansManager {
         final GSPlayer s = PlayerManager.getPlayer(sentBy);
         final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 int pagenum;
@@ -667,7 +668,7 @@ public class BansManager {
     }
     
     public static void displayNameHistory(final String sentBy, final String nameOrId) {
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 GSPlayer s = PlayerManager.getPlayer(sentBy);
@@ -711,7 +712,7 @@ public class BansManager {
     }
     
     private static void callEvent(final Event event) {
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 ProxyServer.getInstance().getPluginManager().callEvent(event);

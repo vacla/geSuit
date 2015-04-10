@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.pluginmessages;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
@@ -22,7 +23,7 @@ public class TeleportToLocation
     public static void execute(GSPlayer player, Location location)
     {
         if (location.getServer() == null) {
-            geSuit.instance.getLogger().severe("Location has no Server, this should never happen. Please check");
+            geSuit.getLogger().severe("Location has no Server, this should never happen. Please check");
             new Exception("").printStackTrace();
             return;
         }
@@ -54,6 +55,6 @@ public class TeleportToLocation
             e.printStackTrace();
         }
 
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, location.getServer(), bytes));
+        geSuitPlugin.proxy.getScheduler().runAsync(geSuit.getPlugin(), new SendPluginMessage(OUTGOING_CHANNEL, location.getServer(), bytes));
     }
 }

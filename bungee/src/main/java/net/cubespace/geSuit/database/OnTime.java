@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.database;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.LoggingManager;
@@ -33,8 +34,8 @@ public class OnTime implements IRepository {
         Calendar end = Calendar.getInstance();
         end.setTimeInMillis(tsEnd);
         
-        if (geSuit.instance.isDebugEnabled())
-        	geSuit.instance.DebugMsg("OnTime (" +player+ "): " + sdf.format(new Date(start.getTimeInMillis())) + " -> " + sdf.format(new Date(end.getTimeInMillis())));
+        if (geSuit.getPlugin().isDebugEnabled())
+        	geSuit.getPlugin().DebugMsg("OnTime (" +player+ "): " + sdf.format(new Date(start.getTimeInMillis())) + " -> " + sdf.format(new Date(end.getTimeInMillis())));
 
         // Set up the initial slots
         Calendar slot = Calendar.getInstance();
@@ -72,8 +73,8 @@ public class OnTime implements IRepository {
         	if (time > 0) {
         		time = (time / 1000);  // Convert from milliseconds to seconds
 
-                if (geSuit.instance.isDebugEnabled())
-                	geSuit.instance.DebugMsg("   " +
+                if (geSuit.getPlugin().isDebugEnabled())
+                	geSuit.getPlugin().DebugMsg("   " +
 	        			"Row " + loop + ": " +
 	        			"Slot: " + sdf.format(new Date(slot.getTimeInMillis())) + " = " +
 	        			sdf.format(new Date(from)) + " -> " +

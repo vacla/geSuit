@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.managers;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
@@ -136,7 +137,7 @@ public class HomesManager {
 
         for(Home home : homes) {
         	if (home.loc.getServer() == null) {
-        		geSuit.instance.getLogger().warning("Invalid server for home \"" + home.name + "\" of player " + player.getName() + "!");
+        		geSuit.getLogger().warning("Invalid server for home \"" + home.name + "\" of player " + player.getName() + "!");
         		continue;
         	}
 

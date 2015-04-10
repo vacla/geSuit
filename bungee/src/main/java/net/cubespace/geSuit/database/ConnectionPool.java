@@ -2,6 +2,7 @@ package net.cubespace.geSuit.database;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
@@ -49,7 +50,7 @@ public class ConnectionPool {
             connections.add(ch);
         }
 
-        ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {
+        ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
             public void run() {
                 Iterator<ConnectionHandler> cons = connections.iterator();
                 while (cons.hasNext()) {
@@ -72,7 +73,7 @@ public class ConnectionPool {
                         standardQuery("CREATE TABLE IF NOT EXISTS `"+ tableInformation[0] +"` (" + tableInformation[1] + ");");
                     } catch (SQLException e) {
                         e.printStackTrace();
-                        geSuit.instance.getLogger().severe("Could not create Table");
+                        geSuit.getLogger().severe("Could not create Table");
                         throw new IllegalStateException();
                     }
                 }

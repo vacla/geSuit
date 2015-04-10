@@ -3,6 +3,7 @@ package net.cubespace.geSuit.commands;
 import java.util.UUID;
 
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.objects.GSPlayer;
@@ -34,9 +35,9 @@ public class DebugCommand extends Command
     	if (args.length == 0) {
 	
 	        // Toggle debug
-	        geSuit.instance.setDebugEnabled(!geSuit.instance.isDebugEnabled());
+	        geSuit.getPlugin().setDebugEnabled(!geSuit.getPlugin().isDebugEnabled());
 	        
-	        PlayerManager.sendMessageToTarget(sender, "geSuit debug is now: " + (geSuit.instance.isDebugEnabled() ? "ENABLED" : "DISABLED"));
+	        PlayerManager.sendMessageToTarget(sender, "geSuit debug is now: " + (geSuit.getPlugin().isDebugEnabled() ? "ENABLED" : "DISABLED"));
     	} else {
     		String action = args[0];
     		if (action.equals("help")) {

@@ -1,7 +1,7 @@
 package net.cubespace.geSuit.objects;
 
 
-import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.md_5.bungee.api.config.ServerInfo;
 
 public class Portal {
@@ -25,7 +25,7 @@ public class Portal {
     }
 
     public ServerInfo getServer() {
-        return geSuit.proxy.getServerInfo(server);
+        return geSuitPlugin.proxy.getServerInfo(server);
     }
 
     public String getName() {
