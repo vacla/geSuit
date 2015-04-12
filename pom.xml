@@ -16,6 +16,11 @@
     <modules>
         <module>bungee</module>
         <module>common</module>
+
+        <!-- Bukkit Module Container -->
+        <module>bukkit</module>
+
+        <!-- geSuit Modules -->
     </modules>
 
     <repositories>
