@@ -135,7 +135,7 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
                 throw new AssertionError(e);
             }
         } catch (ArgumentParseException e) {
-            sender.sendMessage(getUsage());
+            sender.sendMessage(getUsage().replace("<command>", label));
             System.out.println("APE: argument " + e.getArgument() + " in variant " + e.getNode().getVariant() + " value " + e.getValue());
             return true;
         }
