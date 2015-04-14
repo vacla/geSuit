@@ -21,6 +21,7 @@
         <module>bukkit</module>
 
         <!-- geSuit Modules -->
+        <module>modules/moderation</module>
     </modules>
 
     <repositories>

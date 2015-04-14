@@ -1,6 +1,8 @@
 package net.cubespace.geSuit.modules;
 
+import net.cubespace.geSuit.CommandManager;
 import net.cubespace.geSuit.GSPlugin;
+import net.cubespace.geSuit.core.channel.ChannelManager;
 
 /**
  * Represents a module.
@@ -48,12 +50,22 @@ public abstract class BaseModule {
     public void onDisable(DisableReason reason) throws Exception {}
     
     /**
+     * Called when this modules commands are ready to be registered (if any)
+     * @param manager The CommandManager to register commands in
+     */
+    public void registerCommands(CommandManager manager) {}
+    
+    /**
      * Called upon a request to reload configurations
      */
     public void onReloadConfiguration() {}
     
     public final GSPlugin getPlugin() {
         return plugin;
+    }
+    
+    public final ChannelManager getChannelManager() {
+        return plugin.getChannelManager();
     }
     
     public enum DisableReason {

@@ -16,6 +16,7 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     private RedisConnection redis;
     private RedisChannelManager channelManager;
     private ModuleManager moduleManager;
+    private CommandManager commandManager;
     
     @Override
     public void onEnable() {
@@ -27,6 +28,8 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         }
         
         channelManager = new RedisChannelManager(redis, getLogger());
+        
+        commandManager = new CommandManager(this);
         
         getLogger().info("Initializing modules:");
         moduleManager = new ModuleManager(this);
@@ -60,6 +63,10 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     
     public ModuleManager getModuleManager() {
         return moduleManager;
+    }
+    
+    public CommandManager getCommandManager() {
+        return commandManager;
     }
 
     @Override

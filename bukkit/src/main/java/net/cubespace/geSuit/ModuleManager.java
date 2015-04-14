@@ -230,6 +230,9 @@ public class ModuleManager implements Listener {
                 def.state = ModuleState.Loaded;
             }
             
+            // Register commands
+            module.registerCommands(plugin.getCommandManager());
+            
             loadedModules.put(def.name.toLowerCase(), module);
             moduleRevDefs.put(module, def);
             
