@@ -1,4 +1,4 @@
-package net.cubespace.geSuit.core;
+package net.cubespace.geSuit.core.objects;
 
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;

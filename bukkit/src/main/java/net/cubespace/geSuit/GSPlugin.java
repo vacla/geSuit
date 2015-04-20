@@ -3,10 +3,10 @@ package net.cubespace.geSuit;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import net.cubespace.geSuit.core.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.ChannelManager;
+import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
-import net.cubespace.geSuit.core.channel.RedisConnection;
+import net.cubespace.geSuit.core.storage.RedisConnection;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;

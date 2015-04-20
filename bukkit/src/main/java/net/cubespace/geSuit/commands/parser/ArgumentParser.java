@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.UUID;
 
-import net.cubespace.geSuit.core.DateDiff;
+import net.cubespace.geSuit.core.objects.DateDiff;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

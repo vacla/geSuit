@@ -1,4 +1,4 @@
-package net.cubespace.geSuit.core;
+package net.cubespace.geSuit.core.channel;
 
 public interface ConnectionNotifier
 {

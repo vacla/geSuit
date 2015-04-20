@@ -1,10 +1,10 @@
-package net.cubespace.geSuit.core.channel;
+package net.cubespace.geSuit.core.storage;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
-import net.cubespace.geSuit.core.ConnectionNotifier;
+import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager.PubSubHandler;
 
 import com.google.common.base.Charsets;

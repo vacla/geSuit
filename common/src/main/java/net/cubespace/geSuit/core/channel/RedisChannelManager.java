@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
+import net.cubespace.geSuit.core.storage.RedisConnection;
 import redis.clients.jedis.BinaryJedisPubSub;
 
 import com.google.common.base.Charsets;

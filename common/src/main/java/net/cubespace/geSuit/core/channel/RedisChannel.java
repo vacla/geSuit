@@ -7,6 +7,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import net.cubespace.geSuit.core.storage.RedisConnection;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 
