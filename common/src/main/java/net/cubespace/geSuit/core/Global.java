@@ -15,7 +15,7 @@ public final class Global {
     private static geCore instance;
     
     public static void setInstance(geCore instance) {
-        Preconditions.checkState(instance == null, "Instance is already set!");
+        Preconditions.checkState(Global.instance == null, "Instance is already set!");
         
         Global.instance = instance;
     }

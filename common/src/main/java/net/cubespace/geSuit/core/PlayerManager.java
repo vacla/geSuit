@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.core;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,6 +26,8 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     private Map<String, GlobalPlayer> playersByName;
     private Map<String, GlobalPlayer> playersByNickname;
     
+    private Map<UUID, GlobalPlayer> loadingPlayers;
+    
     private Channel<BaseMessage> channel;
     private RedisConnection redis;
     private boolean proxyMode;
@@ -33,12 +36,18 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         playersById = Maps.newHashMap();
         playersByName = Maps.newHashMap();
         playersByNickname = Maps.newHashMap();
+        loadingPlayers = Maps.newHashMap();
         
         this.proxyMode = proxyMode;
         channel = manager.createChannel("players", BaseMessage.class);
+        channel.setCodec(new BaseMessage.Codec());
         channel.addReceiver(this);
         redis = ((RedisChannelManager)manager).getRedis();
     }
+    
+    //=================================================
+    //           Player retrieval methods
+    //=================================================
     
     public GlobalPlayer getPlayer(String name, boolean useNickname) {
         List<GlobalPlayer> players = getPlayers(name, useNickname);
@@ -99,6 +108,10 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         return playersById.get(id);
     }
     
+    //=================================================
+    //           Offline player retrieval
+    //=================================================
+    
     public GlobalPlayer getOfflinePlayer(UUID id) {
         throw new UnsupportedOperationException("Not Implemented");
     }
@@ -111,6 +124,10 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         throw new UnsupportedOperationException("Not Implemented");
     }
     
+    //=================================================
+    //            Packet handling methods
+    //=================================================
+    
     private void onUpdateMessage(PlayerUpdateMessage update) {
         switch (update.action) {
         case Reset:
@@ -119,17 +136,17 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
             playersByNickname.clear();
         case Add:
             for (Item item : update.items) {
-                onPlayerJoin(item.id, item.username, item.nickname);
+                addPlayer(item.id, item.username, item.nickname);
             }
             break;
         case Name:
             for (Item item : update.items) {
-                onNickname(item.id, item.nickname);
+                onNickname(item.id, item.nickname, false);
             }
             break;
         case Remove:
             for (Item item : update.items) {
-                onPlayerLeave(item.id);
+                removePlayer(item.id);
             }
             break;
         case Invalidate:
@@ -147,18 +164,9 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         broadcastFullUpdate();
     }
     
-    private void onPlayerNickname(GlobalPlayer player, String previous) {
-        if (previous != null) {
-            playersByNickname.remove(previous.toLowerCase());
-        }
-        
-        if (player.hasNickname()) {
-            playersByNickname.put(player.getNickname().toLowerCase(), player);
-        }
-    }
-    
     @Override
     public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value) {
+        System.out.println("Got message " + value);
         if (value instanceof PlayerUpdateMessage && !proxyMode) {
             onUpdateMessage((PlayerUpdateMessage)value);
         } else if (value instanceof PlayerUpdateRequestMessage && proxyMode) {
@@ -166,18 +174,28 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         }
     }
     
-    // For proxy implementations
-    protected void onPlayerJoin(UUID id, String name, String nickname) {
+    
+    //=================================================
+    //               Player manipulation
+    //=================================================
+    
+    
+    private void addPlayer(UUID id, String name, String nickname) {
         GlobalPlayer player = new GlobalPlayer(id, redis, name, nickname);
-        
-        playersById.put(id, player);
-        playersByName.put(name.toLowerCase(), player);
-        if (nickname != null) {
-            playersByNickname.put(nickname.toLowerCase(), player);
-        }
+        addPlayer(player);
     }
     
-    protected void onPlayerLeave(UUID id) {
+    private void addPlayer(GlobalPlayer player) {
+        playersById.put(player.getUniqueId(), player);
+        playersByName.put(player.getName().toLowerCase(), player);
+        if (player.hasNickname()) {
+            playersByNickname.put(player.getNickname().toLowerCase(), player);
+        }
+        
+        System.out.println("Adding player " + player.getName());
+    }
+    
+    private boolean removePlayer(UUID id) {
         GlobalPlayer player = playersById.remove(id);
         if (player != null) {
             playersByName.remove(player.getName().toLowerCase());
@@ -185,15 +203,98 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
             if (player.hasNickname()) {
                 playersByNickname.remove(player.getNickname().toLowerCase());
             }
+            
+            System.out.println("Removing player " + player.getName());
+            return true;
         }
+        
+        return false;
     }
     
-    protected void onNickname(UUID id, String newName) {
+    //=================================================
+    //               Proxy ONLY methods
+    //=================================================
+    
+    protected GlobalPlayer loadPlayer(UUID id, String name, InetAddress address) {
+        GlobalPlayer player;
+        
+        if (playersById.containsKey(id)) {
+            player = playersById.get(id);
+        } else {
+            player = new GlobalPlayer(id, redis, name, null);
+        }
+        
+        if (!player.isLoaded()) {
+            player.refresh();
+        }
+        
+        // Update name for name changes
+        if (!player.getName().equals(name)) {
+            player.setName(name);
+        }
+        
+        // Update IP for address changes
+        if (!address.equals(player.getAddress())) {
+            player.setAddress(address);
+        }
+        
+        return player;
+    }
+    
+    /**
+     * To be called on the proxy upon completing the initial login stage.
+     * @param player The player that is joining
+     */
+    protected void onPlayerLoginInitComplete(GlobalPlayer player) {
+        // They are now loaded, but they are not yet ready to be visible to all servers
+        loadingPlayers.put(player.getUniqueId(), player);
+    }
+    
+    /**
+     * To be called on the proxy upon connecting to a server
+     * @param id The UUID of the joining player
+     * @return true if this was the first connection
+     */
+    protected boolean onServerConnect(UUID id) {
+        GlobalPlayer player = loadingPlayers.remove(id);
+        if (player != null) {
+            addPlayer(player);
+            channel.broadcast(new PlayerUpdateMessage(Action.Add, new Item(id, player.getName(), player.getNickname())));
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * To be called upon a player disconnecting
+     * @param id The UUID of the quitting player
+     */
+    protected void onPlayerLeave(UUID id) {
+        if (removePlayer(id)) {
+            channel.broadcast(new PlayerUpdateMessage(Action.Remove, new Item(id, null, null)));
+        }
+        
+        loadingPlayers.remove(id);
+    }
+    
+    protected void onNickname(UUID id, String newName, boolean broadcast) {
         GlobalPlayer player = playersById.get(id);
         if (player != null) {
-            String previous = player.getNickname();
+            if (player.hasNickname()) {
+                playersByNickname.remove(player.getNickname().toLowerCase());
+            }
+            
             player.setNickname0(newName);
-            onPlayerNickname(player, previous);
+            
+            if (player.hasNickname()) {
+                playersByNickname.put(player.getNickname().toLowerCase(), player);
+            }
+            
+            if (broadcast) {
+                channel.broadcast(new PlayerUpdateMessage(Action.Name, new Item(id, null, newName)));
+            }
         }
     }
     
@@ -208,5 +309,15 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         }
         
         channel.broadcast(new PlayerUpdateMessage(Action.Reset, items));
+    }
+    
+    //=================================================
+    //               Client ONLY methods
+    //=================================================
+    
+    public void requestFullUpdate() {
+        Preconditions.checkState(!proxyMode);
+        
+        channel.broadcast(new PlayerUpdateRequestMessage());
     }
 }

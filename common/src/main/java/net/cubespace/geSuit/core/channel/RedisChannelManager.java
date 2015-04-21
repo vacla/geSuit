@@ -75,10 +75,10 @@ public class RedisChannelManager implements ChannelManager {
     }
 
     public class PubSubHandler extends BinaryJedisPubSub {
-        private CountDownLatch mLatch;
+        private CountDownLatch latch;
 
         public PubSubHandler(CountDownLatch latch) {
-            mLatch = latch;
+            this.latch = latch;
         }
 
         @Override
@@ -94,9 +94,9 @@ public class RedisChannelManager implements ChannelManager {
                 long key = in.readLong();
 
                 if (key != connection.getKey()) {
-                    byte[] data = Arrays.copyOfRange(message, 4, message.length);
+                    byte[] data = Arrays.copyOfRange(message, 8, message.length);
                     String name = new String(channel, Charsets.UTF_8);
-                    name = name.substring(4);
+                    name = name.substring(7);
 
                     Channel<?> ch = getChannel(name);
                     if (ch != null)
@@ -121,7 +121,7 @@ public class RedisChannelManager implements ChannelManager {
 
         @Override
         public void onPSubscribe(byte[] pattern, int subscribedChannels) {
-            mLatch.countDown();
+            latch.countDown();
         }
 
     }

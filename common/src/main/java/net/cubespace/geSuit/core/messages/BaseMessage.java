@@ -28,7 +28,7 @@ public abstract class BaseMessage {
     public static BaseMessage readMessage(DataInput in) throws IOException {
         int id = 0;
         try {
-            id = in.readByte();
+            id = in.readUnsignedByte();
             Class<? extends BaseMessage> clazz = mMessages.get(id);
             if (clazz == null) {
                 System.err.println("Tried to read unknown packet " + id);

@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.core;
 
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -21,6 +22,8 @@ public class GlobalPlayer {
     private String name;
     private String nickname;
     private UUID id;
+    
+    private InetAddress address;
     
     private boolean isBanned;
     private BanInfo<GlobalPlayer> banInfo;
@@ -53,6 +56,12 @@ public class GlobalPlayer {
         return name;
     }
     
+    void setName(String name) {
+        loadIfNeeded();
+        this.name = name;
+        isDirty = true;
+    }
+    
     public String getDisplayName() {
         if (nickname == null) {
             return name;
@@ -83,6 +92,17 @@ public class GlobalPlayer {
     
     public UUID getUniqueId() {
         return id;
+    }
+    
+    public InetAddress getAddress() {
+        return address;
+    }
+    
+    void setAddress(InetAddress address) {
+        loadIfNeeded();
+        isDirty = true;
+        
+        this.address = address;
     }
     
     public boolean isBanned() {
@@ -206,6 +226,10 @@ public class GlobalPlayer {
         return isDirty;
     }
     
+    public void markDirty() {
+        isDirty = true;
+    }
+    
     public void saveIfModified() {
         if (isDirty) {
             save();
@@ -230,6 +254,10 @@ public class GlobalPlayer {
     
     private void load0(RedisInterface redis) {
         // Player settings
+        if (!redis.getJedis().exists(String.format("geSuit.players.%s.info", Utilities.toString(id)))) {
+            return;
+        }
+        
         Map<String, String> values = redis.getJedis().hgetAll(String.format("geSuit.players.%s.info", Utilities.toString(id)));
         name = values.get("name");
         nickname = values.get("nickname");
@@ -244,6 +272,7 @@ public class GlobalPlayer {
         
         tpEnabled = Boolean.parseBoolean(values.get("tp-enable"));
         newPlayer = Boolean.parseBoolean(values.get("new-player"));
+        address = Utilities.makeInetAddress(values.get("ip"));
         
         // Ban info
         if (isBanned) {
@@ -305,6 +334,8 @@ public class GlobalPlayer {
         
         values.put("tp-enable", String.valueOf(tpEnabled));
         values.put("new-player", String.valueOf(newPlayer));
+        
+        values.put("ip", address.getHostAddress());
         
         pipe.hmset(String.format("geSuit.players.%s.info", Utilities.toString(id)), values);
         

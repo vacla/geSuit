@@ -1,8 +1,11 @@
 package net.cubespace.geSuit;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
+import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.geCore;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
@@ -15,6 +18,8 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     
     private RedisConnection redis;
     private RedisChannelManager channelManager;
+    private BukkitPlayerManager playerManager;
+    
     private ModuleManager moduleManager;
     private CommandManager commandManager;
     
@@ -27,7 +32,10 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
             return;
         }
         
-        channelManager = new RedisChannelManager(redis, getLogger());
+        initializeChannelManager();
+        playerManager = new BukkitPlayerManager(channelManager);
+        geCore core = new geCore(playerManager, channelManager);
+        Global.setInstance(core);
         
         commandManager = new CommandManager(this);
         
@@ -41,6 +49,7 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     public void onDisable() {
         moduleManager.disableAll();
         
+        channelManager.shutdown();
         redis.shutdown();
     }
     
@@ -54,6 +63,25 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Unable to connect to redis:", e);
             return false;
+        }
+    }
+    
+    private void initializeChannelManager() {
+        channelManager = new RedisChannelManager(redis, getLogger());
+        
+        final CountDownLatch latch = new CountDownLatch(1);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                channelManager.initialize(latch);
+            }
+        }, "GSSubscriptionThread");
+
+        thread.start();
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
         }
     }
     

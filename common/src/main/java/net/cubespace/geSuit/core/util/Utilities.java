@@ -1,5 +1,7 @@
 package net.cubespace.geSuit.core.util;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,5 +36,18 @@ public class Utilities {
     
     public static String toString(UUID uuid) {
         return uuid.toString().replace("-", "");
+    }
+    
+    public static InetAddress makeInetAddress(String address) {
+        // Rough match to filter out anything that isnt an IPv4 or IPv6 address
+        if (address.matches("(?:\\d+.\\d+.\\d+.\\d+)|(?:[0-9a-fA-F]+(?::[0-9a-fA-F]*)+)")) {
+            try {
+                return InetAddress.getByName(address);
+            } catch (UnknownHostException e) {
+                throw new IllegalArgumentException("Input is not an IP address");
+            }
+        } else {
+            throw new IllegalArgumentException("Input is not an IP address");
+        }
     }
 }

@@ -17,6 +17,8 @@ import net.cubespace.geSuit.commands.WarnCommand;
 import net.cubespace.geSuit.commands.WarnHistoryCommand;
 import net.cubespace.geSuit.commands.WhereCommand;
 import net.cubespace.geSuit.configs.SubConfig.Redis;
+import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.geCore;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
@@ -48,6 +50,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private boolean DebugEnabled = false;
     private RedisConnection redis;
     private RedisChannelManager channelManager;
+    private BungeePlayerManager playerManager;
 
     public void onEnable() {
         geSuit.setPlugin(this);
@@ -68,7 +71,11 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
             return;
         }
 
-        channelManager = new RedisChannelManager(redis, getLogger());
+        initializeChannelManager();
+        playerManager = new BungeePlayerManager(channelManager);
+        getProxy().getPluginManager().registerListener(this, playerManager);
+        geCore core = new geCore(playerManager, channelManager);
+        Global.setInstance(core);
 
         registerListeners();
         registerCommands();
@@ -147,8 +154,28 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
 
         return redis != null;
     }
+    
+    private void initializeChannelManager() {
+        channelManager = new RedisChannelManager(redis, getLogger());
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        getProxy().getScheduler().runAsync(this, new Runnable() {
+            @Override
+            public void run() {
+                channelManager.initialize(latch);
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+        }
+    }
 
     public void onDisable() {
+        channelManager.shutdown();
+        redis.shutdown();
         DatabaseManager.connectionPool.closeConnections();
     }
 
