@@ -96,7 +96,7 @@ class RedisChannel<T> implements Channel<T> {
             return (T) data;
 
         if (channelCodec == null) {
-            System.err.println("[Trampoline] No codec has been set. Unable to translate value for receiving (" + getName() + ")");
+            System.err.println("[geSuit] No codec has been set. Unable to translate value for receiving (" + getName() + ")");
             return null;
         }
 
@@ -106,7 +106,7 @@ class RedisChannel<T> implements Channel<T> {
         try {
             return channelCodec.decode(in);
         } catch (IOException e) {
-            System.err.println("[Trampoline] An error occured while decoding a channel message (" + getName() + ")");
+            System.err.println("[geSuit] An error occured while decoding a channel message (" + getName() + ")");
             e.printStackTrace();
             return null;
         }

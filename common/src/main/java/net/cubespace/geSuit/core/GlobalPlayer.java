@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.core;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -39,17 +40,30 @@ public class GlobalPlayer {
     
     private boolean isDirty;
     private boolean isLoaded;
+    private boolean isReal;
     private RedisConnection connection;
     
     GlobalPlayer(UUID id, RedisConnection redis, String name, String nickname) {
+        this(id, redis);
+        
+        this.name = name;
+        this.nickname = nickname;
+    }
+    
+    GlobalPlayer(UUID id, RedisConnection redis) {
         this.id = id;
         this.connection = redis;
         
         attachments = Maps.newIdentityHashMap();
         attachmentClasses = Sets.newHashSet();
-        
+        isReal = true;
+    }
+    
+    GlobalPlayer(String name) {
+        this.id = UUID.nameUUIDFromBytes(("Invalid " + name).getBytes());
         this.name = name;
-        this.nickname = nickname;
+        
+        isReal = false;
     }
     
     public String getName() {
@@ -196,6 +210,8 @@ public class GlobalPlayer {
     }
     
     public void refresh() {
+        Preconditions.checkState(isReal, "This player is not real, you cannt save or load it");
+        
         isDirty = false;
         isLoaded = true;
         
@@ -237,6 +253,8 @@ public class GlobalPlayer {
     }
     
     public void save() {
+        Preconditions.checkState(isReal, "This player is not real, you cannt save or load it");
+        
         if (!isLoaded) {
             throw new IllegalStateException("This player has not been loaded yet. Please load it first with refresh() before you can save it");
         }
@@ -338,6 +356,7 @@ public class GlobalPlayer {
         values.put("ip", address.getHostAddress());
         
         pipe.hmset(String.format("geSuit.players.%s.info", Utilities.toString(id)), values);
+        pipe.sadd("geSuit.players.all", Utilities.toString(id));
         
         // Ban info
         if (isBanned) {
@@ -357,7 +376,35 @@ public class GlobalPlayer {
             pipe.hmset(String.format("geSuit.players.%s.%s", Utilities.toString(id), attachment.getKey().getSimpleName().toLowerCase()), attachmentValues);
         }
         
-        pipe.exec();
+        pipe.sync();
+    }
+    
+    void loadLite() {
+        Preconditions.checkState(isReal, "This player is not real, you cannt save or load it");
+        
+        connection.new JedisRunner<Void>() {
+            @Override
+            public Void execute(Jedis jedis) throws Exception {
+                loadLite0(jedis);
+                return null;
+            }
+        }.runAndThrow();
+    }
+    
+    private void loadLite0(Jedis redis) {
+        // Player settings
+        if (!redis.exists(String.format("geSuit.players.%s.info", Utilities.toString(id)))) {
+            return;
+        }
+        
+        List<String> values = redis.hmget(String.format("geSuit.players.%s.info", Utilities.toString(id)), "name", "nickname");
+        
+        name = values.get(0);
+        nickname = values.get(1);
+    }
+    
+    boolean isReal() {
+        return isReal;
     }
     
     @Override

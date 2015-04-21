@@ -4,6 +4,9 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import redis.clients.jedis.Jedis;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -19,12 +22,17 @@ import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Action;
 import net.cubespace.geSuit.core.messages.PlayerUpdateRequestMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Item;
 import net.cubespace.geSuit.core.storage.RedisConnection;
+import net.cubespace.geSuit.core.storage.RedisConnection.JedisRunner;
+import net.cubespace.geSuit.core.util.PlayerCache;
+import net.cubespace.geSuit.core.util.Utilities;
 
 public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     
     private Map<UUID, GlobalPlayer> playersById;
     private Map<String, GlobalPlayer> playersByName;
     private Map<String, GlobalPlayer> playersByNickname;
+    
+    private PlayerCache offlineCache;
     
     private Map<UUID, GlobalPlayer> loadingPlayers;
     
@@ -38,11 +46,15 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         playersByNickname = Maps.newHashMap();
         loadingPlayers = Maps.newHashMap();
         
+        offlineCache = new PlayerCache(TimeUnit.MINUTES.toMillis(10));
+        
         this.proxyMode = proxyMode;
         channel = manager.createChannel("players", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
         channel.addReceiver(this);
+        
         redis = ((RedisChannelManager)manager).getRedis();
+        loadScripts();
     }
     
     //=================================================
@@ -113,7 +125,16 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     //=================================================
     
     public GlobalPlayer getOfflinePlayer(UUID id) {
-        throw new UnsupportedOperationException("Not Implemented");
+        GlobalPlayer player = offlineCache.get(id);
+        if (player != null) {
+            if (!player.isReal()) {
+                return null;
+            } else {
+                return player;
+            }
+        }
+        
+        return loadOfflinePlayer(id);
     }
     
     public GlobalPlayer getOfflinePlayer(String name) {
@@ -121,7 +142,25 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     public GlobalPlayer getOfflinePlayer(String name, boolean useNickname) {
-        throw new UnsupportedOperationException("Not Implemented");
+        GlobalPlayer player = offlineCache.getFromName(name, useNickname);
+        if (player != null) {
+            if (!player.isReal()) {
+                return null;
+            } else {
+                return player;
+            }
+        }
+        
+        UUID id = executeGetPlayerByName(name, useNickname);
+        if (id == null) {
+            // The purpose of this is to cache the name lookup so we can prevent re-doing the lookup within a 
+            // short amount of time as it is quite expensive
+            GlobalPlayer fake = new GlobalPlayer(name);
+            offlineCache.add(fake);
+            return null;
+        } else {
+            return loadOfflinePlayer(id);
+        }
     }
     
     //=================================================
@@ -181,7 +220,11 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     
     
     private void addPlayer(UUID id, String name, String nickname) {
-        GlobalPlayer player = new GlobalPlayer(id, redis, name, nickname);
+        GlobalPlayer player = offlineCache.get(id);
+        if (player == null) {
+            player = new GlobalPlayer(id, redis, name, nickname);
+        }
+        
         addPlayer(player);
     }
     
@@ -191,6 +234,8 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         if (player.hasNickname()) {
             playersByNickname.put(player.getNickname().toLowerCase(), player);
         }
+        
+        offlineCache.remove(player);
         
         System.out.println("Adding player " + player.getName());
     }
@@ -204,6 +249,8 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
                 playersByNickname.remove(player.getNickname().toLowerCase());
             }
             
+            offlineCache.add(player);
+            
             System.out.println("Removing player " + player.getName());
             return true;
         }
@@ -211,16 +258,22 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         return false;
     }
     
+    private GlobalPlayer loadOfflinePlayer(UUID id) {
+        GlobalPlayer player = new GlobalPlayer(id, redis);
+        player.loadLite();
+        
+        offlineCache.add(player);
+        return player;
+    }
+    
     //=================================================
     //               Proxy ONLY methods
     //=================================================
     
     protected GlobalPlayer loadPlayer(UUID id, String name, InetAddress address) {
-        GlobalPlayer player;
+        GlobalPlayer player = offlineCache.get(id);
         
-        if (playersById.containsKey(id)) {
-            player = playersById.get(id);
-        } else {
+        if (player == null) {
             player = new GlobalPlayer(id, redis, name, null);
         }
         
@@ -248,6 +301,7 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     protected void onPlayerLoginInitComplete(GlobalPlayer player) {
         // They are now loaded, but they are not yet ready to be visible to all servers
         loadingPlayers.put(player.getUniqueId(), player);
+        offlineCache.remove(player);
     }
     
     /**
@@ -259,6 +313,7 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         GlobalPlayer player = loadingPlayers.remove(id);
         if (player != null) {
             addPlayer(player);
+            player.saveIfModified();
             channel.broadcast(new PlayerUpdateMessage(Action.Add, new Item(id, player.getName(), player.getNickname())));
             
             return true;
@@ -282,12 +337,12 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     protected void onNickname(UUID id, String newName, boolean broadcast) {
         GlobalPlayer player = playersById.get(id);
         if (player != null) {
-            if (player.hasNickname()) {
+            String previous = player.getNickname();
+            player.setNickname0(newName);
+ 
+            if (previous != null) {
                 playersByNickname.remove(player.getNickname().toLowerCase());
             }
-            
-            player.setNickname0(newName);
-            
             if (player.hasNickname()) {
                 playersByNickname.put(player.getNickname().toLowerCase(), player);
             }
@@ -295,6 +350,8 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
             if (broadcast) {
                 channel.broadcast(new PlayerUpdateMessage(Action.Name, new Item(id, null, newName)));
             }
+            
+            offlineCache.onUpdateNickname(player, previous);
         }
     }
     
@@ -319,5 +376,63 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         Preconditions.checkState(!proxyMode);
         
         channel.broadcast(new PlayerUpdateRequestMessage());
+    }
+    
+    //=================================================
+    //                 Redis scripts
+    //=================================================
+    
+    private void loadScripts() {
+        redis.new JedisRunner<Void>() {
+            @Override
+            public Void execute(Jedis jedis) throws Exception {
+                scriptSHAGetPlayerByName = jedis.scriptLoad(scriptGetPlayerByName());
+                return null;
+            }
+        }.runAndThrow();
+    }
+    private String scriptSHAGetPlayerByName;
+    private String scriptGetPlayerByName() {
+        return    "local ids = redis.call('SMEMBERS','geSuit.players.all')\n"
+                + "local useNickname = (ARGV[2] == 'true')\n"
+                + "local target = ARGV[1]\n"
+                + "local match = ''\n"
+                + "for _, id in pairs(ids) do\n"
+                + "  redis.call('ECHO', 'Searching ' .. id .. '\\n') \n"
+                + "  local key = 'geSuit.players.' .. id .. '.info'\n"
+                + "  local name = redis.call('HGET', key, 'name'):lower()\n"
+                + "  if name == target then\n"
+                + "    return id\n"
+                + "  elseif useNickname and redis.call('HEXISTS', key, 'nickname') ~= 0 then\n"
+                + "    redis.call('ECHO', 'Nickname ' .. redis.call('HGET', key, 'nickname'))\n"
+                + "    name = redis.call('HGET', key, 'nickname'):lower()\n"
+                + "    if name == target then\n"
+                + "      match = id\n"
+                + "    end\n"
+                + "  end\n"
+                + "end\n"
+                + "if match:len() > 0 then\n"
+                + "  return match\n"
+                + "end";
+    }
+    
+    private UUID executeGetPlayerByName(final String name, final boolean useNicknames) {
+        JedisRunner<String> runner = redis.new JedisRunner<String>() {
+            @Override
+            public String execute(Jedis jedis) throws Exception {
+                return (String)jedis.evalsha(scriptSHAGetPlayerByName, 0, name, String.valueOf(useNicknames));
+            }
+        };
+        
+        if (runner.runAndThrow()) {
+            String result = runner.getReturnedValue();
+            if (result == null) {
+                return null;
+            } else {
+                return Utilities.makeUUID(result);
+            }
+        } else {
+            throw new RuntimeException("Error running getPlayerByName redis script", runner.getLastError());
+        }
     }
 }
