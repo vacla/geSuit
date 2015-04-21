@@ -132,7 +132,11 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     //=================================================
     
     public GlobalPlayer getOfflinePlayer(UUID id) {
-        GlobalPlayer player = offlineCache.get(id);
+        GlobalPlayer player = playersById.get(id);
+        if (player == null) {
+            player = offlineCache.get(id);
+        }
+        
         if (player != null) {
             if (!player.isReal()) {
                 return null;
@@ -149,7 +153,11 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     public GlobalPlayer getOfflinePlayer(String name, boolean useNickname) {
-        GlobalPlayer player = offlineCache.getFromName(name, useNickname);
+        GlobalPlayer player = getPlayerExact(name, useNickname);
+        if (player == null) {
+            player = offlineCache.getFromName(name, useNickname);
+        }
+        
         if (player != null) {
             if (!player.isReal()) {
                 return null;
@@ -224,7 +232,6 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
             onUpdateRequestMessage();
         }
     }
-    
     
     //=================================================
     //               Player manipulation
@@ -323,7 +330,6 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     protected void onPlayerLoginInitComplete(GlobalPlayer player) {
         // They are now loaded, but they are not yet ready to be visible to all servers
         loadingPlayers.put(player.getUniqueId(), player);
-        offlineCache.remove(player);
     }
     
     /**
@@ -334,6 +340,7 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     protected boolean onServerConnect(UUID id) {
         GlobalPlayer player = loadingPlayers.remove(id);
         if (player != null) {
+            offlineCache.remove(player);
             addPlayer(player, false);
             player.saveIfModified();
             channel.broadcast(new PlayerUpdateMessage(Action.Add, new Item(id, player.getName(), player.getNickname())));
