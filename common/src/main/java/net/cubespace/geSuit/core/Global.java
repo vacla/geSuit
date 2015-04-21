@@ -55,4 +55,8 @@ public final class Global {
     public static ChannelManager getChannelManager() {
         return instance.getChannelManager();
     }
+    
+    public static Platform getPlatform() {
+        return instance.getPlatform();
+    }
 }

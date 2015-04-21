@@ -1,0 +1,7 @@
+package net.cubespace.geSuit.core;
+
+import net.cubespace.geSuit.core.events.GSEvent;
+
+public interface Platform {
+    public void callEvent(GSEvent event);
+}

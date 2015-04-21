@@ -122,7 +122,7 @@ class RedisChannel<T> implements Channel<T> {
                 try {
                     receiver.onDataReceive(this, value);
                 } catch (Throwable e) {
-                    System.err.println("[Trampoline] An error occured while passing a channel message (" + getName() + ") to the receiver " + receiver.getClass().getName());
+                    System.err.println("[geSuit] An error occured while passing a channel message (" + getName() + ") to the receiver " + receiver.getClass().getName());
                     e.printStackTrace();
                 }
             }

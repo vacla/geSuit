@@ -16,6 +16,9 @@ import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
+import net.cubespace.geSuit.core.events.player.GlobalPlayerJoinEvent;
+import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
+import net.cubespace.geSuit.core.events.player.GlobalPlayerQuitEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Action;
@@ -55,6 +58,10 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         
         redis = ((RedisChannelManager)manager).getRedis();
         loadScripts();
+    }
+    
+    public RedisConnection getRedis() {
+        return redis;
     }
     
     //=================================================
@@ -168,19 +175,24 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     //=================================================
     
     private void onUpdateMessage(PlayerUpdateMessage update) {
+        boolean isReset = false;
         switch (update.action) {
         case Reset:
             playersById.clear();
             playersByName.clear();
             playersByNickname.clear();
+            isReset = true;
         case Add:
             for (Item item : update.items) {
-                addPlayer(item.id, item.username, item.nickname);
+                addPlayer(item.id, item.username, item.nickname, isReset);
             }
             break;
         case Name:
             for (Item item : update.items) {
-                onNickname(item.id, item.nickname, false);
+                GlobalPlayer player = playersById.get(item.id);
+                if (player != null) {
+                    onNickname(player, item.nickname, false);
+                }
             }
             break;
         case Remove:
@@ -219,16 +231,16 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     //=================================================
     
     
-    private void addPlayer(UUID id, String name, String nickname) {
+    private void addPlayer(UUID id, String name, String nickname, boolean isReset) {
         GlobalPlayer player = offlineCache.get(id);
         if (player == null) {
-            player = new GlobalPlayer(id, redis, name, nickname);
+            player = new GlobalPlayer(id, this, name, nickname);
         }
         
-        addPlayer(player);
+        addPlayer(player, isReset);
     }
     
-    private void addPlayer(GlobalPlayer player) {
+    private void addPlayer(GlobalPlayer player, boolean isReset) {
         playersById.put(player.getUniqueId(), player);
         playersByName.put(player.getName().toLowerCase(), player);
         if (player.hasNickname()) {
@@ -237,12 +249,18 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         
         offlineCache.remove(player);
         
+        // Dont call the event on a reset
+        if (!isReset) {
+            Global.getPlatform().callEvent(new GlobalPlayerJoinEvent(player));
+        }
         System.out.println("Adding player " + player.getName());
     }
     
     private boolean removePlayer(UUID id) {
         GlobalPlayer player = playersById.remove(id);
         if (player != null) {
+            Global.getPlatform().callEvent(new GlobalPlayerQuitEvent(player));
+            
             playersByName.remove(player.getName().toLowerCase());
             
             if (player.hasNickname()) {
@@ -259,7 +277,7 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     private GlobalPlayer loadOfflinePlayer(UUID id) {
-        GlobalPlayer player = new GlobalPlayer(id, redis);
+        GlobalPlayer player = new GlobalPlayer(id, this);
         player.loadLite();
         
         offlineCache.add(player);
@@ -270,11 +288,15 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     //               Proxy ONLY methods
     //=================================================
     
+    protected GlobalPlayer getPreloadedPlayer(UUID id) {
+        return loadingPlayers.get(id);
+    }
+    
     protected GlobalPlayer loadPlayer(UUID id, String name, InetAddress address) {
         GlobalPlayer player = offlineCache.get(id);
         
         if (player == null) {
-            player = new GlobalPlayer(id, redis, name, null);
+            player = new GlobalPlayer(id, this, name, null);
         }
         
         if (!player.isLoaded()) {
@@ -312,7 +334,7 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     protected boolean onServerConnect(UUID id) {
         GlobalPlayer player = loadingPlayers.remove(id);
         if (player != null) {
-            addPlayer(player);
+            addPlayer(player, false);
             player.saveIfModified();
             channel.broadcast(new PlayerUpdateMessage(Action.Add, new Item(id, player.getName(), player.getNickname())));
             
@@ -332,27 +354,6 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         }
         
         loadingPlayers.remove(id);
-    }
-    
-    protected void onNickname(UUID id, String newName, boolean broadcast) {
-        GlobalPlayer player = playersById.get(id);
-        if (player != null) {
-            String previous = player.getNickname();
-            player.setNickname0(newName);
- 
-            if (previous != null) {
-                playersByNickname.remove(player.getNickname().toLowerCase());
-            }
-            if (player.hasNickname()) {
-                playersByNickname.put(player.getNickname().toLowerCase(), player);
-            }
-            
-            if (broadcast) {
-                channel.broadcast(new PlayerUpdateMessage(Action.Name, new Item(id, null, newName)));
-            }
-            
-            offlineCache.onUpdateNickname(player, previous);
-        }
     }
     
     public void broadcastFullUpdate() {
@@ -376,6 +377,51 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         Preconditions.checkState(!proxyMode);
         
         channel.broadcast(new PlayerUpdateRequestMessage());
+    }
+    
+    //=================================================
+    //            GlobalPlayer interactions
+    //=================================================
+    
+    public void trySetNickname(GlobalPlayer player, String nickname) throws IllegalArgumentException {
+        if (nickname != null) {
+            // Make sure its not the same as any existing username or nickname
+            if (!nickname.equalsIgnoreCase(player.getName())) {
+                if (playersByName.containsKey(nickname.toLowerCase())) {
+                    throw new IllegalArgumentException("Name already in use");
+                } else if (playersByNickname.containsKey(nickname.toLowerCase())) {
+                    throw new IllegalArgumentException("Name already in use");
+                }
+            // Make sure its not exactly the same as the players name (can be case changed)
+            } else if (nickname.equals(player.getName())) {
+                throw new IllegalArgumentException("Name already in use");
+            }
+        }
+        
+        onNickname(player, nickname, true);
+    }
+    
+    private void onNickname(GlobalPlayer player, String newName, boolean broadcast) {
+        String previous = player.getNickname();
+        player.setNickname0(newName);
+
+        if (previous != null) {
+            playersByNickname.remove(player.getNickname().toLowerCase());
+        }
+        if (player.hasNickname()) {
+            playersByNickname.put(player.getNickname().toLowerCase(), player);
+        }
+        
+        if (broadcast) {
+            channel.broadcast(new PlayerUpdateMessage(Action.Name, new Item(player.getUniqueId(), null, newName)));
+        }
+        
+        offlineCache.onUpdateNickname(player, previous);
+        Global.getPlatform().callEvent(new GlobalPlayerNicknameEvent(player, previous));
+    }
+    
+    public void invalidate(GlobalPlayer player) {
+        channel.broadcast(new PlayerUpdateMessage(Action.Invalidate, new Item(player.getUniqueId(), null, null)));
     }
     
     //=================================================

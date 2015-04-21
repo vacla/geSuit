@@ -74,7 +74,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         initializeChannelManager();
         playerManager = new BungeePlayerManager(channelManager);
         getProxy().getPluginManager().registerListener(this, playerManager);
-        geCore core = new geCore(playerManager, channelManager);
+        geCore core = new geCore(new BungeePlatform(this), playerManager, channelManager);
         Global.setInstance(core);
 
         registerListeners();

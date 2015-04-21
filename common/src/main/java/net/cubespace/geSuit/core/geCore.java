@@ -7,8 +7,10 @@ import net.cubespace.geSuit.core.channel.ChannelManager;
 public class geCore {
     private PlayerManager playerManager;
     private ChannelManager channelManager;
+    private Platform platform;
     
-    public geCore(PlayerManager playerManager, ChannelManager channelManager) {
+    public geCore(Platform platform, PlayerManager playerManager, ChannelManager channelManager) {
+        this.platform = platform;
         this.playerManager = playerManager;
         this.channelManager = channelManager;
     }
@@ -47,5 +49,9 @@ public class geCore {
     
     public ChannelManager getChannelManager() {
         return channelManager;
+    }
+    
+    public Platform getPlatform() {
+        return platform;
     }
 }

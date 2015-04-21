@@ -11,7 +11,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import net.cubespace.geSuit.core.attachments.Attachment;
 import net.cubespace.geSuit.core.objects.BanInfo;
-import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.core.storage.RedisInterface;
 import net.cubespace.geSuit.core.util.Utilities;
 
@@ -41,18 +40,18 @@ public class GlobalPlayer {
     private boolean isDirty;
     private boolean isLoaded;
     private boolean isReal;
-    private RedisConnection connection;
+    private PlayerManager manager;
     
-    GlobalPlayer(UUID id, RedisConnection redis, String name, String nickname) {
-        this(id, redis);
+    GlobalPlayer(UUID id, PlayerManager manager, String name, String nickname) {
+        this(id, manager);
         
         this.name = name;
         this.nickname = nickname;
     }
     
-    GlobalPlayer(UUID id, RedisConnection redis) {
+    GlobalPlayer(UUID id, PlayerManager manager) {
         this.id = id;
-        this.connection = redis;
+        this.manager = manager;
         
         attachments = Maps.newIdentityHashMap();
         attachmentClasses = Sets.newHashSet();
@@ -92,11 +91,11 @@ public class GlobalPlayer {
         this.nickname = nickname;
     }
     
-    public void setNickname(String nickname) {
+    public void setNickname(String nickname) throws IllegalArgumentException {
+        Preconditions.checkState(isReal, "This player is not real, you cannot modify it");
         loadIfNeeded();
         
-        // TODO: Never allow a nickname to be the same as a real name
-        setNickname0(nickname);
+        manager.trySetNickname(this, nickname);
         isDirty = true;
     }
     
@@ -210,12 +209,12 @@ public class GlobalPlayer {
     }
     
     public void refresh() {
-        Preconditions.checkState(isReal, "This player is not real, you cannt save or load it");
+        Preconditions.checkState(isReal, "This player is not real, you cannot save or load it");
         
         isDirty = false;
         isLoaded = true;
         
-        connection.new JedisRunner<Void>() {
+        manager.getRedis().new JedisRunner<Void>() {
             @Override
             public Void execute(Jedis jedis) throws Exception {
                 load0(new RedisInterface(jedis));
@@ -253,7 +252,7 @@ public class GlobalPlayer {
     }
     
     public void save() {
-        Preconditions.checkState(isReal, "This player is not real, you cannt save or load it");
+        Preconditions.checkState(isReal, "This player is not real, you cannot save or load it");
         
         if (!isLoaded) {
             throw new IllegalStateException("This player has not been loaded yet. Please load it first with refresh() before you can save it");
@@ -261,13 +260,15 @@ public class GlobalPlayer {
         
         isDirty = false;
         
-        connection.new JedisRunner<Void>() {
+        manager.getRedis().new JedisRunner<Void>() {
             @Override
             public Void execute(Jedis jedis) throws Exception {
                 save0(jedis);
                 return null;
             }
         }.runAndThrow();
+        
+        manager.invalidate(this);
     }
     
     private void load0(RedisInterface redis) {
@@ -380,9 +381,9 @@ public class GlobalPlayer {
     }
     
     void loadLite() {
-        Preconditions.checkState(isReal, "This player is not real, you cannt save or load it");
+        Preconditions.checkState(isReal, "This player is not real, you cannot save or load it");
         
-        connection.new JedisRunner<Void>() {
+        manager.getRedis().new JedisRunner<Void>() {
             @Override
             public Void execute(Jedis jedis) throws Exception {
                 loadLite0(jedis);

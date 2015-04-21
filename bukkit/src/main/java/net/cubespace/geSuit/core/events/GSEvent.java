@@ -10,7 +10,7 @@ public abstract class GSEvent extends Event {
     
     @Override
     public HandlerList getHandlers() {
-        return handlers.get(getClass());
+        return (HandlerList)getHandlerList(getClass());
     }
     
     protected static Object getHandlerList(Class<?> thisClass) {
