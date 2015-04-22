@@ -35,7 +35,6 @@ public class GlobalPlayer {
     private boolean newPlayer;
     
     private Map<Class<? extends Attachment>, Attachment> attachments;
-    private Set<String> attachmentClasses;
     
     private boolean isDirty;
     private boolean isLoaded;
@@ -54,7 +53,6 @@ public class GlobalPlayer {
         this.manager = manager;
         
         attachments = Maps.newIdentityHashMap();
-        attachmentClasses = Sets.newHashSet();
         isReal = true;
     }
     
@@ -300,8 +298,6 @@ public class GlobalPlayer {
         
         // Attachments
         Set<String> attachmentNames = redis.getJedis().smembers(String.format("geSuit.players.%s.attachments", Utilities.toString(id)));
-        attachmentClasses.clear();
-        attachmentClasses.addAll(attachmentNames);
         
         for (String name : attachmentNames) {
             try {
@@ -367,15 +363,21 @@ public class GlobalPlayer {
         }
         
         // Attachments
-        pipe.sadd(String.format("geSuit.players.%s.attachments", Utilities.toString(id)), attachmentClasses.toArray(new String[attachmentClasses.size()]));
+        Set<String> classes = Sets.newHashSet();
         for (Entry<Class<? extends Attachment>, Attachment> attachment : attachments.entrySet()) {
-            // Create the map
-            Map<String, String> attachmentValues = Maps.newHashMap();
-            attachment.getValue().save(attachmentValues);
-            
-            // Save it
-            pipe.hmset(String.format("geSuit.players.%s.%s", Utilities.toString(id), attachment.getKey().getSimpleName().toLowerCase()), attachmentValues);
+            if (attachment.getValue().isSaved()) {
+                classes.add(attachment.getKey().getName());
+                
+                // Create the map
+                Map<String, String> attachmentValues = Maps.newHashMap();
+                attachment.getValue().save(attachmentValues);
+                
+                // Save it
+                pipe.hmset(String.format("geSuit.players.%s.%s", Utilities.toString(id), attachment.getKey().getSimpleName().toLowerCase()), attachmentValues);
+            }
         }
+        
+        pipe.sadd(String.format("geSuit.players.%s.attachments", Utilities.toString(id)), classes.toArray(new String[classes.size()]));
         
         pipe.sync();
     }

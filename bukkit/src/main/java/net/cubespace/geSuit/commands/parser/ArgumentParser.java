@@ -5,6 +5,8 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.UUID;
 
+import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.objects.DateDiff;
 
 import org.bukkit.Bukkit;
@@ -132,10 +134,32 @@ public class ArgumentParser {
         }
     };
     
+    public static final Function<String, GlobalPlayer> CONVERT_GLOBALPLAYER = new Function<String, GlobalPlayer>() {
+        @Override
+        public GlobalPlayer apply(String text) {
+            GlobalPlayer player = Global.getPlayer(text);
+            if (player == null) {
+                throw new IllegalArgumentException("Unknown player " + text);
+            }
+            return player;
+        }
+    };
+    
     public static final Function<String, OfflinePlayer> CONVERT_OFFLINEPLAYER = new Function<String, OfflinePlayer>() {
         @Override
         public OfflinePlayer apply(String text) {
             return Bukkit.getOfflinePlayer(text);
+        }
+    };
+    
+    public static final Function<String, GlobalPlayer> CONVERT_OFFLINE_GLOBALPLAYER = new Function<String, GlobalPlayer>() {
+        @Override
+        public GlobalPlayer apply(String text) {
+            GlobalPlayer player = Global.getOfflinePlayer(text);
+            if (player == null) {
+                throw new IllegalArgumentException("Unknown player " + text);
+            }
+            return player;
         }
     };
     
@@ -174,5 +198,6 @@ public class ArgumentParser {
         converters.put(InetAddress.class, CONVERT_INETADDRESS);
         converters.put(UUID.class, CONVERT_UUID);
         converters.put(DateDiff.class, CONVERT_DATEDIFF);
+        converters.put(GlobalPlayer.class, CONVERT_GLOBALPLAYER);
     }
 }
