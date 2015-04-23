@@ -8,12 +8,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.util.EnumSet;
 import java.util.UUID;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.storage.ByteStorable;
 
 import com.google.common.primitives.Primitives;
 
@@ -117,11 +120,14 @@ public class NetworkUtils {
         } else if (object instanceof InetAddress) {
             out.writeByte(11);
             writeInetAddress(out, (InetAddress)object);
-        } else if (object instanceof Serializable) {
+        } else if (object instanceof ByteStorable) {
             out.writeByte(12);
+            writeByteStorable(out, (ByteStorable)object);
+        } else if (object instanceof Serializable) {
+            out.writeByte(13);
             writeObject(out, object);
         } else if (object instanceof GlobalPlayer) {
-            out.writeByte(13);
+            out.writeByte(14);
             writeUUID(out, ((GlobalPlayer)object).getUniqueId());
         } else {
             throw new IllegalArgumentException("Unable to serialize value " + object);
@@ -157,8 +163,10 @@ public class NetworkUtils {
         case 11:
             return readInetAddress(in);
         case 12:
-            return readObject(in);
+            return readByteStorable(in);
         case 13:
+            return readObject(in);
+        case 14:
             return Global.getOfflinePlayer(readUUID(in));
         default:
             throw new IllegalStateException("Unknown data value with id " + type);
@@ -181,5 +189,31 @@ public class NetworkUtils {
         }
         
         return false;
+    }
+    
+    public static void writeByteStorable(DataOutput out, ByteStorable storable) throws IOException {
+        out.writeUTF(storable.getClass().getName());
+        storable.save(out);
+    }
+    
+    public static ByteStorable readByteStorable(DataInput in) throws IOException, ClassNotFoundException {
+        String className = in.readUTF();
+        Class<? extends ByteStorable> clazz = Class.forName(className).asSubclass(ByteStorable.class);
+        
+        try {
+            Constructor<? extends ByteStorable> constructor = clazz.getConstructor();
+            constructor.setAccessible(true);
+            ByteStorable storable = constructor.newInstance();
+            storable.load(in);
+            return storable;
+        } catch (NoSuchMethodException e) {
+            throw new IOException("Unable to load " + className + " because it has no default constructor");
+        } catch (IllegalAccessException e) {
+            throw new IOException("Unable to load " + className, e);
+        } catch (InvocationTargetException e) {
+            throw new IOException("Unable to load " + className, e);
+        } catch (InstantiationException e) {
+            throw new IOException("Unable to load " + className, e);
+        }
     }
 }
