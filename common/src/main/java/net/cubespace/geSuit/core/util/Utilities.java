@@ -7,6 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.GlobalPlayer;
+
 public class Utilities {
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
@@ -49,5 +52,14 @@ public class Utilities {
         } else {
             throw new IllegalArgumentException("Input is not an IP address");
         }
+    }
+    
+    public static GlobalPlayer getPlayerAdvanced(String name) {
+        GlobalPlayer player = Global.getOfflinePlayer(name);
+        if (player == null) {
+            player = Global.getPlayer(name);
+        }
+        
+        return player;
     }
 }

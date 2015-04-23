@@ -3,6 +3,7 @@ package net.cubespace.geSuit.core;
 import java.util.UUID;
 
 import net.cubespace.geSuit.core.channel.ChannelManager;
+import net.cubespace.geSuit.core.remote.RemoteManager;
 
 import com.google.common.base.Preconditions;
 
@@ -54,6 +55,10 @@ public final class Global {
     
     public static ChannelManager getChannelManager() {
         return instance.getChannelManager();
+    }
+    
+    public static RemoteManager getRemoteManager() {
+        return instance.getRemoteManager();
     }
     
     public static Platform getPlatform() {

@@ -451,13 +451,11 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
                 + "local target = ARGV[1]\n"
                 + "local match = ''\n"
                 + "for _, id in pairs(ids) do\n"
-                + "  redis.call('ECHO', 'Searching ' .. id .. '\\n') \n"
                 + "  local key = 'geSuit.players.' .. id .. '.info'\n"
                 + "  local name = redis.call('HGET', key, 'name'):lower()\n"
                 + "  if name == target then\n"
                 + "    return id\n"
                 + "  elseif useNickname and redis.call('HEXISTS', key, 'nickname') ~= 0 then\n"
-                + "    redis.call('ECHO', 'Nickname ' .. redis.call('HGET', key, 'nickname'))\n"
                 + "    name = redis.call('HGET', key, 'nickname'):lower()\n"
                 + "    if name == target then\n"
                 + "      match = id\n"
@@ -473,7 +471,7 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         JedisRunner<String> runner = redis.new JedisRunner<String>() {
             @Override
             public String execute(Jedis jedis) throws Exception {
-                return (String)jedis.evalsha(scriptSHAGetPlayerByName, 0, name, String.valueOf(useNicknames));
+                return (String)jedis.evalsha(scriptSHAGetPlayerByName, 0, name.toLowerCase(), String.valueOf(useNicknames));
             }
         };
         

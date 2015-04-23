@@ -3,16 +3,21 @@ package net.cubespace.geSuit.core;
 import java.util.UUID;
 
 import net.cubespace.geSuit.core.channel.ChannelManager;
+import net.cubespace.geSuit.core.remote.RemoteManager;
 
 public class geCore {
     private PlayerManager playerManager;
     private ChannelManager channelManager;
+    private RemoteManager remoteManager;
+    
     private Platform platform;
     
     public geCore(Platform platform, PlayerManager playerManager, ChannelManager channelManager) {
         this.platform = platform;
         this.playerManager = playerManager;
         this.channelManager = channelManager;
+        
+        remoteManager = new RemoteManager(channelManager);
     }
     
     public GlobalPlayer getPlayer(String name) {
@@ -49,6 +54,10 @@ public class geCore {
     
     public ChannelManager getChannelManager() {
         return channelManager;
+    }
+    
+    public RemoteManager getRemoteManager() {
+        return remoteManager;
     }
     
     public Platform getPlatform() {

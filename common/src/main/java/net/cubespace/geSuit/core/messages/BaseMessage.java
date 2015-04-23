@@ -54,6 +54,7 @@ public abstract class BaseMessage {
     static {
         addMessageType(0, PlayerUpdateMessage.class);
         addMessageType(1, PlayerUpdateRequestMessage.class);
+        addMessageType(2, RemoteInvokeMessage.class);
     }
     
     public static class Codec implements ChannelCodec<BaseMessage> {

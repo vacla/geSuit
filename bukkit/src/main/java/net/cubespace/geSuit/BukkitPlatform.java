@@ -1,5 +1,7 @@
 package net.cubespace.geSuit;
 
+import java.util.logging.Logger;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,14 +18,21 @@ import net.cubespace.geSuit.core.events.player.GlobalPlayerJoinEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
 
 public class BukkitPlatform implements Platform, Listener {
+    private Plugin plugin;
     
     public BukkitPlatform(Plugin plugin) {
+        this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
     
     @Override
     public void callEvent(GSEvent event) {
         Bukkit.getPluginManager().callEvent(event);
+    }
+    
+    @Override
+    public Logger getLogger() {
+        return plugin.getLogger();
     }
     
     @EventHandler
