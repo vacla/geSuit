@@ -6,10 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
+import net.cubespace.geSuit.GSPlugin;
 import net.cubespace.geSuit.commands.parser.ArgumentParseException;
 import net.cubespace.geSuit.commands.parser.ParseTree;
 import net.cubespace.geSuit.commands.parser.ParseTree.ParseResult;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -26,6 +28,7 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
     
     private Object commandHolder;
     private List<Method> variants;
+    private List<Boolean> executeAsync;
     private ParseTree parseTree;
     
     public WrapperCommand(Plugin plugin, Object holder, Method method, net.cubespace.geSuit.commands.Command tag) {
@@ -35,6 +38,7 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
         commandHolder = holder;
         
         variants = Lists.newArrayList();
+        executeAsync = Lists.newArrayList();
         setUsage("");
         
         if (!tag.description().isEmpty()) {
@@ -68,6 +72,7 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
         }
         
         variants.add(method);
+        executeAsync.add(tag.async());
         if (getUsage().isEmpty()) {
             setUsage(tag.usage());
         } else { 
@@ -89,12 +94,12 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
     }
 
     @Override
-    public boolean execute(CommandSender sender, String label, String[] args) {
+    public boolean execute(final CommandSender sender, String label, String[] args) {
         try {
             System.out.println("Executing command " + label);
             
             ParseResult result = parseTree.parse(args);
-            Invokable<Object, Void> method = parseTree.getVariant(result.variant);
+            final Invokable<Object, Void> method = parseTree.getVariant(result.variant);
             System.out.println("Parse complete: " + method.toString() + " in " + method.getDeclaringClass().getName());
             
             
@@ -109,35 +114,48 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
                 return true;
             }
             
-            // Now we can invoke the method
-            try {
-                Object[] parameters = new Object[result.parameters.size() + 1];
-                parameters[0] = sender;
-                int index = 1;
-                for (Object object : result.parameters) {
-                    parameters[index++] = object;
-                }
-                
-                System.out.println("params: " + Arrays.toString(parameters));
-                
-                method.invoke(commandHolder, parameters);
-                return true;
-            } catch (InvocationTargetException e) {
-                if (e.getCause() instanceof IllegalArgumentException) {
-                    sender.sendMessage(ChatColor.RED + e.getCause().getMessage());
-                } else {
-                    plugin.getLogger().log(Level.SEVERE, "An error occured while executing command " + getName(), e.getCause());
-                    sender.sendMessage(ChatColor.RED + "An internal error occured while executing this command");
-                }
-                return true;
-            } catch (IllegalAccessException e) {
-                // Should not happen
-                throw new AssertionError(e);
+            // Make parameter list
+            final Object[] parameters = new Object[result.parameters.size() + 1];
+            parameters[0] = sender;
+            int index = 1;
+            for (Object object : result.parameters) {
+                parameters[index++] = object;
+            }
+            
+            System.out.println("params: " + Arrays.toString(parameters));
+            
+            // Invoke the method
+            if (executeAsync.get(result.variant)) {
+                Bukkit.getScheduler().runTaskAsynchronously(GSPlugin.getPlugin(GSPlugin.class), new Runnable() {
+                    @Override
+                    public void run() {
+                        execute(sender, method, parameters);
+                    }
+                });
+            } else {
+                execute(sender, method, parameters);
             }
         } catch (ArgumentParseException e) {
             sender.sendMessage(getUsage().replace("<command>", label));
             System.out.println("APE: argument " + e.getArgument() + " in variant " + e.getNode().getVariant() + " value " + e.getValue());
-            return true;
+        }
+        
+        return true;
+    }
+    
+    private void execute(CommandSender sender, Invokable<Object, Void> method, Object[] params) {
+        try {
+            method.invoke(commandHolder, params);
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof IllegalArgumentException) {
+                sender.sendMessage(ChatColor.RED + e.getCause().getMessage());
+            } else {
+                plugin.getLogger().log(Level.SEVERE, "An error occured while executing command " + getName(), e.getCause());
+                sender.sendMessage(ChatColor.RED + "An internal error occured while executing this command");
+            }
+        } catch (IllegalAccessException e) {
+            // Should not happen
+            throw new AssertionError(e);
         }
     }
     
