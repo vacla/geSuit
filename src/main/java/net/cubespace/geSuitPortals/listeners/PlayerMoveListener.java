@@ -17,6 +17,7 @@ public class PlayerMoveListener implements Listener {
 	
 	@EventHandler(ignoreCancelled = true)
 	public void PlayerMove(PlayerMoveEvent e){
+		if (e.getPlayer().hasMetadata("npc")) return; // Ignore NPCs
 		Block t = e.getTo().getBlock();
 		Block f = e.getFrom().getBlock();
 		if(f.equals(t)){
@@ -42,6 +43,7 @@ public class PlayerMoveListener implements Listener {
 	
 	@EventHandler(ignoreCancelled = true)
 	public void PlayerMove(PlayerPortalEvent e){
+		if (e.getPlayer().hasMetadata("npc")) return; // Ignore NPCs
 		Block b = null;
 		Block f = e.getFrom().getBlock();
 		if(!PortalsManager.PORTALS.containsKey(f.getWorld())){
