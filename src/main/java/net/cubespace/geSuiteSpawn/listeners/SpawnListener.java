@@ -14,7 +14,7 @@ public class SpawnListener implements Listener {
 
     @EventHandler( priority = EventPriority.LOWEST )
     public void playerLogin( PlayerJoinEvent e ) {
-		if (e.getPlayer().hasMetadata("npc")) return; // Ignore NPCs
+		if (e.getPlayer().hasMetadata("NPC")) return; // Ignore NPCs
         if ( !SpawnManager.HAS_SPAWNS ) {
             Bukkit.getScheduler().runTaskLaterAsynchronously( geSuitSpawn.INSTANCE, new Runnable() {
                 @Override
@@ -42,7 +42,7 @@ public class SpawnListener implements Listener {
 
     @EventHandler( priority = EventPriority.NORMAL, ignoreCancelled=true )
     public void playerRespawn( PlayerRespawnEvent e ) {
-		if (e.getPlayer().hasMetadata("npc")) return; // Ignore NPCs
+		if (e.getPlayer().hasMetadata("NPC")) return; // Ignore NPCs
         Player p = e.getPlayer();
         if ( p.getBedSpawnLocation() != null && p.hasPermission( "gesuit.spawns.spawn.bed" ) ) {
             e.setRespawnLocation( p.getBedSpawnLocation() );
