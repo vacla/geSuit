@@ -22,6 +22,7 @@ public class TeleportsListener implements Listener {
 	
 	@EventHandler
 	public void playerConnect (PlayerSpawnLocationEvent e){
+		if (e.getPlayer().hasMetadata("npc")) return; // Ignore NPCs
 		if(TeleportsManager.pendingTeleports.containsKey(e.getPlayer().getName())){
 			Player t = TeleportsManager.pendingTeleports.get(e.getPlayer().getName());
 			TeleportsManager.pendingTeleports.remove(e.getPlayer().getName());
@@ -46,6 +47,7 @@ public class TeleportsListener implements Listener {
 		if(e.getCause() != TeleportCause.PLUGIN && e.getCause() != TeleportCause.COMMAND){
 			return;
 		}
+		if (e.getPlayer().hasMetadata("npc")) return; // Ignore NPCs
 		
 		if(TeleportsManager.ignoreTeleport.contains(e.getPlayer())){
 			TeleportsManager.ignoreTeleport.remove(e.getPlayer());
@@ -56,6 +58,7 @@ public class TeleportsListener implements Listener {
 	
 	@EventHandler
 	public void playerLeave(PlayerQuitEvent e){
+		if (e.getPlayer().hasMetadata("npc")) return; // Ignore NPCs
 		TeleportsManager.RemovePlayer(e.getPlayer());
 		boolean empty = false;
 		if(Bukkit.getOnlinePlayers().length==1){
@@ -66,6 +69,7 @@ public class TeleportsListener implements Listener {
 	
 	@EventHandler(ignoreCancelled = true)
 	public void playerDeath(PlayerDeathEvent e){
+		if (e.getEntity().hasMetadata("npc")) return; // Ignore NPCs
 		TeleportsManager.sendDeathBackLocation(e.getEntity());
         TeleportsManager.ignoreTeleport.add(e.getEntity());
 	}
@@ -73,6 +77,7 @@ public class TeleportsListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void setFormatChat(final PlayerLoginEvent e) {
+		if (e.getPlayer().hasMetadata("npc")) return; // Ignore NPCs
 		if(e.getPlayer().hasPermission("gesuit.*")){
 			PermissionsManager.addAllPermissions(e.getPlayer());
 		}else if(e.getPlayer().hasPermission("gesuit.admin")){
@@ -86,6 +91,7 @@ public class TeleportsListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void playerJoin(final PlayerJoinEvent event) {
+		if (event.getPlayer().hasMetadata("npc")) return; // Ignore NPCs
 	    // This is to prevent recording the back location when teleporting across servers, on the destination server
 	    TeleportsManager.ignoreTeleport.add(event.getPlayer());
 	    Bukkit.getScheduler().runTaskLaterAsynchronously( geSuitTeleports.instance, new Runnable() {
