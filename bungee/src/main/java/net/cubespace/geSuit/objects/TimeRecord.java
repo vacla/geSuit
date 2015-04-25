@@ -1,7 +1,9 @@
 package net.cubespace.geSuit.objects;
 
+import java.util.UUID;
+
 public class TimeRecord {
-    private String uuid;
+    private UUID uuid;
 
 	private long timeTotal;
 	private long timeSession;
@@ -10,15 +12,15 @@ public class TimeRecord {
     private long timeMonth;
     private long timeYear;
 
-    public TimeRecord(String uuid) {
+    public TimeRecord(UUID uuid) {
         this.uuid = uuid;
     }
 
-    public String getUuid() {
+    public UUID getUniqueId() {
 		return uuid;
 	}
 
-	public void setUuid(String uuid) {
+	public void setUniqueId(UUID uuid) {
 		this.uuid = uuid;
 	}
 

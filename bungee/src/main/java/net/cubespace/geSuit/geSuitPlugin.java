@@ -23,8 +23,7 @@ import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
 import net.cubespace.geSuit.core.storage.RedisConnection;
-import net.cubespace.geSuit.database.ConnectionHandler;
-import net.cubespace.geSuit.database.convert.Converter;
+import net.cubespace.geSuit.database.DatabaseManager;
 import net.cubespace.geSuit.listeners.APIMessageListener;
 import net.cubespace.geSuit.listeners.BansMessageListener;
 import net.cubespace.geSuit.listeners.BungeeChatListener;
@@ -37,7 +36,6 @@ import net.cubespace.geSuit.listeners.TeleportsListener;
 import net.cubespace.geSuit.listeners.TeleportsMessageListener;
 import net.cubespace.geSuit.listeners.WarpsMessageListener;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.GeoIPManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.ChatColor;
@@ -51,19 +49,17 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private RedisConnection redis;
     private RedisChannelManager channelManager;
     private BungeePlayerManager playerManager;
+    private DatabaseManager databaseManager;
 
     public void onEnable() {
         geSuit.setPlugin(this);
         LoggingManager.log(ChatColor.GREEN + "Starting geSuit");
         proxy = ProxyServer.getInstance();
         LoggingManager.log(ChatColor.GREEN + "Initialising Managers");
-
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-        connectionHandler.release();
-
-        if (ConfigManager.main.ConvertFromBungeeSuite) {
-            Converter converter = new Converter();
-            converter.convert();
+        
+        databaseManager = new DatabaseManager(ConfigManager.main.Database);
+        if (!databaseManager.initialize()) {
+            return;
         }
 
         if (!initializeRedis()) {
@@ -175,8 +171,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
 
     public void onDisable() {
         channelManager.shutdown();
+        databaseManager.shutdown();
         redis.shutdown();
-        DatabaseManager.connectionPool.closeConnections();
     }
 
     public boolean isDebugEnabled() {

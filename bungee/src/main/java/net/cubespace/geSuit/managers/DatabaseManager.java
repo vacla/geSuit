@@ -3,12 +3,12 @@ package net.cubespace.geSuit.managers;
 import net.cubespace.geSuit.database.Bans;
 import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.Homes;
-import net.cubespace.geSuit.database.OnTime;
 import net.cubespace.geSuit.database.Players;
 import net.cubespace.geSuit.database.Portals;
 import net.cubespace.geSuit.database.Spawns;
-import net.cubespace.geSuit.database.Tracking;
 import net.cubespace.geSuit.database.Warps;
+import net.cubespace.geSuit.database.repositories.OnTime;
+import net.cubespace.geSuit.database.repositories.Tracking;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)

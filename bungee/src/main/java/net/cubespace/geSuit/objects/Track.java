@@ -1,82 +1,64 @@
 package net.cubespace.geSuit.objects;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import java.net.InetAddress;
+import java.util.UUID;
+
+import net.cubespace.geSuit.core.util.Utilities;
 
 public class Track {
-    private String player;
-    private String uuid;
-    private String ip;
-    private Date firstseen;
-    private Date lastseen;
-    private boolean nameBanned;
-    private boolean ipBanned;
-    private String banType;
+    private String name;
+    private String nickname;
+    private UUID uuid;
+    private InetAddress ip;
+    private long firstseen;
+    private long lastseen;
+    private boolean isNameBanned;
+    private boolean isIPBanned;
 
-    public Track(String player, String uuid, String ip, Timestamp firstseen, Timestamp lastseen, String banType, String bannedName, String bannedId, String bannedIp) {
-        this.player = player;
+    public Track(String name, String nickname, UUID uuid, InetAddress ip, long firstseen, long lastseen, boolean isNameBanned, boolean isIPBanned) {
+        this.name = name;
         this.uuid = uuid;
         this.ip = ip;
         this.firstseen = firstseen;
         this.lastseen = lastseen;
-        
-        if ("ipban".equals(banType)) {
-            // Could just be a name match
-            if (ip.equals(bannedIp)) {
-                this.ipBanned = true;
-            }
-            // If the name matches, treat it as a normal ban too 
-            if (uuid.equals(bannedId) || player.equals(bannedName)) {
-                this.banType = "ban";
-                this.nameBanned = true;
-            }
-        } else if (banType != null) {
-            this.nameBanned = true;
-            this.banType = banType;
-        }
+        this.isNameBanned = isNameBanned;
+        this.isIPBanned = isIPBanned;
     }
 
-    public String getPlayer() {
-        return player;
+    public String getName() {
+        return name;
+    }
+    
+    public String getNickname() {
+        return nickname;
     }
 
-    public Date getFirstSeen() {
+    public long getFirstSeen() {
         return firstseen;
     }
 
-    public Date getLastSeen() {
+    public long getLastSeen() {
         return lastseen;
     }
 
-    public String getUuid()
-    {
+    public UUID getUniqueId() {
         return uuid;
     }
 
-    public void setUuid(String uuid)
-    {
-        this.uuid = uuid;
-    }
-
-    public String getIp()
-    {
+    public InetAddress getIp() {
         return ip;
     }
     
     public boolean isIpBanned() {
-        return ipBanned;
+        return isIPBanned;
     }
     
     public boolean isNameBanned() {
-        return nameBanned;
-    }
-    
-    public String getBanType() {
-        return banType;
+        return isNameBanned;
     }
     
     @Override
     public String toString() {
-        return String.format("n: %s id: %s ip: %s date: %s", player, uuid, ip, lastseen.toString());
+        return String.format("name: %s nickname: %s uuid: %s ip: %s date: %s", name, nickname, uuid, ip, Utilities.formatDate(lastseen));
     }
 }

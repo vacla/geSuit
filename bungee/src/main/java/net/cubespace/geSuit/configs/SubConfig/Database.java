@@ -12,4 +12,9 @@ public class Database extends Config {
     public String Username = "username";
     public String Password = "password";
     public Integer Threads = 5;
+    
+    public String NameBanhistory = "banhistory";
+    public String NameWarnhistory = "warnhistory";
+    public String NameOntime = "ontime";
+    public String NameTracking = "tracking";
 }

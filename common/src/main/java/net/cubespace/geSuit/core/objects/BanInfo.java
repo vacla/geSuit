@@ -13,9 +13,22 @@ public class BanInfo<T> implements Storable {
     private String reason;
     private String bannedBy;
     private UUID bannedById;
+    private boolean isUnban;
+    private int databaseKey = -1;
     
     public BanInfo(T who) {
         this.who = who;
+    }
+    
+    public BanInfo(T who, int databaseKey, String reason, String byName, UUID byId, long date, long until, boolean unban) {
+        this.who = who;
+        this.databaseKey = databaseKey;
+        this.reason = reason;
+        this.date = date;
+        this.until = until;
+        this.bannedBy = byName;
+        this.bannedById = byId;
+        this.isUnban = unban;
     }
     
     public T getWho() {
@@ -46,8 +59,21 @@ public class BanInfo<T> implements Storable {
         return bannedById;
     }
     
+    public boolean isUnban() {
+        return isUnban;
+    }
+    
+    public int getDatabaseKey() {
+        return databaseKey;
+    }
+    
+    public void setDatabaseKey(int key) {
+        databaseKey = key;
+    }
+    
     @Override
     public void load(Map<String, String> values) {
+        databaseKey = Integer.parseInt(values.get("id"));
         date = Utilities.parseDate(values.get("date"));
         reason = values.get("reason");
         bannedBy = values.get("banned-by");
@@ -66,6 +92,7 @@ public class BanInfo<T> implements Storable {
     
     @Override
     public void save(Map<String, String> values) {
+        values.put("id", String.valueOf(databaseKey));
         values.put("date", Utilities.formatDate(date));
         values.put("reason", reason);
         values.put("banned-by", bannedBy);
