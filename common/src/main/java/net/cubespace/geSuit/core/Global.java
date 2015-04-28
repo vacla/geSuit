@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.remote.RemoteManager;
+import net.cubespace.geSuit.core.storage.StorageSection;
 
 import com.google.common.base.Preconditions;
 
@@ -63,5 +64,9 @@ public final class Global {
     
     public static Platform getPlatform() {
         return instance.getPlatform();
+    }
+    
+    public static StorageSection getStorage() {
+        return instance.getStorage();
     }
 }

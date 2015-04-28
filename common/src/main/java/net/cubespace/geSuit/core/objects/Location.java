@@ -1,6 +1,8 @@
 package net.cubespace.geSuit.core.objects;
 
-public class Location {
+import net.cubespace.geSuit.core.storage.SimpleStorable;
+
+public class Location implements SimpleStorable {
     private String server;
     private String world;
     private double x;
@@ -90,6 +92,23 @@ public class Location {
     
     public String toSerialized() {
         return String.format("%s|%s|%.4f|%.4f|%.4f|%.4f|%.4f", server, world, x, y, z, yaw, pitch);
+    }
+    
+    @Override
+    public String save() {
+        return toSerialized();
+    }
+    
+    @Override
+    public void load(String value) {
+        String[] parts = value.split("\\|");
+        server = parts[0]; 
+        world = parts[1]; 
+        x = Double.parseDouble(parts[2]); 
+        y = Double.parseDouble(parts[3]); 
+        z = Double.parseDouble(parts[4]); 
+        yaw = Float.parseFloat(parts[5]);
+        pitch = Float.parseFloat(parts[6]);
     }
     
     public static Location fromSerialized(String serialized) {

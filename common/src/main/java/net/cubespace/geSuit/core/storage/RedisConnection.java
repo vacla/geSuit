@@ -8,6 +8,7 @@ import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager.PubSubHandler;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -20,6 +21,8 @@ public class RedisConnection {
     private ConnectionNotifier notifier;
 
     private long connectionKey;
+    
+    private Set<Jedis> loaned = Sets.newIdentityHashSet();
 
     public RedisConnection(String host, int port, String password) throws IOException {
         connectionKey = System.nanoTime();
@@ -179,6 +182,30 @@ public class RedisConnection {
                 return null;
             }
         }.run();
+    }
+    
+    public Jedis getJedis() {
+        Jedis jedis = pool.getResource();
+        loaned.add(jedis);
+        return jedis;
+    }
+    
+    public void returnJedis(Jedis jedis) {
+        returnJedis(jedis, null);
+    }
+    
+    public void returnJedis(Jedis jedis, Throwable error) {
+        if (!loaned.remove(jedis)) {
+            return;
+        }
+        
+        if (error instanceof JedisConnectionException) {
+            pool.returnBrokenResource(jedis);
+            markInactive(error);
+        } else {
+            markActive();
+            pool.returnResource(jedis);
+        }
     }
 
     public abstract class JedisRunner<ReturnValue> {
