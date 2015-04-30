@@ -55,6 +55,8 @@ public abstract class BaseMessage {
         addMessageType(0, PlayerUpdateMessage.class);
         addMessageType(1, PlayerUpdateRequestMessage.class);
         addMessageType(2, RemoteInvokeMessage.class);
+        addMessageType(3, FireBanEventMessage.class);
+        addMessageType(4, FireWarnEventMessage.class);
     }
     
     public static class Codec implements ChannelCodec<BaseMessage> {

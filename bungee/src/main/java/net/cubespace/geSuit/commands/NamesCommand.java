@@ -1,6 +1,5 @@
 package net.cubespace.geSuit.commands;
 
-import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
@@ -23,6 +22,7 @@ public class NamesCommand extends Command {
             return;
         }
 
-        BansManager.displayNameHistory(sender.getName(), args[0]);
+        throw new UnsupportedOperationException("Not yet implemented");
+        //BansManager.displayNameHistory(sender.getName(), args[0]);
     }
 }

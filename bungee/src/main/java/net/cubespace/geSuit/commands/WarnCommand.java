@@ -1,6 +1,5 @@
 package net.cubespace.geSuit.commands;
 
-import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
@@ -38,6 +37,7 @@ public class WarnCommand extends Command {
         	reason = "Unspecified";
         }
 
-        BansManager.warnPlayer(sender.getName(), args[0], reason);
+        throw new UnsupportedOperationException("Not yet implemented");
+        //BansManager.warnPlayer(sender.getName(), args[0], reason);
     }
 }

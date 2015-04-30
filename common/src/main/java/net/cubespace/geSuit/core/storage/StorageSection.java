@@ -19,6 +19,8 @@ public interface StorageSection {
     
     public StorageSection getSubsection(String key);
     
+    public void remove(String key);
+    
     public <T extends Storable> T getStorable(String key, Class<T> type) throws StorageException;
     public <T extends Storable> T getStorable(String key, T storable) throws StorageException;
     public void set(String key, Storable value);

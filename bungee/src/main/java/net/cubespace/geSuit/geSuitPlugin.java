@@ -19,13 +19,15 @@ import net.cubespace.geSuit.commands.WhereCommand;
 import net.cubespace.geSuit.configs.SubConfig.Redis;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.geCore;
+import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
+import net.cubespace.geSuit.core.messages.BaseMessage;
+import net.cubespace.geSuit.core.remote.RemoteManager;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.database.DatabaseManager;
 import net.cubespace.geSuit.listeners.APIMessageListener;
-import net.cubespace.geSuit.listeners.BansMessageListener;
 import net.cubespace.geSuit.listeners.BungeeChatListener;
 import net.cubespace.geSuit.listeners.HomesMessageListener;
 import net.cubespace.geSuit.listeners.PlayerListener;
@@ -38,6 +40,12 @@ import net.cubespace.geSuit.listeners.WarpsMessageListener;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.GeoIPManager;
 import net.cubespace.geSuit.managers.LoggingManager;
+import net.cubespace.geSuit.moderation.BanManager;
+import net.cubespace.geSuit.moderation.TrackingManager;
+import net.cubespace.geSuit.moderation.WarningsManager;
+import net.cubespace.geSuit.remote.moderation.BanActions;
+import net.cubespace.geSuit.remote.moderation.TrackingActions;
+import net.cubespace.geSuit.remote.moderation.WarnActions;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -50,7 +58,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private RedisChannelManager channelManager;
     private BungeePlayerManager playerManager;
     private DatabaseManager databaseManager;
-
+    
     public void onEnable() {
         geSuit.setPlugin(this);
         LoggingManager.log(ChatColor.GREEN + "Starting geSuit");
@@ -72,6 +80,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         getProxy().getPluginManager().registerListener(this, playerManager);
         geCore core = new geCore(new BungeePlatform(this), playerManager, channelManager);
         Global.setInstance(core);
+        
+        initializeRemotes();
 
         registerListeners();
         registerCommands();
@@ -104,14 +114,12 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private void registerListeners() {
         getProxy().registerChannel("geSuitTeleport"); // Teleport out/in
         getProxy().registerChannel("geSuitSpawns"); // Spawns out/in
-        getProxy().registerChannel("geSuitBans"); // Bans in
         getProxy().registerChannel("geSuitPortals"); // Portals out/in
         getProxy().registerChannel("geSuitWarps"); // Warps in
         getProxy().registerChannel("geSuitHomes"); // Homes in
         getProxy().registerChannel("geSuitAPI"); // API messages in
 
         proxy.getPluginManager().registerListener(this, new PlayerListener());
-        proxy.getPluginManager().registerListener(this, new BansMessageListener());
         proxy.getPluginManager().registerListener(this, new TeleportsListener());
         proxy.getPluginManager().registerListener(this, new TeleportsMessageListener());
         proxy.getPluginManager().registerListener(this, new WarpsMessageListener());
@@ -168,7 +176,16 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         } catch (InterruptedException e) {
         }
     }
-
+    
+    private void initializeRemotes() {
+        Channel<BaseMessage> moderationChannel = channelManager.createChannel("moderation", BaseMessage.class);
+        
+        RemoteManager manager = Global.getRemoteManager();
+        manager.registerRemote("bans", BanActions.class, new BanManager(databaseManager.getBanHistory(), moderationChannel));
+        manager.registerRemote("warns", WarnActions.class, new WarningsManager(databaseManager.getWarnHistory(), (BanManager)manager.getRemote(BanActions.class), moderationChannel));
+        manager.registerRemote("tracking", TrackingActions.class, new TrackingManager(databaseManager));
+    }
+    
     public void onDisable() {
         channelManager.shutdown();
         databaseManager.shutdown();

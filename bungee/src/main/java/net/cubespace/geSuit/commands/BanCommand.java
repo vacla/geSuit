@@ -1,7 +1,6 @@
 package net.cubespace.geSuit.commands;
 
 import net.cubespace.geSuit.Utilities;
-import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
@@ -38,10 +37,11 @@ public class BanCommand extends Command {
             reason = builder.toString();
         }
         
-        if (Utilities.isIPAddress(args[0])) {
-            BansManager.banIP(sender.getName(), args[0], reason);
-        } else {
-            BansManager.banPlayer(sender.getName(), args[0], reason);
-        }
+        throw new UnsupportedOperationException("Not yet implemented");
+//        if (Utilities.isIPAddress(args[0])) {
+//            BansManager.banIP(sender.getName(), args[0], reason);
+//        } else {
+//            BansManager.banPlayer(sender.getName(), args[0], reason);
+//        }
     }
 }

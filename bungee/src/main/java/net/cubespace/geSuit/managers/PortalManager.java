@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
@@ -20,7 +21,8 @@ public class PortalManager {
     private static Map<ServerInfo, List<Portal>> portals = new HashMap<>();
 
     public static void loadPortals() {
-        portals = DatabaseManager.portals.getPortals();
+        throw new UnsupportedOperationException("Not yet implemented");
+        // portals = DatabaseManager.portals.getPortals();
     }
 
     public static void getPortals(ServerInfo s) {
@@ -36,60 +38,62 @@ public class PortalManager {
     }
 
     public static void setPortal(GSPlayer sender, String name, String type, String dest, String fillType, Location max, Location min) throws SQLException {
-        if (!(type.equalsIgnoreCase("warp") || type.equalsIgnoreCase("server"))) {
-            sender.sendMessage(ConfigManager.messages.INVALID_PORTAL_TYPE);
-            return;
-        }
-
-        fillType = fillType.toUpperCase();
-        if (!(fillType.equals("AIR") || fillType.equals("LAVA") || fillType.equals("WATER") || fillType.equals("WEB") || fillType.equals("SUGAR_CANE") || fillType.equals("PORTAL") || fillType.equals("END_PORTAL"))) {
-            sender.sendMessage(ConfigManager.messages.PORTAL_FILLTYPE);
-            return;
-        }
-
-        if (type.equalsIgnoreCase("warp")) {
-            Warp w = WarpsManager.getWarp(dest.toLowerCase());
-            if (w == null) {
-                sender.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);
-                return;
-            }
-        } else {
-            if (geSuitPlugin.proxy.getServerInfo(dest) == null) {
-                sender.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);
-                return;
-            }
-        }
-
-        List<Portal> list = portals.get(max.getServer());
-        if (list == null) {
-            list = new ArrayList<>();
-            portals.put(max.getServer(), list);
-        }
-
-        Portal p = new Portal(name, max.getServer().getName(), fillType, type, dest, max, min);
-        if (doesPortalExist(name)) {
-            Portal old = getPortal(name);
-            removePortal(old);
-
-            DatabaseManager.portals.updatePortal(p);
-
-            sender.sendMessage(ConfigManager.messages.PORTAL_UPDATED);
-        } else {
-            DatabaseManager.portals.insertPortal(p);
-            sender.sendMessage(ConfigManager.messages.PORTAL_CREATED);
-        }
-
-
-        SendPortal.execute(p);
-        list.add(p);
+        throw new UnsupportedOperationException("Not yet implemented");
+//        if (!(type.equalsIgnoreCase("warp") || type.equalsIgnoreCase("server"))) {
+//            sender.sendMessage(ConfigManager.messages.INVALID_PORTAL_TYPE);
+//            return;
+//        }
+//
+//        fillType = fillType.toUpperCase();
+//        if (!(fillType.equals("AIR") || fillType.equals("LAVA") || fillType.equals("WATER") || fillType.equals("WEB") || fillType.equals("SUGAR_CANE") || fillType.equals("PORTAL") || fillType.equals("END_PORTAL"))) {
+//            sender.sendMessage(ConfigManager.messages.PORTAL_FILLTYPE);
+//            return;
+//        }
+//
+//        if (type.equalsIgnoreCase("warp")) {
+//            Warp w = WarpsManager.getWarp(dest.toLowerCase());
+//            if (w == null) {
+//                sender.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);
+//                return;
+//            }
+//        } else {
+//            if (geSuitPlugin.proxy.getServerInfo(dest) == null) {
+//                sender.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);
+//                return;
+//            }
+//        }
+//
+//        List<Portal> list = portals.get(max.getServer());
+//        if (list == null) {
+//            list = new ArrayList<>();
+//            portals.put(max.getServer(), list);
+//        }
+//
+//        Portal p = new Portal(name, max.getServer().getName(), fillType, type, dest, max, min);
+//        if (doesPortalExist(name)) {
+//            Portal old = getPortal(name);
+//            removePortal(old);
+//
+//            DatabaseManager.portals.updatePortal(p);
+//
+//            sender.sendMessage(ConfigManager.messages.PORTAL_UPDATED);
+//        } else {
+//            DatabaseManager.portals.insertPortal(p);
+//            sender.sendMessage(ConfigManager.messages.PORTAL_CREATED);
+//        }
+//
+//
+//        SendPortal.execute(p);
+//        list.add(p);
     }
 
     public static void removePortal(Portal p) {
-        portals.get(p.getServer()).remove(p);
-
-        DatabaseManager.portals.deletePortal(p.getName());
-
-        DeletePortal.execute(p);
+        throw new UnsupportedOperationException("Not yet implemented");
+//        portals.get(p.getServer()).remove(p);
+//
+//        DatabaseManager.portals.deletePortal(p.getName());
+//
+//        DeletePortal.execute(p);
     }
 
     public static void deletePortal(GSPlayer sender, String portal) {

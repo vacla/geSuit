@@ -2,6 +2,7 @@ package net.cubespace.geSuit.managers;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Spawn;
@@ -17,8 +18,9 @@ public class SpawnManager {
     public static ArrayList<ProxiedPlayer> newPlayers = new ArrayList<>();
 
     public static void loadSpawns() {
-        ProxySpawn = DatabaseManager.spawns.getSpawn("ProxySpawn");
-        NewPlayerSpawn = DatabaseManager.spawns.getSpawn("NewPlayerSpawn");
+        throw new UnsupportedOperationException("Not yet implemented");
+//        ProxySpawn = DatabaseManager.spawns.getSpawn("ProxySpawn");
+//        NewPlayerSpawn = DatabaseManager.spawns.getSpawn("NewPlayerSpawn");
     }
 
     public static boolean doesProxySpawnExist() {
@@ -50,23 +52,25 @@ public class SpawnManager {
 
 
     public static void sendSpawns(Server s) {
-        List<Spawn> spawnList = DatabaseManager.spawns.getSpawnsForServer(s.getInfo().getName());
-
-        for (Spawn spawn : spawnList) {
-            SendSpawn.execute(spawn);
-        }
+        throw new UnsupportedOperationException("Not yet implemented");
+//        List<Spawn> spawnList = DatabaseManager.spawns.getSpawnsForServer(s.getInfo().getName());
+//
+//        for (Spawn spawn : spawnList) {
+//            SendSpawn.execute(spawn);
+//        }
     }
 
     private static void setSpawn(GSPlayer player, Spawn spawn, boolean exists) {
-        if (exists) {
-            DatabaseManager.spawns.updateSpawn(spawn);
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_UPDATED);
-        } else {
-            DatabaseManager.spawns.insertSpawn(spawn);
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_SET);
-        }
-
-        SendSpawn.execute(spawn);
+        throw new UnsupportedOperationException("Not yet implemented");
+//        if (exists) {
+//            DatabaseManager.spawns.updateSpawn(spawn);
+//            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_UPDATED);
+//        } else {
+//            DatabaseManager.spawns.insertSpawn(spawn);
+//            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_SET);
+//        }
+//
+//        SendSpawn.execute(spawn);
     }
 
     public static void setServerSpawn(GSPlayer p, Location l, boolean exists) {
@@ -82,30 +86,32 @@ public class SpawnManager {
     }
 
     public static void setNewPlayerSpawn(GSPlayer p, Location l) {
-        Spawn spawn = new Spawn("NewPlayerSpawn", l);
-
-        if (NewPlayerSpawn != null) {
-            DatabaseManager.spawns.updateSpawn(spawn);
-            p.sendMessage(ConfigManager.messages.SPAWN_UPDATED);
-        } else {
-            DatabaseManager.spawns.insertSpawn(spawn);
-            p.sendMessage(ConfigManager.messages.SPAWN_SET);
-        }
-
-        NewPlayerSpawn = l;
+        throw new UnsupportedOperationException("Not yet implemented");
+//        Spawn spawn = new Spawn("NewPlayerSpawn", l);
+//
+//        if (NewPlayerSpawn != null) {
+//            DatabaseManager.spawns.updateSpawn(spawn);
+//            p.sendMessage(ConfigManager.messages.SPAWN_UPDATED);
+//        } else {
+//            DatabaseManager.spawns.insertSpawn(spawn);
+//            p.sendMessage(ConfigManager.messages.SPAWN_SET);
+//        }
+//
+//        NewPlayerSpawn = l;
     }
 
     public static void setProxySpawn(GSPlayer p, Location l) {
-        Spawn spawn = new Spawn("ProxySpawn", l);
-
-        if (ProxySpawn != null) {
-            DatabaseManager.spawns.updateSpawn(spawn);
-            p.sendMessage(ConfigManager.messages.SPAWN_UPDATED);
-        } else {
-            DatabaseManager.spawns.insertSpawn(spawn);
-            p.sendMessage(ConfigManager.messages.SPAWN_SET);
-        }
-
-        ProxySpawn = l;
+        throw new UnsupportedOperationException("Not yet implemented");
+//        Spawn spawn = new Spawn("ProxySpawn", l);
+//
+//        if (ProxySpawn != null) {
+//            DatabaseManager.spawns.updateSpawn(spawn);
+//            p.sendMessage(ConfigManager.messages.SPAWN_UPDATED);
+//        } else {
+//            DatabaseManager.spawns.insertSpawn(spawn);
+//            p.sendMessage(ConfigManager.messages.SPAWN_SET);
+//        }
+//
+//        ProxySpawn = l;
     }
 }

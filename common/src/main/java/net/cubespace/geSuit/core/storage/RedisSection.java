@@ -298,6 +298,11 @@ public class RedisSection implements StorageSection {
             return current;
         }
     }
+    
+    @Override
+    public void remove(String key) {
+        cached.put(key, null);
+    }
 
     @Override
     public <T extends Storable> T getStorable(String key, Class<T> type) {

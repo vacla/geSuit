@@ -3,6 +3,8 @@ package net.cubespace.geSuit.core.objects;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.base.Preconditions;
+
 import net.cubespace.geSuit.core.storage.Storable;
 import net.cubespace.geSuit.core.util.Utilities;
 
@@ -39,8 +41,18 @@ public class BanInfo<T> implements Storable {
         return date;
     }
     
+    public void setDate(long date) {
+        this.date = date;
+    }
+    
     public long getUntil() {
         return until;
+    }
+    
+    public void setUntil(long date) {
+        Preconditions.checkArgument(date == 0 || date > this.date);
+        
+        until = date;
     }
     
     public boolean isTemporary() {
@@ -51,6 +63,10 @@ public class BanInfo<T> implements Storable {
         return reason;
     }
     
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+    
     public String getBannedBy() {
         return bannedBy;
     }
@@ -59,8 +75,17 @@ public class BanInfo<T> implements Storable {
         return bannedById;
     }
     
+    public void setBannedBy(String name, UUID id) {
+        bannedBy = name;
+        bannedById = id;
+    }
+    
     public boolean isUnban() {
         return isUnban;
+    }
+    
+    public void setIsUnban(boolean unban) {
+        isUnban = unban;
     }
     
     public int getDatabaseKey() {

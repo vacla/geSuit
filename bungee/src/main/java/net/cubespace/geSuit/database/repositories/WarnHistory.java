@@ -9,11 +9,11 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.objects.WarnInfo;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.database.BaseRepository;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.StatementKey;
-import net.cubespace.geSuit.objects.WarnInfo;
 
 public class WarnHistory extends BaseRepository {
     private StatementKey insertWarn;

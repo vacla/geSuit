@@ -100,6 +100,7 @@ public class Messages extends Config {
     public String PLAYER_NEVER_WARNED = "&a" + "No warning history for {player}";
     public String IPBAN_PLAYER = "&c" + "Your IP has been banned. Reason: {message}";
     public String IPBAN_PLAYER_BROADCAST = "&b" + "{player} has been ip banned. Reason: {message}";
+    public String IPBAN_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto ip banned. Reason: {message}";
     public String DEFAULT_BAN_REASON = "Unknown";
     public String DEFAULT_KICK_MESSAGE = "&cUnknown";
     public String DEFAULT_WARN_REASON = "Unknown";
@@ -107,8 +108,11 @@ public class Messages extends Config {
     public String BAN_PLAYER_BROADCAST = "&b" + "{player} has been banned. Reason: {message}";
     public String BAN_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto banned.";
     public String TEMP_BAN_MESSAGE = "&c" + "You have been temporarily banned ({shortleft}). Reason: {message}";
+    public String TEMP_BAN_IP = "&c" + "Your IP has been temporarily banned ({shortleft}). Reason: {message}";
     public String TEMP_BAN_BROADCAST = "&b" + "{player} has been temporarily banned ({shortleft}). Reason: {message}";
+    public String TEMP_BAN_IP_BROADCAST = "&b" + "{player} has been temporarily ip banned ({shortleft}). Reason: {message}";
     public String TEMP_BAN_AUTO_BROADCAST = "&b" + "{player} has been auto temp-banned ({shortleft}).";
+    public String TEMP_BAN_IP_AUTO_BROADCAST = "&b" + "{player} has been auto temp ip banned ({shortleft}). Reason: {message}";
     public String PLAYER_UNBANNED = "&c" + "{player} has been unbanned!";
     public String WARN_PLAYER_BROADCAST = "&b" + "{player} has received a warning. Reason: {message}";
 

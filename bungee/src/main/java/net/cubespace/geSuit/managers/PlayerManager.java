@@ -2,11 +2,11 @@ package net.cubespace.geSuit.managers;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
-import net.cubespace.geSuit.objects.Track;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 
 import au.com.addstar.bc.BungeeChat;
 
+// TODO: This class needs work
 public class PlayerManager {
     private static SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
     
@@ -40,81 +41,84 @@ public class PlayerManager {
     public static ArrayList<ProxiedPlayer> kickedPlayers = new ArrayList<>();
 
     public static boolean playerExists(ProxiedPlayer player) {
-        return getPlayer(player.getName()) != null
-                || DatabaseManager.players.playerExists(player.getUUID());
+        return false;
+//        return getPlayer(player.getName()) != null
+//                || DatabaseManager.players.playerExists(player.getUUID());
     }
     
     public static boolean playerExists(UUID player) {
-        return DatabaseManager.players.playerExists(player.toString().replace("-", ""));
+        return false;
+//        return DatabaseManager.players.playerExists(player.toString().replace("-", ""));
     }
 
     public static void initPlayer(final PendingConnection connection, final LoginEvent event) {
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                // Do ban check
-                if (DatabaseManager.bans.isPlayerBanned(connection.getName(), connection.getUUID(), connection.getAddress().getHostString())) {
-                    Ban b = DatabaseManager.bans.getBanInfo(connection.getName(), connection.getUUID(), connection.getAddress().getHostString());
-
-                    boolean banned = true;
-                    if (b != null) {
-                        if (b.getType().equals("tempban")) {
-                            if (BansManager.checkTempBan(b)) {
-                                event.setCancelled(true);
-    
-                                Date then = b.getBannedUntil();
-                                Date now = new Date();
-                                long timeDiff = then.getTime() - now.getTime();
-                                
-                                event.setCancelReason(Utilities.colorize(ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{time}", sdf.format(then)).replace("{left}", Utilities.buildTimeDiffString(timeDiff, 2)).replace("{shortleft}", Utilities.buildShortTimeDiffString(timeDiff, 10)).replace("{message}", b.getReason())));
-                                LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to being banned!");
-                            } else {
-                                banned = false;
-                            }
-                        } else {
-                            event.setCancelled(true);
-    
-                            event.setCancelReason(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{message}", b.getReason())));
-                            LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to being banned!");
-                        }
-                        
-                        if (banned) {
-                            // Dont load this player as they wont be joining
-                            event.completeIntent(geSuit.getPlugin());
-                            return;
-                        }
-                    }
-                }
-                // Load the GSPlayer object for use
-                GSPlayer gsPlayer;
-                if (playerExists(connection.getUniqueId())) {
-                    gsPlayer = getPlayer(connection.getName());
-                    if (gsPlayer == null) {
-                        gsPlayer = DatabaseManager.players.loadPlayer(connection.getUUID());
-                        gsPlayer.setName(connection.getName());
-                        HomesManager.loadPlayersHomes(gsPlayer);
-                        LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()).replace("{uuid}", connection.getUniqueId().toString()));
-                    } else {
-                        LoggingManager.log(ConfigManager.messages.PLAYER_LOAD_CACHED.replace("{player}", gsPlayer.getName()).replace("{uuid}", connection.getUniqueId().toString()));
-                    }
-                } else {
-                    gsPlayer = new GSPlayer(connection.getName(), connection.getUUID(), true);
-                    gsPlayer.setFirstJoin(true);
-                }
-                
-                gsPlayer.setIp(connection.getAddress().getHostString());
-                
-                Track history = DatabaseManager.tracking.checkNameChange(connection.getUniqueId(), connection.getName());
-                if (history != null) {
-                    gsPlayer.setLastName(history);
-                }
-                
-                cachedPlayers.put(connection.getUniqueId(), gsPlayer);
-                
-                // TODO: All database retrieval must be done here for this player
-                event.completeIntent(geSuit.getPlugin());
-            }
-        });
+        throw new UnsupportedOperationException("Not yet implemented");
+//        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
+//            @Override
+//            public void run() {
+//                // Do ban check
+//                if (DatabaseManager.bans.isPlayerBanned(connection.getName(), connection.getUUID(), connection.getAddress().getHostString())) {
+//                    Ban b = DatabaseManager.bans.getBanInfo(connection.getName(), connection.getUUID(), connection.getAddress().getHostString());
+//
+//                    boolean banned = true;
+//                    if (b != null) {
+//                        if (b.getType().equals("tempban")) {
+//                            if (BansManager.checkTempBan(b)) {
+//                                event.setCancelled(true);
+//    
+//                                Date then = b.getBannedUntil();
+//                                Date now = new Date();
+//                                long timeDiff = then.getTime() - now.getTime();
+//                                
+//                                event.setCancelReason(Utilities.colorize(ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{time}", sdf.format(then)).replace("{left}", Utilities.buildTimeDiffString(timeDiff, 2)).replace("{shortleft}", Utilities.buildShortTimeDiffString(timeDiff, 10)).replace("{message}", b.getReason())));
+//                                LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to being banned!");
+//                            } else {
+//                                banned = false;
+//                            }
+//                        } else {
+//                            event.setCancelled(true);
+//    
+//                            event.setCancelReason(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{message}", b.getReason())));
+//                            LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to being banned!");
+//                        }
+//                        
+//                        if (banned) {
+//                            // Dont load this player as they wont be joining
+//                            event.completeIntent(geSuit.getPlugin());
+//                            return;
+//                        }
+//                    }
+//                }
+//                // Load the GSPlayer object for use
+//                GSPlayer gsPlayer;
+//                if (playerExists(connection.getUniqueId())) {
+//                    gsPlayer = getPlayer(connection.getName());
+//                    if (gsPlayer == null) {
+//                        gsPlayer = DatabaseManager.players.loadPlayer(connection.getUUID());
+//                        gsPlayer.setName(connection.getName());
+//                        HomesManager.loadPlayersHomes(gsPlayer);
+//                        LoggingManager.log(ConfigManager.messages.PLAYER_LOAD.replace("{player}", gsPlayer.getName()).replace("{uuid}", connection.getUniqueId().toString()));
+//                    } else {
+//                        LoggingManager.log(ConfigManager.messages.PLAYER_LOAD_CACHED.replace("{player}", gsPlayer.getName()).replace("{uuid}", connection.getUniqueId().toString()));
+//                    }
+//                } else {
+//                    gsPlayer = new GSPlayer(connection.getName(), connection.getUUID(), true);
+//                    gsPlayer.setFirstJoin(true);
+//                }
+//                
+//                gsPlayer.setIp(connection.getAddress().getHostString());
+//                
+//                Track history = DatabaseManager.tracking.checkNameChange(connection.getUniqueId(), connection.getName());
+//                if (history != null) {
+//                    gsPlayer.setLastName(history);
+//                }
+//                
+//                cachedPlayers.put(connection.getUniqueId(), gsPlayer);
+//                
+//                // TODO: All database retrieval must be done here for this player
+//                event.completeIntent(geSuit.getPlugin());
+//            }
+//        });
     }
     
     /**
@@ -124,40 +128,41 @@ public class PlayerManager {
      * @return The GSPlayer instance for efficiency
      */
     public static GSPlayer confirmJoin(final ProxiedPlayer player) {
-    	final GSPlayer gsPlayer = cachedPlayers.get(player.getUniqueId());
-        if (gsPlayer.firstConnect()) {
-            // Do new player stuff
-            if (gsPlayer.isFirstJoin()) {
-                DatabaseManager.players.insertPlayer(gsPlayer, player.getAddress().getHostString());
-
-                LoggingManager.log(ConfigManager.messages.PLAYER_CREATE.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
-
-                if (ConfigManager.main.NewPlayerBroadcast) {
-                    String welcomeMsg = null;
-                    sendBroadcast(welcomeMsg = ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getName()), player.getName());
-                    // Firing custom event
-                    ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
-                }
-
-                if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && SpawnManager.NewPlayerSpawn != null) {
-                    SpawnManager.newPlayers.add(player);
-
-                    ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
-
-                        @Override
-                        public void run() {
-                            SpawnManager.sendPlayerToNewPlayerSpawn(gsPlayer);
-                            SpawnManager.newPlayers.remove(player);
-                        }
-
-                    }, 300, TimeUnit.MILLISECONDS);
-                }
-            }
-            
-            onlinePlayers.put(player.getName().toLowerCase(), gsPlayer);
-        }
-        
-        return gsPlayer;
+        throw new UnsupportedOperationException("Not yet implemented");
+//    	final GSPlayer gsPlayer = cachedPlayers.get(player.getUniqueId());
+//        if (gsPlayer.firstConnect()) {
+//            // Do new player stuff
+//            if (gsPlayer.isFirstJoin()) {
+//                DatabaseManager.players.insertPlayer(gsPlayer, player.getAddress().getHostString());
+//
+//                LoggingManager.log(ConfigManager.messages.PLAYER_CREATE.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
+//
+//                if (ConfigManager.main.NewPlayerBroadcast) {
+//                    String welcomeMsg = null;
+//                    sendBroadcast(welcomeMsg = ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getName()), player.getName());
+//                    // Firing custom event
+//                    ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
+//                }
+//
+//                if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && SpawnManager.NewPlayerSpawn != null) {
+//                    SpawnManager.newPlayers.add(player);
+//
+//                    ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+//
+//                        @Override
+//                        public void run() {
+//                            SpawnManager.sendPlayerToNewPlayerSpawn(gsPlayer);
+//                            SpawnManager.newPlayers.remove(player);
+//                        }
+//
+//                    }, 300, TimeUnit.MILLISECONDS);
+//                }
+//            }
+//            
+//            onlinePlayers.put(player.getName().toLowerCase(), gsPlayer);
+//        }
+//        
+//        return gsPlayer;
     }
 
     public static void unloadPlayer(String player) {
@@ -220,7 +225,7 @@ public class PlayerManager {
         
         if (p == null) {
             // Player is offline, load data
-            p = DatabaseManager.players.loadPlayer(player);
+            //p = DatabaseManager.players.loadPlayer(player);
         }
         
         if (p == null) { // Unknown player
@@ -236,23 +241,23 @@ public class PlayerManager {
         }
         
         // Do a ban check
-        Ban b = DatabaseManager.bans.getBanInfo(p.getName(), p.getUuid(), null);
-        if (b != null) {
-            if (b.getType().equals("tempban")) {
-                if (b.getBannedUntil().getTime() > System.currentTimeMillis()) {
-                    items.put("Temp Banned", Utilities.buildShortTimeDiffString(b.getBannedUntil().getTime() - System.currentTimeMillis(), 3) + " remaining");
-                    items.put("Ban Reason", b.getReason());
-                    if (full) {
-                        items.put("Banned By", b.getBannedBy());
-                    }
-                }
-            } else {
-                items.put("Banned", b.getReason());
-                if (full) {
-                    items.put("Banned By", b.getBannedBy());
-                }
-            }
-        }
+//        Ban b = DatabaseManager.bans.getBanInfo(p.getName(), p.getUuid(), null);
+//        if (b != null) {
+//            if (b.getType().equals("tempban")) {
+//                if (b.getBannedUntil().getTime() > System.currentTimeMillis()) {
+//                    items.put("Temp Banned", Utilities.buildShortTimeDiffString(b.getBannedUntil().getTime() - System.currentTimeMillis(), 3) + " remaining");
+//                    items.put("Ban Reason", b.getReason());
+//                    if (full) {
+//                        items.put("Banned By", b.getBannedBy());
+//                    }
+//                }
+//            } else {
+//                items.put("Banned", b.getReason());
+//                if (full) {
+//                    items.put("Banned By", b.getBannedBy());
+//                }
+//            }
+//        }
         
         if (full) {
             if (online && p.getProxiedPlayer().getServer() != null) {
@@ -387,7 +392,7 @@ public class PlayerManager {
     }
     
     public static void updateTracking(GSPlayer player) {
-    	DatabaseManager.tracking.insertTracking(player.getName(), player.getUuid(), player.getIp());
+    	//DatabaseManager.tracking.insertTracking(player.getName(), player.getUuid(), player.getIp());
     }
 
 }

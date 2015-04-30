@@ -47,4 +47,12 @@ public class DatabaseManager {
     public WarnHistory getWarnHistory() {
         return warnHistory;
     }
+    
+    public Tracking getTracking() {
+        return tracking;
+    }
+    
+    public OnTime getOntime() {
+        return ontime;
+    }
 }

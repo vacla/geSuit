@@ -19,6 +19,10 @@ public class DateDiff {
         return date + time;
     }
     
+    public long toMillis() {
+        return time;
+    }
+    
     private static String[] unitNames = {"y", "mo", "w", "d", "h", "m", "s"};
     private static int[] unitValues = {365, 30, 7, 1, 1, 1, 1};
     private static TimeUnit[] units = {TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};

@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.profile.Profile;
-import net.cubespace.geSuit.tasks.DatabaseUpdateRowUUID;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 
@@ -54,11 +53,6 @@ public class Utilities {
         return null;
     }
     
-    public static void databaseUpdateRowUUID(int id, String playerName)
-    {
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new DatabaseUpdateRowUUID(id, playerName));
-    }
-
     public static String dumpPacket(String channel, String direction, byte[] bytes, boolean consoleOutput) {
 		String data = "";
 		//ByteArrayInputStream ds = new ByteArrayInputStream(bytes);

@@ -54,21 +54,22 @@ public class HomesMessageListener implements Listener {
             HomesManager.sendPlayerToOtherHome( PlayerManager.getPlayer(in.readUTF() ), in.readUTF(), in.readUTF() );
         } else if ( task.equals( "SetPlayersHome" ) ) {
             String player = in.readUTF();
-            GSPlayer gsPlayer = PlayerManager.getPlayer(player);
+            // TODO: Needs to be replaced
+            //GSPlayer gsPlayer = PlayerManager.getPlayer(player);
 
-            if (gsPlayer == null) {
-                gsPlayer = DatabaseManager.players.loadPlayer(player);
-
-                if (gsPlayer == null) {
-                    DatabaseManager.players.insertPlayer(new GSPlayer(player, Utilities.getUUID(player), true), "0.0.0.0");
-                    gsPlayer = DatabaseManager.players.loadPlayer(player);
-                    gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
-                } else {
-                    gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
-                }
-            }
-
-            HomesManager.createNewHome(gsPlayer, in.readInt(), in.readInt(), in.readUTF(), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
+//            if (gsPlayer == null) {
+//                gsPlayer = DatabaseManager.players.loadPlayer(player);
+//
+//                if (gsPlayer == null) {
+//                    DatabaseManager.players.insertPlayer(new GSPlayer(player, Utilities.getUUID(player), true), "0.0.0.0");
+//                    gsPlayer = DatabaseManager.players.loadPlayer(player);
+//                    gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
+//                } else {
+//                    gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
+//                }
+//            }
+//
+//            HomesManager.createNewHome(gsPlayer, in.readInt(), in.readInt(), in.readUTF(), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
         } else if ( task.equals( "GetHomesList" ) ) {
             HomesManager.listPlayersHomes( PlayerManager.getPlayer( in.readUTF() ) );
         } else if ( task.equals( "GetOtherHomesList" ) ) {

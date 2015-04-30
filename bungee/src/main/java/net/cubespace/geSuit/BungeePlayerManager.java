@@ -1,8 +1,20 @@
 package net.cubespace.geSuit;
 
+import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
+
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.PlayerManager;
 import net.cubespace.geSuit.core.channel.ChannelManager;
+import net.cubespace.geSuit.core.objects.BanInfo;
+import net.cubespace.geSuit.events.NewPlayerJoinEvent;
+import net.cubespace.geSuit.managers.ConfigManager;
+import net.cubespace.geSuit.managers.DatabaseManager;
+import net.cubespace.geSuit.managers.LoggingManager;
+import net.cubespace.geSuit.managers.SpawnManager;
+import net.cubespace.geSuit.moderation.BanManager;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -12,6 +24,8 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 public class BungeePlayerManager extends PlayerManager implements Listener {
+    private BanManager bans;
+    
     public BungeePlayerManager(ChannelManager manager) {
         super(true, manager);
         
@@ -33,21 +47,42 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
     private void handleLogin(final LoginEvent event) {
         GlobalPlayer player = loadPlayer(event.getConnection().getUniqueId(), event.getConnection().getName(), event.getConnection().getAddress().getAddress());
         
-        // Check ban state
+        // Check player ban state
         if (player.isBanned()) {
             if (player.getBanInfo().isTemporary()) {
                 // Has ban expired?
                 if (System.currentTimeMillis() >= player.getBanInfo().getUntil()) {
                     player.removeBan();
                 } else {
-                    // TODO: Proper ban message
-                    event.setCancelReason("tempbanned");
+                    event.setCancelReason(bans.getBanKickReason(player.getBanInfo()));
+                    geSuit.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being temp banned!");
                     event.setCancelled(true);
                     return;
                 }
             } else {
-                // TODO: Proper ban message
-                event.setCancelReason("banned");
+                event.setCancelReason(bans.getBanKickReason(player.getBanInfo()));
+                geSuit.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being banned!");
+                event.setCancelled(true);
+                return;
+            }
+        }
+        
+        // Check IP ban state
+        BanInfo<InetAddress> ipBan = bans.getBan(player.getAddress());
+        if (ipBan != null) {
+            if (ipBan.isTemporary()) {
+                // Has ban expired?
+                if (System.currentTimeMillis() >= ipBan.getUntil()) {
+                    bans.setBan(player.getAddress(), null);
+                } else {
+                    event.setCancelReason(bans.getBanKickReason(ipBan));
+                    geSuit.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being temp ip-banned!");
+                    event.setCancelled(true);
+                    return;
+                }
+            } else {
+                event.setCancelReason(bans.getBanKickReason(ipBan));
+                geSuit.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being ip-banned!");
                 event.setCancelled(true);
                 return;
             }
@@ -77,6 +112,31 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
         }
         
         if (onServerConnect(event.getPlayer().getUniqueId())) {
+            GlobalPlayer player = Global.getPlayer(event.getPlayer().getUniqueId());
+            if (player.isNewPlayer()) {
+                LoggingManager.log(ConfigManager.messages.PLAYER_CREATE.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
+
+                if (ConfigManager.main.NewPlayerBroadcast) {
+                    String welcomeMsg = null;
+                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(welcomeMsg = ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getName()), player.getName());
+                    // Firing custom event
+                    ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
+                }
+
+                if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && SpawnManager.NewPlayerSpawn != null) {
+//                    SpawnManager.newPlayers.add(player);
+//
+//                    ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+//
+//                        @Override
+//                        public void run() {
+//                            SpawnManager.sendPlayerToNewPlayerSpawn(gsPlayer);
+//                            SpawnManager.newPlayers.remove(player);
+//                        }
+//
+//                    }, 300, TimeUnit.MILLISECONDS);
+                }
+            }
             // TODO: do all other setup
         }
     }

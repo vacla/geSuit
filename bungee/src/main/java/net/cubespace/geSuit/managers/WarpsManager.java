@@ -15,35 +15,38 @@ public class WarpsManager {
     private static HashMap<String, Warp> warps = new HashMap<>();
 
     public static void loadWarpLocations() {
-        List<Warp> warps1 = DatabaseManager.warps.getWarps();
-
-        for(Warp warp : warps1) {
-            warps.put(warp.getName().toLowerCase(), warp);
-        }
+        throw new UnsupportedOperationException("Not yet implemented");
+//        List<Warp> warps1 = DatabaseManager.warps.getWarps();
+//
+//        for(Warp warp : warps1) {
+//            warps.put(warp.getName().toLowerCase(), warp);
+//        }
     }
 
     public static void setWarp(GSPlayer sender, String name, Location loc, boolean hidden, boolean global) {
-        Warp w;
-        if (doesWarpExist(name)) {
-            w = warps.get(name.toLowerCase());
-            w.setLocation(loc);
-            w.setGlobal(global);
-            w.setHidden(hidden);
-            DatabaseManager.warps.updateWarp(w);
-            sender.sendMessage(ConfigManager.messages.WARP_UPDATED.replace("{warp}", name));
-        } else {
-            w = new Warp(name, loc, hidden, global);
-            warps.put(name.toLowerCase(), w);
-            DatabaseManager.warps.insertWarp(w);
-            sender.sendMessage(ConfigManager.messages.WARP_CREATED.replace("{warp}", name));
-        }
+        throw new UnsupportedOperationException("Not yet implemented");
+//        Warp w;
+//        if (doesWarpExist(name)) {
+//            w = warps.get(name.toLowerCase());
+//            w.setLocation(loc);
+//            w.setGlobal(global);
+//            w.setHidden(hidden);
+//            DatabaseManager.warps.updateWarp(w);
+//            sender.sendMessage(ConfigManager.messages.WARP_UPDATED.replace("{warp}", name));
+//        } else {
+//            w = new Warp(name, loc, hidden, global);
+//            warps.put(name.toLowerCase(), w);
+//            DatabaseManager.warps.insertWarp(w);
+//            sender.sendMessage(ConfigManager.messages.WARP_CREATED.replace("{warp}", name));
+//        }
     }
 
     public static void deleteWarp(GSPlayer sender, String warp) {
-        Warp w = getWarp(warp);
-        warps.remove(w.getName().toLowerCase());
-        DatabaseManager.warps.deleteWarp(w.getName());
-        sender.sendMessage(ConfigManager.messages.WARP_DELETED.replace("{warp}", warp));
+        throw new UnsupportedOperationException("Not yet implemented");
+//        Warp w = getWarp(warp);
+//        warps.remove(w.getName().toLowerCase());
+//        DatabaseManager.warps.deleteWarp(w.getName());
+//        sender.sendMessage(ConfigManager.messages.WARP_DELETED.replace("{warp}", warp));
     }
 
     public static Warp getWarp(String name) {

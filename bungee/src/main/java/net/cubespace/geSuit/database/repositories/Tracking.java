@@ -1,11 +1,11 @@
 package net.cubespace.geSuit.database.repositories;
 
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.database.BaseRepository;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.StatementKey;
-import net.cubespace.geSuit.objects.Track;
 
 import java.net.InetAddress;
 import java.sql.ResultSet;

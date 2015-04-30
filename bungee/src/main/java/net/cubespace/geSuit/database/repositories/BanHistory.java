@@ -152,4 +152,42 @@ public class BanHistory extends BaseRepository {
             con.release();
         }
     }
+    
+    public List<BanInfo<InetAddress>> getBanHistory(InetAddress ip) throws SQLException {
+        ConnectionHandler con = getConnection();
+        
+        try {
+            ResultSet results = con.executeQuery(history, 
+                    ip.getHostAddress(),
+                    "ip"
+                    );
+            
+            List<BanInfo<InetAddress>> bans = Lists.newArrayList();
+            
+            while(results.next()) {
+                int id = results.getInt("id");
+                String reason = results.getString("reason");
+                String byName = results.getString("by_name");
+                UUID byId = null;
+                if (results.getString("by_id") == null) {
+                    byId = Utilities.makeUUID(results.getString("by_id"));
+                }
+                
+                long date = results.getDate("date").getTime();
+                long until = 0;
+                if (results.getDate("until") != null) {
+                    until = results.getDate("until").getTime();
+                }
+                
+                boolean isUnban = results.getString("action").equals("unban");
+                
+                bans.add(new BanInfo<InetAddress>(ip, id, reason, byName, byId, date, until, isUnban));
+            }
+            
+            results.close();
+            return bans;
+        } finally {
+            con.release();
+        }
+    }
 }

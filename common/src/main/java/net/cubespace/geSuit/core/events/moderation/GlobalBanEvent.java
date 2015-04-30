@@ -8,8 +8,21 @@ import net.cubespace.geSuit.core.objects.BanInfo;
 
 public class GlobalBanEvent extends GSEvent {
     private BanInfo<?> ban;
-    public GlobalBanEvent(BanInfo<?> ban) {
+    private boolean isAutomatic;
+    
+    private boolean includesIPBan;
+    private InetAddress ip;
+    public GlobalBanEvent(BanInfo<?> ban, boolean isAuto) {
         this.ban = ban;
+        this.isAutomatic = isAuto;
+    }
+    
+    public GlobalBanEvent(BanInfo<GlobalPlayer> ban, InetAddress ip, boolean isAuto) {
+        this(ban, isAuto);
+        
+        this.ip = ip;
+        this.includesIPBan = true;
+        
     }
     
     public BanInfo<?> getBan() {
@@ -25,8 +38,10 @@ public class GlobalBanEvent extends GSEvent {
     }
     
     public InetAddress getAddress() {
-        if (isIPBan()) {
+        if (ban.getWho() instanceof InetAddress) {
             return (InetAddress)ban.getWho();
+        } else if (includesIPBan) {
+            return ip;
         } else {
             return null;
         }
@@ -37,7 +52,11 @@ public class GlobalBanEvent extends GSEvent {
     }
     
     public boolean isIPBan() {
-        return ban.getWho() instanceof InetAddress;
+        return ban.getWho() instanceof InetAddress || includesIPBan;
+    }
+    
+    public boolean isAutomatic() {
+        return isAutomatic;
     }
     
     public static Object getHandlerList() {

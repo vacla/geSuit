@@ -2,6 +2,7 @@ package net.cubespace.geSuit.database.repositories;
 
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.objects.TimeRecord;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.database.BaseRepository;
 import net.cubespace.geSuit.database.ConnectionHandler;
@@ -9,7 +10,6 @@ import net.cubespace.geSuit.database.StatementKey;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.LoggingManager;
-import net.cubespace.geSuit.objects.TimeRecord;
 import net.md_5.bungee.api.ChatColor;
 
 import java.sql.ResultSet;
@@ -51,7 +51,7 @@ public class OnTime extends BaseRepository {
         timeMonth = registerStatement("getOnTimeMonth", "SELECT SUM(`time`) FROM " + getName() + " WHERE `uuid`=? AND `timeslot` >= DATE_FORMAT(NOW(), '%Y-%m-01')");
         timeYear = registerStatement("getOnTimeYear",  "SELECT SUM(`time`) FROM " + getName() + " WHERE `uuid`=? AND `timeslot` > DATE_FORMAT(NOW(), '%Y-01-01')");
         timeTotal = registerStatement("getOnTimeTotal", "SELECT SUM(`time`) FROM " + getName() + " WHERE `uuid`=?");
-        ontimeTop = registerStatement("getOnTimeTop",   "SELECT `uuid`, SUM(`time`) AS `totaltime` FROM `%ontime%` GROUP BY `uuid` ORDER BY `totaltime` DESC LIMIT 10 OFFSET ?".replace("%ontime%", getName()));
+        ontimeTop = registerStatement("getOnTimeTop",   "SELECT `uuid`, SUM(`time`) AS `totaltime` FROM `%ontime%` GROUP BY `uuid` ORDER BY `totaltime` DESC LIMIT ? OFFSET ?".replace("%ontime%", getName()));
     }
     
     public void updatePlayerOnTime(GlobalPlayer player, long tsStart, long tsEnd) {
@@ -204,14 +204,13 @@ public class OnTime extends BaseRepository {
         }
     }    
 
-    public Map<UUID, Long> getOnTimeTop(int pagenum) throws SQLException {
+    public Map<UUID, Long> getOnTimeTop(int offset, int size) throws SQLException {
         ConnectionHandler handler = getConnection();
         ResultSet results = null;
         try {
             Map<UUID, Long> top = Maps.newLinkedHashMap();
             
-            int offset = (pagenum < 1) ? 0 : (pagenum - 1) * 10;    // Offset = Page number x 10 (but starts at 0 and no less than 0
-            results = handler.executeQuery(ontimeTop, offset);
+            results = handler.executeQuery(ontimeTop, size, offset);
             while (results.next()) {
                 top.put(Utilities.makeUUID(results.getString("uuid")), results.getLong("totaltime"));
             }

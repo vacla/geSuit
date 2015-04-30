@@ -1,6 +1,5 @@
 package net.cubespace.geSuit.commands;
 
-import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.TimeParser;
@@ -45,6 +44,7 @@ public class TempBanCommand extends Command {
             return;
         }
 
-    	BansManager.tempBanPlayer(sender.getName(), args[0], seconds, reason);
+        throw new UnsupportedOperationException("Not yet implemented");
+    	//BansManager.tempBanPlayer(sender.getName(), args[0], seconds, reason);
     }
 }

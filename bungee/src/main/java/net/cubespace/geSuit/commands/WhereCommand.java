@@ -1,6 +1,5 @@
 package net.cubespace.geSuit.commands;
 
-import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
@@ -32,6 +31,7 @@ public class WhereCommand extends Command {
 			search = args[1];
 		}
 
-        BansManager.displayWhereHistory(sender.getName(), options, search);
+		throw new UnsupportedOperationException("Not yet implemented");
+        //BansManager.displayWhereHistory(sender.getName(), options, search);
     }
 }
