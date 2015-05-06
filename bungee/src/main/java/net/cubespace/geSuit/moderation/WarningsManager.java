@@ -59,7 +59,7 @@ public class WarningsManager implements WarnActions {
             }
         }
         
-        actions = new WarnAction[max-1];
+        actions = new WarnAction[max];
         // Fill array with what we have
         for (Entry<Integer, String> entry : defs.entrySet()) {
             try {
