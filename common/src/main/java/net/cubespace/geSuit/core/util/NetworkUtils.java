@@ -12,12 +12,19 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.storage.ByteStorable;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.primitives.Primitives;
 
 public class NetworkUtils {
@@ -129,6 +136,15 @@ public class NetworkUtils {
         } else if (object instanceof GlobalPlayer) {
             out.writeByte(14);
             writeUUID(out, ((GlobalPlayer)object).getUniqueId());
+        } else if (object instanceof List<?>) {
+            out.writeByte(15);
+            writeList(out, (List<?>)object);
+        } else if (object instanceof Set<?>) {
+            out.writeByte(16);
+            writeSet(out, (Set<?>)object);
+        } else if (object instanceof Map<?,?>) {
+            out.writeByte(17);
+            writeMap(out, (Map<?,?>)object);
         } else {
             throw new IllegalArgumentException("Unable to serialize value " + object);
         }
@@ -168,6 +184,12 @@ public class NetworkUtils {
             return readObject(in);
         case 14:
             return Global.getOfflinePlayer(readUUID(in));
+        case 15:
+            return readList(in);
+        case 16:
+            return readSet(in);
+        case 17:
+            return readMap(in);
         default:
             throw new IllegalStateException("Unknown data value with id " + type);
         }
@@ -185,6 +207,12 @@ public class NetworkUtils {
         } else if (Serializable.class.isAssignableFrom(type)) {
             return true;
         } else if (GlobalPlayer.class.isAssignableFrom(type)) {
+            return true;
+        } else if (List.class.isAssignableFrom(type)) {
+            return true;
+        } else if (Set.class.isAssignableFrom(type)) {
+            return true;
+        } else if (Map.class.isAssignableFrom(type)) {
             return true;
         }
         
@@ -215,5 +243,58 @@ public class NetworkUtils {
         } catch (InstantiationException e) {
             throw new IOException("Unable to load " + className, e);
         }
+    }
+    
+    public static void writeList(DataOutput out, List<?> list) throws IOException {
+        out.writeInt(list.size());
+        for (Object val : list) {
+            writeTyped(out, val);
+        }
+    }
+    
+    public static List<?> readList(DataInput in) throws IOException, ClassNotFoundException {
+        int count = in.readInt();
+        List<Object> values = Lists.newArrayListWithCapacity(count);
+        for (int i = 0; i < count; ++i) {
+            values.add(readTyped(in));
+        }
+        
+        return values;
+    }
+    
+    public static void writeSet(DataOutput out, Set<?> set) throws IOException {
+        out.writeInt(set.size());
+        for (Object val : set) {
+            writeTyped(out, val);
+        }
+    }
+    
+    public static Set<?> readSet(DataInput in) throws IOException, ClassNotFoundException {
+        int count = in.readInt();
+        Set<Object> values = Sets.newHashSetWithExpectedSize(count);
+        for (int i = 0; i < count; ++i) {
+            values.add(readTyped(in));
+        }
+        
+        return values;
+    }
+    
+    public static void writeMap(DataOutput out, Map<?, ?> map) throws IOException {
+        out.writeInt(map.size());
+        for (Entry<?, ?> entry : map.entrySet()) {
+            writeTyped(out, entry.getKey());
+            writeTyped(out, entry.getValue());
+        }
+    }
+    
+    public static Map<?, ?> readMap(DataInput in) throws IOException, ClassNotFoundException {
+        int count = in.readInt();
+        Map<Object, Object> values = Maps.newLinkedHashMap();
+        
+        for (int i = 0; i < count; ++i) {
+            values.put(readTyped(in), readTyped(in));
+        }
+        
+        return values;
     }
 }

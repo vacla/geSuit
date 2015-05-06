@@ -2,19 +2,19 @@ package net.cubespace.geSuit.core.remote;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.google.common.reflect.TypeToken;
 
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.RemoteInvokeMessage;
-import net.cubespace.geSuit.core.util.NetworkUtils;
+import net.cubespace.geSuit.core.serialization.Serialization;
 
 public class RemoteManager implements ChannelDataReceiver<BaseMessage> {
     private Channel<BaseMessage> channel;
@@ -108,40 +108,25 @@ public class RemoteManager implements ChannelDataReceiver<BaseMessage> {
                 continue;
             }
 
-            if (!checkType(method.getGenericReturnType())) {
-                throw new IllegalArgumentException("Return type of " + method.getName() + " is not a sendible type");
+            if (!checkType(TypeToken.of(method.getGenericReturnType()))) {
+                throw new IllegalArgumentException("Return type of " + method.getName() + " in " + method.getDeclaringClass().getName() + " is not a sendible type");
             }
 
             int paramIndex = 0;
             for (Type param : method.getGenericParameterTypes()) {
-                if (!checkType(param)) {
-                    throw new IllegalArgumentException("Parameter " + paramIndex + " (" + param.toString() + ") of " + method.getName() + " is not a sendible type");
+                if (!checkType(TypeToken.of(param))) {
+                    throw new IllegalArgumentException("Parameter " + paramIndex + " (" + param.toString() + ") of " + method.getName() + " in " + method.getDeclaringClass().getName() + " is not a sendible type");
                 }
                 ++paramIndex;
             }
         }
     }
 
-    private boolean checkType(Type type) {
-        if (type instanceof Class<?>) {
-            if (!NetworkUtils.isSendible((Class<?>) type)) {
-                return false;
-            }
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType ptype = (ParameterizedType) type;
-            if (!NetworkUtils.isSendible((Class<?>) ptype.getRawType())) {
-                return false;
-            }
-
-            for (Type subType : ptype.getActualTypeArguments()) {
-                if (!checkType(subType)) {
-                    return false;
-                }
-            }
-        } else {
-            return false;
+    private boolean checkType(TypeToken<?> token) {
+        if (token.getRawType().equals(Void.TYPE) || token.getRawType().equals(Void.class)) {
+            return true;
         }
-
-        return true;
+        
+        return Serialization.isSerializable(token);
     }
 }
