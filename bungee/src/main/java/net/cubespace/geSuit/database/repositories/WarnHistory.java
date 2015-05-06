@@ -26,7 +26,7 @@ public class WarnHistory extends BaseRepository {
     
     @Override
     protected String getTableDeclaration() {
-        return "`id` INTEGER AUTO INCREMENT PRIMARY KEY, `who` VARCHAR(32) NOT NULL, `reason` VARCHAR(255), `by_name` VARCHAR(20) NOT NULL, `by_uuid` CHAR(32), `date` DATETIME NOT NULL, `expire_date` DATETIME, INDEX (`who`)";
+        return "`id` INTEGER AUTO_INCREMENT PRIMARY KEY, `who` VARCHAR(32) NOT NULL, `reason` VARCHAR(255), `by_name` VARCHAR(20) NOT NULL, `by_uuid` CHAR(32), `date` DATETIME NOT NULL, `expire_date` DATETIME, INDEX (`who`)";
     }
 
     @Override

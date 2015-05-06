@@ -29,7 +29,7 @@ public class BanHistory extends BaseRepository {
     
     @Override
     protected String getTableDeclaration() {
-        return "`id` INTEGER AUTO INCREMENT PRIMARY KEY, `who` VARCHAR(32) NOT NULL, `type` ENUM('uuid', 'ip') NOT NULL, `reason` VARCHAR(255), `by_name` VARCHAR(20) NOT NULL, `by_uuid` CHAR(32), `action` ENUM('ban', 'unban') NOT NULL, `date` DATETIME NOT NULL, `until` DATETIME, `unban_id` INTEGER, INDEX (`who`, `type`)";
+        return "`id` INTEGER AUTO_INCREMENT PRIMARY KEY, `who` VARCHAR(32) NOT NULL, `type` ENUM('uuid', 'ip') NOT NULL, `reason` VARCHAR(255), `by_name` VARCHAR(20) NOT NULL, `by_uuid` CHAR(32), `action` ENUM('ban', 'unban') NOT NULL, `date` DATETIME NOT NULL, `until` DATETIME, `unban_id` INTEGER, INDEX (`who`, `type`)";
     }
 
     @Override

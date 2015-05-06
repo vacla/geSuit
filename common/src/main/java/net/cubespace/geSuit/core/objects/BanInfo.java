@@ -1,14 +1,22 @@
 package net.cubespace.geSuit.core.objects;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.base.Preconditions;
 
+import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.storage.ByteStorable;
 import net.cubespace.geSuit.core.storage.Storable;
+import net.cubespace.geSuit.core.util.NetworkUtils;
 import net.cubespace.geSuit.core.util.Utilities;
 
-public class BanInfo<T> implements Storable {
+public class BanInfo<T> implements Storable, ByteStorable {
     private T who;
     private long date;
     private long until;
@@ -32,6 +40,8 @@ public class BanInfo<T> implements Storable {
         this.bannedById = byId;
         this.isUnban = unban;
     }
+    
+    protected BanInfo() {}
     
     public T getWho() {
         return who;
@@ -128,5 +138,71 @@ public class BanInfo<T> implements Storable {
         if (until != 0) {
             values.put("until", Utilities.formatDate(until));
         }
+    }
+
+    @Override
+    public void save(DataOutput out) throws IOException {
+        if (who instanceof GlobalPlayer) {
+            out.writeByte(0);
+            NetworkUtils.writeUUID(out, ((GlobalPlayer)who).getUniqueId());
+        } else if (who instanceof InetAddress) {
+            out.writeByte(1);
+            NetworkUtils.writeInetAddress(out, (InetAddress)who);
+        } else {
+            throw new AssertionError("Unknown ban target type");
+        }
+        
+        out.writeInt(databaseKey);
+        out.writeLong(date);
+        out.writeLong(until);
+        out.writeUTF(reason);
+        out.writeUTF(bannedBy);
+        if (bannedById != null) {
+            out.writeBoolean(true);
+            NetworkUtils.writeUUID(out, bannedById);
+        } else {
+            out.writeBoolean(false);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void load(DataInput in) throws IOException {
+        switch (in.readByte()) {
+        case 0:
+            UUID id = NetworkUtils.readUUID(in);
+            who = (T)Global.getOfflinePlayer(id);
+            break;
+        case 1:
+            who = (T)NetworkUtils.readInetAddress(in);
+            break;
+        }
+        
+        databaseKey = in.readInt();
+        date = in.readLong();
+        until = in.readLong();
+        reason = in.readUTF();
+        bannedBy = in.readUTF();
+        if (in.readBoolean()) {
+            bannedById = NetworkUtils.readUUID(in);
+        }
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof BanInfo<?>)) {
+            return false;
+        }
+        
+        BanInfo<?> other = (BanInfo<?>)obj;
+        
+        return who.equals(other.who) 
+                && date == other.date 
+                && until == other.until 
+                && reason.equals(other.reason) 
+                && bannedBy.equals(other.bannedBy) 
+                && ((bannedById != null && bannedById.equals(other.bannedById)) || (bannedById == null && other.bannedById == null)) 
+                && isUnban == other.isUnban 
+                && databaseKey == other.databaseKey;
     }
 }

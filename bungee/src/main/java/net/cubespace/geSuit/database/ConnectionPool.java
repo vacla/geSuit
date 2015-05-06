@@ -41,7 +41,7 @@ public class ConnectionPool {
     public boolean initialiseConnections(Database database) {
         this.dbConfig = database;
         
-        connectionString = String.format("jdbc:mysql://%s:%d/%s", dbConfig.Host, dbConfig.Port, dbConfig.Database);
+        connectionString = String.format("jdbc:mysql://%s:%s/%s", dbConfig.Host, dbConfig.Port, dbConfig.Database);
         
         try {
             for (int i = 0; i < database.Threads; i++) {
@@ -84,7 +84,11 @@ public class ConnectionPool {
                     // Table exists, do nothing
                 } catch (SQLException e) {
                     // Table does not exist
-                    setupRepository(repository, statement);
+                    try {
+                        setupRepository(repository, statement);
+                    } catch (SQLException ex) {
+                        geSuit.getLogger().log(Level.SEVERE, "There was an SQLException while attempting to create the " + repository.getName() + " table", ex);
+                    }
                 }
             }
         } catch (SQLException e) {
