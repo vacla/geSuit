@@ -31,14 +31,17 @@ public class BanCommands {
         }
         
         Result result = actions.ban(player, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
-        sender.sendMessage(result.getMessage());
+        if (result.getMessage() != null) {
+            sender.sendMessage(result.getMessage());
+        }
     }
     
     @Command(name="ipban", aliases={"dbip","banip"}, permission="gesuit.bans.command.ipban", usage="/<command> <ip> [reason]")
     public void ipBan(CommandSender sender, InetAddress ip, @Optional @Varargs String reason) {
         Result result = actions.ban(ip, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
-        
-        sender.sendMessage(result.getMessage());
+        if (result.getMessage() != null) {
+            sender.sendMessage(result.getMessage());
+        }
     }
     
     @Command(name="ipban", aliases={"dbip","banip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
@@ -50,13 +53,17 @@ public class BanCommands {
         }
         
         Result result = actions.ipban(player, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
-        sender.sendMessage(result.getMessage());
+        if (result.getMessage() != null) {
+            sender.sendMessage(result.getMessage());
+        }
     }
     
     @Command(name="tempbanip", aliases={"tbanip","dtbip"}, permission="gesuit.bans.command.tempbanip", usage="/<command> <ip> <time> [reason]")
     public void tempBan(CommandSender sender, InetAddress ip, DateDiff date, @Optional @Varargs String reason) {
         Result result = actions.banUntil(ip, reason, date.fromNow(), sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
-        sender.sendMessage(result.getMessage());
+        if (result.getMessage() != null) {
+            sender.sendMessage(result.getMessage());
+        }
     }
     
     @Command(name="tempban", aliases={"tban","bant","bantemp","dtb"}, permission="gesuit.bans.command.tempban", usage="/<command> <player> <time> [reason]")
@@ -68,7 +75,9 @@ public class BanCommands {
         }
         
         Result result = actions.banUntil(player, reason, date.fromNow(), sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
-        sender.sendMessage(result.getMessage());
+        if (result.getMessage() != null) {
+            sender.sendMessage(result.getMessage());
+        }
     }
     
     @Command(name="unban", aliases={"dub","uban", "reoveban", "pardon"}, permission="gesuit.bans.command.unban", usage="/<command> <player> [reason]")
@@ -80,7 +89,9 @@ public class BanCommands {
         }
         
         Result result = actions.unban(player, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
-        sender.sendMessage(result.getMessage());
+        if (result.getMessage() != null) {
+            sender.sendMessage(result.getMessage());
+        }
     }
     
     @Command(name="unbanip", aliases={"ipunban","unipban", "ipsafe", "safeip", "pardonip", "dubip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
@@ -92,13 +103,17 @@ public class BanCommands {
         }
         
         Result result = actions.ipunban(player, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
-        sender.sendMessage(result.getMessage());
+        if (result.getMessage() != null) {
+            sender.sendMessage(result.getMessage());
+        }
     }
     
     @Command(name="unbanip", aliases={"ipunban","unipban", "ipsafe", "safeip", "pardonip", "dubip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
     public void unbanIp(CommandSender sender, InetAddress ip, @Optional @Varargs String reason) {
         Result result = actions.unban(ip, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
-        sender.sendMessage(result.getMessage());
+        if (result.getMessage() != null) {
+            sender.sendMessage(result.getMessage());
+        }
     }
     
     @Command(name="banhistory", permission="gesuit.bans.command.banhistory", usage="/<command> <player>")

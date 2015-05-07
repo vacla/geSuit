@@ -14,6 +14,7 @@ import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.moderation.BanManager;
+import net.cubespace.geSuit.remote.moderation.BanActions;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.LoginEvent;
@@ -32,14 +33,18 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
         broadcastFullUpdate();
     }
     
+    public void initialize(BanManager bans) {
+        this.bans = bans;
+    }
+    
     @EventHandler
     public void onLogin(final LoginEvent event) {
-        //event.registerIntent(geSuit.getPlugin());
+        event.registerIntent(geSuit.getPlugin());
         ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 handleLogin(event);
-                //event.completeIntent(geSuit.getPlugin());
+                event.completeIntent(geSuit.getPlugin());
             }
         });
     }

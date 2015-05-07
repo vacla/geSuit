@@ -59,6 +59,10 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private BungeePlayerManager playerManager;
     private DatabaseManager databaseManager;
     
+    private BanManager bans;
+    private TrackingManager tracking;
+    private WarningsManager warnings;
+    
     public void onEnable() {
         geSuit.setPlugin(this);
         LoggingManager.log(ChatColor.GREEN + "Starting geSuit");
@@ -82,6 +86,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         Global.setInstance(core);
         
         initializeRemotes();
+        
+        playerManager.initialize(bans);
 
         registerListeners();
         registerCommands();
@@ -179,11 +185,12 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     
     private void initializeRemotes() {
         Channel<BaseMessage> moderationChannel = channelManager.createChannel("moderation", BaseMessage.class);
+        moderationChannel.setCodec(new BaseMessage.Codec());
         
         RemoteManager manager = Global.getRemoteManager();
-        manager.registerRemote("bans", BanActions.class, new BanManager(databaseManager.getBanHistory(), moderationChannel));
-        manager.registerRemote("warns", WarnActions.class, new WarningsManager(databaseManager.getWarnHistory(), (BanManager)manager.getRemote(BanActions.class), moderationChannel));
-        manager.registerRemote("tracking", TrackingActions.class, new TrackingManager(databaseManager));
+        manager.registerRemote("bans", BanActions.class, bans = new BanManager(databaseManager.getBanHistory(), moderationChannel));
+        manager.registerRemote("warns", WarnActions.class, warnings = new WarningsManager(databaseManager.getWarnHistory(), (BanManager)manager.getRemote(BanActions.class), moderationChannel));
+        manager.registerRemote("tracking", TrackingActions.class, tracking = new TrackingManager(databaseManager));
     }
     
     public void onDisable() {

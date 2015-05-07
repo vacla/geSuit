@@ -40,6 +40,7 @@ public class BanManager implements BanActions {
     
     public BanManager(BanHistory banRepo, Channel<BaseMessage> channel) {
         this.banRepo = banRepo;
+        this.channel = channel;
     }
     
     @Override
@@ -153,7 +154,7 @@ public class BanManager implements BanActions {
                     );
             if (ConfigManager.bans.BroadcastUnbans) {
                 PlayerManager.sendBroadcast(message, null);
-                return new Result(Type.Success, null);
+                return new Result(Type.Success, (byId == null ? message : null));
             } else {
                 return new Result(Type.Success, message);
             }
@@ -217,11 +218,12 @@ public class BanManager implements BanActions {
             kickRelevant(ban, getBanKickReason(ban));
             
             // Finally broadcast message
+            String message = getBanBroadcast(ban, isAuto);
             if (ConfigManager.bans.BroadcastBans) {
-                PlayerManager.sendBroadcast(getBanBroadcast(ban, isAuto), null);
-                return new Result(Type.Success, null);
+                PlayerManager.sendBroadcast(message, null);
+                return new Result(Type.Success, (byId == null ? message : null));
             } else {
-                return new Result(Type.Success, getBanBroadcast(ban, isAuto));
+                return new Result(Type.Success, message);
             }
         } catch (SQLException e) {
             geSuit.getLogger().log(Level.SEVERE, "A database exception occured while attempting to ban " + who, e);
@@ -305,11 +307,12 @@ public class BanManager implements BanActions {
             kickRelevant(ipCurrent, getBanKickReason(ipCurrent));
             
             // Finally broadcast message
+            String message = getBanBroadcast(ipCurrent, isAuto);
             if (ConfigManager.bans.BroadcastBans) {
-                PlayerManager.sendBroadcast(getBanBroadcast(ipCurrent, isAuto), null);
-                return new Result(Type.Success, null);
+                PlayerManager.sendBroadcast(message, null);
+                return new Result(Type.Success, (byId == null ? message : null));
             } else {
-                return new Result(Type.Success, getBanBroadcast(ipCurrent, isAuto));
+                return new Result(Type.Success, message);
             }
         } catch (SQLException e) {
             geSuit.getLogger().log(Level.SEVERE, "A database exception occured while attempting to ipban " + player.getName(), e);
@@ -354,7 +357,7 @@ public class BanManager implements BanActions {
                     );
             if (ConfigManager.bans.BroadcastUnbans) {
                 PlayerManager.sendBroadcast(message, null);
-                return new Result(Type.Success, null);
+                return new Result(Type.Success, (byId == null ? message : null));
             } else {
                 return new Result(Type.Success, message);
             }
@@ -385,8 +388,10 @@ public class BanManager implements BanActions {
         } else {
             if (ban.getWho() instanceof GlobalPlayer) {
                 message = ConfigManager.messages.BAN_PLAYER_MESSAGE;
+                message = message.replace("{player}", ((GlobalPlayer)ban.getWho()).getDisplayName());
             } else {
                 message = ConfigManager.messages.IPBAN_PLAYER;
+                message = message.replace("{player}", ((InetAddress)ban.getWho()).getHostAddress());
             }
         }
         
@@ -416,8 +421,10 @@ public class BanManager implements BanActions {
         } else {
             if (ban.getWho() instanceof GlobalPlayer) {
                 message = (isAuto ? ConfigManager.messages.BAN_PLAYER_AUTO_BROADCAST : ConfigManager.messages.BAN_PLAYER_BROADCAST);
+                message = message.replace("{player}", ((GlobalPlayer)ban.getWho()).getDisplayName());
             } else {
                 message = (isAuto ? ConfigManager.messages.IPBAN_PLAYER_AUTO_BROADCAST : ConfigManager.messages.IPBAN_PLAYER_BROADCAST);
+                message = message.replace("{player}", ((InetAddress)ban.getWho()).getHostAddress());
             }
         }
         

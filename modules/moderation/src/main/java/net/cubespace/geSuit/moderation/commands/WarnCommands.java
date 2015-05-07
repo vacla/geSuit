@@ -27,7 +27,9 @@ public class WarnCommands {
         }
         
         Result result = actions.warn(player, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
-        sender.sendMessage(result.getMessage());
+        if (result.getMessage() != null) {
+            sender.sendMessage(result.getMessage());
+        }
     }
     
     @Command(name="warnhistory", aliases={"dst"}, permission="gesuit.bans.command.warnhistory", usage="/<command> <player>")
