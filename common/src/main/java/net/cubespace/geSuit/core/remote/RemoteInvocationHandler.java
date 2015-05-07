@@ -12,18 +12,17 @@ import java.util.concurrent.TimeoutException;
 import com.google.common.collect.Maps;
 
 import net.cubespace.geSuit.core.channel.Channel;
-import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.RemoteInvokeMessage;
 
 public class RemoteInvocationHandler implements InvocationHandler {
     private String name;
-    private Channel<BaseMessage> channel;
+    private Channel<RemoteInvokeMessage> channel;
     private MessageWaiter waiter;
     private Map<Method, Integer> idMap;
     
     private long nextInvokeNum;
     
-    RemoteInvocationHandler(String name, Channel<BaseMessage> channel, MessageWaiter waiter) {
+    RemoteInvocationHandler(String name, Channel<RemoteInvokeMessage> channel, MessageWaiter waiter) {
         this.name = name;
         this.channel = channel;
         this.waiter = waiter;

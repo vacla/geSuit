@@ -1,5 +1,8 @@
 package net.cubespace.geSuit.core.remote;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -10,21 +13,21 @@ import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 
 import net.cubespace.geSuit.core.channel.Channel;
+import net.cubespace.geSuit.core.channel.ChannelCodec;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
 import net.cubespace.geSuit.core.channel.ChannelManager;
-import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.RemoteInvokeMessage;
 import net.cubespace.geSuit.core.serialization.Serialization;
 
-public class RemoteManager implements ChannelDataReceiver<BaseMessage> {
-    private Channel<BaseMessage> channel;
+public class RemoteManager implements ChannelDataReceiver<RemoteInvokeMessage> {
+    private Channel<RemoteInvokeMessage> channel;
     private MessageWaiter waiter;
     private Map<Class<?>, RemoteInterface<?>> remotesByClass;
     private Map<String, RemoteInterface<?>> remotesByName;
     
     public RemoteManager(ChannelManager manager) {
-        channel = manager.createChannel("remote", BaseMessage.class);
-        channel.setCodec(new BaseMessage.Codec());
+        channel = manager.createChannel("remote", RemoteInvokeMessage.class);
+        channel.setCodec(new MessageCodec());
         channel.addReceiver(this);
         
         waiter = new MessageWaiter();
@@ -69,15 +72,13 @@ public class RemoteManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     @Override
-    public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value) {
-        if (value instanceof RemoteInvokeMessage) {
-            RemoteInvokeMessage message = (RemoteInvokeMessage)value;
-            
-            if (message.isReply()) {
-                waiter.checkMessage(message);
-            } else {
-                onInvoke(message);
-            }
+    public void onDataReceive(Channel<RemoteInvokeMessage> channel, RemoteInvokeMessage value) {
+        RemoteInvokeMessage message = (RemoteInvokeMessage)value;
+        
+        if (message.isReply()) {
+            waiter.checkMessage(message);
+        } else {
+            onInvoke(message);
         }
     }
     
@@ -90,9 +91,9 @@ public class RemoteManager implements ChannelDataReceiver<BaseMessage> {
         RemoteInvokeMessage reply;
         try {
             Object returnValue = remote.invoke(message.methodId, message.parameters);
-            reply = new RemoteInvokeMessage(message.name, message.invokeId, returnValue, null);
+            reply = new RemoteInvokeMessage(message.name, message.methodId, message.invokeId, returnValue, null);
         } catch (Throwable e) {
-            reply = new RemoteInvokeMessage(message.name, message.invokeId, null, e);
+            reply = new RemoteInvokeMessage(message.name, message.methodId, message.invokeId, null, e);
         }
         
         channel.broadcast(reply);
@@ -128,5 +129,42 @@ public class RemoteManager implements ChannelDataReceiver<BaseMessage> {
         }
         
         return Serialization.isSerializable(token);
+    }
+    
+    public class MessageCodec implements ChannelCodec<RemoteInvokeMessage> {
+        @Override
+        public void encode(RemoteInvokeMessage message, DataOutput out) throws IOException {
+            RemoteInterface<?> iface = remotesByName.get(message.name);
+            Method method = iface.getMethod(message.methodId);
+            
+            out.writeUTF(message.name);
+            out.writeInt(message.methodId);
+            
+            message.write(method, out);
+        }
+
+        @Override
+        public RemoteInvokeMessage decode(DataInput in) throws IOException {
+            String name = in.readUTF();
+            int methodId = in.readInt();
+            
+            RemoteInterface<?> iface = remotesByName.get(name);
+            if (iface == null) {
+                return null;
+            }
+            
+            Method method = iface.getMethod(methodId);
+            if (method == null) {
+                return null;
+            }
+            
+            RemoteInvokeMessage message = new RemoteInvokeMessage();
+            message.name = name;
+            message.methodId = methodId;
+            message.read(method, in);
+            
+            return message;
+        }
+        
     }
 }

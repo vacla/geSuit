@@ -195,4 +195,24 @@ final class PrimitiveSerializers {
             return in.readUTF();
         }
     }
+    
+    public static class NullSerializer extends AdvancedSerializer<Void> {
+        protected NullSerializer() {
+            super(TypeToken.of(Void.class));
+        }
+
+        @Override
+        public boolean isSerializable() {
+            return true;
+        }
+
+        @Override
+        public void serialize(Void object, DataOutput out) throws IOException {
+        }
+
+        @Override
+        public Void deserialize(DataInput in) throws IOException {
+            return null;
+        }
+    }
 }

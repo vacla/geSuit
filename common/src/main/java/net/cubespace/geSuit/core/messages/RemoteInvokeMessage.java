@@ -3,11 +3,15 @@ package net.cubespace.geSuit.core.messages;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
 
+import com.google.common.reflect.TypeToken;
+
+import net.cubespace.geSuit.core.serialization.Serialization;
 import net.cubespace.geSuit.core.util.NetworkUtils;
 
-public class RemoteInvokeMessage extends BaseMessage implements LinkedMessage<Object> {
+public class RemoteInvokeMessage implements LinkedMessage<Object> {
     public String name;
     public int methodId;
     public long invokeId;
@@ -17,15 +21,16 @@ public class RemoteInvokeMessage extends BaseMessage implements LinkedMessage<Ob
     public Throwable error;
 
     public RemoteInvokeMessage() {}
-    public RemoteInvokeMessage(String name, int method, long invoke, Object[] params) {
+    public RemoteInvokeMessage(String name, int methodId, long invoke, Object[] params) {
         this.name = name;
-        this.methodId = method;
+        this.methodId = methodId;
         this.invokeId = invoke;
         this.parameters = params;
     }
     
-    public RemoteInvokeMessage(String name, long invoke, Object response, Throwable error) {
+    public RemoteInvokeMessage(String name, int methodId, long invoke, Object response, Throwable error) {
         this.name = name;
+        this.methodId = methodId;
         this.invokeId = invoke;
         this.response = response;
         this.error = error;
@@ -53,17 +58,14 @@ public class RemoteInvokeMessage extends BaseMessage implements LinkedMessage<Ob
         return ((RemoteInvokeMessage)message).invokeId == invokeId && ((RemoteInvokeMessage)message).name.equals(name); 
     }
     
-    @Override
-    public void write(DataOutput out) throws IOException {
-        out.writeUTF(name);
+    public void write(Method method, DataOutput out) throws IOException {
         out.writeLong(invokeId);
 
         if (!isReply()) {
             out.writeBoolean(false);
-            out.writeInt(methodId);
             out.writeByte(parameters.length);
-            for (Object param : parameters) {
-                NetworkUtils.writeTyped(out, param);
+            for (int i = 0; i < parameters.length; ++i) {
+                Serialization.serialize(parameters[i], (TypeToken<Object>)TypeToken.of(method.getGenericParameterTypes()[i]), out);
             }
         } else {
             out.writeBoolean(true);
@@ -72,35 +74,23 @@ public class RemoteInvokeMessage extends BaseMessage implements LinkedMessage<Ob
                 NetworkUtils.writeObject(out, error);
             } else {
                 out.writeBoolean(true);
-                NetworkUtils.writeTyped(out, response);
+                Serialization.serialize(response, (TypeToken<Object>)TypeToken.of(method.getGenericReturnType()), out);
             }
         }
     }
 
-    @Override
-    public void read(DataInput in) throws IOException {
-        name = in.readUTF();
+    public void read(Method method, DataInput in) throws IOException {
         invokeId = in.readLong();
 
         if (!in.readBoolean()) { // Request
-            methodId = in.readInt();
             parameters = new Object[in.readByte()];
             for (int i = 0; i < parameters.length; ++i) {
-                try {
-                    parameters[i] = NetworkUtils.readTyped(in);
-                } catch (ClassNotFoundException e) {
-                    error = new IllegalStateException("Unable to deserialize parameter " + i + " value on remote:", e);
-                    break;
-                }
+                parameters[i] = Serialization.deserialize((TypeToken<Object>)TypeToken.of(method.getGenericParameterTypes()[i]), in);
             }
         } else { // Response
             if (in.readBoolean()) { // Success
                 error = null;
-                try {
-                    response = NetworkUtils.readTyped(in);
-                } catch (ClassNotFoundException e) {
-                    error = new IllegalStateException("Unable to deserialize return value:", e);
-                }
+                response = Serialization.deserialize((TypeToken<Object>)TypeToken.of(method.getGenericReturnType()), in);
             } else { // Error
                 try {
                     error = (Throwable) NetworkUtils.readObject(in);

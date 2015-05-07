@@ -54,7 +54,6 @@ public abstract class BaseMessage {
     static {
         addMessageType(0, PlayerUpdateMessage.class);
         addMessageType(1, PlayerUpdateRequestMessage.class);
-        addMessageType(2, RemoteInvokeMessage.class);
         addMessageType(3, FireBanEventMessage.class);
         addMessageType(4, FireWarnEventMessage.class);
     }

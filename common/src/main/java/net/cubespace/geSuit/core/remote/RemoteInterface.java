@@ -2,6 +2,7 @@ package net.cubespace.geSuit.core.remote;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -48,6 +49,10 @@ public class RemoteInterface<T> {
     
     public boolean isRemote() {
         return isRemote;
+    }
+    
+    Method getMethod(int id) {
+        return methodMap.get(id);
     }
     
     Object invoke(int methodId, Object[] params) throws Throwable {

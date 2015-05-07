@@ -35,7 +35,12 @@ public final class Serialization {
             throw new IllegalArgumentException("The specified type is not serializable");
         }
         
-        serializer.serialize(value, out);
+        if (value == null) {
+            out.writeBoolean(false);
+        } else {
+            out.writeBoolean(true);
+            serializer.serialize(value, out);
+        }
     }
     
     public static <T> T deserialize(TypeToken<T> detailedType, DataInput in) throws IOException {
@@ -44,7 +49,11 @@ public final class Serialization {
             throw new IllegalArgumentException("The specified type is not serializable");
         }
         
-        return serializer.deserialize(in);
+        if (in.readBoolean()) {
+            return serializer.deserialize(in);
+        } else {
+            return null;
+        }
     }
     
     public static boolean isSerializable(TypeToken<?> detailedType) {
