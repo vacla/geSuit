@@ -23,6 +23,8 @@ abstract class GSCommand extends Command implements TabExecutor {
         super(name);
         
         this.plugin = (Plugin)plugin;
+        aliases = new String[0];
+        usage = "";
     }
     
     @Override

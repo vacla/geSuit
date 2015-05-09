@@ -8,6 +8,7 @@ public class BungeeCommandManager extends CommandManager {
     @Override
     protected void installCommands(Collection<WrapperCommand> commands) {
         for (WrapperCommand command : commands) {
+            command.bake();
             ProxyServer.getInstance().getPluginManager().registerCommand(command.getPlugin(), command);
         }
     }

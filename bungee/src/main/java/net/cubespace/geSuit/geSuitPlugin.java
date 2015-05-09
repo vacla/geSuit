@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
-import net.cubespace.geSuit.commands.BanCommand;
+import net.cubespace.geSuit.commands.BanCommands;
 import net.cubespace.geSuit.commands.DebugCommand;
 import net.cubespace.geSuit.commands.MOTDCommand;
 import net.cubespace.geSuit.commands.NamesCommand;
 import net.cubespace.geSuit.commands.OnTimeCommand;
 import net.cubespace.geSuit.commands.ReloadCommand;
 import net.cubespace.geSuit.commands.SeenCommand;
-import net.cubespace.geSuit.commands.TempBanCommand;
-import net.cubespace.geSuit.commands.UnbanCommand;
 import net.cubespace.geSuit.commands.WarnCommand;
 import net.cubespace.geSuit.commands.WarnHistoryCommand;
 import net.cubespace.geSuit.commands.WhereCommand;
@@ -106,9 +104,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         if (ConfigManager.main.Seen_Enabled) {
             proxy.getPluginManager().registerCommand(this, new SeenCommand());
         }
-        proxy.getPluginManager().registerCommand(this, new UnbanCommand());
-        proxy.getPluginManager().registerCommand(this, new BanCommand());
-        proxy.getPluginManager().registerCommand(this, new TempBanCommand());
+        
+        Global.getCommandManager().registerAll(new BanCommands(bans), this);
         proxy.getPluginManager().registerCommand(this, new WarnCommand());
         proxy.getPluginManager().registerCommand(this, new WhereCommand());
         proxy.getPluginManager().registerCommand(this, new ReloadCommand());
