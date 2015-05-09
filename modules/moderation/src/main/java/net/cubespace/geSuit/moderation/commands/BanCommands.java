@@ -9,11 +9,11 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
-import net.cubespace.geSuit.commands.Command;
-import net.cubespace.geSuit.commands.CommandPriority;
-import net.cubespace.geSuit.commands.Optional;
-import net.cubespace.geSuit.commands.Varargs;
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.commands.Command;
+import net.cubespace.geSuit.core.commands.CommandPriority;
+import net.cubespace.geSuit.core.commands.Optional;
+import net.cubespace.geSuit.core.commands.Varargs;
 import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.core.objects.DateDiff;
 import net.cubespace.geSuit.core.objects.Result;

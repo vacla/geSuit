@@ -3,6 +3,7 @@ package net.cubespace.geSuit.core;
 import java.util.UUID;
 
 import net.cubespace.geSuit.core.channel.ChannelManager;
+import net.cubespace.geSuit.core.commands.CommandManager;
 import net.cubespace.geSuit.core.remote.RemoteManager;
 import net.cubespace.geSuit.core.storage.StorageSection;
 
@@ -68,5 +69,9 @@ public final class Global {
     
     public static StorageSection getStorage() {
         return instance.getStorage();
+    }
+    
+    public static CommandManager getCommandManager() {
+        return instance.getCommandManager();
     }
 }

@@ -4,16 +4,15 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.UUID;
 
-import net.cubespace.geSuit.commands.Command;
-import net.cubespace.geSuit.commands.CommandPriority;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.commands.Command;
+import net.cubespace.geSuit.core.commands.CommandPriority;
 import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
 
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 public class LookupCommands {
@@ -306,7 +305,7 @@ public class LookupCommands {
     }
     
     @Command(name="namehistory", async=true, aliases={"names"}, permission="gesuit.bans.command.namehistory", usage="/<command> <player>")
-    public void nameHistory(CommandSender sender, OfflinePlayer player) {
+    public void nameHistory(CommandSender sender, String playerName) {
         throw new UnsupportedOperationException("Not yet implemented");
         
 //      ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {

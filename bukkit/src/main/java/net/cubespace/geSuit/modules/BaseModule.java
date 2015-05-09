@@ -1,8 +1,8 @@
 package net.cubespace.geSuit.modules;
 
-import net.cubespace.geSuit.CommandManager;
 import net.cubespace.geSuit.GSPlugin;
 import net.cubespace.geSuit.core.channel.ChannelManager;
+import net.cubespace.geSuit.core.commands.CommandManager;
 
 /**
  * Represents a module.

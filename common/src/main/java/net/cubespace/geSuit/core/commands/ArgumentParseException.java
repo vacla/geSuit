@@ -1,4 +1,4 @@
-package net.cubespace.geSuit.commands.parser;
+package net.cubespace.geSuit.core.commands;
 
 public class ArgumentParseException extends RuntimeException implements Comparable<ArgumentParseException> {
     private static final long serialVersionUID = -6382620486403725353L;

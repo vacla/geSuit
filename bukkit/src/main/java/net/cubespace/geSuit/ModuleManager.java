@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.modules.BaseModule;
 import net.cubespace.geSuit.modules.Module;
 import net.cubespace.geSuit.modules.BaseModule.DisableReason;
@@ -231,7 +232,7 @@ public class ModuleManager implements Listener {
             }
             
             // Register commands
-            module.registerCommands(plugin.getCommandManager());
+            module.registerCommands(Global.getCommandManager());
             
             loadedModules.put(def.name.toLowerCase(), module);
             moduleRevDefs.put(module, def);

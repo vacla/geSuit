@@ -1,9 +1,10 @@
 package net.cubespace.geSuit.moderation.commands;
 
 import java.util.List;
-import net.cubespace.geSuit.commands.Command;
-import net.cubespace.geSuit.commands.Varargs;
+
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.commands.Command;
+import net.cubespace.geSuit.core.commands.Varargs;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.core.objects.WarnInfo;
 import net.cubespace.geSuit.core.util.Utilities;

@@ -21,7 +21,7 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     private BukkitPlayerManager playerManager;
     
     private ModuleManager moduleManager;
-    private CommandManager commandManager;
+    private BukkitCommandManager commandManager;
     
     @Override
     public void onEnable() {
@@ -34,10 +34,9 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         
         initializeChannelManager();
         playerManager = new BukkitPlayerManager(channelManager);
-        geCore core = new geCore(new BukkitPlatform(this), playerManager, channelManager);
+        commandManager = new BukkitCommandManager();
+        geCore core = new geCore(new BukkitPlatform(this), playerManager, channelManager, commandManager);
         Global.setInstance(core);
-        
-        commandManager = new CommandManager(this);
         
         getLogger().info("Initializing modules:");
         moduleManager = new ModuleManager(this);
@@ -91,10 +90,6 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     
     public ModuleManager getModuleManager() {
         return moduleManager;
-    }
-    
-    public CommandManager getCommandManager() {
-        return commandManager;
     }
 
     @Override

@@ -1,11 +1,11 @@
 package net.cubespace.geSuit.moderation;
 
-import net.cubespace.geSuit.CommandManager;
 import net.cubespace.geSuit.GSPlugin;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
+import net.cubespace.geSuit.core.commands.CommandManager;
 import net.cubespace.geSuit.core.events.moderation.GlobalBanEvent;
 import net.cubespace.geSuit.core.events.moderation.GlobalUnbanEvent;
 import net.cubespace.geSuit.core.events.moderation.GlobalWarnEvent;
@@ -63,10 +63,10 @@ public class ModeraionModule extends BaseModule implements ChannelDataReceiver<B
     
     @Override
     public void registerCommands(CommandManager manager) {
-        manager.registerAll(new BanCommands(bans));
-        manager.registerAll(new WarnCommands(warns));
-        manager.registerAll(new KickCommands(bans));
-        manager.registerAll(new LookupCommands(tracking));
+        manager.registerAll(new BanCommands(bans), getPlugin());
+        manager.registerAll(new WarnCommands(warns), getPlugin());
+        manager.registerAll(new KickCommands(bans), getPlugin());
+        manager.registerAll(new LookupCommands(tracking), getPlugin());
     }
     
     @SuppressWarnings("unchecked")

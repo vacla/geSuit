@@ -1,14 +1,13 @@
-package net.cubespace.geSuit.commands.parser;
+package net.cubespace.geSuit.core.commands;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
-
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-public class ParseNode {
+class ParseNode {
     private List<ParseNode> children;
     private ParseNode parent;
     private int variant;
@@ -32,7 +31,7 @@ public class ParseNode {
     }
     
     public void addChild(ParseNode node) {
-        Validate.isTrue(node.parent == null);
+        Preconditions.checkArgument(node.parent == null);
         
         int score = node.getScore();
         boolean inserted = false;

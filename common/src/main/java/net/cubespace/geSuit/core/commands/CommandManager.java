@@ -1,42 +1,23 @@
-package net.cubespace.geSuit;
+package net.cubespace.geSuit.core.commands;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import net.cubespace.geSuit.commands.Command;
-import net.cubespace.geSuit.commands.WrapperCommand;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.SimpleCommandMap;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-public class CommandManager {
-    private GSPlugin plugin;
-    private SimpleCommandMap commandMap;
+public abstract class CommandManager {
     private Map<String, WrapperCommand> commands;
     private Set<String> registered; 
     
-    public CommandManager(GSPlugin plugin) {
-        this.plugin = plugin;
-        
+    public CommandManager() {
         commands = Maps.newHashMap();
         registered = Sets.newHashSet();
-        
-        try
-        {
-            Method method = Bukkit.getServer().getClass().getMethod("getCommandMap");
-            commandMap = (SimpleCommandMap)method.invoke(Bukkit.getServer());
-        }
-        catch(Exception e)
-        {
-            throw new RuntimeException(e);
-        }
     }
     
-    public void registerAll(Object instance) {
+    public void registerAll(Object instance, Object plugin) {
         for (Method method : instance.getClass().getDeclaredMethods()) {
             Command tag = method.getAnnotation(Command.class);
             
@@ -44,26 +25,26 @@ public class CommandManager {
                 continue;
             }
             
-            registerCommand0(instance, method, tag);
+            registerCommand0(instance, method, tag, plugin);
         }
         finishRegistration();
     }
     
-    public void registerCommand(Object instance, Method method) {
+    public void registerCommand(Object instance, Method method, Object plugin) {
         Command tag = method.getAnnotation(Command.class);
         
         if (tag == null) {
             throw new IllegalArgumentException("Methods that will be commands require the @Command annotation");
         }
         
-        registerCommand0(instance, method, tag);
+        registerCommand0(instance, method, tag, plugin);
         finishRegistration();
     }
     
     /*
      * Adds the command to the list or adds variants, but doesnt actually register 
      */
-    private void registerCommand0(Object instance, Method method, Command tag) {
+    private void registerCommand0(Object instance, Method method, Command tag, Object plugin) {
         if (registered.contains(tag.name())) {
             throw new IllegalArgumentException("The command " + tag.name() + " has already been registered. You can only register vairants of a command using registerAll");
         }
@@ -81,13 +62,8 @@ public class CommandManager {
      * Finishes the registration making the commands fully available for use
      */
     private void finishRegistration() {
-        for (WrapperCommand command : commands.values()) {
-            try {
-                command.bake();
-                commandMap.register("gesuit", command);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-        }
+        installCommands(commands.values());
     }
+    
+    protected abstract void installCommands(Collection<WrapperCommand> commands);
 }

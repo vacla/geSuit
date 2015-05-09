@@ -1,10 +1,10 @@
 package net.cubespace.geSuit.moderation.commands;
 
-import net.cubespace.geSuit.commands.Command;
-import net.cubespace.geSuit.commands.Optional;
-import net.cubespace.geSuit.commands.Varargs;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.commands.Command;
+import net.cubespace.geSuit.core.commands.Optional;
+import net.cubespace.geSuit.core.commands.Varargs;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.remote.moderation.BanActions;
 

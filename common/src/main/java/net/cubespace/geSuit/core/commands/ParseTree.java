@@ -1,17 +1,16 @@
-package net.cubespace.geSuit.commands.parser;
+package net.cubespace.geSuit.core.commands;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import net.cubespace.geSuit.core.storage.DataConversion;
 
-import net.cubespace.geSuit.commands.Optional;
-import net.cubespace.geSuit.commands.Varargs;
-
-import com.google.common.base.Function;
+import com.google.common.base.Converter;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -21,7 +20,7 @@ import com.google.common.reflect.Invokable;
 import com.google.common.reflect.Parameter;
 import com.google.common.reflect.TypeToken;
 
-public class ParseTree {
+class ParseTree {
     private ParseNode root;
     private Set<Variant> variants;
     
@@ -102,7 +101,7 @@ public class ParseTree {
     }
     
     private ParseNode makeNode(Variant variant, int index, TypeToken<?> type, boolean varargs) {
-        Function<String, ?> converter = ArgumentParser.getParser(type.getRawType());
+        Converter<String, ?> converter = DataConversion.getConverter(type.getRawType());
         if (converter == null) {
             throw new IllegalArgumentException("Unable to register method " +  variant.method + " as command. There is no converter registered for type " + type.toString());
         }
@@ -130,7 +129,7 @@ public class ParseTree {
         
         String argument = arguments[node.getArgumentIndex()];
         if (node.isVarArgs()) {
-            argument = StringUtils.join(arguments, ' ', node.getArgumentIndex(), arguments.length);
+            argument = Joiner.on(' ').join(Arrays.copyOfRange(arguments, node.getArgumentIndex(), arguments.length));
         }
         
         Object value = null;
