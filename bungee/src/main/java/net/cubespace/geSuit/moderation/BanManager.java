@@ -382,6 +382,7 @@ public class BanManager implements BanActions {
             }
             
             message = message
+                .replace("{player}", ((GlobalPlayer)ban.getWho()).getDisplayName())
                 .replace("{time}", DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG).format(ban.getUntil()))
                 .replace("{left}", remainingLong)
                 .replace("{shortleft}", remainingShort);
@@ -415,6 +416,7 @@ public class BanManager implements BanActions {
             }
             
             message = message
+                .replace("{player}", ((GlobalPlayer)ban.getWho()).getDisplayName())
                 .replace("{time}", DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG).format(ban.getUntil()))
                 .replace("{left}", remainingLong)
                 .replace("{shortleft}", remainingShort);

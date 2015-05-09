@@ -106,6 +106,7 @@ public class GlobalPlayer {
     }
     
     public InetAddress getAddress() {
+        loadIfNeeded();
         return address;
     }
     

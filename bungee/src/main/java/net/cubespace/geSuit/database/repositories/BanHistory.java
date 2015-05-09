@@ -1,9 +1,9 @@
 package net.cubespace.geSuit.database.repositories;
 
 import java.net.InetAddress;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,8 +52,8 @@ public class BanHistory extends BaseRepository {
                         ban.getReason(),
                         ban.getBannedBy(),
                         (ban.getBannedById() != null ? Utilities.toString(ban.getBannedById()) : null),
-                        new Date(ban.getDate()),
-                        (ban.isTemporary() ? new Date(ban.getUntil()) : null)
+                        new Timestamp(ban.getDate()),
+                        (ban.isTemporary() ? new Timestamp(ban.getUntil()) : null)
                         );
             } else if (ban.getWho() instanceof InetAddress) {
                 result = con.executeUpdateWithResults(insertBan,
@@ -62,8 +62,8 @@ public class BanHistory extends BaseRepository {
                         ban.getReason(),
                         ban.getBannedBy(),
                         (ban.getBannedById() != null ? Utilities.toString(ban.getBannedById()) : null),
-                        new Date(ban.getDate()),
-                        (ban.isTemporary() ? new Date(ban.getUntil()) : null)
+                        new Timestamp(ban.getDate()),
+                        (ban.isTemporary() ? new Timestamp(ban.getUntil()) : null)
                         );
             } else {
                 throw new IllegalArgumentException("Ban is of a type that is not supported");
@@ -92,7 +92,7 @@ public class BanHistory extends BaseRepository {
                         reason,
                         ban.getBannedBy(),
                         (ban.getBannedById() != null ? Utilities.toString(ban.getBannedById()) : null),
-                        new Date(ban.getDate())
+                        new Timestamp(ban.getDate())
                         );
             } else if (ban.getWho() instanceof InetAddress) {
                 result = con.executeUpdateWithResults(insertUnban,
@@ -101,7 +101,7 @@ public class BanHistory extends BaseRepository {
                         reason,
                         ban.getBannedBy(),
                         (ban.getBannedById() != null ? Utilities.toString(ban.getBannedById()) : null),
-                        new Date(ban.getDate())
+                        new Timestamp(ban.getDate())
                         );
             } else {
                 throw new IllegalArgumentException("Ban is of a type that is not supported");
@@ -120,7 +120,7 @@ public class BanHistory extends BaseRepository {
         
         try {
             ResultSet results = con.executeQuery(history, 
-                    Utilities.makeUUID(player.getUniqueId().toString()),
+                    Utilities.toString(player.getUniqueId()),
                     "uuid"
                     );
             
@@ -131,14 +131,14 @@ public class BanHistory extends BaseRepository {
                 String reason = results.getString("reason");
                 String byName = results.getString("by_name");
                 UUID byId = null;
-                if (results.getString("by_id") == null) {
-                    byId = Utilities.makeUUID(results.getString("by_id"));
+                if (results.getString("by_uuid") != null) {
+                    byId = Utilities.makeUUID(results.getString("by_uuid"));
                 }
                 
-                long date = results.getDate("date").getTime();
+                long date = results.getTimestamp("date").getTime();
                 long until = 0;
-                if (results.getDate("until") != null) {
-                    until = results.getDate("until").getTime();
+                if (results.getTimestamp("until") != null) {
+                    until = results.getTimestamp("until").getTime();
                 }
                 
                 boolean isUnban = results.getString("action").equals("unban");
@@ -169,14 +169,14 @@ public class BanHistory extends BaseRepository {
                 String reason = results.getString("reason");
                 String byName = results.getString("by_name");
                 UUID byId = null;
-                if (results.getString("by_id") == null) {
-                    byId = Utilities.makeUUID(results.getString("by_id"));
+                if (results.getString("by_uuid") != null) {
+                    byId = Utilities.makeUUID(results.getString("by_uuid"));
                 }
                 
-                long date = results.getDate("date").getTime();
+                long date = results.getTimestamp("date").getTime();
                 long until = 0;
-                if (results.getDate("until") != null) {
-                    until = results.getDate("until").getTime();
+                if (results.getTimestamp("until") != null) {
+                    until = results.getTimestamp("until").getTime();
                 }
                 
                 boolean isUnban = results.getString("action").equals("unban");

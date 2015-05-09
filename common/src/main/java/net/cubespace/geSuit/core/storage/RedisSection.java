@@ -45,31 +45,17 @@ public class RedisSection implements StorageSection {
         this.path = path;
         this.parent = parent;
         this.root = (RedisSection)parent.getRoot();
-        this.fullPath = createPath(parent, path);
+        this.fullPath = parent.getSubPath(path);
         
         cached = Maps.newHashMap();
     }
     
-    private static String createPath(RedisSection section, String key) {
-        StringBuilder builder = new StringBuilder();
-        
-        StorageSection parent = section;
-        while(parent != null) {
-            if (builder.length() > 0) {
-                builder.insert(0, '.');
-            }
-            builder.insert(0, parent.getName());
-            parent = parent.getParent();
+    private String getSubPath(String key) {
+        if (root == this) {
+            return key;
+        } else {
+            return fullPath + "." + key;
         }
-        
-        if (key != null) {
-            if (builder.length() > 0) {
-                builder.append('.');
-            }
-            builder.append(key);
-        }
-        
-        return builder.toString();
     }
     
     private Jedis getJedis() {
@@ -103,7 +89,7 @@ public class RedisSection implements StorageSection {
             } else {
                 try {
                     Jedis jedis = getJedis();
-                    return jedis.exists(fullPath + "." + key);
+                    return jedis.exists(getSubPath(key));
                 } catch (JedisException e) {
                     throw handleJedisException(e);
                 }
@@ -158,7 +144,7 @@ public class RedisSection implements StorageSection {
             String key = entry.getKey();
             Object value = entry.getValue();
 
-            String path = (this == root ? key : fullPath + "." + key);
+            String path = getSubPath(key);
             pipe.del(path);
             
             if (value instanceof StorageSection) {
@@ -332,8 +318,8 @@ public class RedisSection implements StorageSection {
             } else {
                 try {
                     Jedis jedis = getJedis();
-                    if (jedis.type(fullPath + "." + key).equals("hash")) {
-                        Map<String, String> values = jedis.hgetAll(fullPath + "." + key);
+                    if (jedis.type(getSubPath(key)).equals("hash")) {
+                        Map<String, String> values = jedis.hgetAll(getSubPath(key));
                         storable.load(values);
                         return storable;
                     } else {
@@ -379,7 +365,7 @@ public class RedisSection implements StorageSection {
             } else {
                 try {
                     Jedis jedis = getJedis();
-                    String value = jedis.get(fullPath + "." + key);
+                    String value = jedis.get(getSubPath(key));
                     if (value == null) {
                         return def;
                     } else {
@@ -760,7 +746,7 @@ public class RedisSection implements StorageSection {
             } else {
                 try {
                     Jedis jedis = getJedis();
-                    Map<String, String> values = jedis.hgetAll(fullPath + "." + key);
+                    Map<String, String> values = jedis.hgetAll(getSubPath(key));
                     if (values == null) {
                         return def;
                     } else {
@@ -807,7 +793,7 @@ public class RedisSection implements StorageSection {
             } else {
                 try {
                     Jedis jedis = getJedis();
-                    key = fullPath + "." + key;
+                    key = getSubPath(key);
                     if (jedis.type(key).equals("list")) {
                         return jedis.lrange(key, 0, jedis.llen(key));
                     } else {
@@ -924,7 +910,7 @@ public class RedisSection implements StorageSection {
             } else {
                 try {
                     Jedis jedis = getJedis();
-                    key = fullPath + "." + key;
+                    key = getSubPath(key);
                     if (jedis.type(key).equals("set")) {
                         return jedis.smembers(key);
                     } else {

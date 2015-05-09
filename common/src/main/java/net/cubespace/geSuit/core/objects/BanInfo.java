@@ -155,7 +155,14 @@ public class BanInfo<T> implements Storable, ByteStorable {
         out.writeInt(databaseKey);
         out.writeLong(date);
         out.writeLong(until);
-        out.writeUTF(reason);
+        out.writeBoolean(isUnban);
+        if (reason != null) {
+            out.writeBoolean(true);
+            out.writeUTF(reason);
+        } else {
+            out.writeBoolean(false);
+        }
+        
         out.writeUTF(bannedBy);
         if (bannedById != null) {
             out.writeBoolean(true);
@@ -181,7 +188,10 @@ public class BanInfo<T> implements Storable, ByteStorable {
         databaseKey = in.readInt();
         date = in.readLong();
         until = in.readLong();
-        reason = in.readUTF();
+        isUnban = in.readBoolean();
+        if (in.readBoolean()) {
+            reason = in.readUTF();
+        }
         bannedBy = in.readUTF();
         if (in.readBoolean()) {
             bannedById = NetworkUtils.readUUID(in);
