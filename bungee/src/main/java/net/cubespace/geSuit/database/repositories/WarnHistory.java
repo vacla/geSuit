@@ -1,8 +1,8 @@
 package net.cubespace.geSuit.database.repositories;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,8 +45,8 @@ public class WarnHistory extends BaseRepository {
                     warn.getReason(),
                     warn.getBy(),
                     (warn.getById() != null ? Utilities.toString(warn.getById()) : null),
-                    new Date(warn.getDate()),
-                    new Date(warn.getExpireDate())
+                    new Timestamp(warn.getDate()),
+                    new Timestamp(warn.getExpireDate())
                     );
         } finally {
             con.release();
@@ -66,7 +66,7 @@ public class WarnHistory extends BaseRepository {
         
         try {
             ResultSet results = con.executeQuery(statement, 
-                    Utilities.makeUUID(player.getUniqueId().toString())
+                    Utilities.toString(player.getUniqueId())
                     );
             
             List<WarnInfo> warnings = Lists.newArrayList();
@@ -75,12 +75,12 @@ public class WarnHistory extends BaseRepository {
                 String reason = results.getString("reason");
                 String byName = results.getString("by_name");
                 UUID byId = null;
-                if (results.getString("by_id") == null) {
-                    byId = Utilities.makeUUID(results.getString("by_id"));
+                if (results.getString("by_uuid") != null) {
+                    byId = Utilities.makeUUID(results.getString("by_uuid"));
                 }
                 
-                long date = results.getDate("date").getTime();
-                long expireDate = results.getDate("expire_date").getTime();
+                long date = results.getTimestamp("date").getTime();
+                long expireDate = results.getTimestamp("expire_date").getTime();
                 
                 warnings.add(new WarnInfo(player, reason, byName, byId, date, expireDate));
             }
