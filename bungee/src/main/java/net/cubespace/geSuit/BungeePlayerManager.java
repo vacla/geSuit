@@ -1,20 +1,18 @@
 package net.cubespace.geSuit;
 
 import java.net.InetAddress;
-import java.util.concurrent.TimeUnit;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.PlayerManager;
 import net.cubespace.geSuit.core.channel.ChannelManager;
+import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
 import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.moderation.BanManager;
-import net.cubespace.geSuit.remote.moderation.BanActions;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.LoginEvent;
@@ -118,6 +116,10 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
         
         if (onServerConnect(event.getPlayer().getUniqueId())) {
             GlobalPlayer player = Global.getPlayer(event.getPlayer().getUniqueId());
+            
+            // Update the tracking data for this player
+            geSuit.getPlugin().getTrackingManager().updateTracking(player);
+            
             if (player.isNewPlayer()) {
                 LoggingManager.log(ConfigManager.messages.PLAYER_CREATE.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
 
@@ -144,6 +146,12 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             }
             // TODO: do all other setup
         }
+    }
+    
+    @EventHandler
+    public void onNickname(GlobalPlayerNicknameEvent event) {
+        // Update the tracking data for this player
+        geSuit.getPlugin().getTrackingManager().updateTracking(event.getPlayer());
     }
     
     @EventHandler

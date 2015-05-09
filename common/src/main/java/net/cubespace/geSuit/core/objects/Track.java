@@ -17,17 +17,17 @@ public class Track implements ByteStorable {
     private InetAddress ip;
     private long firstseen;
     private long lastseen;
-    private boolean isNameBanned;
-    private boolean isIPBanned;
+    private int nameBanned;
+    private int ipBanned;
 
-    public Track(String name, String nickname, UUID uuid, InetAddress ip, long firstseen, long lastseen, boolean isNameBanned, boolean isIPBanned) {
+    public Track(String name, String nickname, UUID uuid, InetAddress ip, long firstseen, long lastseen, int nameBanned, int ipBanned) {
         this.name = name;
         this.uuid = uuid;
         this.ip = ip;
         this.firstseen = firstseen;
         this.lastseen = lastseen;
-        this.isNameBanned = isNameBanned;
-        this.isIPBanned = isIPBanned;
+        this.nameBanned = nameBanned;
+        this.ipBanned = ipBanned;
     }
     
     public Track() {}
@@ -57,11 +57,19 @@ public class Track implements ByteStorable {
     }
     
     public boolean isIpBanned() {
-        return isIPBanned;
+        return ipBanned != 0;
+    }
+    
+    public boolean isIpBanTemp() {
+        return ipBanned == 2;
     }
     
     public boolean isNameBanned() {
-        return isNameBanned;
+        return nameBanned != 0;
+    }
+    
+    public boolean isNameBanTemp() {
+        return nameBanned == 2;
     }
     
     @Override
@@ -85,8 +93,7 @@ public class Track implements ByteStorable {
         out.writeLong(firstseen);
         out.writeLong(lastseen);
         
-        out.writeBoolean(isNameBanned);
-        out.writeBoolean(isIPBanned);
+        out.writeByte(nameBanned | (ipBanned << 4));
     }
     
     @Override
@@ -102,7 +109,8 @@ public class Track implements ByteStorable {
         firstseen = in.readLong();
         lastseen = in.readLong();
         
-        isNameBanned = in.readBoolean();
-        isIPBanned = in.readBoolean();
+        int val = in.readByte();
+        ipBanned = (val >> 4) & 15;
+        nameBanned = val & 15;
     }
 }

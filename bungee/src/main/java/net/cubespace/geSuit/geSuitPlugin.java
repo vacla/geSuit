@@ -216,6 +216,18 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     public ChannelManager getChannelManager() {
         return channelManager;
     }
+    
+    public BanManager getBanManager() {
+        return bans;
+    }
+    
+    public TrackingManager getTrackingManager() {
+        return tracking;
+    }
+    
+    public WarningsManager getWarningsManager() {
+        return warnings;
+    }
 
     @Override
     public void onConnectionLost(Throwable e) {

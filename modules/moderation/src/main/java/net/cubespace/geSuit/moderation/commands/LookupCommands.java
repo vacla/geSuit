@@ -1,11 +1,17 @@
 package net.cubespace.geSuit.moderation.commands;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.UUID;
 
 import net.cubespace.geSuit.commands.Command;
+import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.objects.Track;
+import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
 
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -16,9 +22,92 @@ public class LookupCommands {
         this.lookup = lookup;
     }
     
-    @Command(name="where", permission="gesuit.bans.command.where", usage="/<command> <uuid>")
-    public void where(CommandSender sender, UUID id) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void where0(CommandSender sender, Object who, List<Track> tracking) {
+        String whoString;
+        
+        if (who instanceof GlobalPlayer) {
+            whoString = ((GlobalPlayer)who).getDisplayName();
+        } else if (who instanceof InetAddress) {
+            whoString = ((InetAddress)who).getHostAddress();
+        } else {
+            whoString = who.toString();
+        }
+        
+        if (tracking.isEmpty()) {
+            sender.sendMessage(ChatColor.RED + "[Tracker] No known accounts match or contain \"" + whoString + "\"");
+            return;
+        }
+        
+        // Header
+        StringBuilder builder = new StringBuilder();
+        builder.append(ChatColor.GREEN);
+        builder.append("[Tracker] ");
+        
+        if (who instanceof GlobalPlayer) {
+            builder.append("Player");
+        } else if (who instanceof InetAddress) {
+            builder.append("IP address");
+        } else {
+            builder.append("UUID");
+        }
+        
+        builder.append('"');
+        builder.append(whoString);
+        builder.append("\" associated with ");
+        builder.append(tracking.size());
+        builder.append(" accounts:");
+        
+        sender.sendMessage(builder.toString());
+        
+        // Contents
+        for (Track track : tracking) {
+            builder = new StringBuilder();
+            builder.append(ChatColor.DARK_GREEN);
+            builder.append(" - ");
+            if (track.isNameBanned()) {
+                builder.append(ChatColor.DARK_AQUA);
+            }
+
+            builder.append(track.getName());
+            if (track.getNickname() != null) {
+                builder.append(" (");
+                builder.append(track.getNickname());
+                builder.append(") ");
+            }
+
+            if (track.isNameBanned()) {
+                builder.append(ChatColor.GREEN);
+                if (track.isNameBanTemp()) {
+                    builder.append("[Tempban]");
+                } else {
+                    builder.append("[Ban]");
+                }
+            }
+
+            builder.append(' ');
+
+            if (track.isIpBanned()) {
+                builder.append(ChatColor.DARK_AQUA);
+                builder.append(track.getIp().getHostAddress());
+                builder.append(ChatColor.GREEN);
+                if (track.isIpBanTemp()) {
+                    builder.append("[Temp IPBan]");
+                } else {
+                    builder.append("[IPBan]");
+                }
+            } else {
+                builder.append(ChatColor.DARK_GREEN);
+                builder.append(track.getIp().getHostAddress());
+            }
+
+            builder.append(ChatColor.GRAY);
+            builder.append(" (");
+            builder.append(Utilities.formatDate(track.getLastSeen()));
+            builder.append(')');
+
+            sender.sendMessage(builder.toString());
+        }
+        
 //      ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
 //      @Override
 //      public void run() {
@@ -46,32 +135,7 @@ public class LookupCommands {
 //                type = "name";
 //            }
 //  
-//            if (!DatabaseManager.players.playerExists(searchString)) {
-//                // No exact match... do a partial match
-//                  PlayerManager.sendMessageToTarget(sender,
-//                        ChatColor.AQUA + "[Tracker] No accounts matched exactly \"" + searchString + "\", trying wildcard search..");
-//  
-//                  List<String> matches = DatabaseManager.players.matchPlayers(searchString);
-//                if (matches.isEmpty()) { 
-//                    PlayerManager.sendMessageToTarget(sender,
-//                            ChatColor.RED + "[Tracker] No known accounts match or contain \"" + searchString + "\"");
-//                    return;
-//                }
-//                else if (matches.size() == 1) {
-//                    if (searchString.length() < 20) {
-//                        searchString = matches.get(0);
-//                    }
-//                } else {
-//                    // Matched too many names, show list of names instead
-//                    PlayerManager.sendMessageToTarget(sender,
-//                            ChatColor.RED + "[Tracker] More than one player matched \"" + searchString + "\":");
-//                    for (String m : matches) {
-//                        PlayerManager.sendMessageToTarget(sender,
-//                                ChatColor.AQUA + " - " + m);
-//                    }
-//                    return;
-//                }
-//            }
+
 //            
 //            tracking = DatabaseManager.tracking.getPlayerTracking(searchString, type);
 //            if (tracking.isEmpty()) { 
@@ -138,17 +202,57 @@ public class LookupCommands {
 //  });
     }
     
-    @Command(name="where", permission="gesuit.bans.command.where", usage="/<command> <ip>")
-    public void where(CommandSender sender, InetAddress ip) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    @Command(name="where", permission="gesuit.bans.command.where", usage="/<command> <player>")
-    public void where(CommandSender sender, String playerName) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    @Command(name="where", async=true, permission="gesuit.bans.command.where", usage="/<command> <uuid>")
+    public void where(CommandSender sender, UUID id) {
+        List<Track> tracking = lookup.getHistory(id);
+        where0(sender, id, tracking);
     }
     
-    @Command(name="ontime", permission="gesuit.bans.command.ontime", usage="/<command> <player>")
+    @Command(name="where", async=true, permission="gesuit.bans.command.where", usage="/<command> <ip>")
+    public void where(CommandSender sender, InetAddress ip) {
+        List<Track> tracking = lookup.getHistory(ip);
+        where0(sender, ip, tracking);
+    }
+
+    @Command(name="where", async=true, permission="gesuit.bans.command.where", usage="/<command> <player>")
+    public void where(CommandSender sender, String playerName) {
+        GlobalPlayer player = Global.getOfflinePlayer(playerName);
+        
+        if (player != null) {
+            where0(sender, player, lookup.getHistory(player.getName()));
+        } else {
+            // TODO: Try wildcard match
+            throw new UnsupportedOperationException("Not yet implemented");
+//          if (!DatabaseManager.players.playerExists(searchString)) {
+//          // No exact match... do a partial match
+//            PlayerManager.sendMessageToTarget(sender,
+//                  ChatColor.AQUA + "[Tracker] No accounts matched exactly \"" + searchString + "\", trying wildcard search..");
+//
+//            List<String> matches = DatabaseManager.players.matchPlayers(searchString);
+//          if (matches.isEmpty()) { 
+//              PlayerManager.sendMessageToTarget(sender,
+//                      ChatColor.RED + "[Tracker] No known accounts match or contain \"" + searchString + "\"");
+//              return;
+//          }
+//          else if (matches.size() == 1) {
+//              if (searchString.length() < 20) {
+//                  searchString = matches.get(0);
+//              }
+//          } else {
+//              // Matched too many names, show list of names instead
+//              PlayerManager.sendMessageToTarget(sender,
+//                      ChatColor.RED + "[Tracker] More than one player matched \"" + searchString + "\":");
+//              for (String m : matches) {
+//                  PlayerManager.sendMessageToTarget(sender,
+//                          ChatColor.AQUA + " - " + m);
+//              }
+//              return;
+//          }
+//      }
+        }
+    }
+    
+    @Command(name="ontime", async=true, permission="gesuit.bans.command.ontime", usage="/<command> <player>")
     public void ontime(CommandSender sender, String playerName) {
         throw new UnsupportedOperationException("Not yet implemented");
         
@@ -197,7 +301,7 @@ public class LookupCommands {
 //      });
     }
     
-    @Command(name="namehistory", aliases={"names"}, permission="gesuit.bans.command.namehistory", usage="/<command> <player>")
+    @Command(name="namehistory", async=true, aliases={"names"}, permission="gesuit.bans.command.namehistory", usage="/<command> <player>")
     public void nameHistory(CommandSender sender, OfflinePlayer player) {
         throw new UnsupportedOperationException("Not yet implemented");
         

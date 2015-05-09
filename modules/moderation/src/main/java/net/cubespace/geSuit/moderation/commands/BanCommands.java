@@ -40,7 +40,7 @@ public class BanCommands {
         }
     }
     
-    @Command(name="ipban", aliases={"dbip","banip"}, permission="gesuit.bans.command.ipban", usage="/<command> <ip> [reason]")
+    @Command(name="ipban", async=true, aliases={"dbip","banip"}, permission="gesuit.bans.command.ipban", usage="/<command> <ip> [reason]")
     public void ipBan(CommandSender sender, InetAddress ip, @Optional @Varargs String reason) {
         Result result = actions.ban(ip, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
         if (result.getMessage() != null) {
@@ -48,7 +48,7 @@ public class BanCommands {
         }
     }
     
-    @Command(name="ipban", aliases={"dbip","banip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
+    @Command(name="ipban", async=true, aliases={"dbip","banip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
     public void ipBan(CommandSender sender, String playerName, @Optional @Varargs String reason) {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
@@ -62,7 +62,7 @@ public class BanCommands {
         }
     }
     
-    @Command(name="tempbanip", aliases={"tbanip","dtbip"}, permission="gesuit.bans.command.tempbanip", usage="/<command> <ip> <time> [reason]")
+    @Command(name="tempbanip", async=true, aliases={"tbanip","dtbip"}, permission="gesuit.bans.command.tempbanip", usage="/<command> <ip> <time> [reason]")
     public void tempBan(CommandSender sender, InetAddress ip, DateDiff date, @Optional @Varargs String reason) {
         Result result = actions.banUntil(ip, reason, date.fromNow(), sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
         if (result.getMessage() != null) {
@@ -70,7 +70,7 @@ public class BanCommands {
         }
     }
     
-    @Command(name="tempban", aliases={"tban","bant","bantemp","dtb"}, permission="gesuit.bans.command.tempban", usage="/<command> <player> <time> [reason]")
+    @Command(name="tempban", async=true, aliases={"tban","bant","bantemp","dtb"}, permission="gesuit.bans.command.tempban", usage="/<command> <player> <time> [reason]")
     public void tempBan(CommandSender sender, String playerName, DateDiff date, @Optional @Varargs String reason) {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
@@ -84,7 +84,7 @@ public class BanCommands {
         }
     }
     
-    @Command(name="unban", aliases={"dub","uban", "reoveban", "pardon"}, permission="gesuit.bans.command.unban", usage="/<command> <player> [reason]")
+    @Command(name="unban", async=true, aliases={"dub","uban", "reoveban", "pardon"}, permission="gesuit.bans.command.unban", usage="/<command> <player> [reason]")
     public void unban(CommandSender sender, String playerName, @Optional @Varargs String reason) {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
@@ -98,7 +98,7 @@ public class BanCommands {
         }
     }
     
-    @Command(name="unbanip", aliases={"ipunban","unipban", "ipsafe", "safeip", "pardonip", "dubip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
+    @Command(name="unbanip", async=true, aliases={"ipunban","unipban", "ipsafe", "safeip", "pardonip", "dubip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
     public void unbanIp(CommandSender sender, String playerName, @Optional @Varargs String reason) {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
@@ -112,7 +112,7 @@ public class BanCommands {
         }
     }
     
-    @Command(name="unbanip", aliases={"ipunban","unipban", "ipsafe", "safeip", "pardonip", "dubip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
+    @Command(name="unbanip", async=true, aliases={"ipunban","unipban", "ipsafe", "safeip", "pardonip", "dubip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
     public void unbanIp(CommandSender sender, InetAddress ip, @Optional @Varargs String reason) {
         Result result = actions.unban(ip, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
         if (result.getMessage() != null) {
@@ -120,7 +120,7 @@ public class BanCommands {
         }
     }
     
-    @Command(name="banhistory", permission="gesuit.bans.command.banhistory", usage="/<command> <player>")
+    @Command(name="banhistory", async=true, permission="gesuit.bans.command.banhistory", usage="/<command> <player>")
     public void banHistory(CommandSender sender, String playerName) {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
@@ -194,7 +194,7 @@ public class BanCommands {
         }
     }
     
-    @Command(name="checkban", aliases={"lookupban","baninfo"}, permission="gesuit.bans.command.checkban", usage="/<command> <player>")
+    @Command(name="checkban", async=true, aliases={"lookupban","baninfo"}, permission="gesuit.bans.command.checkban", usage="/<command> <player>")
     public void checkBan(CommandSender sender, String playerName) {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
