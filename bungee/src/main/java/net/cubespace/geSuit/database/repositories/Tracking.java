@@ -127,8 +127,8 @@ public class Tracking extends BaseRepository {
                 results.getString("nickname"), 
                 Utilities.makeUUID(results.getString("uuid")),
                 InetAddresses.forString(results.getString("ip")), 
-                results.getDate("firstseen").getTime(),
-                results.getDate("lastseen").getTime(), 
+                results.getTimestamp("firstseen").getTime(),
+                results.getTimestamp("lastseen").getTime(), 
                 results.getInt("name_ban"), 
                 results.getInt("ip_ban")
         );

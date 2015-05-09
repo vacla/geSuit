@@ -52,7 +52,7 @@ public class LookupCommands {
             builder.append("UUID");
         }
         
-        builder.append('"');
+        builder.append(" \"");
         builder.append(whoString);
         builder.append("\" associated with ");
         builder.append(tracking.size());
