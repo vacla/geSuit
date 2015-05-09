@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Lists;
 
 import net.cubespace.geSuit.commands.Command;
+import net.cubespace.geSuit.commands.CommandPriority;
 import net.cubespace.geSuit.commands.Optional;
 import net.cubespace.geSuit.commands.Varargs;
 import net.cubespace.geSuit.core.GlobalPlayer;
@@ -41,6 +42,7 @@ public class BanCommands {
     }
     
     @Command(name="ipban", async=true, aliases={"dbip","banip"}, permission="gesuit.bans.command.ipban", usage="/<command> <ip> [reason]")
+    @CommandPriority(2)
     public void ipBan(CommandSender sender, InetAddress ip, @Optional @Varargs String reason) {
         Result result = actions.ban(ip, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
         if (result.getMessage() != null) {
@@ -49,6 +51,7 @@ public class BanCommands {
     }
     
     @Command(name="ipban", async=true, aliases={"dbip","banip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
+    @CommandPriority(1)
     public void ipBan(CommandSender sender, String playerName, @Optional @Varargs String reason) {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
@@ -99,6 +102,7 @@ public class BanCommands {
     }
     
     @Command(name="unbanip", async=true, aliases={"ipunban","unipban", "ipsafe", "safeip", "pardonip", "dubip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
+    @CommandPriority(1)
     public void unbanIp(CommandSender sender, String playerName, @Optional @Varargs String reason) {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
@@ -113,6 +117,7 @@ public class BanCommands {
     }
     
     @Command(name="unbanip", async=true, aliases={"ipunban","unipban", "ipsafe", "safeip", "pardonip", "dubip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
+    @CommandPriority(2)
     public void unbanIp(CommandSender sender, InetAddress ip, @Optional @Varargs String reason) {
         Result result = actions.unban(ip, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
         if (result.getMessage() != null) {

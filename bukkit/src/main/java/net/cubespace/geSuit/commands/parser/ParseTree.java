@@ -26,7 +26,7 @@ public class ParseTree {
     private Set<Variant> variants;
     
     public ParseTree(List<Method> methods) {
-        variants = Sets.newHashSet();
+        variants = Sets.newLinkedHashSet();
         for (int i = 0; i < methods.size(); ++i) {
             variants.add(new Variant(i, methods.get(i)));
         }
@@ -201,7 +201,7 @@ public class ParseTree {
         public int index;
         
         public Marker(Variant variant, int index) {
-            this.variants = Sets.newHashSet();
+            this.variants = Sets.newLinkedHashSet();
             this.variants.add(variant);
             this.index = index;
         }

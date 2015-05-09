@@ -3,6 +3,7 @@ package net.cubespace.geSuit.commands;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -27,8 +28,7 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
     private Plugin plugin;
     
     private Object commandHolder;
-    private List<Method> variants;
-    private List<Boolean> executeAsync;
+    private List<MethodWrapper> variants;
     private ParseTree parseTree;
     
     public WrapperCommand(Plugin plugin, Object holder, Method method, net.cubespace.geSuit.commands.Command tag) {
@@ -38,7 +38,6 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
         commandHolder = holder;
         
         variants = Lists.newArrayList();
-        executeAsync = Lists.newArrayList();
         setUsage("");
         
         if (!tag.description().isEmpty()) {
@@ -71,25 +70,29 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
             throw new IllegalArgumentException(String.format("Method %s in class %s requires the return type to be void", method.getName(), method.getDeclaringClass().getName()));
         }
         
-        variants.add(method);
-        executeAsync.add(tag.async());
+        CommandPriority priorityTag = method.getAnnotation(CommandPriority.class);
+        int priority = 0;
+        if (priorityTag != null) {
+            priority = priorityTag.value();
+        }
+        
+        variants.add(new MethodWrapper(method, tag.async(), priority));
         if (getUsage().isEmpty()) {
             setUsage(tag.usage());
         } else { 
             setUsage(getUsage() + "\n" + tag.usage());
         }
-        
-        // We need a parse tree
-        // Each node should be a parseable type
-        // The children of those nodes are all the possibilities from that point
-        // The leafs of the tree should indicate which method will be called with the data
-        // Varargs must be the lowest non leaf level and should be placed at the end of the children for their parent so that other options are considered first
-        
-        
     }
     
     public void bake() {
-        parseTree = new ParseTree(variants);
+        Collections.sort(variants);
+        
+        List<Method> methods = Lists.newArrayListWithCapacity(variants.size());
+        for (MethodWrapper variant : variants) {
+            methods.add(variant.method);
+        }
+        
+        parseTree = new ParseTree(methods);
         parseTree.build();
     }
 
@@ -125,7 +128,7 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
             System.out.println("params: " + Arrays.toString(parameters));
             
             // Invoke the method
-            if (executeAsync.get(result.variant)) {
+            if (variants.get(result.variant).async) {
                 Bukkit.getScheduler().runTaskAsynchronously(GSPlugin.getPlugin(GSPlugin.class), new Runnable() {
                     @Override
                     public void run() {
@@ -169,4 +172,25 @@ public class WrapperCommand extends Command implements PluginIdentifiableCommand
         return plugin;
     }
     
+    private static class MethodWrapper implements Comparable<MethodWrapper> {
+        public Method method;
+        public int priority;
+        public boolean async;
+        
+        public MethodWrapper(Method method, boolean async, int priority) {
+            this.method = method;
+            this.priority = priority;
+            this.async = async;
+        }
+
+        @Override
+        public int compareTo(MethodWrapper other) {
+            return Integer.compare(other.priority, priority);
+        }
+        
+        @Override
+        public String toString() {
+            return String.format("%d %s", priority, method);
+        }
+    }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import net.cubespace.geSuit.commands.Command;
+import net.cubespace.geSuit.commands.CommandPriority;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.objects.Track;
@@ -203,18 +204,21 @@ public class LookupCommands {
     }
     
     @Command(name="where", async=true, permission="gesuit.bans.command.where", usage="/<command> <uuid>")
+    @CommandPriority(3)
     public void where(CommandSender sender, UUID id) {
         List<Track> tracking = lookup.getHistory(id);
         where0(sender, id, tracking);
     }
     
     @Command(name="where", async=true, permission="gesuit.bans.command.where", usage="/<command> <ip>")
+    @CommandPriority(2)
     public void where(CommandSender sender, InetAddress ip) {
         List<Track> tracking = lookup.getHistory(ip);
         where0(sender, ip, tracking);
     }
 
     @Command(name="where", async=true, permission="gesuit.bans.command.where", usage="/<command> <player>")
+    @CommandPriority(1)
     public void where(CommandSender sender, String playerName) {
         GlobalPlayer player = Global.getOfflinePlayer(playerName);
         
