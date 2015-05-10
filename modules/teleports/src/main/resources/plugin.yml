@@ -1,0 +1,156 @@
+name: geSuitTeleports
+main : net.cubespace.geSuit.teleports.Bootstrap
+version: ${project.version}b-${build.number}
+description: Part of the gesuit this plugin allows users to teleport to each other.
+depend: [geSuitBukkit]
+author: Schmoller
+
+permissions:
+    gesuit.teleports.*:
+        description: Gives access to all gesuitTeleport commands
+        default: op
+        children:
+            gesuit.teleports.admin: true
+    gesuit.teleports.admin:
+        description: Gives access to all gesuitTeleport admin commands
+        children:
+            gesuit.teleports.vip: true
+            gesuit.teleports.command.tp: true
+            gesuit.teleports.command.tphere: true
+            gesuit.teleports.command.tpall: true
+            gesuit.teleports.tp.silent: true
+            gesuit.teleports.tp.bypass: true
+    gesuit.teleports.vip:
+        decsription: Gives access to all gesuitTeleport vip commands
+        children:
+            gesuit.teleports.command.tptoggle: true
+            gesuit.teleports.command.top: true
+            gesuit.teleports.back.*: true
+            gesuit.teleports.user: true
+    gesuit.teleports.user:
+        description: Gives access to all gesuitTeleport user commands
+        children:
+            gesuit.teleports.command.tpahere: true
+            gesuit.teleports.command.tpa: true
+            gesuit.teleports.command.tpaccept: true
+            gesuit.teleports.command.tpdeny: true
+    gesuit.teleports.back.*:
+        description: Gives full access to the back command
+        children:
+            gesuit.teleports.command.back: true
+            gesuit.teleports.back.death: true
+            gesuit.teleports.back.teleport: true
+    gesuit.teleports.back.death:
+        description: Gives access to /back for death points
+    gesuit.teleports.back.teleport:
+        description: Gives access to /back for teleports
+    gesuit.teleports.tp.silent:
+        description: Does not send a teleport message to the player you teleported to
+    gesuit.teleports.tp.bypass:
+        description: Ability to bypass the tptoggle using /tp and this permission
+
+    gesuit.warps.*:
+        description: Gives access to all gesuitWarps commands
+        default: op
+        children:
+            gesuit.warps.admin: true
+    gesuit.warps.admin:
+        description: Gives access to all gesuitWarps admin commands
+        children:
+            gesuit.warps.user: true
+            gesuit.warps.command.setwarp: true
+            gesuit.warps.command.delwarp: true
+            gesuit.warps.list.hidden: true
+            gesuit.warps.warp.*: true
+            gesuit.warps.bypass: true
+            gesuit.warps.command.warp.other: true
+    gesuit.warps.user:
+        description: Gives access to all gesuitWarps user commands
+        children:
+            gesuit.warps.command.warps: true
+            gesuit.warps.command.warp: true
+            gesuit.warps.list.server: true
+            gesuit.warps.list.global: true
+    gesuit.warps.list.hidden:
+        description: Displays all hidden warps to the user
+    gesuit.warps.list.server:
+        description: Displays all server warps to the user
+    gesuit.warps.list.global:
+        description: Displays all global warps to the user
+    gesuit.warps.warp.*:
+        description: Allows access to all warps
+    gesuit.warps.warp.<warpname>:
+        description: "allows access to <warpname>"
+    gesuit.warps.bypass:
+        description: Allows players to user perserver warps cross server
+    gesuit.warps.command.warp.other:
+        description: Allows players to warp other players
+    
+    gesuit.spawns.*:
+        description: gives access to all gesuitspawn commands and features
+        default: op
+        children:
+            gesuit.spawns.admin: true
+    gesuit.spawns.admin:
+        description: gives access to all admin features of gesuitspawn
+        children:
+            gesuit.spawns.command.setnewspawn: true
+            gesuit.spawns.command.setworldspawn: true
+            gesuit.spawns.command.setserverspawn: true
+            gesuit.spawns.command.setglobalspawn: true
+            gesuit.spawns.command.spawn: true
+            gesuit.spawns.command.worldspawn: true
+            gesuit.spawns.command.serverspawn: true
+            gesuit.spawns.command.globalspawn: true
+    gesuit.spawns.new.world:
+        description: Teleports players with no server.data to the world spawn on first connect
+        default: false
+    gesuit.spawns.new.server:
+        description: Teleports players with no server.data to the server spawn on first connect
+        default: false
+    gesuit.spawns.new.global:
+        description: Teleports players with no server.data to the proxy spawn on first connect
+        default: false
+    gesuit.spawns.spawn.bed:
+        description: If a player has a bed spawn then the player will respawn at the bed on death
+        default: false
+    gesuit.spawns.spawn.world:
+        description: IF the player doesnt have a bed location or bed perm then the player will respawn at the world spawn if there is one
+        default: false
+    gesuit.spawns.spawn.server:
+        description: If the player doesnt have the world/bed perms or there is no bed/world spawn location the player will spawn at the server spawn if there is one on death
+        default: false
+    gesuit.spawns.spawn.global:
+        description: On death if none of the previous cases are met the player will respawn at the proxy spawn.
+        default: false
+    
+    gesuit.homes.*:
+        description: Gives access to all home commands
+        default: op
+        children:
+            gesuit.homes.admin: true
+    gesuit.homes.admin:
+        description: Gives access to all gesuit homes commands
+        children:
+            gesuit.homes.commands.importhomes: true
+            gesuit.homes.user: true
+    gesuit.homes.user:
+        description: Gives access to all gesuit homes user commands
+        children:
+            gesuit.homes.commands.sethome: true
+            gesuit.homes.commands.delhome: true
+            gesuit.homes.commands.homes: true
+            gesuit.homes.commands.home: true
+    gesuit.homes.limits.*:
+        decription: Gives maximum home limits for both global and server
+        children:
+            gesuit.homes.limits.server.*: true
+            gesuit.homes.limits.global.*: true
+    gesuit.homes.limits.server.*:
+        description: Gives maximum homes allowed for each server
+        children:
+            gesuit.homes.limits.server.<number of allowed homes>: true
+    gesuit.homes.limits.global.*:
+        description: Gives maximum homes allowed for the whole proxy
+        children:
+            gesuit.homes.limits.global.<number of allowed homes>: true
