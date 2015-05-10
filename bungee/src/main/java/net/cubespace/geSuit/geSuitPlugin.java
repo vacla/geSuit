@@ -6,12 +6,14 @@ import java.util.logging.Level;
 
 import net.cubespace.geSuit.commands.BanCommands;
 import net.cubespace.geSuit.commands.DebugCommand;
+import net.cubespace.geSuit.commands.KickCommands;
 import net.cubespace.geSuit.commands.MOTDCommand;
 import net.cubespace.geSuit.commands.NamesCommand;
 import net.cubespace.geSuit.commands.OnTimeCommand;
 import net.cubespace.geSuit.commands.ReloadCommand;
 import net.cubespace.geSuit.commands.SeenCommand;
 import net.cubespace.geSuit.commands.WarnCommand;
+import net.cubespace.geSuit.commands.WarnCommands;
 import net.cubespace.geSuit.commands.WarnHistoryCommand;
 import net.cubespace.geSuit.commands.WhereCommand;
 import net.cubespace.geSuit.configs.SubConfig.Redis;
@@ -106,6 +108,9 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         }
         
         Global.getCommandManager().registerAll(new BanCommands(bans), this);
+        Global.getCommandManager().registerAll(new KickCommands(bans), this);
+        Global.getCommandManager().registerAll(new WarnCommands(warnings), this);
+        
         proxy.getPluginManager().registerCommand(this, new WarnCommand());
         proxy.getPluginManager().registerCommand(this, new WhereCommand());
         proxy.getPluginManager().registerCommand(this, new ReloadCommand());
