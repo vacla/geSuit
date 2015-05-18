@@ -224,7 +224,7 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     @Override
-    public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value) {
+    public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value, int sourceId, boolean isBroadcast) {
         System.out.println("Got message " + value);
         if (value instanceof PlayerUpdateMessage && !proxyMode) {
             onUpdateMessage((PlayerUpdateMessage)value);

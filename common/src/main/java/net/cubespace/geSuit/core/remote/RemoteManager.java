@@ -72,7 +72,7 @@ public class RemoteManager implements ChannelDataReceiver<RemoteInvokeMessage> {
     }
     
     @Override
-    public void onDataReceive(Channel<RemoteInvokeMessage> channel, RemoteInvokeMessage value) {
+    public void onDataReceive(Channel<RemoteInvokeMessage> channel, RemoteInvokeMessage value, int sourceId, boolean isBroadcast) {
         RemoteInvokeMessage message = (RemoteInvokeMessage)value;
         
         if (message.isReply()) {

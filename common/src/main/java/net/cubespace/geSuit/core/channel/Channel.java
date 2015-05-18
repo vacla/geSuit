@@ -20,6 +20,14 @@ public interface Channel<T>
 	public void broadcast(T value);
 	
 	/**
+	 * Sends a data packet to the specified server.
+	 * This method is fairly useless on the Bukkit side as there is no tracking of servers.
+	 * @param value The value to send, this must not be null
+	 * @param serverId The id of the server.
+	 */
+	public void send(T value, int serverId);
+	
+	/**
 	 * Adds a receiver for this channel
 	 * @param receiver The receiver to add, must not be null
 	 */

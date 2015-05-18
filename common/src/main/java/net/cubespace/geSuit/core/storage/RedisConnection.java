@@ -20,12 +20,12 @@ public class RedisConnection {
     private boolean connectionActive;
     private ConnectionNotifier notifier;
 
-    private long connectionKey;
+    private int connectionId;
     
     private Set<Jedis> loaned = Sets.newIdentityHashSet();
 
-    public RedisConnection(String host, int port, String password) throws IOException {
-        connectionKey = System.nanoTime();
+    public RedisConnection(String host, int port, String password, int serverId) throws IOException {
+        connectionId = serverId;
 
         connectionActive = false;
 
@@ -55,8 +55,8 @@ public class RedisConnection {
         pool.destroy();
     }
 
-    public long getKey() {
-        return connectionKey;
+    public int getId() {
+        return connectionId;
     }
 
     public void testConnection() {

@@ -11,6 +11,7 @@ import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -56,7 +57,7 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         FileConfiguration config = getConfig();
         
         try {
-            redis = new RedisConnection(config.getString("redis.host", "localhost"), config.getInt("redis.port", 6379), config.getString("redis.password", ""));
+            redis = new RedisConnection(config.getString("redis.host", "localhost"), config.getInt("redis.port", 6379), config.getString("redis.password", ""), Bukkit.getPort());
             redis.setNotifier(this);
             return true;
         } catch (IOException e) {

@@ -71,7 +71,7 @@ public class ModeraionModule extends BaseModule implements ChannelDataReceiver<B
     
     @SuppressWarnings("unchecked")
     @Override
-    public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value) {
+    public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value, int sourceId, boolean isBroadcast) {
         if (value instanceof FireBanEventMessage) {
             FireBanEventMessage message = (FireBanEventMessage)value;
             

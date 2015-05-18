@@ -152,7 +152,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
             public void run() {
                 try {
                     Redis config = ConfigManager.main.Redis;
-                    redis = new RedisConnection(config.host, config.port, config.password);
+                    redis = new RedisConnection(config.host, config.port, config.password, 0);
                     redis.setNotifier(geSuitPlugin.this);
                 } catch (IOException e) {
                     getLogger().log(Level.SEVERE, "Unable to connect to Redis:", e);

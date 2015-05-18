@@ -91,16 +91,19 @@ public class RedisChannelManager implements ChannelManager {
             DataInputStream in = new DataInputStream(stream);
 
             try {
-                long key = in.readLong();
+                int source = in.readInt();
+                int dest = in.readInt();
 
-                if (key != connection.getKey()) {
-                    byte[] data = Arrays.copyOfRange(message, 8, message.length);
-                    String name = new String(channel, Charsets.UTF_8);
-                    name = name.substring(7);
-
-                    Channel<?> ch = getChannel(name);
-                    if (ch != null)
-                        ((RedisChannel<?>) ch).onReceive(data);
+                if (source != connection.getId()) {
+                    if (dest == BROADCAST || dest == connection.getId()) {
+                        byte[] data = Arrays.copyOfRange(message, 8, message.length);
+                        String name = new String(channel, Charsets.UTF_8);
+                        name = name.substring(7);
+    
+                        Channel<?> ch = getChannel(name);
+                        if (ch != null)
+                            ((RedisChannel<?>) ch).onReceive(data, source, dest == BROADCAST);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

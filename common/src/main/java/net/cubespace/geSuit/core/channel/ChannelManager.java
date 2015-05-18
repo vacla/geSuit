@@ -2,8 +2,16 @@ package net.cubespace.geSuit.core.channel;
 
 import java.util.Collection;
 
-public interface ChannelManager
-{
+public interface ChannelManager {
+    /**
+     * The id for the proxy server. Always 0
+     */
+    public static final int PROXY = 0;
+    /**
+     * The broadcast id. Used to send to all servers
+     */
+    public static final int BROADCAST = 0xFFFFFFFF;
+    
 	/**
 	 * Creates a channel 
 	 * @param name The name of the channel, case insensitive. This needs to be unique

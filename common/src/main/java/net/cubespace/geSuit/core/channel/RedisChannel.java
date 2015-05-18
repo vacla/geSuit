@@ -66,6 +66,11 @@ class RedisChannel<T> implements Channel<T> {
 
     @Override
     public void broadcast(T value) {
+        send(value, 0xFFFFFFFF);
+    }
+    
+    @Override
+    public void send(T value, int serverId) {
         Preconditions.checkNotNull(value);
 
         byte[] data = encodeValue(value);
@@ -74,7 +79,8 @@ class RedisChannel<T> implements Channel<T> {
         DataOutputStream out = new DataOutputStream(stream);
 
         try {
-            out.writeLong(connection.getKey()); // Prevents this server from receiving its own messages
+            out.writeInt(connection.getId());
+            out.writeInt(serverId);
             out.write(data);
         } catch (IOException e) { // Cant happen
         }
@@ -112,7 +118,7 @@ class RedisChannel<T> implements Channel<T> {
         }
     }
 
-    public void onReceive(byte[] data) {
+    public void onReceive(byte[] data, int source, boolean broadcast) {
         T value = decodeValue(data);
         if (value == null)
             return;
@@ -120,7 +126,7 @@ class RedisChannel<T> implements Channel<T> {
         synchronized (receivers) {
             for (ChannelDataReceiver<T> receiver : receivers) {
                 try {
-                    receiver.onDataReceive(this, value);
+                    receiver.onDataReceive(this, value, source, broadcast);
                 } catch (Throwable e) {
                     System.err.println("[geSuit] An error occured while passing a channel message (" + getName() + ") to the receiver " + receiver.getClass().getName());
                     e.printStackTrace();

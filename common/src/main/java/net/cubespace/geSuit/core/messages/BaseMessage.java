@@ -56,6 +56,7 @@ public abstract class BaseMessage {
         addMessageType(1, PlayerUpdateRequestMessage.class);
         addMessageType(3, FireBanEventMessage.class);
         addMessageType(4, FireWarnEventMessage.class);
+        addMessageType(5, TeleportMessage.class);
     }
     
     public static class Codec implements ChannelCodec<BaseMessage> {

@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.objects.GSPlayer;
+import net.md_5.bungee.api.config.ServerInfo;
 
 public final class geSuit {
     private static geSuitPlugin plugin;
@@ -37,6 +38,10 @@ public final class geSuit {
     
     public static ChannelManager getChannelManager() {
         return plugin.getChannelManager();
+    }
+    
+    public static int getServerId(ServerInfo server) {
+        return server.getAddress().getPort();
     }
     
     public static GSPlayer getPlayer(String name) {
