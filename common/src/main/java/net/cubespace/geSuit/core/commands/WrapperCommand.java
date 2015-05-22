@@ -123,7 +123,7 @@ public class WrapperCommand extends GSCommand {
             }
         } catch (ArgumentParseException e) {
             sendMessage(sender, getUsage0().replace("<command>", label));
-            System.out.println("APE: argument " + e.getArgument() + " in variant " + e.getNode().getVariant() + " value " + e.getValue());
+            System.out.println("APE: argument " + e.getArgument() + " in variant " + e.getNode().getVariant() + " value " + e.getValue() + " reason " + e.getReason());
         }
         
         return true;

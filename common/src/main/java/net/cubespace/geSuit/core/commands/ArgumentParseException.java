@@ -6,11 +6,13 @@ public class ArgumentParseException extends RuntimeException implements Comparab
     private String argumentValue;
     private int argumentIndex;
     private ParseNode node;
+    private String reason;
     
-    public ArgumentParseException(ParseNode node, int argumentIndex, String argumentValue) {
+    public ArgumentParseException(ParseNode node, int argumentIndex, String argumentValue, String reason) {
         this.node = node;
         this.argumentIndex = argumentIndex;
         this.argumentValue = argumentValue;
+        this.reason = reason;
     }
     
     public ParseNode getNode() {
@@ -23,6 +25,10 @@ public class ArgumentParseException extends RuntimeException implements Comparab
     
     public String getValue() {
         return argumentValue;
+    }
+    
+    public String getReason() {
+        return reason;
     }
 
     @Override

@@ -1,10 +1,12 @@
 package net.cubespace.geSuit.core.commands;
 
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 class ParseNode {
@@ -25,8 +27,9 @@ class ParseNode {
         children = Lists.newArrayList();
     }
     
-    public ParseNode(int variant) {
+    public ParseNode(int variant, int argumentIndex) {
         this.variant = variant;
+        this.argumentIndex = argumentIndex;
         isTerminal = true;
     }
     
@@ -42,6 +45,7 @@ class ParseNode {
             if (score < otherScore) {
                 children.add(i, node);
                 inserted = true;
+                break;
             }
         }
         
@@ -50,6 +54,17 @@ class ParseNode {
         }
         
         node.parent = this;
+    }
+    
+    public int getDepth() {
+        int depth = 0;
+        ParseNode node = parent;
+        while (node != null) {
+            ++depth;
+            node = node.parent;
+        }
+        
+        return depth;
     }
     
     private int getScore() {
@@ -90,17 +105,47 @@ class ParseNode {
         return transformer.apply(value);
     }
     
-    @Override
-    public String toString() {
+    public String getDebugName() {
         String text;
         if (isTerminal) {
             text = "*term*";
         } else {
-            text = String.valueOf(transformer);
+            if (transformer != null) {
+                try {
+                    // Does it have a toString method
+                    transformer.getClass().getMethod("toString");
+                    text = transformer.toString();
+                } catch (Throwable e) {
+                    if (transformer.getClass().isAnonymousClass()) {
+                        text = transformer.toString();
+                    } else {
+                        text = transformer.getClass().getSimpleName();
+                    }
+                }
+            } else {
+                text = "*root*";
+            }
+            
             if (isVarArgs) {
                 text += "...";
             }
         }
-        return String.format("%s:%s", text, children);
+        
+        return text;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s:%s", getDebugName(), children);
+    }
+    
+    void debugPrint(PrintStream out, int depth) {
+        String padding = Strings.repeat(" ", depth * 2);
+        out.println(padding + getDebugName() + " var: " + variant);
+        if (children != null) {
+            for (ParseNode child : children) {
+                child.debugPrint(out, depth+1);
+            }
+        }
     }
 }

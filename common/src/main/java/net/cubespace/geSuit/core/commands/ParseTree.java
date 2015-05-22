@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.core.commands;
 
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,7 +63,7 @@ class ParseTree {
         
         if (index >= parameters.size()) {
             // This variant is done
-            parent.addChild(new ParseNode(var.id));
+            parent.addChild(new ParseNode(var.id, index-1));
         } else {
             Parameter current = parameters.get(index);
             ParseNode node = typeMap.get(current.getType());
@@ -113,18 +114,26 @@ class ParseTree {
         // During parsing we must start at the root, then proceed to each child. At each node, if a type, we must try to parse the current argument as that object. If it succeeds, we recurse and start the process with its children
         // If a parsing a node fails, move back up the parse tree and try the next available node
         // If no path makes it to a leaf, then the syntax is wrong, we should record the one which made it the furthest and try to suggest a correct value. or we can just show the usage
+        //debugPrint(System.out);
         ParseResult result = recurseChildren(root, arguments);
         result.ensureParameters(getVariant(result.variant).getParameters().size() - 1);
         return result;
     }
     
     private ParseResult parseNode(ParseNode node, String[] arguments) throws ArgumentParseException {
+        //DebugPrintStream.systemOut.print(Strings.repeat(" ", node.getDepth()*2) + node.getDebugName() + ": ");
         if (node.isTerminal()) {
+            if (arguments.length > node.getArgumentIndex()) {
+                //DebugPrintStream.systemOut.println("#" + arguments[node.getArgumentIndex()]);
+                throw new ArgumentParseException(node, node.getArgumentIndex(), arguments[node.getArgumentIndex()], "More input");
+            }
+            //DebugPrintStream.systemOut.println("*fin*");
             return new ParseResult(node.getVariant());
         }
         
         if (arguments.length <= node.getArgumentIndex()) {
-            throw new ArgumentParseException(node, node.getArgumentIndex(), null);
+            //DebugPrintStream.systemOut.println("*eol*");
+            throw new ArgumentParseException(node, node.getArgumentIndex(), null, "Premature end");
         }
         
         String argument = arguments[node.getArgumentIndex()];
@@ -132,11 +141,15 @@ class ParseTree {
             argument = Joiner.on(' ').join(Arrays.copyOfRange(arguments, node.getArgumentIndex(), arguments.length));
         }
         
+        //DebugPrintStream.systemOut.print("'" + argument + "': ");
+        
         Object value = null;
         try {
             value = node.parse(argument);
+            //DebugPrintStream.systemOut.println("*ok*");
         } catch (IllegalArgumentException e) {
-            throw new ArgumentParseException(node, node.getArgumentIndex(), argument);
+            //DebugPrintStream.systemOut.println("*err* " + e.getMessage());
+            throw new ArgumentParseException(node, node.getArgumentIndex(), argument, "Wrong value");
         }
         
         // Now combine with children
@@ -174,6 +187,17 @@ class ParseTree {
     public String toString() {
         return root.toString();
     }
+    
+    public void debugPrint(PrintStream out) {
+        out.println("Variants:");
+        for (Variant var : variants) {
+            out.println(" " + var.id + ": " + var.method.toString());
+        }
+        out.println("Tree:");
+        root.debugPrint(out, 0);
+    }
+    
+    
     
     private static class Variant {
         public int id;
