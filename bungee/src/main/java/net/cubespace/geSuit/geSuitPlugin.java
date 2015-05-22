@@ -47,6 +47,8 @@ import net.cubespace.geSuit.moderation.WarningsManager;
 import net.cubespace.geSuit.remote.moderation.BanActions;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
 import net.cubespace.geSuit.remote.moderation.WarnActions;
+import net.cubespace.geSuit.remote.teleports.TeleportActions;
+import net.cubespace.geSuit.teleports.TeleportsManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -64,6 +66,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private BanManager bans;
     private TrackingManager tracking;
     private WarningsManager warnings;
+    private TeleportsManager teleports;
     
     public void onEnable() {
         geSuit.setPlugin(this);
@@ -196,6 +199,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         manager.registerRemote("bans", BanActions.class, bans = new BanManager(databaseManager.getBanHistory(), moderationChannel));
         manager.registerRemote("warns", WarnActions.class, warnings = new WarningsManager(databaseManager.getWarnHistory(), (BanManager)manager.getRemote(BanActions.class), moderationChannel));
         manager.registerRemote("tracking", TrackingActions.class, tracking = new TrackingManager(databaseManager));
+        
+        manager.registerRemote("teleports", TeleportActions.class, teleports = new TeleportsManager());
     }
     
     public void onDisable() {

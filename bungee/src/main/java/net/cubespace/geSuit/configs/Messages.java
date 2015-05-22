@@ -33,6 +33,7 @@ public class Messages extends Config {
     // teleport specific messages
     public String ALL_PLAYERS_TELEPORTED = "&6" + "All players have been teleported to {player}";
     public String TELEPORTED_TO_PLAYER = "&6" + "You have been teleported to {player}";
+    public String TELEPORTED_TO_LOCATION = "&6" + "You have been teleported";
     public String PLAYER_TELEPORT_PENDING = "&c" + "You already have a teleport pending";
     public String PLAYER_TELEPORT_PENDING_OTHER = "&c" + "That player already has a teleport pending";
     public String PLAYER_TELEPORT_WRONG_SERVER = "&c" + "You are not allowed to teleport to that player from here.";
@@ -54,6 +55,8 @@ public class Messages extends Config {
     public String TELEPORT_TOGGLE_ON = "&6" + "Telports have been toggled on";
     public String TELEPORT_TOGGLE_OFF = "&c" + "Telports have been toggled off";
     public String TELEPORT_UNABLE = "&c" + "You are unable to teleport to this player";
+    public String TELEPORT_INVALID_SERVER = "&c Unable to teleport to unknown server {server}";
+    public String TELEPORT_INVALID_WORLD = "&c Unable to teleport to unknown world {world}";
 
     // warp specific messages
     public String WARP_CREATED = "&6" + "Successfully created a warp";
