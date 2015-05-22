@@ -18,6 +18,7 @@ import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
+import com.google.common.primitives.Primitives;
 import com.google.common.primitives.Shorts;
 
 public class DataConversion {
@@ -131,6 +132,8 @@ public class DataConversion {
                     return ((SimpleStorable)b).save();
                 }
             };
+        } else if (type.isPrimitive()) {
+            return (Converter<String, A>)registeredConverters.get(Primitives.wrap(type));
         } else {
             return (Converter<String, A>)registeredConverters.get(type);
         }

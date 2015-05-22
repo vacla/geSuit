@@ -85,7 +85,6 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         
         for (GlobalPlayer player : playersById.values()) {
             String playerName = player.getName().toLowerCase();
-            String nickname = player.getNickname().toLowerCase();
 
             if (playerName.contains(name)) {
                 int diff = playerName.length() - name.length();
@@ -98,14 +97,17 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
                 }
             }
 
-            if (useNickname && !playerName.equalsIgnoreCase(nickname) && nickname.contains(name)) {
-                int diff = nickname.length() - name.length();
-                if (diff < best) {
-                    best = diff;
-                    bestPlayers.clear();
-                    bestPlayers.add(player);
-                } else if (diff == best) {
-                    bestPlayers.add(player);
+            if (player.hasNickname()) {
+                String nickname = player.getNickname().toLowerCase();
+                if (useNickname && !playerName.equalsIgnoreCase(nickname) && nickname.contains(name)) {
+                    int diff = nickname.length() - name.length();
+                    if (diff < best) {
+                        best = diff;
+                        bestPlayers.clear();
+                        bestPlayers.add(player);
+                    } else if (diff == best) {
+                        bestPlayers.add(player);
+                    }
                 }
             }
         }

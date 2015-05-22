@@ -87,11 +87,11 @@ public class Location implements SimpleStorable {
     
     @Override
     public String toString() {
-        return String.format("Location: %.1f,%.1f,%.1f %.1f %.1f %s %s", x, y, z, yaw, pitch, world, server);
+        return String.format("%.1f,%.1f,%.1f %.1f %.1f %s %s", x, y, z, yaw, pitch, world, server);
     }
     
     public String toSerialized() {
-        return String.format("%s|%s|%.4f|%.4f|%.4f|%.4f|%.4f", server, world, x, y, z, yaw, pitch);
+        return String.format("%s|%s|%.4f|%.4f|%.4f|%.4f|%.4f", (server == null ? "\0" : server), (world == null ? "\0" : world), x, y, z, yaw, pitch);
     }
     
     @Override
@@ -102,8 +102,14 @@ public class Location implements SimpleStorable {
     @Override
     public void load(String value) {
         String[] parts = value.split("\\|");
-        server = parts[0]; 
-        world = parts[1]; 
+        server = parts[0];
+        if (server.equals("\0")) {
+            server = null;
+        }
+        world = parts[1];
+        if (world.equals("\0")) {
+            world = null;
+        }
         x = Double.parseDouble(parts[2]); 
         y = Double.parseDouble(parts[3]); 
         z = Double.parseDouble(parts[4]); 
@@ -115,8 +121,8 @@ public class Location implements SimpleStorable {
         String[] parts = serialized.split("\\|");
         
         return new Location(
-            parts[0], 
-            parts[1], 
+            (parts[0].equals("\0") ? null : parts[0]), 
+            (parts[1].equals("\0") ? null : parts[1]), 
             Double.parseDouble(parts[2]), 
             Double.parseDouble(parts[3]), 
             Double.parseDouble(parts[4]), 

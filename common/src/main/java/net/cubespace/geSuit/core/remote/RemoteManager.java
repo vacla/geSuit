@@ -78,13 +78,13 @@ public class RemoteManager implements ChannelDataReceiver<RemoteInvokeMessage> {
         if (message.isReply()) {
             waiter.checkMessage(message);
         } else {
-            onInvoke(message);
+            onInvoke(message, sourceId);
         }
     }
     
-    private void onInvoke(RemoteInvokeMessage message) {
+    private void onInvoke(RemoteInvokeMessage message, int sourceId) {
         RemoteInterface<?> remote = remotesByName.get(message.name);
-        if (remote == null) {
+        if (remote == null || remote.isRemote()) {
             return;
         }
         
@@ -96,7 +96,7 @@ public class RemoteManager implements ChannelDataReceiver<RemoteInvokeMessage> {
             reply = new RemoteInvokeMessage(message.name, message.methodId, message.invokeId, null, e);
         }
         
-        channel.broadcast(reply);
+        channel.send(reply, sourceId);
     }
     
     private void checkValidity(Class<?> clazz) {

@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import com.google.common.reflect.TypeToken;
@@ -98,6 +99,15 @@ public class RemoteInvokeMessage implements LinkedMessage<Object> {
                     error = new IllegalStateException("Unable to deserialize error:", e);
                 }
             }
+        }
+    }
+    
+    @Override
+    public String toString() {
+        if (isReply()) {
+            return String.format("InvokeReply: %s %d #%d response:%s err:%s", name, methodId, invokeId, response, error);
+        } else {
+            return String.format("RemoteInvoke: %s %d #%d params:%s", name, methodId, invokeId, Arrays.toString(parameters));
         }
     }
 }
