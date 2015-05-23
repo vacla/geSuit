@@ -27,7 +27,7 @@ public class TeleportCommands {
     public void back(Player sender) {
         GlobalPlayer player = Global.getPlayer(sender.getUniqueId());
         
-        Result result = actions.tpBack(player);
+        Result result = actions.tpBack(player, sender.hasPermission("gesuit.teleports.back.death"), sender.hasPermission("gesuit.teleports.back.teleport"));
         
         if (result.getMessage() != null) {
             sender.sendMessage(result.getMessage());
@@ -61,7 +61,7 @@ public class TeleportCommands {
             return;
         }
         
-        Result result = actions.requestTp(target, player, sender.hasPermission("gesuit.teleports.tp.bypass"));
+        Result result = actions.requestTphere(player, target, sender.hasPermission("gesuit.teleports.tp.bypass"));
         
         if (result.getMessage() != null) {
             sender.sendMessage(result.getMessage());

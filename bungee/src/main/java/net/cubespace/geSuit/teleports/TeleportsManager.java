@@ -14,6 +14,7 @@ import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.TeleportMessage;
 import net.cubespace.geSuit.core.messages.TeleportRequestMessage;
+import net.cubespace.geSuit.core.messages.UpdateBackMessage;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.core.objects.Result.Type;
@@ -26,6 +27,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 public class TeleportsManager implements TeleportActions, ChannelDataReceiver<BaseMessage> {
     private Channel<BaseMessage> channel;
@@ -81,7 +83,8 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
     public boolean isTPAWhitelisted(ServerInfo source, ServerInfo target) {
         return tpaWhitelist.containsEntry(source, target) ||
                 tpaWhitelist.containsEntry(null, target) ||
-                tpaWhitelist.containsEntry(source, null);
+                tpaWhitelist.containsEntry(source, null) ||
+                tpaWhitelist.containsEntry(null, null);
     }
     
     public boolean isTPAWhitelisted(Server source, Server target) {
@@ -110,19 +113,38 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
     }
     
     @Override
-    public Result tpBack(GlobalPlayer player) {
-        // TODO: Need to update back location
+    public Result tpBack(GlobalPlayer player, boolean allowDeath, boolean allowTeleport) {
         TeleportsAttachment attachment = getAttachment(player);
         
-        if (attachment.hasLastLocation()) {
-            teleport(player, attachment.getLastLocation());
-            sendMessage(player, ConfigManager.messages.SENT_BACK);
-            return new Result(Type.Success, null);
+        if (allowDeath && allowTeleport) {
+            if (attachment.hasLastLocation()) {
+                teleport0(player, attachment.getLastLocation());
+                sendMessage(player, ConfigManager.messages.SENT_BACK);
+                return new Result(Type.Success, null);
+            } else {
+                return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_BACK_TP));
+            }
+        } else if (allowDeath) {
+            if (attachment.hasLastDeath()) {
+                teleport0(player, attachment.getLastDeath());
+                sendMessage(player, ConfigManager.messages.SENT_BACK);
+                return new Result(Type.Success, null);
+            } else {
+                return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_BACK_TP));
+            }
+        } else if (allowTeleport) {
+            if (attachment.hasLastTeleport()) {
+                teleport0(player, attachment.getLastTeleport());
+                sendMessage(player, ConfigManager.messages.SENT_BACK);
+                return new Result(Type.Success, null);
+            } else {
+                return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_BACK_TP));
+            }
         } else {
             return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_BACK_TP));
         }
     }
-
+    
     @Override
     public Result requestTphere(final GlobalPlayer player, final GlobalPlayer target, boolean hasBypass) {
         final TeleportsAttachment playerTp = getAttachment(player);
@@ -155,10 +177,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORT_WRONG_SERVER));
         }
         
-        targetTp.setTPAHere(player);
-        sendMessage(target, ConfigManager.messages.PLAYER_REQUESTS_YOU_TELEPORT_TO_THEM.replace("{player}", player.getDisplayName()));
-        
-        ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+        ScheduledTask expireTask = ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 if (targetTp.getTPAHere() != null) {
@@ -167,12 +186,15 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
                     }
                     
                     sendMessage(player, ConfigManager.messages.TPAHERE_REQUEST_TIMED_OUT.replace("{player}", target.getDisplayName()));
-                    targetTp.setTPAHere(null);
+                    targetTp.setTPAHere(null, null);
                     
                     sendMessage(target, ConfigManager.messages.TP_REQUEST_OTHER_TIMED_OUT.replace("{player}", player.getDisplayName()));
                 }
             }
         }, tpaExpireTime, TimeUnit.SECONDS);
+        
+        targetTp.setTPAHere(player, expireTask);
+        sendMessage(target, ConfigManager.messages.PLAYER_REQUESTS_YOU_TELEPORT_TO_THEM.replace("{player}", player.getDisplayName()));
         
         return new Result(Type.Success, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", player.getDisplayName())));
     }
@@ -228,10 +250,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORT_WRONG_SERVER));
         }
         
-        targetTp.setTPA(player);
-        sendMessage(target, ConfigManager.messages.PLAYER_REQUESTS_TO_TELEPORT_TO_YOU.replace("{player}", player.getDisplayName()));
-        
-        ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+        ScheduledTask expireTask = ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 if (targetTp.getTPA() != null) {
@@ -240,12 +259,15 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
                     }
                     
                     sendMessage(player, ConfigManager.messages.TPA_REQUEST_TIMED_OUT.replace("{player}", target.getDisplayName()));
-                    targetTp.setTPA(null);
+                    targetTp.setTPA(null, null);
                     
                     sendMessage(target, ConfigManager.messages.TP_REQUEST_OTHER_TIMED_OUT.replace("{player}", player.getDisplayName()));
                 }
             }
         }, tpaExpireTime, TimeUnit.SECONDS);
+        
+        targetTp.setTPA(player, expireTask);
+        sendMessage(target, ConfigManager.messages.PLAYER_REQUESTS_TO_TELEPORT_TO_YOU.replace("{player}", player.getDisplayName()));
         
         return new Result(Type.Success, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", target.getDisplayName())));
     }
@@ -257,14 +279,14 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             GlobalPlayer target = attachment.getTPA();
             sendMessage(player, ConfigManager.messages.TELEPORT_ACCEPTED.replace("{player}", target.getDisplayName()));
             sendMessage(target, ConfigManager.messages.TELEPORT_REQUEST_ACCEPTED.replace("{player}", player.getDisplayName()));
-            teleport0(player, target);
-            attachment.setTPA(null);
+            teleport0(target, player);
+            attachment.setTPA(null, null);
         } else if (attachment.getTPAHere() != null) {
             GlobalPlayer target = attachment.getTPAHere();
             sendMessage(player, ConfigManager.messages.TELEPORT_ACCEPTED.replace("{player}", target.getDisplayName()));
             sendMessage(target, ConfigManager.messages.TELEPORT_REQUEST_ACCEPTED.replace("{player}", player.getDisplayName()));
-            teleport0(target, player);
-            attachment.setTPAHere(null);
+            teleport0(player, target);
+            attachment.setTPAHere(null, null);
         } else {
             return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_TELEPORTS));
         }
@@ -279,12 +301,12 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             GlobalPlayer target = attachment.getTPA();
             sendMessage(player, ConfigManager.messages.TELEPORT_DENIED.replace("{player}", target.getDisplayName()));
             sendMessage(target, ConfigManager.messages.TELEPORT_REQUEST_DENIED.replace("{player}", player.getDisplayName()));
-            attachment.setTPA(null);
+            attachment.setTPA(null, null);
         } else if (attachment.getTPAHere() != null) {
             GlobalPlayer target = attachment.getTPAHere();
             sendMessage(player, ConfigManager.messages.TELEPORT_DENIED.replace("{player}", target.getDisplayName()));
             sendMessage(target, ConfigManager.messages.TELEPORT_REQUEST_DENIED.replace("{player}", player.getDisplayName()));
-            attachment.setTPAHere(null);
+            attachment.setTPAHere(null, null);
         } else {
             return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_TELEPORTS));
         }
@@ -344,6 +366,17 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         if (!sourceServer.equals(destServer)) {
             pPlayer.connect(destServer);
         }
+    }
+    
+    private void teleport0(GlobalPlayer player, Location target) {
+        ProxiedPlayer pPlayer = proxy.getPlayer(player.getUniqueId());
+        ServerInfo destServer = pPlayer.getServer().getInfo();
+        if (target.getServer() != null) {
+            destServer = proxy.getServerInfo(target.getServer());
+        }
+        
+        // Send request to bukkit side to handle teleport delays
+        channel.send(new TeleportRequestMessage(player.getUniqueId(), target, 1), getServerId(destServer));
     }
 
     @Override
@@ -446,6 +479,24 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             // Move the player to the target server if needed
             if (!sourceServer.equals(targetServer)) {
                 player.connect(targetServer);
+            }
+        } else if (value instanceof UpdateBackMessage) {
+            UpdateBackMessage message = (UpdateBackMessage)value;
+            
+            ProxiedPlayer pPlayer = proxy.getPlayer(message.player);
+            if (pPlayer == null) {
+                return;
+            }
+            
+            message.location.setServer(pPlayer.getServer().getInfo().getName());
+            
+            GlobalPlayer player = Global.getPlayer(message.player);
+            
+            TeleportsAttachment attachment = getAttachment(player);
+            if (message.isDeath) {
+                attachment.setLastDeath(message.location);
+            } else {
+                attachment.setLastTeleport(message.location);
             }
         }
     }

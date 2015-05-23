@@ -43,9 +43,10 @@ public class RemoteInvocationHandler implements InvocationHandler {
         int id = idMap.get(method);
         
         RemoteInvokeMessage message = new RemoteInvokeMessage(name, id, nextInvokeNum++, args);
+        Future<Object> future = waiter.waitForReply(message);
+        
         channel.broadcast(message);
         
-        Future<Object> future = waiter.waitForReply(message);
         try {
             return future.get(5, TimeUnit.SECONDS);
         } catch (TimeoutException e) {

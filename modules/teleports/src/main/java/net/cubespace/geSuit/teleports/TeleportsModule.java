@@ -6,9 +6,7 @@ import com.google.common.base.Preconditions;
 
 import net.cubespace.geSuit.GSPlugin;
 import net.cubespace.geSuit.core.Global;
-import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.commands.CommandManager;
-import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.modules.BaseModule;
 import net.cubespace.geSuit.remote.teleports.TeleportActions;
 import net.cubespace.geSuit.teleports.commands.TeleportCommands;

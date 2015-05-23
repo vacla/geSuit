@@ -12,7 +12,9 @@ import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.TeleportMessage;
 import net.cubespace.geSuit.core.messages.TeleportRequestMessage;
+import net.cubespace.geSuit.core.messages.UpdateBackMessage;
 import net.cubespace.geSuit.core.objects.Location;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -20,6 +22,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
@@ -225,5 +230,41 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         } else {
             channel.send(finalMessage, ChannelManager.PROXY);
         }
+    }
+    
+    private void updateBackDeath(final Player player) {
+        final org.bukkit.Location loc = player.getLocation();
+        Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(GSPlugin.class), new Runnable() {
+            @Override
+            public void run() {
+                channel.send(new UpdateBackMessage(player.getUniqueId(), true, new Location(null, loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch())), ChannelManager.PROXY);
+            }
+        });
+    }
+    
+    private void updateBack(final Player player) {
+        final org.bukkit.Location loc = player.getLocation();
+        Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(GSPlugin.class), new Runnable() {
+            @Override
+            public void run() {
+                channel.send(new UpdateBackMessage(player.getUniqueId(), false, new Location(null, loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch())), ChannelManager.PROXY);
+            }
+        });
+    }
+    
+    // Handle updating back location
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        updateBackDeath(event.getEntity());
+    }
+    
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        updateBack(event.getPlayer());
+    }
+    
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void onPlayerLeaveServer(PlayerQuitEvent event) {
+        updateBack(event.getPlayer());
     }
 }

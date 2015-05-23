@@ -5,8 +5,8 @@ import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Result;
 
 public interface TeleportActions {
-    public Result tpBack(GlobalPlayer player);
-
+    public Result tpBack(GlobalPlayer player, boolean allowDeath, boolean allowTeleport);
+    
     public Result requestTphere(GlobalPlayer player, GlobalPlayer target, boolean hasBypass);
     
     public Result tpall(GlobalPlayer player);
