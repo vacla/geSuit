@@ -15,6 +15,7 @@ import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -124,8 +125,8 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                 LoggingManager.log(ConfigManager.messages.PLAYER_CREATE.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
 
                 if (ConfigManager.main.NewPlayerBroadcast) {
-                    String welcomeMsg = null;
-                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(welcomeMsg = ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getName()), player.getName());
+                    String welcomeMsg = ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getDisplayName()));
+                    ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(welcomeMsg));
                     // Firing custom event
                     ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
                 }
