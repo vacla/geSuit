@@ -31,7 +31,7 @@ public class GlobalPlayer {
     private long firstJoin;
     private long lastJoin;
     
-    private boolean tpEnabled;
+    private boolean tpEnabled = true;
     private boolean newPlayer;
     
     private Map<Class<? extends Attachment>, Attachment> attachments;
