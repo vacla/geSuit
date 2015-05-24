@@ -15,9 +15,11 @@ import net.cubespace.geSuit.core.messages.TeleportMessage;
 import net.cubespace.geSuit.core.messages.TeleportRequestMessage;
 import net.cubespace.geSuit.core.messages.UpdateBackMessage;
 import net.cubespace.geSuit.core.objects.Location;
+import net.cubespace.geSuit.teleports.misc.LocationUtil;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -72,7 +74,7 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
     }
     
     private boolean teleportNonLocal(GlobalPlayer player, GlobalPlayer target, TeleportCause cause) {
-        TeleportMessage message = new TeleportMessage(player.getUniqueId(), target.getUniqueId(), cause.ordinal());
+        TeleportMessage message = new TeleportMessage(player.getUniqueId(), target.getUniqueId(), cause.ordinal(), false);
         channel.send(message, ChannelManager.PROXY);
         
         return true;
@@ -114,7 +116,7 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
     }
     
     private boolean teleportNonLocal(GlobalPlayer player, Location target, TeleportCause cause) {
-        TeleportMessage message = new TeleportMessage(player.getUniqueId(), target, cause.ordinal());
+        TeleportMessage message = new TeleportMessage(player.getUniqueId(), target, cause.ordinal(), false);
         channel.send(message, ChannelManager.PROXY);
         
         return true;
@@ -124,43 +126,7 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
     public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value, int sourceId, boolean isBroadcast) {
         System.out.println("Got T " + value);
         if (value instanceof TeleportMessage) {
-            TeleportMessage message = (TeleportMessage)value;
-            
-            TeleportCause cause = TeleportCause.values()[message.cause];
-            
-            Player player = Bukkit.getPlayer(message.player);
-            // Teleport to player
-            if (message.targetPlayer != null) {
-                if (player == null) {
-                    System.out.println("Pending tp " + message.player + " to " + message.targetPlayer);
-                    pendingTeleports.put(message.player, message.targetPlayer);
-                } else {
-                    Player target = Bukkit.getPlayer(message.targetPlayer);
-                    System.out.println("tp " + message.player + " to " + target);
-                    if (target != null) {
-                        player.teleport(target, cause);
-                    }
-                }
-            // Teleport to location
-            } else if (message.targetLocation != null) {
-                // Do a world check
-                if (message.targetLocation.getWorld() != null) {
-                    World world = Bukkit.getWorld(message.targetLocation.getWorld());
-                    if (world == null) {
-                        Global.getPlatform().getLogger().warning("Attempted to process teleport for invalid world " + message.targetLocation.getWorld());
-                        // TODO: Send something back to inform of this
-                        return;
-                    }
-                }
-                
-                if (player == null) {
-                    System.out.println("pending tp " + message.player + " to " + message.targetLocation);
-                    pendingTeleports.put(message.player, message.targetLocation);
-                } else {
-                    System.out.println("tp " + message.player + " to " + message.targetLocation);
-                    teleportLocal(player, message.targetLocation, cause);
-                }
-            }
+            handleTeleport((TeleportMessage)value);
         } else if (value instanceof TeleportRequestMessage) {
             handleTPRequest((TeleportRequestMessage)value);
         }
@@ -211,9 +177,9 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         // This will be the teleport message sent to the proxy to do the actual teleport
         final TeleportMessage finalMessage;
         if (message.targetLocation != null) {
-            finalMessage = new TeleportMessage(message.player, message.targetLocation, message.cause);
+            finalMessage = new TeleportMessage(message.player, message.targetLocation, message.cause, true);
         } else {
-            finalMessage = new TeleportMessage(message.player, message.targetPlayer, message.cause);
+            finalMessage = new TeleportMessage(message.player, message.targetPlayer, message.cause, true);
         }
         
         // Handle the no move policy if needed
@@ -242,6 +208,65 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         // Instant teleport
         } else {
             channel.send(finalMessage, ChannelManager.PROXY);
+        }
+    }
+    
+    private void handleTeleport(final TeleportMessage message) {
+        final TeleportCause cause = TeleportCause.values()[message.cause];
+        
+        final Player player = Bukkit.getPlayer(message.player);
+        org.bukkit.Location targetLocation = null;
+        // Teleport to player
+        if (message.targetPlayer != null) {
+            // Add to pending
+            if (player == null) {
+                System.out.println("Pending tp " + message.player + " to " + message.targetPlayer);
+                pendingTeleports.put(message.player, message.targetPlayer);
+            // Process
+            } else {
+                Player target = Bukkit.getPlayer(message.targetPlayer);
+                
+                System.out.println("tp " + message.player + " to " + target);
+                if (target != null) {
+                    targetLocation = target.getLocation();
+                }
+            }
+        // Teleport to location
+        } else if (message.targetLocation != null) {
+            // Do a world check
+            if (message.targetLocation.getWorld() != null) {
+                World world = Bukkit.getWorld(message.targetLocation.getWorld());
+                if (world == null) {
+                    Global.getPlatform().getLogger().warning("Attempted to process teleport for invalid world " + message.targetLocation.getWorld());
+                    // TODO: Send something back to inform of this
+                    return;
+                }
+            }
+            
+            // Add to pending
+            if (player == null) {
+                System.out.println("pending tp " + message.player + " to " + message.targetLocation);
+                pendingTeleports.put(message.player, message.targetLocation);
+            // Process
+            } else {
+                targetLocation = LocationUtil.toBukkit(message.targetLocation, player.getWorld());
+                System.out.println("tp " + message.player + " to " + message.targetLocation);
+            }
+        }
+        
+        // Teleport must be done on the server thread
+        if (targetLocation != null) {
+            final org.bukkit.Location fLocation = targetLocation;
+            Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(GSPlugin.class), new Runnable() {
+                @Override
+                public void run() {
+                    if (message.safe) {
+                        doSafeTeleport(player, fLocation, cause);
+                    } else {
+                        player.teleport(fLocation, cause);
+                    }
+                }
+            });
         }
     }
     
@@ -282,5 +307,35 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onPlayerLeaveServer(PlayerQuitEvent event) {
         updateBack(event.getPlayer());
+    }
+    
+    private void doSafeTeleport(Player player, org.bukkit.Location target, TeleportCause cause) {
+        // Creative and Spectator are immune from damage so just teleport anyway
+        if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
+            // Enable flying if needed
+            if (LocationUtil.shouldFly(target) && !player.isFlying()) {
+                player.setFlying(true);
+            }
+            player.teleport(target, cause);
+            return;
+        }
+        
+        // Try enable fly mode if theyre allowed it
+        if (LocationUtil.shouldFly(target)) {
+            // Already flying
+            if (player.isFlying()) {
+                player.teleport(target, cause);
+                return;
+            // Is allowed to enable fly on tp
+            } else if (player.hasPermission("gesuit.teleports.tp.fly") || player.getAllowFlight()) {
+                player.setFlying(true);
+                player.setAllowFlight(true);
+                player.teleport(target, cause);
+                return;
+            }
+        }
+        
+        // Otherwise do a safe teleport
+        player.teleport(LocationUtil.getSafeDestination(target), cause);
     }
 }

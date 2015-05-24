@@ -13,24 +13,28 @@ public class TeleportMessage extends BaseMessage {
     public Location targetLocation;
     public UUID targetPlayer;
     public int cause;
+    public boolean safe;
     
     public TeleportMessage() {}
-    public TeleportMessage(UUID player, Location target, int cause) {
+    public TeleportMessage(UUID player, Location target, int cause, boolean safe) {
         this.player = player;
         this.targetLocation = target;
         this.cause = cause;
+        this.safe = safe;
     }
     
-    public TeleportMessage(UUID player, UUID target, int cause) {
+    public TeleportMessage(UUID player, UUID target, int cause, boolean safe) {
         this.player = player;
         this.targetPlayer = target;
         this.cause = cause;
+        this.safe = safe;
     }
     
     @Override
     public void write(DataOutput out) throws IOException {
         NetworkUtils.writeUUID(out, player);
         out.writeByte(cause);
+        out.writeBoolean(safe);
         
         if (targetLocation != null) {
             out.writeByte(0);
@@ -45,6 +49,7 @@ public class TeleportMessage extends BaseMessage {
     public void read(DataInput in) throws IOException {
         player = NetworkUtils.readUUID(in);
         cause = in.readUnsignedByte();
+        safe = in.readBoolean();
         
         switch (in.readByte()) {
         case 0: // Location

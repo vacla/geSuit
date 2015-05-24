@@ -20,6 +20,7 @@ permissions:
             gesuit.teleports.command.tpall: true
             gesuit.teleports.tp.silent: true
             gesuit.teleports.tp.bypass: true
+            gesuit.teleports.tp.fly: true
     gesuit.teleports.vip:
         decsription: Gives access to all gesuitTeleport vip commands
         children:

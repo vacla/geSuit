@@ -224,7 +224,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
                 continue;
             }
             
-            teleportTo(Global.getPlayer(pPlayer.getUniqueId()), target);
+            teleportTo(Global.getPlayer(pPlayer.getUniqueId()), target, true);
             PlayerManager.sendMessageToTarget(pPlayer, ConfigManager.messages.ALL_PLAYERS_TELEPORTED.replace("{player}", target.getDisplayName()));
         }
         
@@ -354,13 +354,13 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             }
         }
         
-        teleportTo(player, target);
+        teleportTo(player, target, true);
         
         sendMessage(player, ConfigManager.messages.TELEPORTED_TO_LOCATION);
         return new Result(Type.Success, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORTED.replace("{player}", player.getDisplayName()).replace("{target}", target.toString())));
     }
     
-    public void teleportTo(GlobalPlayer player, Location target) {
+    public void teleportTo(GlobalPlayer player, Location target, boolean safe) {
         ProxiedPlayer pPlayer = proxy.getPlayer(player.getUniqueId());
         
         ServerInfo sourceServer = pPlayer.getServer().getInfo();
@@ -373,7 +373,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         Preconditions.checkNotNull(pPlayer, "Teleport player " + player.getName() + " was not online");
         Preconditions.checkNotNull(destServer, "Teleport target server " + target.getServer() + " does not exist");
         
-        TeleportMessage message = new TeleportMessage(player.getUniqueId(), target, 1);
+        TeleportMessage message = new TeleportMessage(player.getUniqueId(), target, 1, safe);
         channel.send(message, getServerId(destServer));
         
         // Move the player to the target server if needed
@@ -414,7 +414,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_UNABLE.replace("player", target.getDisplayName())));
         }
         
-        teleportTo(player, target);
+        teleportTo(player, target, true);
         
         if (!silent) {
             sendMessage(target, ConfigManager.messages.PLAYER_TELEPORTED_TO_YOU.replace("{player}", player.getDisplayName()));
@@ -432,7 +432,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         channel.send(new TeleportRequestMessage(player.getUniqueId(), target.getUniqueId(), 1), getServerId(pPlayer.getServer().getInfo()));
     }
     
-    public void teleportTo(GlobalPlayer player, GlobalPlayer target) {
+    public void teleportTo(GlobalPlayer player, GlobalPlayer target, boolean safe) {
         ProxiedPlayer pPlayer = proxy.getPlayer(player.getUniqueId());
         ProxiedPlayer pTarget = proxy.getPlayer(target.getUniqueId());
         
@@ -443,7 +443,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         ServerInfo sourceServer = pPlayer.getServer().getInfo();
         ServerInfo destServer = pTarget.getServer().getInfo();
         
-        TeleportMessage message = new TeleportMessage(player.getUniqueId(), target.getUniqueId(), 1);
+        TeleportMessage message = new TeleportMessage(player.getUniqueId(), target.getUniqueId(), 1, safe);
         channel.send(message, getServerId(destServer));
         
         // Move the player to the target server if needed
