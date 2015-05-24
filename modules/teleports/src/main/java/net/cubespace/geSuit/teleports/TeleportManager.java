@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.teleports;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -31,10 +32,12 @@ import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Sets;
 
 public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listener {
     private Channel<BaseMessage> channel;
     private Cache<UUID, Object> pendingTeleports;
+    private Set<Player> backIgnoredPlayers;
     
     public TeleportManager() {
         channel = Global.getChannelManager().createChannel("tp", BaseMessage.class);
@@ -42,6 +45,7 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         channel.addReceiver(this);
         
         pendingTeleports = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
+        backIgnoredPlayers = Sets.newHashSet();
     }
     
     /**
@@ -164,7 +168,7 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
     
     // Handles changing the position players spawn based on pending teleports
     @EventHandler(priority=EventPriority.LOWEST)
-    public void onLoginSpawnPosition(PlayerSpawnLocationEvent event) {
+    public void onLoginSpawnPosition(final PlayerSpawnLocationEvent event) {
         Object pending = pendingTeleports.getIfPresent(event.getPlayer().getUniqueId());
         if (pending != null) {
             pendingTeleports.invalidate(event.getPlayer().getUniqueId());
@@ -187,6 +191,15 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
                 }
             }
         }
+        
+        // Prevent recording back location during the first 2 ticks for plugins to move the player around on join
+        backIgnoredPlayers.add(event.getPlayer());
+        Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(GSPlugin.class), new Runnable() {
+            @Override
+            public void run() {
+                backIgnoredPlayers.remove(event.getPlayer());
+            }
+        }, 2);
     }
     
     private void handleTPRequest(final TeleportRequestMessage message) {
@@ -243,6 +256,9 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
     }
     
     private void updateBack(final Player player) {
+        if (backIgnoredPlayers.contains(player)) {
+            return;
+        }
         final org.bukkit.Location loc = player.getLocation();
         Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(GSPlugin.class), new Runnable() {
             @Override

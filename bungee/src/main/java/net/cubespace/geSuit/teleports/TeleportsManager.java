@@ -50,6 +50,20 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         return server.getAddress().getPort();
     }
     
+    private ServerInfo getServer(int id) {
+        if (id == 0) {
+            return null;
+        }
+        
+        for (ServerInfo server : proxy.getServers().values()) {
+            if (server.getAddress().getPort() == id) {
+                return server;
+            }
+        }
+        
+        return null;
+    }
+    
     public void loadConfig() {
         tpaWhitelist = HashMultimap.create();
         
@@ -376,7 +390,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         }
         
         // Send request to bukkit side to handle teleport delays
-        channel.send(new TeleportRequestMessage(player.getUniqueId(), target, 1), getServerId(destServer));
+        channel.send(new TeleportRequestMessage(player.getUniqueId(), target, 1), getServerId(pPlayer.getServer().getInfo()));
     }
 
     @Override
@@ -411,10 +425,11 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
     }
     
     private void teleport0(GlobalPlayer player, GlobalPlayer target) {
+        ProxiedPlayer pPlayer = proxy.getPlayer(player.getUniqueId());
         ProxiedPlayer pTarget = proxy.getPlayer(target.getUniqueId());
         
         // Send request to bukkit side to handle teleport delays
-        channel.send(new TeleportRequestMessage(player.getUniqueId(), target.getUniqueId(), 1), getServerId(pTarget.getServer().getInfo()));
+        channel.send(new TeleportRequestMessage(player.getUniqueId(), target.getUniqueId(), 1), getServerId(pPlayer.getServer().getInfo()));
     }
     
     public void teleportTo(GlobalPlayer player, GlobalPlayer target) {
@@ -448,12 +463,12 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             }
             
             ServerInfo sourceServer = player.getServer().getInfo();
-            ServerInfo targetServer = null;
+            ServerInfo targetServer = sourceServer;
             
             // Bounce the message to the required other server
             if (message.targetLocation != null) {
                 int targetServerId = sourceId;
-                if (message.targetLocation.getServer() == null) {
+                if (message.targetLocation.getServer() != null) {
                     ServerInfo server = proxy.getServerInfo(message.targetLocation.getServer());
                     if (server == null) {
                         return;
@@ -488,7 +503,8 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
                 return;
             }
             
-            message.location.setServer(pPlayer.getServer().getInfo().getName());
+            ServerInfo sourceServer = getServer(sourceId);
+            message.location.setServer(sourceServer.getName());
             
             GlobalPlayer player = Global.getPlayer(message.player);
             
