@@ -7,6 +7,10 @@ import java.io.IOException;
 import net.cubespace.geSuit.core.storage.ByteStorable;
 import net.cubespace.geSuit.core.util.NetworkUtils;
 
+/**
+ * A simple container for holding a status and response.
+ * This is used for remote command execution
+ */
 public class Result implements ByteStorable {
     private Type type;
     private String message;
@@ -18,10 +22,16 @@ public class Result implements ByteStorable {
     
     protected Result() {}
     
+    /**
+     * @return Returns whether this was a successful execution
+     */
     public Type getType() {
         return type;
     }
     
+    /**
+     * @return Returns a message to display or null if there isnt one
+     */
     public String getMessage() {
         return message;
     }

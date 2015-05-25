@@ -21,6 +21,9 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Primitives;
 import com.google.common.primitives.Shorts;
 
+/**
+ * The DataConversion system provides converters between string and various types.
+ */
 public class DataConversion {
     private static Map<Class<?>, Converter<String, ?>> registeredConverters;
     
@@ -108,10 +111,20 @@ public class DataConversion {
         }
     }
     
+    /**
+     * Checks if a converter is available for the specified type
+     * @param type The type wanted
+     * @return True if one is available
+     */
     public static boolean isConvertable(Class<?> type) {
         return registeredConverters.containsKey(type);
     }
     
+    /**
+     * Attempts to get a converter for {@code type}.
+     * @param type The type to get
+     * @return A converter that can convert between {@code type} and {@code String} or null if none is available
+     */
     public static <A> Converter<String, A> getConverter(final Class<A> type) {
         if (SimpleStorable.class.isAssignableFrom(type)) {
             return new Converter<String, A>() {
@@ -139,6 +152,13 @@ public class DataConversion {
         }
     }
     
+    /**
+     * Attempts to convert a string list to a typed list using the registered converters
+     * @param source The string list to convert
+     * @param type The type you want out
+     * @return A converted list
+     * @throws IllegalArgumentException Thrown if no converter is available for {@code type}
+     */
     public static <T> List<T> convertList(List<String> source, Class<T> type) {
         List<T> target = Lists.newArrayListWithCapacity(source.size());
         
@@ -154,6 +174,12 @@ public class DataConversion {
         return target;
     }
     
+    /**
+     * Attempts to convert a typed list to a string list using the registered converters
+     * @param source The typed list to convert
+     * @return A converted string list
+     * @throws IllegalArgumentException Thrown if no converter is available for the list type
+     */
     public static List<String> reverseConvertList(List<Object> source) {
         List<String> target = Lists.newArrayListWithCapacity(source.size());
         
@@ -171,6 +197,13 @@ public class DataConversion {
         return target;
     }
     
+    /**
+     * Attempts to convert a string set to a typed set using the registered converters
+     * @param source The string set to convert
+     * @param type The type you want out
+     * @return A converted set
+     * @throws IllegalArgumentException Thrown if no converter is available for {@code type}
+     */
     public static <T> Set<T> convertSet(Set<String> source, Class<T> type) {
         Set<T> target = Sets.newHashSetWithExpectedSize(source.size());
         
@@ -186,6 +219,12 @@ public class DataConversion {
         return target;
     }
     
+    /**
+     * Attempts to convert a typed set to a string set using the registered converters
+     * @param source The typed set to convert
+     * @return A converted string set
+     * @throws IllegalArgumentException Thrown if no converter is available for the set type
+     */
     public static <T> Set<String> reverseConvertSet(Set<Object> source) {
         Set<String> target = Sets.newHashSetWithExpectedSize(source.size());
         
@@ -203,6 +242,13 @@ public class DataConversion {
         return target;
     }
     
+    /**
+     * A better boolean parser than Boolean.parseBoolean(). It supports parsing numbers as booleans 
+     * and will throw an exception if the input is not a boolean
+     * @param input The input string to parse
+     * @return the parsed boolean
+     * @throws IllegalArgumentException Thrown if the input cannot be parsed as a boolean
+     */
     public static boolean parseBoolean(String input) {
         try {
             if (input.equalsIgnoreCase("true")) {

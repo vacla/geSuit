@@ -10,6 +10,9 @@ import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.storage.ByteStorable;
 import net.cubespace.geSuit.core.util.NetworkUtils;
 
+/**
+ * This class represents a warning on a player
+ */
 public class WarnInfo implements ByteStorable {
     private GlobalPlayer who;
     private long date;
@@ -28,27 +31,45 @@ public class WarnInfo implements ByteStorable {
     }
     
     public WarnInfo() {}
-    
+
+    /**
+     * @return Returns the player that was warned
+     */
     public GlobalPlayer getWho() {
         return who;
     }
     
+    /**
+     * @return Returns the UNIX datetime in ms when they were warned
+     */
     public long getDate() {
         return date;
     }
     
+    /**
+     * @return Returns the UNIX datetime in ms when this warning will expire
+     */
     public long getExpireDate() {
         return expireDate;
     }
     
+    /**
+     * @return Returns the reason of the warning
+     */
     public String getReason() {
         return reason;
     }
     
+    /**
+     * @return Returns the name of who warned this player
+     */
     public String getBy() {
         return by;
     }
     
+    /**
+     * @return Returns the UUID of who warned this player, or null if a non-player did
+     */
     public UUID getById() {
         return byId;
     }

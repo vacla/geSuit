@@ -17,6 +17,25 @@ import com.google.common.collect.Maps;
 import com.google.common.reflect.Invokable;
 import com.google.common.reflect.TypeToken;
 
+/**
+ * This serialization system creates minimal versions of data. 
+ * The produced output has no type information present, instead
+ * prior knowledge of the precise types is used.
+ * 
+ * <p>The type information used by this system includes type 
+ * parameters such as {@code List<String>}. This allows the
+ * system to not have to write type information simply because
+ * both sides know the exact type to read. The result is as
+ * minimal as doing it manually, but with the benefit of
+ * being able to dynamically serialize data.</p>
+ * 
+ * <h2>Drawbacks</h2>
+ * <p>This system is not able to serialize values of type 
+ * {@code Object} or other unknown types such as collections 
+ * with an unknown type parameter or wildcard parameters.</p>
+ * 
+ * @see TypeToken
+ */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class Serialization {
     private static final Map<TypeToken<?>, AdvancedSerializer<?>> staticSerializers = Maps.newHashMap();
@@ -29,6 +48,13 @@ public final class Serialization {
                 .build();
     }
     
+    /**
+     * Serializes an object of {@code detailedType} to {@code out}
+     * @param value The value to serialize
+     * @param detailedType The exact type of {@code value}
+     * @param out The output to write to
+     * @throws IOException Thrown if an exception occurs while writing to {@code out}
+     */
     public static <T> void serialize(T value, TypeToken<T> detailedType, DataOutput out) throws IOException {
         AdvancedSerializer<T> serializer = getSerializer(detailedType);
         if (serializer == null || !serializer.isSerializable()) {
@@ -43,6 +69,13 @@ public final class Serialization {
         }
     }
     
+    /**
+     * Deserializes an object of {@code detailedType} from {@code in}
+     * @param detailedType The exact type to deserialize
+     * @param in The input to read from
+     * @return The deserialized object
+     * @throws IOException Thrown if an exception occurs while reading from {@code in}
+     */
     public static <T> T deserialize(TypeToken<T> detailedType, DataInput in) throws IOException {
         AdvancedSerializer<T> serializer = getSerializer(detailedType);
         if (serializer == null || !serializer.isSerializable()) {
@@ -56,6 +89,11 @@ public final class Serialization {
         }
     }
     
+    /**
+     * Checks if a type can be serialized by this system
+     * @param detailedType The exact type to be serialized
+     * @return True if it can
+     */
     public static boolean isSerializable(TypeToken<?> detailedType) {
         AdvancedSerializer<?> serializer = getSerializer(detailedType);
         if (serializer == null) {
@@ -65,6 +103,11 @@ public final class Serialization {
         return serializer.isSerializable();
     }
     
+    /**
+     * Gets a serializer that is capable of reading and writing that type
+     * @param type The exact type you wish to serialize / deserialize
+     * @return A serializer object or null
+     */
     public static <T> AdvancedSerializer<T> getSerializer(TypeToken<T> type) {
         if (type.isPrimitive()) {
             type = type.wrap();
@@ -112,10 +155,22 @@ public final class Serialization {
         return null;
     }
     
+    /**
+     * Registeres a dynamic serializer. Dynamic serializers are for variable types. eg. {@code List<?>}, {@code Storable}, etc.
+     * These serializers are created as needed based on the type.
+     * @param base The base type that things must implement to invoke this serializer
+     * @param type The class to instantiate when one needs to be made. <b>NOTE:</b> This class requires a public constructor that takes a {@code TypeToken<T>} as a parameter 
+     */
     public static <T> void registerDynamic(TypeToken<T> base, Class<? extends AdvancedSerializer> type) {
         dynamicSerializers.put(base, type);
     }
     
+    /**
+     * Registers a static serializer. Static serializers are for fixed types, eg. {@code Integer}, {@code String}, etc.
+     * Only one instance of these serializers are used for all.
+     * 
+     * @param fixedSerializer The actual serializer object
+     */
     public static void registerStatic(AdvancedSerializer<?> fixedSerializer) {
         staticSerializers.put(fixedSerializer.getType(), fixedSerializer);
     }

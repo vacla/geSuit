@@ -19,6 +19,24 @@ import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.messages.RemoteInvokeMessage;
 import net.cubespace.geSuit.core.serialization.Serialization;
 
+/**
+ * Remotes allow you to execute code on other servers with the ease of executing local code.
+ * 
+ * <p><b>TEMINOLOGY:</b> The execution side is the side that holds the actual functionality of the interface. 
+ * The calling side is the side that holds a proxy</p> 
+ * 
+ * <p>Remotes require an interface class which defines all methods the remote will make available. 
+ * On the execution side, there must be a class that implemented that interface. Both are 
+ * provided with a call to {@link #registerRemote(String, Class, Object)}. </p>
+ * 
+ * <p>The calling side requires access to that interface, so you will need to place it in a 
+ * common location, or provide a copy on both sides. To use it, you must first register your interest in
+ * using that remote with {@link #registerInterest(String, Class)}. Once you have registered your interest,
+ * you can call {@link #getRemote(Class)} to get a version of that interface you can execute.</p>
+ * 
+ * <p>Behind the scenes, the calling side uses a reflection proxy to enable you to use the interface instead
+ * of having to use untyped methods.</p>
+ */
 public class RemoteManager implements ChannelDataReceiver<RemoteInvokeMessage> {
     private Channel<RemoteInvokeMessage> channel;
     private MessageWaiter waiter;
@@ -36,6 +54,19 @@ public class RemoteManager implements ChannelDataReceiver<RemoteInvokeMessage> {
         remotesByName = Maps.newHashMap();
     }
     
+    /**
+     * Defines a new remote that is usable on other servers.
+     * <h2>Interface requirements:</h2>
+     * <ul>
+     *   <li>The {@code interfaceClass} must be a java interface, not an abstract class or anything else</li>
+     *   <li>Every return type and parameter of every method must be serializable through the {@link Serialization} system</li>
+     *   <li>ALL exceptions you intend to throw must be declared with {@code throws}. Any undeclared thrown exceptions will be logged</li>
+     * </ul>
+     * @param name The name of this remote. This name must be unique.
+     * @param interfaceClass The interface that this remote is based on
+     * @param implementation The execution side implementation of the interface.
+     * @throws IllegalArgumentException Thrown if the remote is already registered (either by name or by interface)
+     */
     public <T> void registerRemote(String name, Class<T> interfaceClass, T implementation) {
         Preconditions.checkArgument(!remotesByClass.containsKey(interfaceClass), "This type is already registered");
         Preconditions.checkArgument(!remotesByName.containsKey(name), "This name is already registered");
@@ -47,7 +78,15 @@ public class RemoteManager implements ChannelDataReceiver<RemoteInvokeMessage> {
         remotesByName.put(name, handler);
     }
     
+    /**
+     * Registers your interest in this remote. It is required that you do this before you can use the remote.
+     * This method sets up the proxy needed to be able to forward calls to the execution side.
+     * @param name The name of the remote. This must be the same as defined on the execution side.
+     * @param interfaceClass The interface class the remote is based on. This interface MUST contain the exact same methods as the 
+     *                       execution side but does not need to have the same name or package.
+     */
     public <T> void registerInterest(String name, Class<T> interfaceClass) {
+        // TODO: Dont throw an exception if interest is already registered, just ignore
         Preconditions.checkArgument(!remotesByClass.containsKey(interfaceClass), "This type is already registered");
         Preconditions.checkArgument(!remotesByName.containsKey(name), "This name is already registered");
         
@@ -60,6 +99,20 @@ public class RemoteManager implements ChannelDataReceiver<RemoteInvokeMessage> {
         remotesByName.put(name, remoteHandler);
     }
     
+    /**
+     * Retrieves an executable version of the {@code interfaceClass}. 
+     * The interface must have already been registered with {@link #registerInterest(String, Class)} 
+     * or {@link #registerRemote(String, Class, Object)} before this method can be used.
+     * <h2>Calling remotes</h2>
+     * <p>Methods in remotes can be called like any other java method but the following must be considered:
+     * <ul>
+     *   <li>Method calls can timeout with {@link RemoteTimeoutException} after a maximum of 5 seconds</li>
+     *   <li>The calls are blocking so don't use them on a thread you can't afford to wait up to 5 seconds on.</li>
+     *   <li>If the remote's interface does not match on both the execution and calling side, {@link InvalidRemoteException} can be thrown</li>
+     * </ul>
+     * @param interfaceClass The registered interface class
+     * @return An executable version of {@code interfaceClass}
+     */
     public <T> T getRemote(Class<T> interfaceClass) {
         @SuppressWarnings("unchecked") // The types are forced to match on register
         RemoteInterface<T> remoteHandler = (RemoteInterface<T>)remotesByClass.get(interfaceClass);

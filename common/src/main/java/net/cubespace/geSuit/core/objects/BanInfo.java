@@ -16,6 +16,10 @@ import net.cubespace.geSuit.core.storage.Storable;
 import net.cubespace.geSuit.core.util.NetworkUtils;
 import net.cubespace.geSuit.core.util.Utilities;
 
+/**
+ * This class represents a ban on some object. In practice, the only used types are GlobalPlayer and InetAddress 
+ * @param <T> The type of the object the ban is on
+ */
 public class BanInfo<T> implements Storable, ByteStorable {
     private T who;
     private long date;
@@ -43,65 +47,116 @@ public class BanInfo<T> implements Storable, ByteStorable {
     
     protected BanInfo() {}
     
+    /**
+     * @return Returns the target of this ban
+     */
     public T getWho() {
         return who;
     }
     
+    /**
+     * @return Returns the UNIX datetime in ms of when the ban occurred
+     */
     public long getDate() {
         return date;
     }
     
+    /**
+     * Sets the datetime of the ban
+     * @param date The UNIX datetime in ms
+     */
     public void setDate(long date) {
         this.date = date;
     }
     
+    /**
+     * @return Returns the UNIX datetime in ms of when the ban expires, or 0 if there is no expiry
+     */
     public long getUntil() {
         return until;
     }
     
+    /**
+     * Sets the datetime when this ban expires
+     * @param date The UNIX datetime in ms or 0. This must be later than the ban date
+     */
     public void setUntil(long date) {
         Preconditions.checkArgument(date == 0 || date > this.date);
         
         until = date;
     }
     
+    /**
+     * @return Returns true if this ban has an expiry date
+     */
     public boolean isTemporary() {
         return until != 0;
     }
     
+    /**
+     * @return Returns the reason for this ban
+     */
     public String getReason() {
         return reason;
     }
     
+    /**
+     * Sets the reason for this ban
+     * @param reason The reason
+     */
     public void setReason(String reason) {
         this.reason = reason;
     }
     
+    /**
+     * @return Returns the name of the player or object that applied the ban
+     */
     public String getBannedBy() {
         return bannedBy;
     }
     
+    /**
+     * @return Returns the UUID of the player that applied the ban. This may be null if the ban was created by a non-player
+     */
     public UUID getBannedById() {
         return bannedById;
     }
     
+    /**
+     * Sets who applied the ban
+     * @param name The name of the banner
+     * @param id The UUID of the banner, or null
+     */
     public void setBannedBy(String name, UUID id) {
         bannedBy = name;
         bannedById = id;
     }
     
+    /**
+     * @return Returns true if this is actually an unban
+     */
     public boolean isUnban() {
         return isUnban;
     }
     
+    /**
+     * Sets whether this is an unban or not
+     * @param unban True if this is an unban
+     */
     public void setIsUnban(boolean unban) {
         isUnban = unban;
     }
     
+    /**
+     * @return Returns the database row id. This is used for ban - unban linking
+     */
     public int getDatabaseKey() {
         return databaseKey;
     }
     
+    /**
+     * Sets the database row id. This should never be used by plugins
+     */
     public void setDatabaseKey(int key) {
         databaseKey = key;
     }
