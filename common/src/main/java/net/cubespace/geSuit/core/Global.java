@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.core;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import net.cubespace.geSuit.core.channel.ChannelManager;
@@ -148,5 +149,38 @@ public final class Global {
      */
     public static CommandManager getCommandManager() {
         return instance.getCommandManager();
+    }
+    
+    /**
+     * @return Returns the current server information.
+     */
+    public static GlobalServer getServer() {
+        return instance.getServer();
+    }
+    
+    /**
+     * Gets all servers the proxy knows about
+     * @return A collection of servers
+     */
+    public static Collection<GlobalServer> getServers() {
+        return instance.getServers();
+    }
+    
+    /**
+     * Gets a servers information by its name
+     * @param name The name of the server
+     * @return The server information or null
+     */
+    public static GlobalServer getServer(String name) {
+        return instance.getServer(name);
+    }
+    
+    /**
+     * Gets a servers information by its id
+     * @param id The id of the server
+     * @return The server information or null
+     */
+    public static GlobalServer getServer(int id) {
+        return instance.getServer(id);
     }
 }

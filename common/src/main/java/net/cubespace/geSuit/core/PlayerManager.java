@@ -1,9 +1,11 @@
 package net.cubespace.geSuit.core;
 
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import redis.clients.jedis.Jedis;
@@ -20,6 +22,7 @@ import net.cubespace.geSuit.core.events.player.GlobalPlayerJoinEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerQuitEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
+import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Action;
 import net.cubespace.geSuit.core.messages.PlayerUpdateRequestMessage;
@@ -39,7 +42,11 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     
     private Map<UUID, GlobalPlayer> loadingPlayers;
     
-    private Channel<BaseMessage> channel;
+    private GlobalServer thisServer;
+    private Map<String, GlobalServer> serversByName;
+    private Map<Integer, GlobalServer> serversById;
+    
+    protected Channel<BaseMessage> channel;
     private RedisConnection redis;
     private boolean proxyMode;
     
@@ -48,6 +55,9 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         playersByName = Maps.newHashMap();
         playersByNickname = Maps.newHashMap();
         loadingPlayers = Maps.newHashMap();
+        
+        serversByName = Maps.newHashMap();
+        serversById = Maps.newHashMap();
         
         offlineCache = new PlayerCache(TimeUnit.MINUTES.toMillis(10));
         
@@ -181,6 +191,25 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     //=================================================
+    //            Server retrieval methods
+    //=================================================
+    public GlobalServer getCurrentServer() {
+        return thisServer;
+    }
+    
+    public GlobalServer getServer(int id) {
+        return serversById.get(id);
+    }
+    
+    public GlobalServer getServer(String name) {
+        return serversByName.get(name);
+    }
+    
+    public Collection<GlobalServer> getServers() {
+        return serversById.values();
+    }
+    
+    //=================================================
     //            Packet handling methods
     //=================================================
     
@@ -221,8 +250,24 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         }
     }
     
-    private void onUpdateRequestMessage() {
+    protected void onUpdateRequestMessage() {
         broadcastFullUpdate();
+    }
+    
+    protected void onNetworkInfo(NetworkInfoMessage message) {
+        serversById.clear();
+        serversByName.clear();
+        
+        for (Entry<Integer, String> server : message.servers.entrySet()) {
+            GlobalServer gs = new GlobalServer(server.getValue(), server.getKey());
+            serversById.put(gs.getId(), gs);
+            serversByName.put(gs.getName(), gs);
+            
+            // Update current server
+            if (gs.getId() == message.serverId) {
+                thisServer = gs;
+            }
+        }
     }
     
     @Override
@@ -232,6 +277,8 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
             onUpdateMessage((PlayerUpdateMessage)value);
         } else if (value instanceof PlayerUpdateRequestMessage && proxyMode) {
             onUpdateRequestMessage();
+        } else if (value instanceof NetworkInfoMessage && !proxyMode) {
+            onNetworkInfo((NetworkInfoMessage)value);
         }
     }
     

@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.core;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import net.cubespace.geSuit.core.channel.ChannelManager;
@@ -76,5 +77,21 @@ public class geCore {
     
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+    
+    public GlobalServer getServer() {
+        return playerManager.getCurrentServer();
+    }
+    
+    public Collection<GlobalServer> getServers() {
+        return playerManager.getServers();
+    }
+    
+    public GlobalServer getServer(String name) {
+        return playerManager.getServer(name);
+    }
+    
+    public GlobalServer getServer(int id) {
+        return playerManager.getServer(id);
     }
 }

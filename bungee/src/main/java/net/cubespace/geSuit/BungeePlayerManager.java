@@ -1,12 +1,16 @@
 package net.cubespace.geSuit;
 
 import java.net.InetAddress;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.PlayerManager;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
+import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.managers.ConfigManager;
@@ -16,6 +20,7 @@ import net.cubespace.geSuit.moderation.BanManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -30,10 +35,36 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
         super(true, manager);
         
         broadcastFullUpdate();
+        broadcastNetworkInfo();
     }
     
     public void initialize(BanManager bans) {
         this.bans = bans;
+    }
+    
+    private void broadcastNetworkInfo() {
+        // Build server map
+        Map<Integer, String> servers = Maps.newHashMap();
+        servers.put(ChannelManager.PROXY, "proxy");
+        
+        for (ServerInfo info : ProxyServer.getInstance().getServers().values()) {
+            servers.put(info.getAddress().getPort(), info.getName());
+        }
+        
+        // Send out the update to everyone
+        for (ServerInfo info : ProxyServer.getInstance().getServers().values()) {
+            int id = info.getAddress().getPort();
+            channel.send(new NetworkInfoMessage(id, servers), id);
+        }
+        
+        // Update my info
+        onNetworkInfo(new NetworkInfoMessage(ChannelManager.PROXY, servers));
+    }
+    
+    @Override
+    protected void onUpdateRequestMessage() {
+        super.onUpdateRequestMessage();
+        broadcastNetworkInfo();
     }
     
     @EventHandler

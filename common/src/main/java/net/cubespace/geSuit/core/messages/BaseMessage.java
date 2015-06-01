@@ -47,7 +47,7 @@ public abstract class BaseMessage {
 
     private static HashBiMap<Integer, Class<? extends BaseMessage>> mMessages = HashBiMap.create();
 
-    private static void addMessageType(int id, Class<? extends BaseMessage> type) {
+    public static void addMessageType(int id, Class<? extends BaseMessage> type) {
         mMessages.put(id, type);
     }
 
@@ -59,6 +59,7 @@ public abstract class BaseMessage {
         addMessageType(5, TeleportMessage.class);
         addMessageType(6, TeleportRequestMessage.class);
         addMessageType(7, UpdateBackMessage.class);
+        addMessageType(8, NetworkInfoMessage.class);
     }
     
     public static class Codec implements ChannelCodec<BaseMessage> {
