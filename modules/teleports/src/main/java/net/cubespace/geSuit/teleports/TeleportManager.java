@@ -73,6 +73,18 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         }
     }
     
+    /**
+     * Teleports a player to another player including across servers.
+     * The player may, depending on permissions, have to stay still for a time before commencing the teleport
+     * @param player The player to teleport
+     * @param target The player to teleport to
+     * @param cause The teleport cause to be used on the bukkit side in cases where teleport is actually done.
+     *              Teleports are not done upon changing server usually, instead the login position is changed to the target location.
+     */
+    public void teleportWithDelay(GlobalPlayer player, GlobalPlayer target, TeleportCause cause) {
+        handleTPRequest(new TeleportRequestMessage(player.getUniqueId(), target.getUniqueId(), cause.ordinal()));
+    }
+    
     private boolean teleportNonLocal(GlobalPlayer player, GlobalPlayer target, TeleportCause cause) {
         TeleportMessage message = new TeleportMessage(player.getUniqueId(), target.getUniqueId(), cause.ordinal(), false);
         channel.send(message, ChannelManager.PROXY);
@@ -102,6 +114,19 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         }
     }
     
+    /**
+     * Requests that a player be teleported to a position including across servers.
+     * The player may, depending on permissions, have to stay still for a time before commencing the teleport
+     * @param player The player to teleport
+     * @param target The location to teleport to. A null value for server will teleport them on this server. 
+     *              A null value for world will teleport them in the same world they are in.
+     * @param cause The teleport cause to be used on the bukkit side in cases where teleport is actually done.
+     *              Teleports are not done upon changing server usually, instead the login position is changed to the target location.
+     */
+    public void teleportWithDelay(GlobalPlayer player, Location target, TeleportCause cause) {
+        handleTPRequest(new TeleportRequestMessage(player.getUniqueId(), target, cause.ordinal()));
+    }
+    
     private boolean teleportLocal(Player player, Location target, TeleportCause cause) {
         if (target.getWorld() == null) {
             return player.teleport(new org.bukkit.Location(player.getWorld(), target.getX(), target.getY(), target.getZ(), target.getYaw(), target.getPitch()), cause);
@@ -120,6 +145,16 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         channel.send(message, ChannelManager.PROXY);
         
         return true;
+    }
+    
+    /**
+     * To be called on any join events to check if a login is a result
+     * of a teleport of some kind.
+     * @param player The player to check
+     * @return True if the login is a teleport 
+     */
+    public boolean isJoinTeleport(Player player) {
+        return backIgnoredPlayers.contains(player);
     }
     
     @Override
