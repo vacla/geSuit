@@ -91,7 +91,7 @@ public class ModuleManager implements Listener {
         
         // Automatically load the module if we are past the load time
         if (loaded)
-            loadSingleModule(def);
+            loadAndEnableModule(def);
         
         return true;
     }
@@ -205,6 +205,15 @@ public class ModuleManager implements Listener {
         }
         
         logModule(Level.INFO, def.name, "Loaded successfully");
+        return true;
+    }
+    
+    private boolean loadAndEnableModule(ModuleDefinition def) {
+        if (!loadSingleModule(def)) {
+            return false;
+        }
+        
+        enableModule(loadedModules.get(def.name.toLowerCase()));
         return true;
     }
     
@@ -330,7 +339,7 @@ public class ModuleManager implements Listener {
             
             if (checkDependencies(def.dependencies)) {
                 // YAY we can load it
-                loadSingleModule(def);
+                loadAndEnableModule(def);
             }
         }
     }
