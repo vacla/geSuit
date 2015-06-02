@@ -3,6 +3,7 @@ package net.cubespace.geSuit.core.messages;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+
 import net.cubespace.geSuit.core.channel.ChannelCodec;
 
 import com.google.common.collect.HashBiMap;
@@ -60,6 +61,7 @@ public abstract class BaseMessage {
         addMessageType(6, TeleportRequestMessage.class);
         addMessageType(7, UpdateBackMessage.class);
         addMessageType(8, NetworkInfoMessage.class);
+        addMessageType(9, UpdateSpawnMessage.class);
     }
     
     public static class Codec implements ChannelCodec<BaseMessage> {

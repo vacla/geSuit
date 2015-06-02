@@ -363,14 +363,20 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
     public void teleportTo(GlobalPlayer player, Location target, boolean safe) {
         ProxiedPlayer pPlayer = proxy.getPlayer(player.getUniqueId());
         
+        // Sanity check
+        Preconditions.checkNotNull(pPlayer, "Teleport player " + player.getName() + " was not online");
+        
         ServerInfo sourceServer = pPlayer.getServer().getInfo();
+        teleportToInConnection(pPlayer, target, sourceServer, safe);
+    }
+    
+    public void teleportToInConnection(ProxiedPlayer player, Location target, ServerInfo sourceServer, boolean safe) {
         ServerInfo destServer = sourceServer;
         if (target.getServer() != null) {
             destServer = proxy.getServerInfo(target.getServer());
         }
         
-        // Sanity checks
-        Preconditions.checkNotNull(pPlayer, "Teleport player " + player.getName() + " was not online");
+        // Sanity check
         Preconditions.checkNotNull(destServer, "Teleport target server " + target.getServer() + " does not exist");
         
         TeleportMessage message = new TeleportMessage(player.getUniqueId(), target, 1, safe);
@@ -378,7 +384,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         
         // Move the player to the target server if needed
         if (!sourceServer.equals(destServer)) {
-            pPlayer.connect(destServer);
+            player.connect(destServer);
         }
     }
     

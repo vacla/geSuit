@@ -1,10 +1,8 @@
-package net.cubespace.geSuit.teleports.spawns;
+package net.cubespace.geSuit.core.messages;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-
-import net.cubespace.geSuit.core.messages.BaseMessage;
 
 public class UpdateSpawnMessage extends BaseMessage {
     public UpdateSpawnMessage() {}

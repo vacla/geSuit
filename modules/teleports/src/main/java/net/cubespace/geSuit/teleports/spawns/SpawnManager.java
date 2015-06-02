@@ -18,6 +18,7 @@ import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
 import net.cubespace.geSuit.core.messages.BaseMessage;
+import net.cubespace.geSuit.core.messages.UpdateSpawnMessage;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.storage.StorageSection;
 import net.cubespace.geSuit.teleports.TeleportsModule;
@@ -291,9 +292,5 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
                 teleportTo(SpawnType.Global, player, false);
             }
         }
-    }
-    
-    static {
-        BaseMessage.addMessageType(40, UpdateSpawnMessage.class);
     }
 }

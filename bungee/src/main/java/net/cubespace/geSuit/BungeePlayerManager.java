@@ -15,7 +15,6 @@ import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.LoggingManager;
-import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -162,18 +161,10 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                     ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
                 }
 
-                if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && SpawnManager.NewPlayerSpawn != null) {
-//                    SpawnManager.newPlayers.add(player);
-//
-//                    ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//                            SpawnManager.sendPlayerToNewPlayerSpawn(gsPlayer);
-//                            SpawnManager.newPlayers.remove(player);
-//                        }
-//
-//                    }, 300, TimeUnit.MILLISECONDS);
+                // Teleport to new player spawn
+                if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && geSuit.getPlugin().getSpawnManager().isSetNewPlayer()) {
+                    // Somehow we need to make it not connect to this server, only others
+                    geSuit.getPlugin().getTeleportManager().teleportToInConnection(event.getPlayer(), geSuit.getPlugin().getSpawnManager().getSpawnNewPlayer(), event.getServer().getInfo(), true);
                 }
             }
             // TODO: do all other setup
