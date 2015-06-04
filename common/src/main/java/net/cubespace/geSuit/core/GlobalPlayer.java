@@ -457,7 +457,7 @@ public class GlobalPlayer {
                 }
                 
                 // Load it
-                redis.load(String.format("geSuit.players.%s.%s", Utilities.toString(id)), attachment);
+                redis.load(String.format("geSuit.players.%s.%s", Utilities.toString(id), clazz.getSimpleName().toLowerCase()), attachment);
                 attachments.put(attachmentClass, attachment);
             } catch (ClassNotFoundException e) {
                 continue;
