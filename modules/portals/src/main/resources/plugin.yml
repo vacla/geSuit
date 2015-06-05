@@ -1,0 +1,29 @@
+name: geSuitPortals
+main : net.cubespace.geSuit.portals.Bootstrap
+version: ${project.version}b-${BUILD_NUMBER}
+description: Part of the geSuit this plugin allows users to use portals to move around the server.
+author: Schmoller
+depend: [WorldEdit, geSuitTeleports]
+permissions:
+    gesuit.portals.*:
+        description: Gives access to all gesuitPortal commands
+        default: op
+        children:
+            gesuit.portals.admin: true
+    gesuit.portals.admin:
+        description: Gives access to all gesuitPortal admin commands
+        children:
+            gesuit.portals.user: true
+            gesuit.portals.command.portals: true
+            gesuit.portals.command.delportal: true
+            gesuit.portals.command.setportal: true
+    gesuit.portals.user:
+        description: Gives access to all gesuitPortal user commands
+        children:
+            gesuit.portals.portal.*: true
+    gesuit.portals.portal.*:
+        description: Gives access to all portals
+        children:
+            gesuit.portals.portal.<portalname>: true
+#    gesuit.portals.portal.<portalname>:
+#        description: Gives access tp <portalname>
