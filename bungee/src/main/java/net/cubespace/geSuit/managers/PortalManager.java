@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import net.cubespace.geSuit.geSuitPlugin;
+import net.cubespace.geSuit.core.objects.Warp;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Portal;
-import net.cubespace.geSuit.objects.Warp;
 import net.cubespace.geSuit.pluginmessages.DeletePortal;
 import net.cubespace.geSuit.pluginmessages.SendPortal;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
@@ -133,30 +133,30 @@ public class PortalManager {
     }
 
     public static void teleportPlayer(GSPlayer p, String type, String dest, boolean perm) {
-        if (!perm) {
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&',ConfigManager.messages.PORTAL_NO_PERMISSION));
-            return;
-        }
-
-        if (type.equalsIgnoreCase("warp")) {
-            Warp w = WarpsManager.getWarp(dest.toLowerCase());
-
-            if (w == null) {
-                p.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);
-            } else {
-                TeleportToLocation.execute(p, w.getLocation());
-            }
-        } else {
-            if (geSuitPlugin.proxy.getServerInfo(dest) == null) {
-                p.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);
-                return;
-            }
-
-            ServerInfo s = geSuitPlugin.proxy.getServerInfo(dest);
-            if (!s.getName().equals(p.getServer())) {
-                p.connectTo(s);
-            }
-        }
+//        if (!perm) {
+//            p.sendMessage(ChatColor.translateAlternateColorCodes('&',ConfigManager.messages.PORTAL_NO_PERMISSION));
+//            return;
+//        }
+//
+//        if (type.equalsIgnoreCase("warp")) {
+//            Warp w = WarpsManager.getWarp(dest.toLowerCase());
+//
+//            if (w == null) {
+//                p.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);
+//            } else {
+//                TeleportToLocation.execute(p, w.getLocation());
+//            }
+//        } else {
+//            if (geSuitPlugin.proxy.getServerInfo(dest) == null) {
+//                p.sendMessage(ConfigManager.messages.PORTAL_DESTINATION_NOT_EXIST);
+//                return;
+//            }
+//
+//            ServerInfo s = geSuitPlugin.proxy.getServerInfo(dest);
+//            if (!s.getName().equals(p.getServer())) {
+//                p.connectTo(s);
+//            }
+//        }
     }
 
     public static void listPortals(GSPlayer p) {

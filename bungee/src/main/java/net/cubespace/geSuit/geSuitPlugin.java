@@ -50,6 +50,7 @@ import net.cubespace.geSuit.remote.moderation.WarnActions;
 import net.cubespace.geSuit.remote.teleports.TeleportActions;
 import net.cubespace.geSuit.teleports.SpawnManager;
 import net.cubespace.geSuit.teleports.TeleportsManager;
+import net.cubespace.geSuit.teleports.warps.WarpManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -69,6 +70,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private WarningsManager warnings;
     private TeleportsManager teleports;
     private SpawnManager spawns;
+    private WarpManager warps;
     
     public void onEnable() {
         geSuit.setPlugin(this);
@@ -205,6 +207,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         manager.registerRemote("teleports", TeleportActions.class, teleports = new TeleportsManager());
         
         spawns = new SpawnManager();
+        warps = new WarpManager();
     }
     
     public void onDisable() {
@@ -249,6 +252,10 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     
     public SpawnManager getSpawnManager() {
         return spawns;
+    }
+    
+    public WarpManager getWarpManager() {
+        return warps;
     }
 
     @Override
