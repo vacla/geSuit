@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.core.storage;
 
 import java.net.InetAddress;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -145,11 +146,32 @@ public class DataConversion {
                     return ((SimpleStorable)b).save();
                 }
             };
+        } else if (Enum.class.isAssignableFrom(type)) {
+            return (Converter<String, A>)getEnumConverter((Class<Enum>)type);
         } else if (type.isPrimitive()) {
             return (Converter<String, A>)registeredConverters.get(Primitives.wrap(type));
         } else {
             return (Converter<String, A>)registeredConverters.get(type);
         }
+    }
+    
+    public static <E extends Enum<E>> Converter<String, E> getEnumConverter(final Class<E> enumType) {
+        return new Converter<String, E>() {
+            @Override
+            protected String doBackward(E b) {
+                return b.name();
+            }
+            
+            @Override
+            protected E doForward(String a) {
+                for (E value : EnumSet.allOf(enumType)) {
+                    if (value.name().equalsIgnoreCase(a)) {
+                        return value;
+                    }
+                }
+                throw new IllegalArgumentException("Unknown value " + a + " for " + enumType.getSimpleName());
+            }
+        };
     }
     
     /**

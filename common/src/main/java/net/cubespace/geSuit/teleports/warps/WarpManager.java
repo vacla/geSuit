@@ -144,6 +144,15 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     /**
+     * Checks if a warp (global or local) is set
+     * @param name The name of the warp case insensitive
+     * @return True if it exists
+     */
+    public boolean hasWarp(String name) {
+        return serverWarps.containsKey(name.toLowerCase()) || globalWarps.containsKey(name.toLowerCase());
+    }
+    
+    /**
      * Creates or updates the <b>global</b> warp {@code name} setting it to {@code location} <br>
      * <b>Note:</b> This method will sync this change with all servers and is blocking
      * @param name The name of the warp, will be made lowercase

@@ -62,7 +62,8 @@ public abstract class BaseMessage {
         addMessageType(7, UpdateBackMessage.class);
         addMessageType(8, NetworkInfoMessage.class);
         addMessageType(9, UpdateSpawnMessage.class);
-        addMessageType(9, UpdateWarpMessage.class);
+        addMessageType(10, UpdateWarpMessage.class);
+        addMessageType(11, UpdatePortalMessage.class);
     }
     
     public static class Codec implements ChannelCodec<BaseMessage> {

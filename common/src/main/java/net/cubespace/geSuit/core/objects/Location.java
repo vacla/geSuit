@@ -208,4 +208,30 @@ public class Location implements SimpleStorable {
             Float.parseFloat(parts[6])
             );
     }
+    
+    /**
+     * Checks if a location is within the bounding box made by {@code min} and {@code max}.
+     * @param min The minimum point of the bounding box
+     * @param max The maximum point of the bounding box <b>inclusive</b>
+     * @param other The location to check
+     * @return True if {@code other} is within the bounding box
+     */
+    public static boolean contains(Location min, Location max, Location other) {
+        return contains(min, max, other.x, other.y, other.z);
+    }
+    
+    /**
+     * Checks if a location is within the bounding box made by {@code min} and {@code max}.
+     * @param min The minimum point of the bounding box
+     * @param max The maximum point of the bounding box <b>inclusive</b>
+     * @param x The x coord to check
+     * @param y The y coord to check
+     * @param z The z coord to check
+     * @return True if {@code other} is within the bounding box
+     */
+    public static boolean contains(Location min, Location max, double x, double y, double z) {
+        return (x >= min.x && x <= max.x &&
+                y >= min.y && y <= max.y &&
+                z >= min.z && z <= max.z);
+    }
 }
