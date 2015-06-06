@@ -493,6 +493,8 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
                 targetServer = target.getServer().getInfo();
                 
                 channel.send(message, getServerId(target.getServer().getInfo()));
+            } else if (message.targetServer != null) {
+                targetServer = proxy.getServerInfo(message.targetServer);
             } else {
                 throw new IllegalArgumentException("Expected target location or player for teleport message");
             }

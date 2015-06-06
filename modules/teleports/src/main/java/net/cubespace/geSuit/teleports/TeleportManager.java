@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import net.cubespace.geSuit.GSPlugin;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.GlobalServer;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
 import net.cubespace.geSuit.core.channel.ChannelManager;
@@ -148,6 +149,25 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
     }
     
     /**
+     * Teleports a player to a server. This is just a server change.
+     * @param player The player to teleport
+     * @param server The server to go to
+     */
+    public void teleport(GlobalPlayer player, GlobalServer server) {
+        channel.send(new TeleportMessage(player.getUniqueId(), server.getName(), TeleportCause.UNKNOWN.ordinal(), false), ChannelManager.PROXY);
+    }
+    
+    /**
+     * Teleports a player to a server. This is just a server change.
+     * The player may, depending on permissions, have to stay still for a time before commencing the teleport
+     * @param player The player to teleport
+     * @param server The server to go to
+     */
+    public void teleportWithDelay(GlobalPlayer player, GlobalServer server) {
+        handleTPRequest(new TeleportRequestMessage(player.getUniqueId(), server.getName(), TeleportCause.UNKNOWN.ordinal()));
+    }
+    
+    /**
      * To be called on any join events to check if a login is a result
      * of a teleport of some kind.
      * @param player The player to check
@@ -213,8 +233,10 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         final TeleportMessage finalMessage;
         if (message.targetLocation != null) {
             finalMessage = new TeleportMessage(message.player, message.targetLocation, message.cause, true);
-        } else {
+        } else if (message.targetPlayer != null) {
             finalMessage = new TeleportMessage(message.player, message.targetPlayer, message.cause, true);
+        } else {
+            finalMessage = new TeleportMessage(message.player, message.targetServer, message.cause, true);
         }
         
         // Handle the no move policy if needed

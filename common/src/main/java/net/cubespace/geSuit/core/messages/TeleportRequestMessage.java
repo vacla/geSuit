@@ -12,6 +12,7 @@ public class TeleportRequestMessage extends BaseMessage {
     public UUID player;
     public Location targetLocation;
     public UUID targetPlayer;
+    public String targetServer;
     public int cause;
     
     public TeleportRequestMessage() {}
@@ -27,6 +28,12 @@ public class TeleportRequestMessage extends BaseMessage {
         this.cause = cause;
     }
     
+    public TeleportRequestMessage(UUID player, String server, int cause) {
+        this.player = player;
+        this.targetServer = server;
+        this.cause = cause;
+    }
+    
     @Override
     public void write(DataOutput out) throws IOException {
         NetworkUtils.writeUUID(out, player);
@@ -35,9 +42,12 @@ public class TeleportRequestMessage extends BaseMessage {
         if (targetLocation != null) {
             out.writeByte(0);
             out.writeUTF(targetLocation.save());
-        } else {
+        } else if (targetPlayer != null) {
             out.writeByte(1);
             NetworkUtils.writeUUID(out, targetPlayer);
+        } else {
+            out.writeByte(2);
+            out.writeUTF(targetServer);
         }
     }
 
@@ -53,6 +63,9 @@ public class TeleportRequestMessage extends BaseMessage {
             break;
         case 1: // Player
             targetPlayer = NetworkUtils.readUUID(in);
+            break;
+        case 2: // Server
+            targetServer = in.readUTF();
             break;
         }
     }
