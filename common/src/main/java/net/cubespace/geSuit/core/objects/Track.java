@@ -39,6 +39,14 @@ public class Track implements ByteStorable {
     public String getNickname() {
         return nickname;
     }
+    
+    public String getDisplayName() {
+        if (nickname != null) {
+            return nickname;
+        } else {
+            return name;
+        }
+    }
 
     public long getFirstSeen() {
         return firstseen;

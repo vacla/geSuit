@@ -28,6 +28,7 @@ import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.remote.RemoteManager;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.database.DatabaseManager;
+import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.listeners.APIMessageListener;
 import net.cubespace.geSuit.listeners.BungeeChatListener;
 import net.cubespace.geSuit.listeners.HomesMessageListener;
@@ -39,7 +40,6 @@ import net.cubespace.geSuit.listeners.TeleportsListener;
 import net.cubespace.geSuit.listeners.TeleportsMessageListener;
 import net.cubespace.geSuit.listeners.WarpsMessageListener;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.GeoIPManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.cubespace.geSuit.moderation.TrackingManager;
@@ -64,6 +64,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private BungeePlayerManager playerManager;
     private DatabaseManager databaseManager;
     private BungeeCommandManager commandManager;
+    
+    private GeoIPLookup geoIpLookup;
     
     private BanManager bans;
     private TrackingManager tracking;
@@ -101,7 +103,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
 
         registerListeners();
         registerCommands();
-        GeoIPManager.initialize();
+        
+        registerGenerals();
     }
 
     private void registerCommands() {
@@ -210,6 +213,11 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         warps = new WarpManager();
     }
     
+    private void registerGenerals() {
+        geoIpLookup = new GeoIPLookup();
+        geoIpLookup.initialize();
+    }
+    
     public void onDisable() {
         channelManager.shutdown();
         databaseManager.shutdown();
@@ -256,6 +264,10 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     
     public WarpManager getWarpManager() {
         return warps;
+    }
+    
+    public GeoIPLookup getGeoIPLookup() {
+        return geoIpLookup;
     }
 
     @Override

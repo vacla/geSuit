@@ -2,12 +2,7 @@ package net.cubespace.geSuit.managers;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
-import net.cubespace.geSuit.core.objects.Track;
-import net.cubespace.geSuit.events.NewPlayerJoinEvent;
-import net.cubespace.geSuit.geSuitPlugin;
-import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -21,15 +16,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
 import au.com.addstar.bc.BungeeChat;
 
 // TODO: This class needs work
@@ -269,7 +260,7 @@ public class PlayerManager {
             String location = null;
             try {
                 InetAddress address = InetAddress.getByName(p.getIp());
-                location = GeoIPManager.lookup(address);
+                location = geSuit.getGeoIPLookup().lookup(address);
             } catch(UnknownHostException e) {
             }
             

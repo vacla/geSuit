@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import com.google.common.collect.Lists;
 
+import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.objects.TimeRecord;
@@ -18,7 +19,9 @@ import net.cubespace.geSuit.core.storage.StorageException;
 import net.cubespace.geSuit.database.DatabaseManager;
 import net.cubespace.geSuit.database.repositories.OnTime;
 import net.cubespace.geSuit.database.repositories.Tracking;
+import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class TrackingManager implements TrackingActions {
     private Tracking trackingRepo;
@@ -100,6 +103,38 @@ public class TrackingManager implements TrackingActions {
         } catch (SQLException e) {
             geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get ontime top", e);
             throw new StorageException("Unable to retrieve ontime top");
+        }
+    }
+    
+    public void addPlayerInfo(ProxiedPlayer player, GlobalPlayer gPlayer) {
+        // Check for alt accounts and notify staff (used later)
+        if (!ConfigManager.bans.ShowAltAccounts) {
+            return;
+        }
+        
+        try {
+            Track alt = trackingRepo.getPlayerAlt(gPlayer);
+            
+            if (alt == null) {
+                return;
+            }
+            
+            String message;
+            // Is banned?
+            if (ConfigManager.bans.ShowBannedAltAccounts && (alt.isIpBanned() || alt.isNameBanned())) {
+                message = ConfigManager.messages.PLAYER_BANNED_ALT_JOIN;
+            } else {
+                message = ConfigManager.messages.PLAYER_ALT_JOIN;
+            }
+            
+            message = message
+                    .replace("{player}", gPlayer.getDisplayName())
+                    .replace("{alt}", alt.getDisplayName())
+                    .replace("{ip}", player.getAddress().getHostString());
+            
+            Utilities.doBungeeChatMirror("StaffNotice", message);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -2,6 +2,7 @@ package net.cubespace.geSuit;
 
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Maps;
 
@@ -138,7 +139,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
     }
     
     @EventHandler
-    public void onServerConnect(ServerConnectedEvent event) {
+    public void onServerConnect(final ServerConnectedEvent event) {
         // Ensure they are still online before continuing
         if (ProxyServer.getInstance().getPlayer(event.getPlayer().getUniqueId()) == null) {
             geSuit.getLogger().warning("ServerConnectedEvent was called on " + event.getPlayer().getName() + " but they're not online");
@@ -146,7 +147,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
         }
         
         if (onServerConnect(event.getPlayer().getUniqueId())) {
-            GlobalPlayer player = Global.getPlayer(event.getPlayer().getUniqueId());
+            final GlobalPlayer player = Global.getPlayer(event.getPlayer().getUniqueId());
             
             // Update the tracking data for this player
             geSuit.getPlugin().getTrackingManager().updateTracking(player);
@@ -167,7 +168,17 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                     geSuit.getPlugin().getTeleportManager().teleportToInConnection(event.getPlayer(), geSuit.getPlugin().getSpawnManager().getSpawnNewPlayer(), event.getServer().getInfo(), true);
                 }
             }
+            
             // TODO: do all other setup
+            
+            // Notifications
+            ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    geSuit.getGeoIPLookup().addPlayerInfo(event.getPlayer(), player);
+                    geSuit.getPlugin().getTrackingManager().addPlayerInfo(event.getPlayer(), player);
+                }
+            }, 100, TimeUnit.MILLISECONDS);
         }
     }
     

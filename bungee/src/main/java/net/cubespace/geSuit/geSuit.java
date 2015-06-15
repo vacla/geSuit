@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 import net.cubespace.geSuit.core.channel.ChannelManager;
+import net.cubespace.geSuit.general.GeoIPLookup;
 import net.md_5.bungee.api.config.ServerInfo;
 
 public final class geSuit {
@@ -40,5 +41,9 @@ public final class geSuit {
     
     public static int getServerId(ServerInfo server) {
         return server.getAddress().getPort();
+    }
+    
+    public static GeoIPLookup getGeoIPLookup() {
+        return plugin.getGeoIPLookup();
     }
 }

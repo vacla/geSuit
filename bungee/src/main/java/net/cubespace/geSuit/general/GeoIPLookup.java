@@ -1,4 +1,4 @@
-package net.cubespace.geSuit.managers;
+package net.cubespace.geSuit.general;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,25 +9,28 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
 
+import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
-import net.cubespace.geSuit.geSuitPlugin;
+import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.managers.ConfigManager;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import com.maxmind.geoip.Location;
 import com.maxmind.geoip.LookupService;
 import com.maxmind.geoip.regionName;
 
-public class GeoIPManager {
-    private static LookupService mLookup;
-    private static File mDatabaseFile;
+public class GeoIPLookup {
+    private LookupService lookup;
+    private File databaseFile;
     
-    public static void initialize() {
+    public void initialize() {
         if (ConfigManager.bans.GeoIP.ShowCity) {
-            mDatabaseFile = geSuit.getFile("GeoIPCity.dat");
+            databaseFile = geSuit.getFile("GeoIPCity.dat");
         } else {
-            mDatabaseFile = geSuit.getFile("GeoIP.dat");
+            databaseFile = geSuit.getFile("GeoIP.dat");
         }
         
-        if (!mDatabaseFile.exists()) {
+        if (!databaseFile.exists()) {
             if (ConfigManager.bans.GeoIP.DownloadIfMissing) {
                 if (!updateDatabase()) {
                     return;
@@ -39,20 +42,20 @@ public class GeoIPManager {
         }
         
         try {
-            mLookup = new LookupService(mDatabaseFile);
+            lookup = new LookupService(databaseFile);
         } catch(IOException e) {
             geSuit.getLogger().warning("[GeoIP] Unable to read GeoIP database, if this No GeoIP database is available locally and updating is off. Lookups will be unavailable");
         }
     }
     
-    public static String lookup(InetAddress address)
+    public String lookup(InetAddress address)
     {
-        if (mLookup == null) { 
+        if (lookup == null) { 
             return null;
         }
         
         if (ConfigManager.bans.GeoIP.ShowCity) {
-            Location loc = mLookup.getLocation(address);
+            Location loc = lookup.getLocation(address);
             if (loc == null) {
                 return null;
             }
@@ -71,11 +74,11 @@ public class GeoIPManager {
             result += loc.countryName;
             return result;
         } else {
-            return mLookup.getCountry(address).getName();
+            return lookup.getCountry(address).getName();
         }
     }
     
-    private static boolean updateDatabase() {
+    private boolean updateDatabase() {
         String url;
         if (ConfigManager.bans.GeoIP.ShowCity) {
             url = ConfigManager.bans.GeoIP.CityDownloadURL;
@@ -102,7 +105,7 @@ public class GeoIPManager {
                 input = new GZIPInputStream(input);
             }
             
-            FileOutputStream output = new FileOutputStream(mDatabaseFile);
+            FileOutputStream output = new FileOutputStream(databaseFile);
             byte[] buffer = new byte[2048];
             int length = input.read(buffer);
             while (length >= 0) {
@@ -132,6 +135,17 @@ public class GeoIPManager {
         } catch(IOException e) {
             geSuit.getLogger().severe("[GeoIP] Download failed. IOException: " + e.getMessage());
             return false;
+        }
+    }
+    
+    public void addPlayerInfo(ProxiedPlayer player, GlobalPlayer gPlayer) {
+        // Show Geo location notifications for player (if enabled)
+        if (ConfigManager.bans.GeoIP.ShowOnLogin) {
+            String location = lookup(player.getAddress().getAddress());
+            if (location != null) {
+                String msg = ConfigManager.messages.PLAYER_GEOIP.replace("{player}", gPlayer.getDisplayName()).replace("{location}", location);
+                Utilities.doBungeeChatMirror("StaffNotice", msg);
+            }
         }
     }
 }
