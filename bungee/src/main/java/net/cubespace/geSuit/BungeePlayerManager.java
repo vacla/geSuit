@@ -11,6 +11,7 @@ import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.PlayerManager;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
+import net.cubespace.geSuit.core.messages.LangUpdateMessage;
 import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
@@ -33,13 +34,14 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
     
     public BungeePlayerManager(ChannelManager manager) {
         super(true, manager);
-        
-        broadcastFullUpdate();
-        broadcastNetworkInfo();
     }
     
     public void initialize(BanManager bans) {
         this.bans = bans;
+        
+        broadcastFullUpdate();
+        broadcastNetworkInfo();
+        broadcastLang();
     }
     
     private void broadcastNetworkInfo() {
@@ -61,10 +63,16 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
         onNetworkInfo(new NetworkInfoMessage(ChannelManager.PROXY, servers));
     }
     
+    private void broadcastLang() {
+        LangUpdateMessage message = new LangUpdateMessage(Global.getMessages().getLang(), Global.getMessages().getDefaultLang());
+        channel.broadcast(message);
+    }
+    
     @Override
     protected void onUpdateRequestMessage() {
         super.onUpdateRequestMessage();
         broadcastNetworkInfo();
+        broadcastLang();
     }
     
     @EventHandler

@@ -6,7 +6,9 @@ import net.cubespace.geSuit.core.channel.ChannelManager;
 public class BukkitPlayerManager extends PlayerManager {
     public BukkitPlayerManager(ChannelManager manager) {
         super(false, manager);
-        
+    }
+    
+    public void initialize() {
         requestFullUpdate();
     }
 }

@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.commands.CommandManager;
+import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.remote.RemoteManager;
 import net.cubespace.geSuit.core.storage.StorageSection;
 
@@ -182,5 +183,9 @@ public final class Global {
      */
     public static GlobalServer getServer(int id) {
         return instance.getServer(id);
+    }
+    
+    public static Messages getMessages() {
+        return instance.getMessages();
     }
 }

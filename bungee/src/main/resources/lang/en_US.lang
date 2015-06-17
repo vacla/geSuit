@@ -1,0 +1,141 @@
+# The language file is for US english
+# Any lines starting with # are comments and are ignored
+# Blank lines are also ignored
+# NOTE: Values to the left of equals signs must not be changed
+# Coloring can be used for any message using '&' and a 
+# color code 0-f or format code l-o,r,k  
+# Some messages contain tokens that are replaced with another
+# value at runtime. These must always be lowercase and are
+# wrapped in braces {}
+
+# Connection messages
+connect.geoip = &8{player} is from {location}
+connect.alt-join = &b{player} same IP ({ip}) as {alt}
+connect.alt-join.banned = &c{player} same IP as banned player {alt}
+
+connect.join = {player}&e has joined the server!
+connect.join.namechange = {player} ({old})&e has joined the server!
+connect.join.namechange.log = &ePlayer {player} was previously known as {old}.
+connect.join.new = &eNotice to everyone: &b{player} &ahas just joined this server for the first time. Please make them feel welcome!
+connect.quit = {player}&e has left the server!
+
+# Generic messages
+player.not-online = &cThat player is not online
+player.no-permisison = &cYou do not have permission to use that command
+
+# teleport specific messages
+teleport.all = &6All players have been teleported to {player}
+teleport.blocked.server = &cYou are not allowed to teleport to that player from here.
+teleport.blocked.player = &cYou are unable to teleport to this player
+teleport.incoming = &6{player} has teleported to you
+teleport.outgoing = &6You have been teleported to {player}
+teleport.outgoing.loc = &6You have been teleported
+teleport.message.player = &6{player} has teleported to {target}
+
+tpa.request.blocked = &cYou already have a teleport pending
+tpa.request.blocked.other = &cThat player already has a teleport pending
+tpa.request.receive = &6{player} has requested to teleport to you. Type /tpaccept to allow
+tpa.request.accept.you = &6You accepted {player}'s teleport request
+tpa.request.accept.them = &6{player} accepted your teleport request
+tpa.request.denied.you = &cYou denied {player}'s teleport request
+tpa.request.denied.them =  &c{player} denied your teleport request
+tpa.request.none = &cYou do not have any pending teleports
+tpa.request.sent =  &6Your request has been sent
+tpa.request.timeout = &cYour request to teleport to {player} has timed out
+tpa.request.timeout.other = &c{player}'s teleport request has timed out
+tpahere.request.timeout = &cYour request to have {player} teleport to you has timed out
+tpahere.request.receive = &6{player} has requested you teleport to them. Type /tpaccept to allow
+back.not-set = &cYou do not have anywhere to go back to
+back.teleport = &6You have been sent back
+teleport.toggle.on = &6Telports have been toggled on
+teleport.toggle.off = &cTelports have been toggled off
+
+teleport.error.server = &c Unable to teleport to unknown server {server}
+teleport.error.world = &cUnable to teleport to unknown world {world}
+
+# warp specific messages
+warp.create = &6Successfully created a warp
+warp.update = &6Successfully updated the warp
+warp.delete = &6Successfully deleted the warp
+warp.teleport = &7You have been warped to {warp}
+warp.teleport.other = &7{player} has been warped to {warp}
+warp.unknown-warp = &cThat warp does not exist
+warp.no-permission = &cYou do not have permission to use that warp
+
+# portal specific messages
+portal.create = &6You have successfully created a portal
+portal.update = &6You have successfully updated the portal
+portal.delete = &cPortal deleted
+portal.unknown-portal = &cThat portal does not exist
+portal.unknown-dest = &cThat portal destination does not exist
+portal.command.error.fill = &cThat filltype does not exist
+portal.command.error.type = &cThat is an invalid portal type. Use warp, server, or teleport
+portal.command.error.no-sel = &cNo world edit selection has been made
+portal.no-permission = &cYou do not have permission to enter this portal
+
+# Spawn related messages
+spawn.not-set = &cThe spawn point has not been set yet
+spawn.update = &6Spawn point updated
+spawn.set = &6Spawn point set
+
+# moderation related messages
+ban.already-banned = &cThat player is already banned!
+ban.not-banned = &aThat player is not banned
+ban.history.empty = &aNo ban history for {player}
+ban.display.personal = &cYou have been banned. Reason: {message}
+ban.display.broadcast = &b{player} has been banned. Reason: {message}
+ban.display.broadcast.auto = &b{player} has been auto banned.
+
+ipban.display.personal = &cYour IP has been banned. Reason: {message}
+ipban.display.broadcast = &b{player} has been ip banned. Reason: {message}
+ipban.display.broadcast.auto = &b{player} has been auto ip banned.
+
+tempban.display.personal = &cYou have been temporarily banned ({shortleft}). Reason: {message}
+tempban.display.broadcast = &b{player} has been temporarily banned ({shortleft}). Reason: {message}
+tempban.display.broadcast.auto = &b{player} has been auto temp-banned ({shortleft}).
+
+iptempban.display.personal = &cYour IP has been temporarily banned ({shortleft}). Reason: {message}
+iptempban.display.broadcast = &b{player} has been temporarily ip banned ({shortleft}). Reason: {message}
+iptempban.display.broadcast.auto = &b{player} has been auto temp ip banned ({shortleft}).
+
+kick.display.personal = &cYou have been kicked. Reason: {message}
+kick.display.broadcast = &b{player} has been kicked. Reason: {message}
+kick.dipslay.broadcast.auto = &b{player} has been auto kicked.
+
+unban.broadcast = &c{player} has been unbanned!
+
+warn.unknown-player = &cERROR: Player is unknown, refusing to give warning.
+warn.history.empty = &aNo warning history for {player}
+warn.display.personal = &bYou has received a warning. Reason: {message}
+warn.display.broadcast = &b{player} has received a warning. Reason: {message}
+
+# Home related messages
+home.teleport = &6You have been sent home 
+home.limit.server = &cYour are not allowed to set anymore homes on this server.
+home.limit.global = &cYour are not allowed to set anymore homes globally.
+home.empty = &cYou do not have any homes set.
+home.list.header = &eListing your homes:
+home.list.header.other = &eListing homes of {player}:
+home.list.prefix.this-server = &a{server}: &9
+home.list.prefix.other-server = &e{server}: &9
+home.set = &6Your home \{home}\ has been set
+home.update = &6Your home \{home}\ has been updated
+home.unknown-home = &cThat home does not exist
+home.delete = &cYour home \{home}\ has been deleted
+
+# Seen related messages
+seen.command.usage = &cUsage: /seen <player>
+seen.header.online = &6Player &c{player} &6is &aonline&6 since {timediff}\n&6 {date}
+seen.header.offline = &6Player &c{player} &6is &4offline&6 since {timediff}\n&6 {date}
+seen.format = &6 - {name}: &r{value}
+
+# Ontime related messages
+ontime.command.usage = &cUsage: !ontime <player>
+ontime.first-joined = &6First joined:&f {date} ({days} days)
+ontime.time-session = &6This login:&f {diff}
+ontime.time-today = &6Today:&f {diff}
+ontime.time-week = &6This week:&f {diff}
+ontime.time-month = &6This month:&f {diff}
+ontime.time-year = &6This year:&f {diff}
+ontime.time-total = &6Total ontime:&f {diff}
+ontime.time-top = &e{num}: &b{time}&a {player}

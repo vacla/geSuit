@@ -22,6 +22,7 @@ import net.cubespace.geSuit.core.events.player.GlobalPlayerJoinEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerQuitEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
+import net.cubespace.geSuit.core.messages.LangUpdateMessage;
 import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Action;
@@ -270,6 +271,10 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         }
     }
     
+    private void onLanguageUpdate(LangUpdateMessage message) {
+        Global.getMessages().load(message);
+    }
+    
     @Override
     public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value, int sourceId, boolean isBroadcast) {
         System.out.println("Got message " + value);
@@ -279,6 +284,8 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
             onUpdateRequestMessage();
         } else if (value instanceof NetworkInfoMessage && !proxyMode) {
             onNetworkInfo((NetworkInfoMessage)value);
+        } else if (value instanceof LangUpdateMessage && !proxyMode) {
+            onLanguageUpdate((LangUpdateMessage)value);
         }
     }
     

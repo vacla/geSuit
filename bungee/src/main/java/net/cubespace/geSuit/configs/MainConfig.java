@@ -1,13 +1,11 @@
 package net.cubespace.geSuit.configs;
 
-import java.io.File;
-
 import net.cubespace.Yamler.Config.Comment;
+import net.cubespace.Yamler.Config.Comments;
 import net.cubespace.Yamler.Config.Config;
 import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.configs.SubConfig.Redis;
 import net.cubespace.geSuit.geSuit;
-import net.cubespace.geSuit.geSuitPlugin;
 
 public class MainConfig extends Config {
     public MainConfig() {
@@ -16,6 +14,10 @@ public class MainConfig extends Config {
 
     public Database Database = new Database();
     public Redis Redis = new Redis();
+    
+    @Comments({"The language file to use. This file can either be in the jar or inside",
+            "the folder 'lang/' in the plugins. Lang files must end in '.lang'"})
+    public String Lang = "en_US";
 
     @Comment("This can be used if you have multiple Proxies to seperate the Homes in it")
     public String Table_Homes = "homes";

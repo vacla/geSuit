@@ -39,6 +39,8 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         geCore core = new geCore(new BukkitPlatform(this), playerManager, channelManager, commandManager);
         Global.setInstance(core);
         
+        playerManager.initialize();
+        
         getLogger().info("Initializing modules:");
         moduleManager = new ModuleManager(this);
         moduleManager.loadAll();

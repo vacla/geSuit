@@ -1,8 +1,12 @@
 package net.cubespace.geSuit;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
+
+import com.google.common.base.Strings;
 
 import net.cubespace.geSuit.commands.BanCommands;
 import net.cubespace.geSuit.commands.DebugCommand;
@@ -24,6 +28,7 @@ import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
 import net.cubespace.geSuit.core.commands.BungeeCommandManager;
+import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.remote.RemoteManager;
 import net.cubespace.geSuit.core.storage.RedisConnection;
@@ -95,6 +100,9 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         getProxy().getPluginManager().registerListener(this, playerManager);
         geCore core = new geCore(new BungeePlatform(this), playerManager, channelManager, commandManager);
         Global.setInstance(core);
+        
+        core.getMessages().loadDefaults();
+        loadLanguage();
         
         initializeRemotes();
         
@@ -214,6 +222,28 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private void registerGenerals() {
         geoIpLookup = new GeoIPLookup();
         geoIpLookup.initialize();
+    }
+    
+    public void loadLanguage() {
+        if (!Strings.isNullOrEmpty(ConfigManager.main.Lang)) {
+            Messages messages = Global.getMessages();
+            
+            try {
+                File langFile = new File(getDataFolder(), "lang/" + ConfigManager.main.Lang + ".lang");
+                if (langFile.exists()) {
+                    messages.load(langFile);
+                } else {
+                    InputStream stream = getResourceAsStream("lang/" + ConfigManager.main.Lang + ".lang");
+                    if (stream != null) {
+                        messages.load(stream);
+                    } else {
+                        getLogger().warning("Failed to load language " + ConfigManager.main.Lang + ". Cannot find it either in the filesystem or in the jar.");
+                    }
+                }
+            } catch (IOException e) {
+                getLogger().log(Level.WARNING, "Failed to load language " + ConfigManager.main.Lang + ":", e);
+            }
+        }
     }
     
     public void onDisable() {
