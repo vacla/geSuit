@@ -127,6 +127,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             player.setNewPlayer(true);
         }
         
+        geSuit.getLogger().info("Player " + player.getDisplayName() + " (" + player.getUniqueId().toString() + ") connected from " + player.getAddress().getHostAddress());
         onPlayerLoginInitComplete(player);
     }
     
@@ -160,12 +161,18 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                     ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(welcomeMsg));
                     // Firing custom event
                     ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
+                } else if (ConfigManager.main.BroadcastProxyConnectionMessages) {
+                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_CONNECT_PROXY.replace("{player}", player.getDisplayName()));
                 }
 
                 // Teleport to new player spawn
                 if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && geSuit.getPlugin().getSpawnManager().isSetNewPlayer()) {
                     // Somehow we need to make it not connect to this server, only others
                     geSuit.getPlugin().getTeleportManager().teleportToInConnection(event.getPlayer(), geSuit.getPlugin().getSpawnManager().getSpawnNewPlayer(), event.getServer().getInfo(), true);
+                }
+            } else {
+                if (ConfigManager.main.BroadcastProxyConnectionMessages) {
+                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_CONNECT_PROXY.replace("{player}", player.getDisplayName()));
                 }
             }
             
@@ -190,6 +197,27 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
     
     @EventHandler
     public void onQuit(PlayerDisconnectEvent event) {
+        final GlobalPlayer player = getPlayer(event.getPlayer().getUniqueId());
+        
+        // Send the final disconnect message at this delay
+        if (ConfigManager.main.BroadcastProxyConnectionMessages) {
+            ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_DISCONNECT_PROXY.replace("{player}", player.getName()));
+                }
+            }, ConfigManager.main.PlayerDisconnectDelay, TimeUnit.SECONDS);
+        }
+        
+        // Update time tracking (if enabled)
+        if (ConfigManager.bans.TrackOnTime) {
+            geSuit.getPlugin().getTrackingManager().updatePlayerOnTime(player);
+        }
+        
+        // Final save before being moved to offline
+        player.saveIfModified();
+        
+        // Handle final remove
         onPlayerLeave(event.getPlayer().getUniqueId());
     }
 }

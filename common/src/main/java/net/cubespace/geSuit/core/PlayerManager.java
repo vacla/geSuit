@@ -308,7 +308,9 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         // Dont call the event on a reset
         if (!isReset) {
             Global.getPlatform().callEvent(new GlobalPlayerJoinEvent(player));
+            player.setSessionJoin(System.currentTimeMillis());
         }
+        
         System.out.println("Adding player " + player.getName());
     }
     

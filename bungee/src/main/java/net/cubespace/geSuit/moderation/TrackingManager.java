@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import net.cubespace.geSuit.Utilities;
@@ -21,6 +22,7 @@ import net.cubespace.geSuit.database.repositories.OnTime;
 import net.cubespace.geSuit.database.repositories.Tracking;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class TrackingManager implements TrackingActions {
@@ -103,6 +105,16 @@ public class TrackingManager implements TrackingActions {
         } catch (SQLException e) {
             geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get ontime top", e);
             throw new StorageException("Unable to retrieve ontime top");
+        }
+    }
+    
+    public void updatePlayerOnTime(GlobalPlayer player) throws StorageException {
+        Preconditions.checkArgument(ProxyServer.getInstance().getPlayer(player.getUniqueId()) != null, "Player is not online");
+        try {
+            ontimeRepo.updatePlayerOnTime(player, player.getSessionJoin(), System.currentTimeMillis());
+        } catch (SQLException e) {
+            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to update " + player.getDisplayName() + "'s ontime records", e);
+            throw new StorageException("Unable to update ontime");
         }
     }
     

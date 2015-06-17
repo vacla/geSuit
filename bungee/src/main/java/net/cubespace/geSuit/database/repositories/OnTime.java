@@ -8,7 +8,6 @@ import net.cubespace.geSuit.database.BaseRepository;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.StatementKey;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.ChatColor;
 
@@ -54,7 +53,7 @@ public class OnTime extends BaseRepository {
         ontimeTop = registerStatement("getOnTimeTop",   "SELECT `uuid`, SUM(`time`) AS `totaltime` FROM `%ontime%` GROUP BY `uuid` ORDER BY `totaltime` DESC LIMIT ? OFFSET ?".replace("%ontime%", getName()));
     }
     
-    public void updatePlayerOnTime(GlobalPlayer player, long tsStart, long tsEnd) {
+    public void updatePlayerOnTime(GlobalPlayer player, long tsStart, long tsEnd) throws SQLException {
         String uuid = Utilities.toString(player.getUniqueId());
         // Get start/end in calendar objects (required to handle day/month/year changes properly)
         Calendar start = Calendar.getInstance();
@@ -139,15 +138,8 @@ public class OnTime extends BaseRepository {
         			"(uuid,timeslot,time) VALUES " + sqlvalues + " " +
         			"ON DUPLICATE KEY UPDATE time=time+VALUES(time)"
         	);
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
-			try {
-				if (stmt != null) { stmt.close(); stmt = null; }
-			} catch (SQLException e) {
-				System.out.println("ERROR: Failed to close SQL Statement!");
-				e.printStackTrace();
-			}
+			if (stmt != null) { stmt.close(); stmt = null; }
     		connectionHandler.release();
         }
     }

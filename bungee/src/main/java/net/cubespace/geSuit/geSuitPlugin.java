@@ -32,7 +32,6 @@ import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.listeners.APIMessageListener;
 import net.cubespace.geSuit.listeners.BungeeChatListener;
 import net.cubespace.geSuit.listeners.HomesMessageListener;
-import net.cubespace.geSuit.listeners.PlayerListener;
 import net.cubespace.geSuit.listeners.PortalsMessageListener;
 import net.cubespace.geSuit.listeners.SpawnListener;
 import net.cubespace.geSuit.listeners.SpawnMessageListener;
@@ -140,7 +139,6 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         getProxy().registerChannel("geSuitHomes"); // Homes in
         getProxy().registerChannel("geSuitAPI"); // API messages in
 
-        proxy.getPluginManager().registerListener(this, new PlayerListener());
         proxy.getPluginManager().registerListener(this, new TeleportsListener());
         proxy.getPluginManager().registerListener(this, new TeleportsMessageListener());
         proxy.getPluginManager().registerListener(this, new WarpsMessageListener());

@@ -42,6 +42,7 @@ public class GlobalPlayer {
     
     private long firstJoin;
     private long lastJoin;
+    private long sessionJoin;
     
     private boolean tpEnabled = true;
     private boolean newPlayer;
@@ -226,6 +227,21 @@ public class GlobalPlayer {
         loadIfNeeded();
         lastJoin = time;
         isDirty = true;
+    }
+    
+    /**
+     * @return Gets the UNIX datetime in ms of the time and date this player session started. If they are not online, the value is undefined.
+     */
+    public long getSessionJoin() {
+        return sessionJoin;
+    }
+    
+    /**
+     * Sets the session join datetime for the player
+     * @param time The UNIX datetime in ms
+     */
+    public void setSessionJoin(long time) {
+        sessionJoin = time;
     }
     
     /**
