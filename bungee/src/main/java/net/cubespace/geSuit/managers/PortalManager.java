@@ -97,15 +97,15 @@ public class PortalManager {
     }
 
     public static void deletePortal(GSPlayer sender, String portal) {
-        if (!doesPortalExist(portal)) {
-            sender.sendMessage(ConfigManager.messages.PORTAL_DOES_NOT_EXIST);
-            return;
-        }
-
-        Portal p = getPortal(portal);
-        removePortal(p);
-
-        sender.sendMessage(ConfigManager.messages.PORTAL_DELETED);
+//        if (!doesPortalExist(portal)) {
+//            sender.sendMessage(ConfigManager.messages.PORTAL_DOES_NOT_EXIST);
+//            return;
+//        }
+//
+//        Portal p = getPortal(portal);
+//        removePortal(p);
+//
+//        sender.sendMessage(ConfigManager.messages.PORTAL_DELETED);
     }
 
     public static Portal getPortal(String name) {

@@ -162,15 +162,15 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             geSuit.getPlugin().getTrackingManager().updateTracking(player);
             
             if (player.isNewPlayer()) {
-                LoggingManager.log(ConfigManager.messages.PLAYER_CREATE.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
+                LoggingManager.log(Global.getMessages().get("log.player-create", "player", player.getName(), "uuid", player.getUniqueId()));
 
                 if (ConfigManager.main.NewPlayerBroadcast) {
-                    String welcomeMsg = ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NEW_PLAYER_BROADCAST.replace("{player}", player.getDisplayName()));
+                    String welcomeMsg = Global.getMessages().get("connect.join.new", "player", player.getDisplayName());
                     ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(welcomeMsg));
                     // Firing custom event
                     ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
                 } else if (ConfigManager.main.BroadcastProxyConnectionMessages) {
-                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_CONNECT_PROXY.replace("{player}", player.getDisplayName()));
+                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(Global.getMessages().get("connect.join", "player", player.getDisplayName()));
                 }
 
                 // Teleport to new player spawn
@@ -180,7 +180,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                 }
             } else {
                 if (ConfigManager.main.BroadcastProxyConnectionMessages) {
-                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_CONNECT_PROXY.replace("{player}", player.getDisplayName()));
+                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(Global.getMessages().get("connect.join", "player", player.getDisplayName()));
                 }
             }
             
@@ -212,7 +212,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
-                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_DISCONNECT_PROXY.replace("{player}", player.getName()));
+                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(Global.getMessages().get("connect.quit", "player", player.getName()));
                 }
             }, ConfigManager.main.PlayerDisconnectDelay, TimeUnit.SECONDS);
         }

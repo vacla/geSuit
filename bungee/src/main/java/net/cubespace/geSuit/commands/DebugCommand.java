@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.geSuitPlugin;
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.objects.GSPlayer;
@@ -28,7 +29,7 @@ public class DebugCommand extends Command
     public void execute(CommandSender sender, String[] args)
     {
     	if (!(sender.hasPermission("gesuit.debug") || sender.hasPermission("gesuit.admin"))) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_PERMISSION);
+            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permisison"));
             return;
         }
 

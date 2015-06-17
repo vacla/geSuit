@@ -17,19 +17,19 @@ public class WhereCommand extends Command {
             return;
         }
 
-        if (args.length == 0) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BUNGEE_COMMAND_WHERE_USAGE);
-            return;
-        }
-
-		String search, options;
-		if (args.length == 1) {
-			options = "";
-			search = args[0];
-		} else {
-			options = args[0];
-			search = args[1];
-		}
+//        if (args.length == 0) {
+//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BUNGEE_COMMAND_WHERE_USAGE);
+//            return;
+//        }
+//
+//		String search, options;
+//		if (args.length == 1) {
+//			options = "";
+//			search = args[0];
+//		} else {
+//			options = args[0];
+//			search = args[1];
+//		}
 
 		throw new UnsupportedOperationException("Not yet implemented");
         //BansManager.displayWhereHistory(sender.getName(), options, search);

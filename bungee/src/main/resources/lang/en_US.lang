@@ -19,6 +19,9 @@ connect.join.namechange.log = &ePlayer {player} was previously known as {old}.
 connect.join.new = &eNotice to everyone: &b{player} &ahas just joined this server for the first time. Please make them feel welcome!
 connect.quit = {player}&e has left the server!
 
+# Log messages
+log.player-create = "Created player &b{player}&7 ({uuid})"
+
 # Generic messages
 player.not-online = &cThat player is not online
 player.no-permisison = &cYou do not have permission to use that command
@@ -31,6 +34,10 @@ teleport.incoming = &6{player} has teleported to you
 teleport.outgoing = &6You have been teleported to {player}
 teleport.outgoing.loc = &6You have been teleported
 teleport.message.player = &6{player} has teleported to {target}
+teleport.toggle.on = &6Telports have been toggled on
+teleport.toggle.off = &cTelports have been toggled off
+teleport.error.server = &c Unable to teleport to unknown server {server}
+teleport.error.world = &cUnable to teleport to unknown world {world}
 
 tpa.request.blocked = &cYou already have a teleport pending
 tpa.request.blocked.other = &cThat player already has a teleport pending
@@ -47,11 +54,6 @@ tpahere.request.timeout = &cYour request to have {player} teleport to you has ti
 tpahere.request.receive = &6{player} has requested you teleport to them. Type /tpaccept to allow
 back.not-set = &cYou do not have anywhere to go back to
 back.teleport = &6You have been sent back
-teleport.toggle.on = &6Telports have been toggled on
-teleport.toggle.off = &cTelports have been toggled off
-
-teleport.error.server = &c Unable to teleport to unknown server {server}
-teleport.error.world = &cUnable to teleport to unknown world {world}
 
 # warp specific messages
 warp.create = &6Successfully created a warp
@@ -124,13 +126,11 @@ home.unknown-home = &cThat home does not exist
 home.delete = &cYour home \{home}\ has been deleted
 
 # Seen related messages
-seen.command.usage = &cUsage: /seen <player>
 seen.header.online = &6Player &c{player} &6is &aonline&6 since {timediff}\n&6 {date}
 seen.header.offline = &6Player &c{player} &6is &4offline&6 since {timediff}\n&6 {date}
 seen.format = &6 - {name}: &r{value}
 
 # Ontime related messages
-ontime.command.usage = &cUsage: !ontime <player>
 ontime.first-joined = &6First joined:&f {date} ({days} days)
 ontime.time-session = &6This login:&f {diff}
 ontime.time-today = &6Today:&f {diff}

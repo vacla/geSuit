@@ -11,6 +11,7 @@ import java.util.zip.GZIPInputStream;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -143,7 +144,7 @@ public class GeoIPLookup {
         if (ConfigManager.bans.GeoIP.ShowOnLogin) {
             String location = lookup(player.getAddress().getAddress());
             if (location != null) {
-                String msg = ConfigManager.messages.PLAYER_GEOIP.replace("{player}", gPlayer.getDisplayName()).replace("{location}", location);
+                String msg = Global.getMessages().get("connect.geoip", "player", gPlayer.getDisplayName(), "location", location);
                 Utilities.doBungeeChatMirror("StaffNotice", msg);
             }
         }

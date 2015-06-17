@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.objects.TimeRecord;
 import net.cubespace.geSuit.core.objects.Track;
@@ -134,15 +135,20 @@ public class TrackingManager implements TrackingActions {
             String message;
             // Is banned?
             if (ConfigManager.bans.ShowBannedAltAccounts && (alt.isIpBanned() || alt.isNameBanned())) {
-                message = ConfigManager.messages.PLAYER_BANNED_ALT_JOIN;
+                message = Global.getMessages().get(
+                        "connect.alt-join.banned",
+                        "player", gPlayer.getDisplayName(),
+                        "alt", alt.getDisplayName(),
+                        "ip", player.getAddress().getAddress().getHostAddress()
+                        );
             } else {
-                message = ConfigManager.messages.PLAYER_ALT_JOIN;
+                message = Global.getMessages().get(
+                        "connect.alt-join",
+                        "player", gPlayer.getDisplayName(),
+                        "alt", alt.getDisplayName(),
+                        "ip", player.getAddress().getAddress().getHostAddress()
+                        );
             }
-            
-            message = message
-                    .replace("{player}", gPlayer.getDisplayName())
-                    .replace("{alt}", alt.getDisplayName())
-                    .replace("{ip}", player.getAddress().getHostString());
             
             Utilities.doBungeeChatMirror("StaffNotice", message);
         } catch (SQLException e) {

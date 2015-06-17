@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
@@ -185,7 +184,7 @@ public class WarningsManager implements WarnActions {
             channel.broadcast(new FireWarnEventMessage(warning, action, warnings.size()));
             
             // Broadcast
-            String message = Utilities.colorize(ConfigManager.messages.WARN_PLAYER_BROADCAST.replace("{player}", player.getDisplayName()).replace("{message}", reason).replace("{sender}", by));
+            String message = Global.getMessages().get("warn.display.broadcast", "player", player.getDisplayName(), "message", reason, "sender", by);
             if (ConfigManager.bans.BroadcastWarns) {
                 PlayerManager.sendBroadcast(message);
                 return new Result(Type.Success, null);

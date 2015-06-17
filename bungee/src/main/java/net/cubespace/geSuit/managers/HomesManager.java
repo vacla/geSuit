@@ -67,31 +67,31 @@ public class HomesManager {
     }
 
     public static void listPlayersHomes(GSPlayer player) {
-        if (player.getHomes().isEmpty()) {
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_HOMES);
-            return;
-        }
-
-        PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SHOWING_YOUR_HOMES.replace("{player}", player.getName()));
-        for (String server : player.getHomes().keySet()) {
-        	// Skip if the home list for this server is empty (shouldn't happen)
-        	if (player.getHomes().get(server).isEmpty()) {
-            	continue;
-            }
-
-            String homes;
-            if (server.equals(player.getServer())) {
-                homes = ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server);
-            } else {
-            	homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
-            }
-
-            for (Home h : player.getHomes().get(server)) {
-                homes += h.name + ", ";
-            }
-
-            PlayerManager.sendMessageToTarget(player, homes.substring(0, homes.length() - 2));
-        }
+//        if (player.getHomes().isEmpty()) {
+//            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_HOMES);
+//            return;
+//        }
+//
+//        PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SHOWING_YOUR_HOMES.replace("{player}", player.getName()));
+//        for (String server : player.getHomes().keySet()) {
+//        	// Skip if the home list for this server is empty (shouldn't happen)
+//        	if (player.getHomes().get(server).isEmpty()) {
+//            	continue;
+//            }
+//
+//            String homes;
+//            if (server.equals(player.getServer())) {
+//                homes = ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server);
+//            } else {
+//            	homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
+//            }
+//
+//            for (Home h : player.getHomes().get(server)) {
+//                homes += h.name + ", ";
+//            }
+//
+//            PlayerManager.sendMessageToTarget(player, homes.substring(0, homes.length() - 2));
+//        }
 
     }
     
@@ -178,15 +178,15 @@ public class HomesManager {
     }
 
     public static void sendPlayerToHome(GSPlayer player, String home) {
-        Home h = getHome(player, home);
-        if (h == null) {
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_DOES_NOT_EXIST.replace("{home}", home));
-            return;
-        }
-
-        TeleportToLocation.execute(player, h.loc);
-
-        PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SENT_HOME.replace("{home}", home));
+//        Home h = getHome(player, home);
+//        if (h == null) {
+//            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_DOES_NOT_EXIST.replace("{home}", home));
+//            return;
+//        }
+//
+//        TeleportToLocation.execute(player, h.loc);
+//
+//        PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SENT_HOME.replace("{home}", home));
     }
     
     public static void sendPlayerToOtherHome(GSPlayer sender, String playername, String home) {

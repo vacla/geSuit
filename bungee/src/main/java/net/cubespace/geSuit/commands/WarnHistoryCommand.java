@@ -17,10 +17,10 @@ public class WarnHistoryCommand extends Command {
             return;
         }
 
-        if (args.length == 0) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BUNGEE_COMMAND_WARNHISTORY_USAGE);
-            return;
-        }
+//        if (args.length == 0) {
+//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BUNGEE_COMMAND_WARNHISTORY_USAGE);
+//            return;
+//        }
 
         throw new UnsupportedOperationException("Not yet implemented");
         //BansManager.displayPlayerWarnHistory(sender.getName(), args[0]);

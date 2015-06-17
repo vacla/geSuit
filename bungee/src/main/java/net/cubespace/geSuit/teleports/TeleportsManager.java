@@ -133,29 +133,29 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         if (allowDeath && allowTeleport) {
             if (attachment.hasLastLocation()) {
                 teleport0(player, attachment.getLastLocation());
-                sendMessage(player, ConfigManager.messages.SENT_BACK);
+                sendMessage(player, Global.getMessages().get("back.teleport"));
                 return new Result(Type.Success, null);
             } else {
-                return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_BACK_TP));
+                return new Result(Type.Fail, Global.getMessages().get("back.not-set"));
             }
         } else if (allowDeath) {
             if (attachment.hasLastDeath()) {
                 teleport0(player, attachment.getLastDeath());
-                sendMessage(player, ConfigManager.messages.SENT_BACK);
+                sendMessage(player, Global.getMessages().get("back.teleport"));
                 return new Result(Type.Success, null);
             } else {
-                return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_BACK_TP));
+                return new Result(Type.Fail, Global.getMessages().get("back.not-set"));
             }
         } else if (allowTeleport) {
             if (attachment.hasLastTeleport()) {
                 teleport0(player, attachment.getLastTeleport());
-                sendMessage(player, ConfigManager.messages.SENT_BACK);
+                sendMessage(player, Global.getMessages().get("back.teleport"));
                 return new Result(Type.Success, null);
             } else {
-                return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_BACK_TP));
+                return new Result(Type.Fail, Global.getMessages().get("back.not-set"));
             }
         } else {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_BACK_TP));
+            return new Result(Type.Fail, Global.getMessages().get("back.not-set"));
         }
     }
     
@@ -165,30 +165,30 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         final TeleportsAttachment targetTp = getAttachment(target);
         
         if (playerTp.getTPA() != null && playerTp.getTPAHere() != null) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORT_PENDING));
+            return new Result(Type.Fail, Global.getMessages().get("tpa.request.blocked"));
         }
         
         if (!isOnline(target)) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_NOT_ONLINE.replace("{player}", target.getDisplayName())));
+            return new Result(Type.Fail, Global.getMessages().get("player.not-online", "player", target.getDisplayName()));
         }
         
         if (player.equals(target)) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_UNABLE.replace("{player}", player.getDisplayName())));
+            return new Result(Type.Fail, Global.getMessages().get("teleport.blocked.player", "player", player.getDisplayName()));
         }
         
         if (!hasBypass && !target.hasTPsEnabled()) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_UNABLE.replace("{player}", target.getDisplayName())));
+            return new Result(Type.Fail, Global.getMessages().get("teleport.blocked.player", "player", target.getDisplayName()));
         }
         
         if (targetTp.getTPA() != null && targetTp.getTPAHere() != null) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORT_PENDING_OTHER));
+            return new Result(Type.Fail, Global.getMessages().get("tpa.request.blocked.other", "player", target.getDisplayName()));
         }
         
         ProxiedPlayer pPlayer = proxy.getPlayer(player.getUniqueId());
         ProxiedPlayer pTarget = proxy.getPlayer(target.getUniqueId());
         
         if (!isTPAWhitelisted(pTarget.getServer(), pPlayer.getServer())) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORT_WRONG_SERVER));
+            return new Result(Type.Fail, Global.getMessages().get("teleport.blocked.server"));
         }
         
         ScheduledTask expireTask = ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
@@ -199,24 +199,24 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
                         return;
                     }
                     
-                    sendMessage(player, ConfigManager.messages.TPAHERE_REQUEST_TIMED_OUT.replace("{player}", target.getDisplayName()));
+                    sendMessage(player, Global.getMessages().get("tpahere.request.timeout", "player", target.getDisplayName()));
                     targetTp.setTPAHere(null, null);
                     
-                    sendMessage(target, ConfigManager.messages.TP_REQUEST_OTHER_TIMED_OUT.replace("{player}", player.getDisplayName()));
+                    sendMessage(target, Global.getMessages().get("tpa.request.timeout.other", "player", player.getDisplayName()));
                 }
             }
         }, tpaExpireTime, TimeUnit.SECONDS);
         
         targetTp.setTPAHere(player, expireTask);
-        sendMessage(target, ConfigManager.messages.PLAYER_REQUESTS_YOU_TELEPORT_TO_THEM.replace("{player}", player.getDisplayName()));
+        sendMessage(target, Global.getMessages().get("tpahere.request.receive", "player", player.getDisplayName()));
         
-        return new Result(Type.Success, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", player.getDisplayName())));
+        return new Result(Type.Success, Global.getMessages().get("tpa.request.sent", "player", player.getDisplayName()));
     }
 
     @Override
     public Result tpall(GlobalPlayer target) {
         if (!isOnline(target)) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_NOT_ONLINE));
+            return new Result(Type.Fail, Global.getMessages().get("player.not-online", "player", target.getDisplayName()));
         }
 
         for (ProxiedPlayer pPlayer : proxy.getPlayers()) {
@@ -225,7 +225,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             }
             
             teleportTo(Global.getPlayer(pPlayer.getUniqueId()), target, true);
-            PlayerManager.sendMessageToTarget(pPlayer, ConfigManager.messages.ALL_PLAYERS_TELEPORTED.replace("{player}", target.getDisplayName()));
+            PlayerManager.sendMessageToTarget(pPlayer, Global.getMessages().get("teleport.all", "player", target.getDisplayName()));
         }
         
         return new Result(Type.Success, null);
@@ -237,23 +237,23 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         final TeleportsAttachment targetTp = getAttachment(target);
         
         if (playerTp.getTPA() != null && playerTp.getTPAHere() != null) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORT_PENDING));
+            return new Result(Type.Fail, Global.getMessages().get("tpa.request.blocked"));
         }
         
         if (!isOnline(target)) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_NOT_ONLINE.replace("{player}", target.getDisplayName())));
+            return new Result(Type.Fail, Global.getMessages().get("player.not-online", "player", target.getDisplayName()));
         }
         
         if (player.equals(target)) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_UNABLE.replace("{player}", player.getDisplayName())));
+            return new Result(Type.Fail, Global.getMessages().get("teleport.blocked.player", "player", player.getDisplayName()));
         }
         
         if (!hasBypass && !target.hasTPsEnabled()) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_UNABLE.replace("{player}", target.getDisplayName())));
+            return new Result(Type.Fail, Global.getMessages().get("teleport.blocked.player", "player", target.getDisplayName()));
         }
         
         if (targetTp.getTPA() != null && targetTp.getTPAHere() != null) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORT_PENDING_OTHER));
+            return new Result(Type.Fail, Global.getMessages().get("tpa.request.blocked.other", "player", target.getDisplayName()));
         }
         
         // Cross TPA server whitelist handling
@@ -261,7 +261,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         ProxiedPlayer pTarget = proxy.getPlayer(target.getUniqueId());
         
         if (!isTPAWhitelisted(pPlayer.getServer(), pTarget.getServer())) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORT_WRONG_SERVER));
+            return new Result(Type.Fail, Global.getMessages().get("teleport.blocked.server"));
         }
         
         ScheduledTask expireTask = ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
@@ -272,18 +272,18 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
                         return;
                     }
                     
-                    sendMessage(player, ConfigManager.messages.TPA_REQUEST_TIMED_OUT.replace("{player}", target.getDisplayName()));
+                    sendMessage(player, Global.getMessages().get("tpa.request.timeout", "player", target.getDisplayName()));
                     targetTp.setTPA(null, null);
                     
-                    sendMessage(target, ConfigManager.messages.TP_REQUEST_OTHER_TIMED_OUT.replace("{player}", player.getDisplayName()));
+                    sendMessage(target, Global.getMessages().get("tpa.request.timeout.other", "player", "{player}", player.getDisplayName()));
                 }
             }
         }, tpaExpireTime, TimeUnit.SECONDS);
         
         targetTp.setTPA(player, expireTask);
-        sendMessage(target, ConfigManager.messages.PLAYER_REQUESTS_TO_TELEPORT_TO_YOU.replace("{player}", player.getDisplayName()));
+        sendMessage(target, Global.getMessages().get("tpa.request.receive", "player", player.getDisplayName()));
         
-        return new Result(Type.Success, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", target.getDisplayName())));
+        return new Result(Type.Success, ChatColor.translateAlternateColorCodes('&', Global.getMessages().get("tpa.request.sent", "player", target.getDisplayName())));
     }
 
     @Override
@@ -291,18 +291,18 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         TeleportsAttachment attachment = getAttachment(player);
         if (attachment.getTPA() != null) {
             GlobalPlayer target = attachment.getTPA();
-            sendMessage(player, ConfigManager.messages.TELEPORT_ACCEPTED.replace("{player}", target.getDisplayName()));
-            sendMessage(target, ConfigManager.messages.TELEPORT_REQUEST_ACCEPTED.replace("{player}", player.getDisplayName()));
+            sendMessage(player, Global.getMessages().get("tpa.request.accept.you", "player", target.getDisplayName()));
+            sendMessage(target, Global.getMessages().get("tpa.request.accept.them", "player", player.getDisplayName()));
             teleport0(target, player);
             attachment.setTPA(null, null);
         } else if (attachment.getTPAHere() != null) {
             GlobalPlayer target = attachment.getTPAHere();
-            sendMessage(player, ConfigManager.messages.TELEPORT_ACCEPTED.replace("{player}", target.getDisplayName()));
-            sendMessage(target, ConfigManager.messages.TELEPORT_REQUEST_ACCEPTED.replace("{player}", player.getDisplayName()));
+            sendMessage(player, Global.getMessages().get("tpa.request.accept.you", "player", target.getDisplayName()));
+            sendMessage(target, Global.getMessages().get("tpa.request.accept.them", "player", player.getDisplayName()));
             teleport0(player, target);
             attachment.setTPAHere(null, null);
         } else {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_TELEPORTS));
+            return new Result(Type.Fail, Global.getMessages().get("tpa.request.none"));
         }
         
         return new Result(Type.Success, null);
@@ -313,16 +313,16 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         TeleportsAttachment attachment = getAttachment(player);
         if (attachment.getTPA() != null) {
             GlobalPlayer target = attachment.getTPA();
-            sendMessage(player, ConfigManager.messages.TELEPORT_DENIED.replace("{player}", target.getDisplayName()));
-            sendMessage(target, ConfigManager.messages.TELEPORT_REQUEST_DENIED.replace("{player}", player.getDisplayName()));
+            sendMessage(player, Global.getMessages().get("tpa.request.denied.you", "player", target.getDisplayName()));
+            sendMessage(target, Global.getMessages().get("tpa.request.denied.them", "player", player.getDisplayName()));
             attachment.setTPA(null, null);
         } else if (attachment.getTPAHere() != null) {
             GlobalPlayer target = attachment.getTPAHere();
-            sendMessage(player, ConfigManager.messages.TELEPORT_DENIED.replace("{player}", target.getDisplayName()));
-            sendMessage(target, ConfigManager.messages.TELEPORT_REQUEST_DENIED.replace("{player}", player.getDisplayName()));
+            sendMessage(player, Global.getMessages().get("tpa.request.denied.you", "player", target.getDisplayName()));
+            sendMessage(target, Global.getMessages().get("tpa.request.denied.them", "player", player.getDisplayName()));
             attachment.setTPAHere(null, null);
         } else {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.NO_TELEPORTS));
+            return new Result(Type.Fail, Global.getMessages().get("tpa.request.none"));
         }
         
         return new Result(Type.Success, null);
@@ -332,10 +332,10 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
     public Result toggleTp(GlobalPlayer player) {
         if (player.hasTPsEnabled()) {
             player.setTPsEnabled(false);
-            return new Result(Type.Success, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_TOGGLE_OFF));
+            return new Result(Type.Success, Global.getMessages().get("teleport.toggle.off"));
         } else {
             player.setTPsEnabled(true);
-            return new Result(Type.Success, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_TOGGLE_ON));
+            return new Result(Type.Success, Global.getMessages().get("teleport.toggle.off"));
         }
     }
 
@@ -344,20 +344,20 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         ProxiedPlayer sourcePlayer = ProxyServer.getInstance().getPlayer(player.getUniqueId());
         
         if (sourcePlayer == null) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_NOT_ONLINE));
+            return new Result(Type.Fail, Global.getMessages().get("player.not-online", "player", player.getDisplayName()));
         }
         
         // Check the server exists
         if (target.getServer() != null) {
             if (proxy.getServerInfo(target.getServer()) == null) {
-                return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_INVALID_SERVER.replace("{server}", target.getServer())));
+                return new Result(Type.Fail, Global.getMessages().get("teleport.error.server", "server", target.getServer()));
             }
         }
         
         teleportTo(player, target, true);
         
-        sendMessage(player, ConfigManager.messages.TELEPORTED_TO_LOCATION);
-        return new Result(Type.Success, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORTED.replace("{player}", player.getDisplayName()).replace("{target}", target.toString())));
+        sendMessage(player, Global.getMessages().get("teleport.outgoing.loc"));
+        return new Result(Type.Success, Global.getMessages().get("teleport.message.player", "player", player.getDisplayName(), "target", target.toString()));
     }
     
     public void teleportTo(GlobalPlayer player, Location target, boolean safe) {
@@ -404,30 +404,34 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         ProxiedPlayer sourcePlayer = ProxyServer.getInstance().getPlayer(player.getUniqueId());
         ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(target.getUniqueId());
         
-        if (sourcePlayer == null || targetPlayer == null) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_NOT_ONLINE));
+        if (sourcePlayer == null) {
+            return new Result(Type.Fail, Global.getMessages().get("player.not-online", "player", player.getDisplayName()));
+        }
+        
+        if (targetPlayer == null) {
+            return new Result(Type.Fail, Global.getMessages().get("player.not-online", "player", target.getDisplayName()));
         }
         
         // Dont allow tp to players without TPs enabled
         if (!hasBypass) {
             if (!player.hasTPsEnabled() || !target.hasTPsEnabled()) {
-                return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_UNABLE.replace("player", target.getDisplayName())));
+                return new Result(Type.Fail, Global.getMessages().get("teleport.blocked.player", "player", target.getDisplayName()));
             }
         }
         
         // Dont allow tp to self
         if (player.equals(target)) {
-            return new Result(Type.Fail, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.TELEPORT_UNABLE.replace("player", target.getDisplayName())));
+            return new Result(Type.Fail, Global.getMessages().get("teleport.blocked.player", "player", target.getDisplayName()));
         }
         
         teleportTo(player, target, true);
         
         if (!silent) {
-            sendMessage(target, ConfigManager.messages.PLAYER_TELEPORTED_TO_YOU.replace("{player}", player.getDisplayName()));
+            sendMessage(target, Global.getMessages().get("teleport.incoming", "player", player.getDisplayName()));
         }
         
-        sendMessage(player, ConfigManager.messages.TELEPORTED_TO_PLAYER.replace("{player}", target.getDisplayName()));
-        return new Result(Type.Success, ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_TELEPORTED.replace("{player}", player.getDisplayName()).replace("{target}", target.getDisplayName())));
+        sendMessage(player, Global.getMessages().get("teleport.outgoing", "player", target.getDisplayName()));
+        return new Result(Type.Success, Global.getMessages().get("teleport.message.player", "player", player.getDisplayName(), "target", target.getDisplayName()));
     }
     
     private void teleport0(GlobalPlayer player, GlobalPlayer target) {

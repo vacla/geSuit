@@ -32,22 +32,22 @@ public class SpawnManager {
     }
 
     public static void sendPlayerToProxySpawn(GSPlayer player) {
-        if (!doesProxySpawnExist()) {
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_DOES_NOT_EXIST);
-            return;
-        }
-
-        TeleportToLocation.execute(player, ProxySpawn);
+//        if (!doesProxySpawnExist()) {
+//            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_DOES_NOT_EXIST);
+//            return;
+//        }
+//
+//        TeleportToLocation.execute(player, ProxySpawn);
     }
 
 
     public static void sendPlayerToNewPlayerSpawn(GSPlayer player) {
-        if (!doesNewPlayerSpawnExist()) {
-            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_DOES_NOT_EXIST);
-            return;
-        }
-
-        TeleportToLocation.execute(player, NewPlayerSpawn);
+//        if (!doesNewPlayerSpawnExist()) {
+//            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_DOES_NOT_EXIST);
+//            return;
+//        }
+//
+//        TeleportToLocation.execute(player, NewPlayerSpawn);
     }
 
 

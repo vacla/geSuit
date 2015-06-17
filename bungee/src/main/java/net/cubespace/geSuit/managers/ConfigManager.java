@@ -18,13 +18,13 @@ public class ConfigManager {
     public static MainConfig main = new MainConfig();
     public static SpawnConfig spawn = new SpawnConfig();
     public static TeleportConfig teleport = new TeleportConfig();
-    public static Messages messages = new Messages();
+    public static Messages messagesa = new Messages();
     public static MOTDFile motd = new MOTDFile("motd.txt");
     public static MOTDFile motdNew = new MOTDFile("motd-new.txt");
 
     static {
         try {
-            messages.init();
+            messagesa.init();
             announcements.init();
             bans.init();
             main.init();

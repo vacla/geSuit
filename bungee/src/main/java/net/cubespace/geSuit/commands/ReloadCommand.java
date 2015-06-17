@@ -1,6 +1,8 @@
 package net.cubespace.geSuit.commands;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
+import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.managers.AnnouncementManager;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
@@ -22,7 +24,7 @@ public class ReloadCommand extends Command
     public void execute(CommandSender sender, String[] args)
     {
         if (!(sender.hasPermission("gesuit.reload") || sender.hasPermission("gesuit.admin"))) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_PERMISSION);
+            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permisison"));
 
             return;
         }
@@ -32,7 +34,7 @@ public class ReloadCommand extends Command
             ConfigManager.bans.reload();
             ConfigManager.main.reload();
             ConfigManager.spawn.reload();
-            ConfigManager.messages.reload();
+            geSuit.getPlugin().loadLanguage();
             ConfigManager.teleport.reload();
 
             AnnouncementManager.reloadAnnouncements();

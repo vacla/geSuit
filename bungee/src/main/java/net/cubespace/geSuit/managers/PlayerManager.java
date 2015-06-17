@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.Map.Entry;
+
 import au.com.addstar.bc.BungeeChat;
 
 // TODO: This class needs work
@@ -157,11 +158,11 @@ public class PlayerManager {
     }
 
     public static void unloadPlayer(String player) {
-    	if (onlinePlayers.containsKey(player.toLowerCase())) {
-            onlinePlayers.remove(player.toLowerCase());
-
-            LoggingManager.log(ConfigManager.messages.PLAYER_UNLOAD.replace("{player}", player));
-        }
+//    	if (onlinePlayers.containsKey(player.toLowerCase())) {
+//            onlinePlayers.remove(player.toLowerCase());
+//
+//            LoggingManager.log(ConfigManager.messages.PLAYER_UNLOAD.replace("{player}", player));
+//        }
     }
 
     public static void sendMessageToTarget(CommandSender target, String message) {
@@ -209,27 +210,28 @@ public class PlayerManager {
     }
 
     public static String getLastSeeninfos(String player, boolean full, boolean seeVanished) {
-        GSPlayer p = getPlayer(player);
-        LinkedHashMap<String, String> items = new LinkedHashMap<String, String>();
-        
-        boolean online = (p != null && p.getProxiedPlayer() != null);
-        
-        if (p == null) {
-            // Player is offline, load data
-            //p = DatabaseManager.players.loadPlayer(player);
-        }
-        
-        if (p == null) { // Unknown player
-            return ConfigManager.messages.PLAYER_DOES_NOT_EXIST;
-        }
-        
-        // Vanished and not online
-        if (ConfigManager.main.BungeeChatIntegration) {
-	        if (BungeeChat.instance.getSyncManager().getPropertyBoolean(p.getProxiedPlayer(), "VNP:vanished", false) 
-	                && !BungeeChat.instance.getSyncManager().getPropertyBoolean(p.getProxiedPlayer(), "VNP:online", true)) {
-	            online = false;
-	        }
-        }
+        throw new UnsupportedOperationException("Not yet implemented");
+//        GSPlayer p = getPlayer(player);
+//        LinkedHashMap<String, String> items = new LinkedHashMap<String, String>();
+//        
+//        boolean online = (p != null && p.getProxiedPlayer() != null);
+//        
+//        if (p == null) {
+//            // Player is offline, load data
+//            //p = DatabaseManager.players.loadPlayer(player);
+//        }
+//        
+//        if (p == null) { // Unknown player
+//            return ConfigManager.messages.PLAYER_DOES_NOT_EXIST;
+//        }
+//        
+//        // Vanished and not online
+//        if (ConfigManager.main.BungeeChatIntegration) {
+//	        if (BungeeChat.instance.getSyncManager().getPropertyBoolean(p.getProxiedPlayer(), "VNP:vanished", false) 
+//	                && !BungeeChat.instance.getSyncManager().getPropertyBoolean(p.getProxiedPlayer(), "VNP:online", true)) {
+//	            online = false;
+//	        }
+//        }
         
         // Do a ban check
 //        Ban b = DatabaseManager.bans.getBanInfo(p.getName(), p.getUuid(), null);
@@ -250,59 +252,59 @@ public class PlayerManager {
 //            }
 //        }
         
-        if (full) {
-            if (online && p.getProxiedPlayer().getServer() != null) {
-                items.put("Server", p.getProxiedPlayer().getServer().getInfo().getName());
-            }
-            items.put("IP", p.getIp());
-
-            // Do GeoIP lookup
-            String location = null;
-            try {
-                InetAddress address = InetAddress.getByName(p.getIp());
-                location = geSuit.getGeoIPLookup().lookup(address);
-            } catch(UnknownHostException e) {
-            }
-            
-            if (location != null) {
-                items.put("Location", location);
-            }
-        }
-        
-        String message = (online ? ConfigManager.messages.PLAYER_SEEN_ONLINE : ConfigManager.messages.PLAYER_SEEN_OFFLINE);
-        message = message.replace("{player}", p.getName());
-
-        if (online) {
-            String fullDate = String.format("%s @ %s",
-            		DateFormat.getDateInstance(DateFormat.MEDIUM).format(p.getLoginTime()),
-            		DateFormat.getTimeInstance(DateFormat.MEDIUM).format(p.getLoginTime()));
-            String diff = Utilities.buildTimeDiffString(System.currentTimeMillis() - p.getLoginTime(), 2);
-            message = message.replace("{timediff}", diff);
-            message = message.replace("{date}", fullDate);
-        } else {
-	        if (p.getLastOnline() != null) {
-	            String fullDate = String.format("%s @ %s",
-	            		DateFormat.getDateInstance(DateFormat.MEDIUM).format(p.getLastOnline()),
-	            		DateFormat.getTimeInstance(DateFormat.MEDIUM).format(p.getLastOnline()));
-	            String diff = Utilities.buildTimeDiffString(System.currentTimeMillis() - p.getLastOnline().getTime(), 2);
-	            message = message.replace("{timediff}", diff);
-	            message = message.replace("{date}", fullDate);
-	        } else {
-	            message = message.replace("{timediff}", "Never");
-	            message = message.replace("{date}", "Never");
-	        }
-        }
-        
-        StringBuilder builder = new StringBuilder();
-        builder.append(message);
-        for(Entry<String, String> item : items.entrySet()) {
-            builder.append('\n');
-            builder.append(ConfigManager.messages.PLAYER_SEEN_ITEM_FORMAT
-                    .replace("{name}", item.getKey())
-                    .replace("{value}", item.getValue()));
-        }
-        
-        return builder.toString();
+//        if (full) {
+//            if (online && p.getProxiedPlayer().getServer() != null) {
+//                items.put("Server", p.getProxiedPlayer().getServer().getInfo().getName());
+//            }
+//            items.put("IP", p.getIp());
+//
+//            // Do GeoIP lookup
+//            String location = null;
+//            try {
+//                InetAddress address = InetAddress.getByName(p.getIp());
+//                location = geSuit.getGeoIPLookup().lookup(address);
+//            } catch(UnknownHostException e) {
+//            }
+//            
+//            if (location != null) {
+//                items.put("Location", location);
+//            }
+//        }
+//        
+//        String message = (online ? ConfigManager.messages.PLAYER_SEEN_ONLINE : ConfigManager.messages.PLAYER_SEEN_OFFLINE);
+//        message = message.replace("{player}", p.getName());
+//
+//        if (online) {
+//            String fullDate = String.format("%s @ %s",
+//            		DateFormat.getDateInstance(DateFormat.MEDIUM).format(p.getLoginTime()),
+//            		DateFormat.getTimeInstance(DateFormat.MEDIUM).format(p.getLoginTime()));
+//            String diff = Utilities.buildTimeDiffString(System.currentTimeMillis() - p.getLoginTime(), 2);
+//            message = message.replace("{timediff}", diff);
+//            message = message.replace("{date}", fullDate);
+//        } else {
+//	        if (p.getLastOnline() != null) {
+//	            String fullDate = String.format("%s @ %s",
+//	            		DateFormat.getDateInstance(DateFormat.MEDIUM).format(p.getLastOnline()),
+//	            		DateFormat.getTimeInstance(DateFormat.MEDIUM).format(p.getLastOnline()));
+//	            String diff = Utilities.buildTimeDiffString(System.currentTimeMillis() - p.getLastOnline().getTime(), 2);
+//	            message = message.replace("{timediff}", diff);
+//	            message = message.replace("{date}", fullDate);
+//	        } else {
+//	            message = message.replace("{timediff}", "Never");
+//	            message = message.replace("{date}", "Never");
+//	        }
+//        }
+//        
+//        StringBuilder builder = new StringBuilder();
+//        builder.append(message);
+//        for(Entry<String, String> item : items.entrySet()) {
+//            builder.append('\n');
+//            builder.append(ConfigManager.messages.PLAYER_SEEN_ITEM_FORMAT
+//                    .replace("{name}", item.getKey())
+//                    .replace("{value}", item.getValue()));
+//        }
+//        
+//        return builder.toString();
     }
 
     public static GSPlayer matchOnlinePlayer(String player) {

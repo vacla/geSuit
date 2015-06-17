@@ -3,12 +3,12 @@ package net.cubespace.geSuit.listeners;
 import java.util.concurrent.TimeUnit;
 
 import au.com.addstar.bc.event.BCPlayerJoinEvent;
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.objects.GSPlayer;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -27,13 +27,17 @@ public class BungeeChatListener implements Listener {
                 // Display the last name if it changed less than the config value days ago
                 if (System.currentTimeMillis() - lastName.getLastSeen() < TimeUnit.DAYS.toMillis(ConfigManager.bans.NameChangeNotifyTime)) {
                 	// Always log recent name changes to console
-                	LoggingManager.log(ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_JOIN_NAMECHANGE_PROXY
-                			.replace("{player}", event.getPlayer().getDisplayName())
-                			.replace("{old}", lastName.getName())));
+                	LoggingManager.log(Global.getMessages().get(
+                	        "connect.join.namechange.log",
+                			"player", event.getPlayer().getDisplayName(),
+                			"old", lastName.getName()));
 
                     // Do not show this for nicknamed players (usually the case that the previous name was rude or inappropriate)
                     if (event.getPlayer().getName().equals(event.getPlayer().getDisplayName())) {
-                        event.setJoinMessage(ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_JOIN_NAMECHANGE.replace("{player}", event.getPlayer().getDisplayName()).replace("{old}", lastName.getName())));
+                        event.setJoinMessage(Global.getMessages().get(
+                                "connect.join.namechange",
+                                "player", event.getPlayer().getDisplayName(),
+                                "old", lastName.getName()));
                     }
                 }
             }

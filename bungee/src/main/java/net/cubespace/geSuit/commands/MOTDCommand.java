@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.commands;
 
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
@@ -19,7 +20,7 @@ public class MOTDCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender.hasPermission("gesuit.motd") || sender.hasPermission("gesuit.admin"))) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_PERMISSION);
+            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permisison"));
 
             return;
         }

@@ -24,6 +24,10 @@ public class BansConfig extends Config {
     public int NameChangeNotifyTime = 20;
 
     public int WarningExpiryDays = 180;
+    
+    public String DefaultBanReason = "Unknown";
+    public String DefaultWarnReason = "Unknown";
+    public String DefaultKickReason = "Unknown";
 
     public HashMap<Integer, String> Actions = new HashMap<Integer, String>();
     

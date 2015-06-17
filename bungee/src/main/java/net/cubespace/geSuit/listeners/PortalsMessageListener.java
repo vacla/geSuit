@@ -53,7 +53,7 @@ public class PortalsMessageListener implements Listener {
             GSPlayer sender = PlayerManager.getPlayer(in.readUTF());
             boolean selection = in.readBoolean();
             if (!selection) {
-                PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_SELECTION_MADE);
+                //PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_SELECTION_MADE);
             } else {
                 PortalManager.setPortal(sender, in.readUTF(), in.readUTF(), in.readUTF(), in.readUTF(), new Location(s.getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()), new Location(s.getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
             }

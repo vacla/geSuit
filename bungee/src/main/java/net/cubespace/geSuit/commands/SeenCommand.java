@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.commands;
 
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
@@ -19,16 +20,17 @@ public class SeenCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender.hasPermission("gesuit.seen") || sender.hasPermission("gesuit.admin"))) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_PERMISSION);
+            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permisison"));
 
             return;
         }
 
-        if (args.length == 0) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BUNGEE_COMMAND_SEEN_USAGE);
-            return;
-        }
-
-        PlayerManager.sendMessageToTarget(sender, PlayerManager.getLastSeeninfos(args[0], sender.hasPermission("gesuit.seen.extra"), sender.hasPermission("gesuit.seen.vanish")));
+        throw new UnsupportedOperationException("Not implemented yet");
+//        if (args.length == 0) {
+//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BUNGEE_COMMAND_SEEN_USAGE);
+//            return;
+//        }
+//
+//        PlayerManager.sendMessageToTarget(sender, PlayerManager.getLastSeeninfos(args[0], sender.hasPermission("gesuit.seen.extra"), sender.hasPermission("gesuit.seen.vanish")));
     }
 }

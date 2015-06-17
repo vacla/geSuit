@@ -17,10 +17,10 @@ public class NamesCommand extends Command {
             return;
         }
 
-        if (args.length != 1) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BUNGEE_COMMAND_NAMES_USAGE);
-            return;
-        }
+//        if (args.length != 1) {
+//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BUNGEE_COMMAND_NAMES_USAGE);
+//            return;
+//        }
 
         throw new UnsupportedOperationException("Not yet implemented");
         //BansManager.displayNameHistory(sender.getName(), args[0]);
