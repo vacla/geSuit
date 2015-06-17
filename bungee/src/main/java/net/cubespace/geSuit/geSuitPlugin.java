@@ -36,13 +36,6 @@ import net.cubespace.geSuit.database.DatabaseManager;
 import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.listeners.APIMessageListener;
 import net.cubespace.geSuit.listeners.BungeeChatListener;
-import net.cubespace.geSuit.listeners.HomesMessageListener;
-import net.cubespace.geSuit.listeners.PortalsMessageListener;
-import net.cubespace.geSuit.listeners.SpawnListener;
-import net.cubespace.geSuit.listeners.SpawnMessageListener;
-import net.cubespace.geSuit.listeners.TeleportsListener;
-import net.cubespace.geSuit.listeners.TeleportsMessageListener;
-import net.cubespace.geSuit.listeners.WarpsMessageListener;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.moderation.BanManager;
@@ -147,13 +140,6 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         getProxy().registerChannel("geSuitHomes"); // Homes in
         getProxy().registerChannel("geSuitAPI"); // API messages in
 
-        proxy.getPluginManager().registerListener(this, new TeleportsListener());
-        proxy.getPluginManager().registerListener(this, new TeleportsMessageListener());
-        proxy.getPluginManager().registerListener(this, new WarpsMessageListener());
-        proxy.getPluginManager().registerListener(this, new HomesMessageListener());
-        proxy.getPluginManager().registerListener(this, new PortalsMessageListener());
-        proxy.getPluginManager().registerListener(this, new SpawnListener());
-        proxy.getPluginManager().registerListener(this, new SpawnMessageListener());
         proxy.getPluginManager().registerListener(this, new APIMessageListener());
         if (ConfigManager.main.BungeeChatIntegration) {
             proxy.getPluginManager().registerListener(this, new BungeeChatListener());

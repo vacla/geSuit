@@ -8,8 +8,5 @@ public class DatabaseManager {
     static {
         // TODO: This needs to be moved to 
         AnnouncementManager.loadAnnouncements();
-        WarpsManager.loadWarpLocations();
-        PortalManager.loadPortals();
-        SpawnManager.loadSpawns();
     }
 }
