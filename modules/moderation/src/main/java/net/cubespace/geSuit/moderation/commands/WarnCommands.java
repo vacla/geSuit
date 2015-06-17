@@ -2,6 +2,7 @@ package net.cubespace.geSuit.moderation.commands;
 
 import java.util.List;
 
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.commands.Command;
 import net.cubespace.geSuit.core.commands.Varargs;
@@ -26,7 +27,7 @@ public class WarnCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException("Cannot warn unknown player");
+            throw new IllegalArgumentException(Global.getMessages().get("warn.unknown-player"));
         }
         
         Result result = actions.warn(player, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
@@ -41,7 +42,7 @@ public class WarnCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException("Cannot warn unknown player");
+            throw new IllegalArgumentException(Global.getMessages().get("warn.unknown-player"));
         }
         
         List<WarnInfo> warnings = actions.getWarnings(player);

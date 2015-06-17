@@ -8,7 +8,6 @@ import net.cubespace.geSuit.core.commands.Varargs;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.remote.moderation.BanActions;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class KickCommands {
@@ -23,7 +22,7 @@ public class KickCommands {
         GlobalPlayer player = Global.getPlayer(playerName);
         
         if (player == null) {
-            sender.sendMessage(ChatColor.RED + "That player is not online");
+            sender.sendMessage(Global.getMessages().get("player.not-online"));
             return;
         }
         

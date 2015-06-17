@@ -24,10 +24,12 @@ log.player-create = "Created player &b{player}&7 ({uuid})"
 
 # Generic messages
 player.not-online = &cThat player is not online
-player.no-permisison = &cYou do not have permission to use that command
+player.no-permission = &cYou do not have permission to use that command
+player.unknown = &cUnknown player
 
 # teleport specific messages
 teleport.all = &6All players have been teleported to {player}
+teleport.blocked.area = &cTeleportation is being blocked in this area
 teleport.blocked.server = &cYou are not allowed to teleport to that player from here.
 teleport.blocked.player = &cYou are unable to teleport to this player
 teleport.incoming = &6{player} has teleported to you
@@ -38,6 +40,10 @@ teleport.toggle.on = &6Telports have been toggled on
 teleport.toggle.off = &cTelports have been toggled off
 teleport.error.server = &c Unable to teleport to unknown server {server}
 teleport.error.world = &cUnable to teleport to unknown world {world}
+
+teleport.delay.start = &6Teleportation will commence in &c{time}&6. Don't move.
+teleport.delay.end = &6Teleportation commencing...
+teleport.delay.abort = &6Teleportation aborted because you moved.
 
 tpa.request.blocked = &cYou already have a teleport pending
 tpa.request.blocked.other = &cThat player already has a teleport pending
@@ -63,6 +69,10 @@ warp.teleport = &7You have been warped to {warp}
 warp.teleport.other = &7{player} has been warped to {warp}
 warp.unknown-warp = &cThat warp does not exist
 warp.no-permission = &cYou do not have permission to use that warp
+warp.list.global = &6Global warps:
+warp.list.server = &6Server warps:
+warp.list.empty = &cnone
+warp.command.no-player = &cYou must specify a player name when run from console
 
 # portal specific messages
 portal.create = &6You have successfully created a portal
@@ -73,14 +83,27 @@ portal.unknown-dest = &cThat portal destination does not exist
 portal.command.error.fill = &cThat filltype does not exist
 portal.command.error.type = &cThat is an invalid portal type. Use warp, server, or teleport
 portal.command.error.no-sel = &cNo world edit selection has been made
+portal.command.error.sel-type = &cCurrently, only cuboid selections are supported
+portal.command.error.unknown-server = &cUnknown server {server}
+portal.command.error.unknown-warp = &cUnknown warp {warp}
+portal.command.error.unknown-location = &cUnknown location {location} expected {format}
+portal.command.error.unknown-world = &cUnknown world {world}
 portal.no-permission = &cYou do not have permission to enter this portal
+portal.list.header = &cListing portals:
+portal.list.empty = &cThere are no portals
+
 
 # Spawn related messages
 spawn.not-set = &cThe spawn point has not been set yet
-spawn.update = &6Spawn point updated
-spawn.set = &6Spawn point set
+spawn.set.new = &6New Player spawn point set
+spawn.set.global = &6Global spawn point set
+spawn.set.server = &6Server spawn point set
+spawn.set.world = &6World spawn point set
+spawn.no-permission = &cYou dont have permission to go to spawn from here
+spawn.not-set = &cCannot teleport, spawn is not set
 
 # moderation related messages
+ban.unknown-player = &cCannot ban unknown player {player}
 ban.already-banned = &cThat player is already banned!
 ban.not-banned = &aThat player is not banned
 ban.history.empty = &aNo ban history for {player}
@@ -104,26 +127,32 @@ kick.display.personal = &cYou have been kicked. Reason: {message}
 kick.display.broadcast = &b{player} has been kicked. Reason: {message}
 kick.dipslay.broadcast.auto = &b{player} has been auto kicked.
 
+unban.unknown-player = &cCannot unban unknown player {player}
 unban.broadcast = &c{player} has been unbanned!
 
-warn.unknown-player = &cERROR: Player is unknown, refusing to give warning.
+warn.unknown-player = &cPlayer is unknown, refusing to give warning.
 warn.history.empty = &aNo warning history for {player}
 warn.display.personal = &bYou has received a warning. Reason: {message}
 warn.display.broadcast = &b{player} has received a warning. Reason: {message}
 
 # Home related messages
-home.teleport = &6You have been sent home 
+home.teleport = &6You have been sent home
 home.limit.server = &cYour are not allowed to set anymore homes on this server.
 home.limit.global = &cYour are not allowed to set anymore homes globally.
-home.empty = &cYou do not have any homes set.
+home.no-homes = &cYou do not have any homes set.
+home.no-homes.other = &cThey do not have any homes set.
 home.list.header = &eListing your homes:
 home.list.header.other = &eListing homes of {player}:
 home.list.prefix.this-server = &a{server}: &9
 home.list.prefix.other-server = &e{server}: &9
-home.set = &6Your home \{home}\ has been set
-home.update = &6Your home \{home}\ has been updated
+home.set = &6Your home "{home}" has been set
+home.update = &6Your home "{home}" has been updated
+home.set.other = &6Home "{home}" has been set for {player}
+home.update.other = &6Home "{home}" has been updated for {player}
 home.unknown-home = &cThat home does not exist
-home.delete = &cYour home \{home}\ has been deleted
+home.delete = &cYour home "{home}" has been deleted
+home.delete.other = &cHome "{home}" has been deleted for {player}
+home.command.hint = &cWhen specifying player name, use '<player>:<home>'
 
 # Seen related messages
 seen.header.online = &6Player &c{player} &6is &aonline&6 since {timediff}\n&6 {date}

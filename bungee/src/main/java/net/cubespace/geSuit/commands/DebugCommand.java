@@ -29,7 +29,7 @@ public class DebugCommand extends Command
     public void execute(CommandSender sender, String[] args)
     {
     	if (!(sender.hasPermission("gesuit.debug") || sender.hasPermission("gesuit.admin"))) {
-            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permisison"));
+            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permission"));
             return;
         }
 

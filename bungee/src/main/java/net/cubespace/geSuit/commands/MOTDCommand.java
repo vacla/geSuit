@@ -20,7 +20,7 @@ public class MOTDCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender.hasPermission("gesuit.motd") || sender.hasPermission("gesuit.admin"))) {
-            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permisison"));
+            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permission"));
 
             return;
         }

@@ -29,20 +29,20 @@ public class WarpCommands {
         
         if (sender.hasPermission("gesuit.warps.list.global")) {
             List<Warp> globalWarps = manager.getGlobalWarps(canSeeHidden);
-            sender.sendMessage(ChatColor.GOLD + "Global warps:");
+            sender.sendMessage(Global.getMessages().get("warp.list.global"));
             sendWarpList(sender, globalWarps);
         }
         
         if (sender.hasPermission("gesuit.warps.list.server")) {
             List<Warp> localWarps = manager.getLocalWarps(canSeeHidden);
-            sender.sendMessage(ChatColor.GOLD + "Server warps:");
+            sender.sendMessage(Global.getMessages().get("warp.list.server"));
             sendWarpList(sender, localWarps);
         }
     }
     
     private void sendWarpList(CommandSender sender, List<Warp> warps) {
         if (warps.isEmpty()) {
-            sender.sendMessage(ChatColor.RED + " none");
+            sender.sendMessage(" " + Global.getMessages().get("warp.list.empty"));
             return;
         }
         
@@ -72,7 +72,6 @@ public class WarpCommands {
     
     @Command(name="warp", async=true, aliases={"warpto"}, permission="gesuit.warps.command.warp", description="Warps a player to a specific warp", usage="/<command> [player] <warp>")
     public void warp(CommandSender sender, @Optional String playerName, String warpName) {
-        // TODO: Make messages configurable
         GlobalPlayer player;
         boolean warpSelf;
         
@@ -80,20 +79,20 @@ public class WarpCommands {
         if (playerName == null) {
             // Consoles must provide player name
             if (!(sender instanceof Player)) {
-                sender.sendMessage(ChatColor.RED + "You must specify a player name when run from console");
+                sender.sendMessage(Global.getMessages().get("warp.command.no-player"));
                 return;
             }
             player = Global.getPlayer(((Player)sender).getUniqueId());
             warpSelf = true;
         } else {
             if (!sender.hasPermission("gesuit.warps.command.warp.other")) {
-                sender.sendMessage(ChatColor.RED + "You do not have permission to do this");
+                sender.sendMessage(Global.getMessages().get("player.no-permission"));
                 return;
             }
             
             player = Global.getPlayer(playerName);
             if (player == null) {
-                sender.sendMessage(ChatColor.RED + "Unknown player " + playerName);
+                sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
                 return;
             }
             warpSelf = false;
@@ -101,7 +100,7 @@ public class WarpCommands {
         
         Warp warp = manager.getWarp(warpName);
         if (warp == null) {
-            sender.sendMessage(ChatColor.RED + "That warp does not exist");
+            sender.sendMessage(Global.getMessages().get("warp.unknown-warp"));
             return;
         }
         
@@ -109,9 +108,9 @@ public class WarpCommands {
         if (!sender.hasPermission("gesuit.warps.warp.*") && !sender.hasPermission("gesuit.warps.warp." + warpName.toLowerCase())) {
             if (warp.isHidden()) {
                 // Actually hide the warp if they cant use it
-                sender.sendMessage(ChatColor.RED + "That warp does not exist");
+                sender.sendMessage(Global.getMessages().get("warp.unknown-warp"));
             } else {
-                sender.sendMessage(ChatColor.RED + "You do not have permission to use that warp");
+                sender.sendMessage(Global.getMessages().get("warp.no-permission"));
             }
             return;
         }
@@ -119,44 +118,41 @@ public class WarpCommands {
         // Perform the warp
         if (warpSelf) {
             TeleportsModule.getTeleportManager().teleportWithDelay(player, warp.getLocation(), TeleportCause.COMMAND);
-            sender.sendMessage(ChatColor.GRAY + "You have been warped to " + warpName);
+            sender.sendMessage(Global.getMessages().get("warp.teleport", "warp", warpName));
         } else {        
             TeleportsModule.getTeleportManager().teleport(player, warp.getLocation(), TeleportCause.COMMAND);
             // TODO: Enable sending messages to players
-            //player.sendMessage(ChatColor.GRAY + "You have been warped to " + warpName);
-            sender.sendMessage(ChatColor.GRAY + player.getDisplayName() + " has been warped to " + warpName);
+            //player.sendMessage(Global.getMessages().get("warp.teleport", "warp", warpName));
+            sender.sendMessage(Global.getMessages().get("warp.teleport.other", "player", player.getDisplayName(), "warp", warpName));
         }
     }
     
     @Command(name="setwarp", async=true, aliases={"createwarp"}, permission="gesuit.warps.command.setwarp", description="Sets a warps at the players location", usage="/<command> <name>")
     public void setwarp(Player sender, String warp) {
-        // TODO: Allow messages to be customized
         boolean isUpdate = manager.hasGlobalWarp(warp);
         manager.setGlobalWarp(warp, LocationUtil.fromBukkit(sender.getLocation(), Global.getServer().getName()), false);
         
         if (isUpdate) {
-            sender.sendMessage(ChatColor.GOLD + "Successfully updated the warp");
+            sender.sendMessage(Global.getMessages().get("warp.update"));
         } else {
-            sender.sendMessage(ChatColor.GOLD + "Successfully created a warp");
+            sender.sendMessage(Global.getMessages().get("warp.create"));
         }
     }
     
     @Command(name="setwarp", async=true, aliases={"createwarp"}, permission="gesuit.warps.command.setwarp", description="Sets a warps at the players location", usage="/<command> <name> <hidden true/false>")
     public void setwarp(Player sender, String warp, boolean hidden) {
-        // TODO: Allow messages to be customized
         boolean isUpdate = manager.hasGlobalWarp(warp);
         manager.setGlobalWarp(warp, LocationUtil.fromBukkit(sender.getLocation(), Global.getServer().getName()), hidden);
         
         if (isUpdate) {
-            sender.sendMessage(ChatColor.GOLD + "Successfully updated the warp");
+            sender.sendMessage(Global.getMessages().get("warp.update"));
         } else {
-            sender.sendMessage(ChatColor.GOLD + "Successfully created a warp");
+            sender.sendMessage(Global.getMessages().get("warp.create"));
         }
     }
     
     @Command(name="setwarp", async=true, aliases={"createwarp"}, permission="gesuit.warps.command.setwarp", description="Sets a warps at the players location", usage="/<command> <name> <hidden true/false> <global true/false>")
     public void setwarp(Player sender, String warp, boolean hidden, boolean global) {
-        // TODO: Allow messages to be customized
         boolean isUpdate;
         if (global) {
             isUpdate = manager.hasGlobalWarp(warp);
@@ -167,24 +163,23 @@ public class WarpCommands {
         }
         
         if (isUpdate) {
-            sender.sendMessage(ChatColor.GOLD + "Successfully updated the warp");
+            sender.sendMessage(Global.getMessages().get("warp.update"));
         } else {
-            sender.sendMessage(ChatColor.GOLD + "Successfully created a warp");
+            sender.sendMessage(Global.getMessages().get("warp.create"));
         }
     }
     
     @Command(name="delwarp", async=true, aliases={"deletewarp", "removewarp"}, permission="gesuit.warps.command.delwarp", description="Used to delete a specific warp", usage="/<command> <name>")
     public void delwarp(CommandSender sender, String name) {
-        // TODO: Allow messages to be customized
         if (manager.hasLocalWarp(name)) {
             manager.removeLocalWarp(name);
         } else if (manager.hasGlobalWarp(name)) {
             manager.removeGlobalWarp(name);
         } else {
-            sender.sendMessage(ChatColor.RED + "That warp does not exist");
+            sender.sendMessage(Global.getMessages().get("warp.unknown-warp"));
             return;
         }
         
-        sender.sendMessage(ChatColor.GOLD + "Successfully deleted the warp");
+        sender.sendMessage(Global.getMessages().get("warp.delete"));
     }
 }

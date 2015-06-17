@@ -19,7 +19,6 @@ import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.teleports.misc.LocationUtil;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -243,7 +242,8 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         if (!player.hasPermission("gesuit.teleports.bypass.delay")) {
             final org.bukkit.Location initialPosition = player.getLocation();
             
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Teleportation will commence in &c3 seconds&6. Don't move."));
+            // TODO: Make time configurable
+            player.sendMessage(Global.getMessages().get("teleport.delay.start", "time", "3 seconds"));
 
             Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(GSPlugin.class), new Runnable() {
                 @Override
@@ -254,11 +254,11 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
                     
                     // Must be standing in the same block
                     if (initialPosition.getBlock().equals(player.getLocation().getBlock())) {
-                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
+                        player.sendMessage(Global.getMessages().get("teleport.delay.end"));
                         player.saveData();
                         channel.send(finalMessage, ChannelManager.PROXY);
                     } else {
-                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
+                        player.sendMessage(Global.getMessages().get("teleport.delay.abort"));
                     }
                 }
             }, 60L);

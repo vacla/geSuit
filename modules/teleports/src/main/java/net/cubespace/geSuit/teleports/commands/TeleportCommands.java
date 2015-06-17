@@ -11,7 +11,6 @@ import net.cubespace.geSuit.core.objects.Result.Type;
 import net.cubespace.geSuit.remote.teleports.TeleportActions;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -40,7 +39,7 @@ public class TeleportCommands {
         GlobalPlayer target = Global.getPlayer(playerName);
         
         if (target == null) {
-            sender.sendMessage(ChatColor.RED + "Unknown player " + playerName);
+            sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         
@@ -57,7 +56,7 @@ public class TeleportCommands {
         GlobalPlayer target = Global.getPlayer(playerName);
         
         if (target == null) {
-            sender.sendMessage(ChatColor.RED + "Unknown player " + playerName);
+            sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         
@@ -85,7 +84,7 @@ public class TeleportCommands {
         GlobalPlayer target = Global.getPlayer(playerName);
         
         if (target == null) {
-            sender.sendMessage(ChatColor.RED + "Unknown player " + playerName);
+            sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         
@@ -140,7 +139,7 @@ public class TeleportCommands {
         
         if (worldName != null) {
             if (Bukkit.getWorld(worldName) == null) {
-                sender.sendMessage(ChatColor.RED + "Unknown world " + worldName);
+                sender.sendMessage(Global.getMessages().get("teleport.error.world", "world", worldName));
                 return;
             }
         } else {
@@ -149,7 +148,7 @@ public class TeleportCommands {
         
         // See if teleporting is allowed here
         if (!sender.teleport(sender.getLocation(), TeleportCause.COMMAND)) {
-            sender.sendMessage(ChatColor.RED + "Error teleporting. Teleportation is being blocked in this area");
+            sender.sendMessage(Global.getMessages().get("teleport.blocked.area"));
             return;
         }
         
@@ -169,7 +168,7 @@ public class TeleportCommands {
         
         // See if teleporting is allowed here
         if (!sender.teleport(sender.getLocation(), TeleportCause.COMMAND)) {
-            sender.sendMessage(ChatColor.RED + "Error teleporting. Teleportation is being blocked in this area");
+            sender.sendMessage(Global.getMessages().get("teleport.blocked.area"));
             return;
         }
         
@@ -188,13 +187,13 @@ public class TeleportCommands {
         GlobalPlayer target = Global.getPlayer(playerName);
         
         if (target == null) {
-            sender.sendMessage(ChatColor.RED + "Unknown player " + playerName);
+            sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         
         // See if teleporting is allowed here
         if (!sender.teleport(sender.getLocation(), TeleportCause.COMMAND)) {
-            sender.sendMessage(ChatColor.RED + "Error teleporting. Teleportation is being blocked in this area");
+            sender.sendMessage(Global.getMessages().get("teleport.blocked.area"));
             return;
         }
         
@@ -211,12 +210,12 @@ public class TeleportCommands {
         GlobalPlayer target = Global.getPlayer(targetPlayer);
         
         if (player == null) {
-            sender.sendMessage(ChatColor.RED + "Unknown player " + playerName);
+            sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         
         if (target == null) {
-            sender.sendMessage(ChatColor.RED + "Unknown player " + targetPlayer);
+            sender.sendMessage(Global.getMessages().get("player.unknown", "player", targetPlayer));
             return;
         }
         
@@ -233,13 +232,13 @@ public class TeleportCommands {
         GlobalPlayer player = Global.getPlayer(playerName);
         
         if (player == null) {
-            sender.sendMessage(ChatColor.RED + "Unknown player " + playerName);
+            sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         
         if (worldName != null) {
             if (Bukkit.getWorld(worldName) == null) {
-                sender.sendMessage(ChatColor.RED + "Unknown world " + worldName);
+                sender.sendMessage(Global.getMessages().get("teleport.error.world", "world", worldName));
                 return;
             }
         }
@@ -258,7 +257,7 @@ public class TeleportCommands {
         GlobalPlayer player = Global.getPlayer(playerName);
         
         if (player == null) {
-            sender.sendMessage(ChatColor.RED + "Unknown player " + playerName);
+            sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         

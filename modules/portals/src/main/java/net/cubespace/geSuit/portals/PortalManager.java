@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -443,7 +442,7 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
             if (server != null) {
                 TeleportsModule.getTeleportManager().teleport(Global.getPlayer(player.getUniqueId()), server);
             } else {
-                player.sendMessage(ChatColor.RED + "Unable to use portal, it is not set up correctly");
+                player.sendMessage(Global.getMessages().get("portal.unknown-dest"));
                 Global.getPlatform().getLogger().warning("Portal " + portal.getName() + " is linked to non-existant server " + portal.getDestServer());
             }
             return;
@@ -455,7 +454,7 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
             if (warp != null) {
                 dest = warp.getLocation();
             } else {
-                player.sendMessage(ChatColor.RED + "Unable to use portal, it is not set up correctly");
+                player.sendMessage(Global.getMessages().get("portal.unknown-dest"));
                 Global.getPlatform().getLogger().warning("Portal " + portal.getName() + " is linked to non-existant warp " + portal.getDestWarp());
                 return;
             }

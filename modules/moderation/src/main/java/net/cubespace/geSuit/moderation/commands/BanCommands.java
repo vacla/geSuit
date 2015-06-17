@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.commands.Command;
 import net.cubespace.geSuit.core.commands.CommandPriority;
@@ -32,7 +33,7 @@ public class BanCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException("Cannot ban unknown player " + playerName);
+            throw new IllegalArgumentException(Global.getMessages().get("ban.unknown-player", "player", playerName));
         }
         
         Result result = actions.ban(player, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
@@ -56,7 +57,7 @@ public class BanCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException("Cannot ipban unknown player " + playerName);
+            throw new IllegalArgumentException(Global.getMessages().get("ban.unknown-player", "player", playerName));
         }
         
         Result result = actions.ipban(player, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
@@ -78,7 +79,7 @@ public class BanCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException("Cannot tempban unknown player " + playerName);
+            throw new IllegalArgumentException(Global.getMessages().get("ban.unknown-player", "player", playerName));
         }
         
         Result result = actions.banUntil(player, reason, date.fromNow(), sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
@@ -92,7 +93,7 @@ public class BanCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException("Cannot unban unknown player " + playerName);
+            throw new IllegalArgumentException(Global.getMessages().get("unban.unknown-player", "player", playerName));
         }
         
         Result result = actions.unban(player, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
@@ -107,7 +108,7 @@ public class BanCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException("Cannot unban unknown player " + playerName);
+            throw new IllegalArgumentException(Global.getMessages().get("unban.unknown-player", "player", playerName));
         }
         
         Result result = actions.ipunban(player, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
@@ -130,7 +131,7 @@ public class BanCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException("Cannot get history for unknown player " + playerName);
+            throw new IllegalArgumentException(Global.getMessages().get("player.unknown", "player", playerName));
         }
         
         List<BanInfo<GlobalPlayer>> history = actions.getHistory(player);
@@ -204,14 +205,14 @@ public class BanCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException("Cannot unban unknown player " + playerName);
+            throw new IllegalArgumentException(Global.getMessages().get("player.unknown", "player", playerName));
         }
         
         BanInfo<InetAddress> ipBan = (player.getAddress() != null ? actions.getBan(player.getAddress()) : null);
         BanInfo<GlobalPlayer> playerBan = player.getBanInfo();
         
         if (ipBan == null && playerBan == null) {
-            sender.sendMessage(ChatColor.RED + "That player is not banned");
+            sender.sendMessage(Global.getMessages().get("ban.not-banned"));
             return;
         }
         

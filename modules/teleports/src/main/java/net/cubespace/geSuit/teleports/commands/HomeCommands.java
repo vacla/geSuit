@@ -31,7 +31,6 @@ public class HomeCommands {
     
     @Command(name="sethome", async=true, permission="gesuit.homes.commands.sethome", description="Sets the players home location", usage="/<command> [<name>]")
     public void sethome(Player player, @Optional String home) {
-        // TODO: These messages need to be configurable
         if (home == null) {
             home = HomeManager.defaultHome;
         }
@@ -43,11 +42,11 @@ public class HomeCommands {
         if (!manager.hasHome(gPlayer, home)) {
             // Check limits
             if (manager.getHomeCountServer(gPlayer) >= manager.getHomeLimitServer(player)) {
-                player.sendMessage(ChatColor.RED + "You're not allowed to set anymore homes on this server.");
+                player.sendMessage(Global.getMessages().get("home.limit.server"));
             }
             
             if (manager.getHomeCount(gPlayer) >= manager.getHomeLimitGlobal(player)) {
-                player.sendMessage(ChatColor.RED + "You're not allowed to set anymore homes globally.");
+                player.sendMessage(Global.getMessages().get("home.limit.global"));
             }
             
             newHome = true;
@@ -56,27 +55,26 @@ public class HomeCommands {
         manager.setHome(gPlayer, home, location);
         
         if (newHome) {
-            player.sendMessage(ChatColor.GOLD + "Your home \"" + home + "\" has been set");
+            player.sendMessage(Global.getMessages().get("home.set", "home", home));
         } else {
-            player.sendMessage(ChatColor.GOLD + "Your home \"" + home + "\" has been updated");
+            player.sendMessage(Global.getMessages().get("home.update", "home", home));
         }
     }
     
     @Command(name="sethome", async=true, permission="gesuit.homes.commands.sethome", description="Sets the players home location", usage="/<command> <player> <name>")
     public void sethomeOther(Player player, String playerName, String home) {
         if (!player.hasPermission("gesuit.homes.commands.sethome.other")) {
-            player.sendMessage(ChatColor.RED + "You do not have permission to do this");
+            player.sendMessage(Global.getMessages().get("player.no-permission"));
             return;
         }
         
-        // TODO: These messages need to be configurable
         if (home == null) {
             home = HomeManager.defaultHome;
         }
         
         GlobalPlayer gPlayer = Utilities.getPlayerAdvanced(playerName);
         if (gPlayer == null) {
-            player.sendMessage(ChatColor.RED + "Unknown player " + playerName);
+            player.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         
@@ -95,15 +93,14 @@ public class HomeCommands {
         manager.setHome(gPlayer, home, location);
         
         if (newHome) {
-            player.sendMessage(ChatColor.GOLD + "Home \"" + home + "\" has been set for " + gPlayer.getDisplayName());
+            player.sendMessage(Global.getMessages().get("home.set.other", "home", home, "player", gPlayer.getDisplayName()));
         } else {
-            player.sendMessage(ChatColor.GOLD + "Home \"" + home + "\" has been updated for " + gPlayer.getDisplayName());
+            player.sendMessage(Global.getMessages().get("home.update.other", "home", home, "player", gPlayer.getDisplayName()));
         }
     }
     
     @Command(name="delhome", async=true, permission="gesuit.homes.commands.delhome", description="Deletes a players home", usage="/<command> [<name>]")
     public void delhome(Player player, @Optional String home) {
-        // TODO: These messages need to be configurable
         if (home == null) {
             home = HomeManager.defaultHome;
         }
@@ -111,29 +108,28 @@ public class HomeCommands {
         GlobalPlayer gPlayer = Global.getPlayer(player.getUniqueId());
         
         if (!manager.hasHome(gPlayer, home)) {
-            player.sendMessage(ChatColor.RED + "That home does not exist");
+            player.sendMessage(Global.getMessages().get("home.unknown-home"));
             return;
         }
         
         manager.deleteHome(gPlayer, home);
         
-        player.sendMessage(ChatColor.RED + "Your home \"" + home + "\" has been deleted");
+        player.sendMessage(Global.getMessages().get("home.delete", "home", home));
     }
     
     @Command(name="delhome", async=true, permission="gesuit.homes.commands.delhome", description="Deletes a players home", usage="/<command> <player> <name>")
     public void delhome(Player player, String playerName, String home) {
         if (!player.hasPermission("gesuit.homes.commands.delhome.other")) {
-            player.sendMessage(ChatColor.RED + "You do not have permission to do this");
+            player.sendMessage(Global.getMessages().get("player.no-permission"));
             return;
         }
-        // TODO: These messages need to be configurable
         if (home == null) {
             home = HomeManager.defaultHome;
         }
         
         GlobalPlayer gPlayer = Utilities.getPlayerAdvanced(playerName);
         if (gPlayer == null) {
-            player.sendMessage(ChatColor.RED + "Unknown player " + playerName);
+            player.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         
@@ -143,30 +139,29 @@ public class HomeCommands {
         }
         
         if (!manager.hasHome(gPlayer, home)) {
-            player.sendMessage(ChatColor.RED + "That home does not exist");
+            player.sendMessage(Global.getMessages().get("home.unknown-home"));
             return;
         }
         
         manager.deleteHome(gPlayer, home);
         
-        player.sendMessage(ChatColor.RED + "Home \"" + home + "\" has been deleted for " + gPlayer.getDisplayName());
+        player.sendMessage(Global.getMessages().get("home.delete.other", "home", home, "player", gPlayer.getDisplayName()));
     }
     
     @Command(name="home", async=true, permission="gesuit.homes.commands.home", description="Teleports you home", usage="/<command> [<name>]")
     public void home(Player sender, @Optional String home) {
-        // TODO: These messages need to be configurable
         GlobalPlayer gTarget;
         GlobalPlayer gPlayer = Global.getPlayer(sender.getUniqueId());
         if (home != null && home.contains(":")) {
             // Player and home specification
             if (!sender.hasPermission("gesuit.homes.commands.homes.other")) {
-                sender.sendMessage(ChatColor.RED + "You do not have permission to do this.");
+                sender.sendMessage(Global.getMessages().get("player.no-permission"));
                 return;
             }
             
             String[] parts = home.split(":");
             if (parts.length != 2) {
-                sender.sendMessage(ChatColor.RED + "When specifying player name, use '<player>:<home>'");
+                sender.sendMessage(Global.getMessages().get("home.command.hint"));
                 return;
             }
             
@@ -174,7 +169,7 @@ public class HomeCommands {
             home = parts[1];
             
             if (gTarget == null) {
-                sender.sendMessage(ChatColor.RED + "Unknown player " + parts[0]);
+                sender.sendMessage(Global.getMessages().get("player.unknown", "player", parts[0]));
                 return;
             }
             
@@ -193,11 +188,11 @@ public class HomeCommands {
         
         Location location = manager.getHome(gTarget, home);
         if (location == null) {
-            sender.sendMessage(ChatColor.RED + "That home does not exist");
+            sender.sendMessage(Global.getMessages().get("home.unknown-home"));
             return;
         }
         
-        sender.sendMessage(ChatColor.GOLD + "You are being sent home");
+        sender.sendMessage(Global.getMessages().get("home.teleport", "home", home));
         TeleportsModule.getTeleportManager().teleportWithDelay(gPlayer, location, TeleportCause.COMMAND);
     }
     
@@ -206,7 +201,7 @@ public class HomeCommands {
         GlobalPlayer gTarget;
         if (playerName != null) {
             if (!player.hasPermission("gesuit.homes.commands.homes.other")) {
-                player.sendMessage(ChatColor.RED + "You do not have permission to do this");
+                player.sendMessage(Global.getMessages().get("player.no-permission"));
                 return;
             }
             
@@ -219,13 +214,12 @@ public class HomeCommands {
     }
     
     private void displayHomes(Player sender, GlobalPlayer player) {
-        // TODO: These messages need to be configurable
         Homes homes = player.getAttachment(Homes.class);
         if (homes == null) {
             if (player.getUniqueId().equals(sender.getUniqueId())) {
-                sender.sendMessage(ChatColor.RED + "You do not have any homes set.");
+                sender.sendMessage(Global.getMessages().get("home.no-homes"));
             } else {
-                sender.sendMessage(ChatColor.RED + "They do not have any homes set.");
+                sender.sendMessage(Global.getMessages().get("home.no-homes.other"));
             }
             return;
         }
@@ -238,9 +232,9 @@ public class HomeCommands {
         
         // Header
         if (player.getUniqueId().equals(sender.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + "Listing your homes:");
+            sender.sendMessage(Global.getMessages().get("home.list.header"));
         } else {
-            sender.sendMessage(ChatColor.RED + "Listing homes of " + player.getDisplayName() + ":");
+            sender.sendMessage(Global.getMessages().get("home.list.header.other", "player", player.getDisplayName()));
         }
         
         // Display homes per server

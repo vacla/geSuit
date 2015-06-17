@@ -24,7 +24,7 @@ public class ReloadCommand extends Command
     public void execute(CommandSender sender, String[] args)
     {
         if (!(sender.hasPermission("gesuit.reload") || sender.hasPermission("gesuit.admin"))) {
-            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permisison"));
+            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permission"));
 
             return;
         }

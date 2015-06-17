@@ -35,19 +35,18 @@ public class PortalCommands {
     
     @Command(name="setportal", async=true, aliases={"createportal", "makeportal", "sportal"}, permission="gesuit.portals.command.setportal", usage="/<command> <name> <type> <destination> [<fill>]")
     public void setportal(Player player, String portalName, Portal.Type type, String destination, @Optional Portal.FillType fill) {
-        // TODO: Make messages configurable
         if (fill == null) {
             fill = Portal.FillType.Air;
         }
         
         Selection selection = worldEdit.getSelection(player);
         if (selection == null) {
-            player.sendMessage(ChatColor.RED + "Please select the portals area with WorldEdit.");
+            player.sendMessage(Global.getMessages().get("portal.command.error.no-sel"));
             return;
         }
         
         if (!(selection instanceof CuboidSelection)) {
-            player.sendMessage(ChatColor.RED + "Currently, only cuboid selections are supported.");
+            player.sendMessage(Global.getMessages().get("portal.command.error.sel-type"));
             return;
         }
         
@@ -59,7 +58,7 @@ public class PortalCommands {
         switch (type) {
         case Server:
             if (Global.getServer(destination) == null) {
-                player.sendMessage(ChatColor.RED + "Unknown server " + destination);
+                player.sendMessage(Global.getMessages().get("portal.command.error.unknown-server", "server", destination));
                 return;
             }
             
@@ -67,7 +66,7 @@ public class PortalCommands {
             break;
         case Warp:
             if (!WarpsModule.getWarpManager().hasWarp(destination)) {
-                player.sendMessage(ChatColor.RED + "Unknown warp " + destination);
+                player.sendMessage(Global.getMessages().get("portal.command.error.unknown-warp", "warp", destination));
                 return;
             }
             
@@ -76,7 +75,7 @@ public class PortalCommands {
         case Teleport: {
             String[] parts = destination.split(",");
             if (parts.length < 3 || parts.length > 6 || parts.length == 5) {
-                player.sendMessage(ChatColor.RED + "Unknown location " + destination + " expected x,y,z x,y,z,world or x,y,z,world,yaw,pitch");
+                player.sendMessage(Global.getMessages().get("portal.command.error.unknown-location", "location", destination, "format", "x,y,z x,y,z,world or x,y,z,world,yaw,pitch"));
                 return;
             }
             
@@ -93,7 +92,7 @@ public class PortalCommands {
                 if (parts.length >= 4) {
                     world = Bukkit.getWorld(parts[3]);
                     if (world == null) {
-                        player.sendMessage(ChatColor.RED + "Unknown world " + parts[3]);
+                        player.sendMessage(Global.getMessages().get("portal.command.error.unknown-world", parts[3]));
                         return;
                     }
                 }
@@ -106,7 +105,7 @@ public class PortalCommands {
                 
                 portal = new Portal(portalName, new Location(Global.getServer().getName(), world.getName(), x, y, z, yaw, pitch), fill, min, max);
             } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.RED + "Unknown location " + destination + " expected x,y,z x,y,z,world or x,y,z,world,yaw,pitch");
+                player.sendMessage(Global.getMessages().get("portal.command.error.unknown-location", "location", destination, "format", "x,y,z x,y,z,world or x,y,z,world,yaw,pitch"));
                 return;
             }
             break;
@@ -116,21 +115,21 @@ public class PortalCommands {
         }
         
         if (manager.addOrUpdatePortal(portal)) {
-            player.sendMessage(ChatColor.GOLD + "You have successfully created a portal");
+            player.sendMessage(Global.getMessages().get("portal.create"));
         } else {
-            player.sendMessage(ChatColor.GOLD + "You have successfully updated the portal");
+            player.sendMessage(Global.getMessages().get("portal.update"));
         }
     }
     
     @Command(name="delportal", async=true, aliases={"deleteportal", "dportal", "removeportal"}, permission="gesuit.portals.command.delportal", usage="/<command> <name>")
     public void delportal(Player player, String portalName) {
         if (!manager.hasPortal(portalName)) {
-            player.sendMessage(ChatColor.RED + "There is no portal by that name");
+            player.sendMessage(Global.getMessages().get("portal.unknown-portal"));
             return;
         }
         
         manager.removePortal(portalName);
-        player.sendMessage(ChatColor.GOLD + "Portal " + portalName + " has been removed");
+        player.sendMessage(Global.getMessages().get("portal.delete", "portal", portalName));
     }
     
     @Command(name="portals", async=true, aliases={"portalslist", "portallist", "listportals"}, permission="gesuit.portals.command.portals", usage="/<command>")
@@ -138,7 +137,7 @@ public class PortalCommands {
         Collection<Portal> portals = manager.getPortals();
         
         if (portals.isEmpty()) {
-            sender.sendMessage(ChatColor.RED + "There are no portals");
+            sender.sendMessage(Global.getMessages().get("portal.list.empty"));
             return;
         }
         
@@ -149,7 +148,7 @@ public class PortalCommands {
         }
         
         // Header
-        sender.sendMessage(ChatColor.RED + "Listing portals:");
+        sender.sendMessage(Global.getMessages().get("portal.list.header"));
         
         // Display portals per server
         String thisServer = Global.getServer().getName();
