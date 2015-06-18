@@ -9,6 +9,7 @@ import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.core.objects.Result.Type;
 import net.cubespace.geSuit.remote.teleports.TeleportActions;
+import net.cubespace.geSuit.teleports.misc.LocationUtil;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -128,9 +129,22 @@ public class TeleportCommands {
         }
     }
     
-    @Command(name="top", async=true, permission="gesuit.teleports.command.top", description="Teleport to the highest block at your current position", usage="/<command>")
+    @Command(name="top", async=false, permission="gesuit.teleports.command.top", description="Teleport to the highest block at your current position", usage="/<command>")
     public void top(Player sender) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        org.bukkit.Location current = sender.getLocation();
+        org.bukkit.Location location = LocationUtil.getSafeDestination(
+            new org.bukkit.Location(
+                current.getWorld(), 
+                current.getX(), 
+                current.getWorld().getMaxHeight(), 
+                current.getZ(), 
+                current.getYaw(), 
+                current.getPitch()
+            )
+        );
+        
+        sender.teleport(location, TeleportCause.COMMAND);
+        sender.sendMessage(Global.getMessages().get("top.success"));
     }
     
     @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <x> <y> <z> [world]")

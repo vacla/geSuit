@@ -366,7 +366,7 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         updateBack(event.getPlayer());
     }
     
-    private void doSafeTeleport(Player player, org.bukkit.Location target, TeleportCause cause) {
+    public void doSafeTeleport(Player player, org.bukkit.Location target, TeleportCause cause) {
         // Creative and Spectator are immune from damage so just teleport anyway
         if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
             // Enable flying if needed
@@ -385,8 +385,8 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
                 return;
             // Is allowed to enable fly on tp
             } else if (player.hasPermission("gesuit.teleports.tp.fly") || player.getAllowFlight()) {
-                player.setFlying(true);
                 player.setAllowFlight(true);
+                player.setFlying(true);
                 player.teleport(target, cause);
                 return;
             }
