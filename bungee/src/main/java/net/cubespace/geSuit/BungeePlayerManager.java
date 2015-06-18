@@ -221,6 +221,14 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             geSuit.getPlugin().getTrackingManager().updatePlayerOnTime(player);
         }
         
+        // This is the end of their first session. They wont be a new player next time
+        if (player.isNewPlayer()) {
+            player.setNewPlayer(false);
+        }
+        
+        // Update their last online time
+        player.setLastOnline(System.currentTimeMillis());
+        
         // Final save before being moved to offline
         player.saveIfModified();
         

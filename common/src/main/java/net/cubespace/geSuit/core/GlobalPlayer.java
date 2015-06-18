@@ -212,18 +212,19 @@ public class GlobalPlayer {
     }
     
     /**
-     * @return Gets the UNIX datetime in ms of the most recent time the player joined the server   
+     * @return Gets the UNIX datetime in ms of the most recent time the player was online.
+     *         In practice, this is not updated until the player disconnects   
      */
-    public long getLastJoined() {
+    public long getLastOnline() {
         loadIfNeeded();
         return lastJoin;
     }
     
     /**
-     * Updates the players most recent joined date
-     * @param time The UNIX datetime in ms   
+     * Updates the players most recent date they were online
+     * @param time The UNIX datetime in ms
      */
-    public void setLastJoined(long time) {
+    public void setLastOnline(long time) {
         loadIfNeeded();
         lastJoin = time;
         isDirty = true;
@@ -241,7 +242,14 @@ public class GlobalPlayer {
      * @param time The UNIX datetime in ms
      */
     public void setSessionJoin(long time) {
+        loadIfNeeded();
         sessionJoin = time;
+        
+        // Update the first join if unset
+        if (firstJoin == 0) {
+            firstJoin = time;
+            isDirty = true;
+        }
     }
     
     /**
