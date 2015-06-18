@@ -3,10 +3,10 @@ package net.cubespace.geSuit.listeners;
 import java.util.concurrent.TimeUnit;
 
 import au.com.addstar.bc.event.BCPlayerJoinEvent;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.plugin.Listener;
@@ -27,7 +27,7 @@ public class BungeeChatListener implements Listener {
                 // Display the last name if it changed less than the config value days ago
                 if (System.currentTimeMillis() - lastName.getLastSeen() < TimeUnit.DAYS.toMillis(ConfigManager.bans.NameChangeNotifyTime)) {
                 	// Always log recent name changes to console
-                	LoggingManager.log(Global.getMessages().get(
+                    geSuit.getLogger().info(Global.getMessages().get(
                 	        "connect.join.namechange.log",
                 			"player", event.getPlayer().getDisplayName(),
                 			"old", lastName.getName()));

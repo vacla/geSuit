@@ -15,10 +15,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.profile.Profile;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ProxyServer;
 
 public class Utilities {
     public static boolean isIPAddress(String ip){
@@ -176,7 +174,7 @@ public class Utilities {
     }
     
     public static boolean doBungeeChatMirror(String channel, String msg) {
-		LoggingManager.log(ChatColor.translateAlternateColorCodes('&', msg));
+        geSuit.getLogger().info(ChatColor.translateAlternateColorCodes('&', msg));
 
 		// If BungeeChat integration is disabled, just log the message and exit
 		if (!ConfigManager.main.BungeeChatIntegration)

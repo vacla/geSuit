@@ -16,7 +16,6 @@ import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -162,7 +161,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             geSuit.getPlugin().getTrackingManager().updateTracking(player);
             
             if (player.isNewPlayer()) {
-                LoggingManager.log(Global.getMessages().get("log.player-create", "player", player.getName(), "uuid", player.getUniqueId()));
+                geSuit.getLogger().info(Global.getMessages().get("log.player-create", "player", player.getName(), "uuid", player.getUniqueId()));
 
                 if (ConfigManager.main.NewPlayerBroadcast) {
                     String welcomeMsg = Global.getMessages().get("connect.join.new", "player", player.getDisplayName());

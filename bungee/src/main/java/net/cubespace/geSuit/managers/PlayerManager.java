@@ -10,19 +10,12 @@ import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.LoginEvent;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.Map.Entry;
-
-import au.com.addstar.bc.BungeeChat;
 
 // TODO: This class needs work
 public class PlayerManager {
@@ -168,7 +161,7 @@ public class PlayerManager {
     public static void sendMessageToTarget(CommandSender target, String message) {
         // Shouldnt need it. But let's be cautious.
         if (target == null) {
-        	LoggingManager.log("WARNING: sendMessageToTarget(CommandSender, String): Target is null!");
+            geSuit.getLogger().info("WARNING: sendMessageToTarget(CommandSender, String): Target is null!");
         	return;
         }
 
@@ -183,7 +176,7 @@ public class PlayerManager {
 
     public static void sendMessageToTarget(GSPlayer target, String message) {
         if (target == null) {
-        	LoggingManager.log("WARNING: sendMessageToTarget(GSPlayer, String): Target is null!");
+            geSuit.getLogger().info("WARNING: sendMessageToTarget(GSPlayer, String): Target is null!");
         	return;
         }
         sendMessageToTarget(target.getProxiedPlayer(), message);
@@ -191,7 +184,7 @@ public class PlayerManager {
 
     public static void sendMessageToTarget(String target, String message) {
         if ((target == null) || (target.isEmpty())) {
-        	LoggingManager.log("WARNING: sendMessageToTarget(String, String): Target is null or empty!");
+            geSuit.getLogger().info("WARNING: sendMessageToTarget(String, String): Target is null or empty!");
         	return;
         }
         sendMessageToTarget(getPlayer(target) != null ? getPlayer(target).getProxiedPlayer() : ProxyServer.getInstance().getConsole(), message);
@@ -206,7 +199,7 @@ public class PlayerManager {
         	if ((excludedPlayer != null) && (excludedPlayer.equals(p.getName()))) continue;
         	sendMessageToTarget(p.getName(), message);
         }
-        LoggingManager.log(message);
+        geSuit.getLogger().info(message);
     }
 
     public static String getLastSeeninfos(String player, boolean full, boolean seeVanished) {

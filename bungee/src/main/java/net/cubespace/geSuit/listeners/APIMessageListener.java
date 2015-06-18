@@ -7,9 +7,7 @@ import java.sql.SQLException;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
-import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.managers.APIManager;
-import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -53,7 +51,7 @@ public class APIMessageListener implements Listener {
         		break;
         	default:
         		// Unknown API command
-        		LoggingManager.log("WARNING: Unknown API command received: \"" + task + "\"!");
+        	    geSuit.getLogger().info("WARNING: Unknown API command received: \"" + task + "\"!");
         		break;
         }
     }

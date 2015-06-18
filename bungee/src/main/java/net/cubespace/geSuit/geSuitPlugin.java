@@ -37,7 +37,6 @@ import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.listeners.APIMessageListener;
 import net.cubespace.geSuit.listeners.BungeeChatListener;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.cubespace.geSuit.moderation.TrackingManager;
 import net.cubespace.geSuit.moderation.WarningsManager;
@@ -73,9 +72,9 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     
     public void onEnable() {
         geSuit.setPlugin(this);
-        LoggingManager.log(ChatColor.GREEN + "Starting geSuit");
+        getLogger().info(ChatColor.GREEN + "Starting geSuit");
         proxy = ProxyServer.getInstance();
-        LoggingManager.log(ChatColor.GREEN + "Initialising Managers");
+        getLogger().info(ChatColor.GREEN + "Initialising Managers");
         
         databaseManager = new DatabaseManager(ConfigManager.main.Database);
         if (!databaseManager.initialize()) {
@@ -83,7 +82,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         }
 
         if (!initializeRedis()) {
-            LoggingManager.log("Unable to connect to redis");
+            getLogger().info("Unable to connect to redis");
             return;
         }
 

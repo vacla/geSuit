@@ -2,7 +2,6 @@ package net.cubespace.geSuit.pluginmessages;
 
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.geSuitPlugin;
-import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.tasks.SendPluginMessage;
@@ -29,7 +28,7 @@ public class TeleportToLocation
         }
 
         if (player == null) {
-        	LoggingManager.log(ChatColor.RED + "Warning! Teleport called but player is null!");
+            geSuit.getLogger().info(ChatColor.RED + "Warning! Teleport called but player is null!");
             new Exception("").printStackTrace();
         	return;
         }

@@ -8,7 +8,6 @@ import net.cubespace.geSuit.database.BaseRepository;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.StatementKey;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.ChatColor;
 
 import java.sql.ResultSet;
@@ -115,7 +114,7 @@ public class OnTime extends BaseRepository {
         	loop++;
 
         	if (loop == 100) {
-        		LoggingManager.log(ChatColor.RED + "WARNING! OnTime slot checking exceeded 100 loops for " +player+ ", this should never hapen!");
+        	    geSuit.getLogger().info(ChatColor.RED + "WARNING! OnTime slot checking exceeded 100 loops for " +player+ ", this should never hapen!");
         		break;
         	}
         }
