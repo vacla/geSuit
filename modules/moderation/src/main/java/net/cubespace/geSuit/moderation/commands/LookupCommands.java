@@ -1,13 +1,17 @@
 package net.cubespace.geSuit.moderation.commands;
 
 import java.net.InetAddress;
+import java.text.DateFormat;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.commands.Command;
 import net.cubespace.geSuit.core.commands.CommandPriority;
+import net.cubespace.geSuit.core.objects.DateDiff;
+import net.cubespace.geSuit.core.objects.TimeRecord;
 import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
@@ -255,53 +259,40 @@ public class LookupCommands {
         }
     }
     
-    @Command(name="ontime", async=true, permission="gesuit.bans.command.ontime", usage="/<command> <player>")
+    @Command(name = "ontime", async = true, permission = "gesuit.bans.command.ontime", usage = "/<command> <player>")
     public void ontime(CommandSender sender, String playerName) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
+
+        if (player == null) {
+            throw new IllegalArgumentException(Global.getMessages().get("ban.unknown-player", "player", playerName));
+        }
+
+        TimeRecord record = lookup.getOntime(player);
+        boolean online = (Global.getPlayer(player.getUniqueId()) != null);
+
+        if (online) {
+            record.setTimeSession(System.currentTimeMillis() - player.getSessionJoin());
+        } else {
+            record.setTimeSession(-1);
+        }
         
-//      final GSPlayer s = PlayerManager.getPlayer(sentBy);
-//      final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
-//
-//      ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
-//          @Override
-//          public void run() {
-//            BanTarget bt = getBanTarget(player);
-//            if ((bt == null) || (bt.gsp == null)) {
-//                PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
-//                return;
-//            }
-//
-//            // Get time records and set online time (if player is online)
-//            TimeRecord tr = DatabaseManager.ontime.getPlayerOnTime(bt.uuid);
-//            boolean online = (bt.gsp.getProxiedPlayer() != null);
-//            if (online) {
-//                tr.setTimeSession(System.currentTimeMillis() - bt.gsp.getLoginTime());
-//            } else {
-//                tr.setTimeSession(-1);
-//            }
-//            
-//            PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + bt.dispname + "'s OnTime Statistics" + ChatColor.DARK_AQUA + " --------");
-//
-//            // Player join date/time + number of days
-//            String firstjoin = String.format("%s %s",
-//                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(bt.gsp.getFirstOnline()),
-//                    DateFormat.getTimeInstance(DateFormat.SHORT).format(bt.gsp.getFirstOnline()));
-//              String days = Integer.toString((int) Math.floor((System.currentTimeMillis() - bt.gsp.getFirstOnline().getTime()) / TimeUnit.DAYS.toMillis(1)));
-//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_FIRST_JOINED
-//                    .replace("{date}", firstjoin)
-//                    .replace("{days}", days));
-//
-//            // Current session length 
-//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_SESSION
-//                    .replace("{diff}", (tr.getTimeSession() == -1) ? ChatColor.RED + "Offline" : Utilities.buildTimeDiffString(tr.getTimeSession(), 3)));
-//
-//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_TODAY.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeToday() + tr.getTimeSession(), 3)));
-//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_WEEK.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeWeek() + tr.getTimeSession(), 3)));
-//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_MONTH.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeMonth() + tr.getTimeSession(), 3)));
-//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_YEAR.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeYear() + tr.getTimeSession(), 3)));
-//            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_TOTAL.replace("{diff}", Utilities.buildTimeDiffString(tr.getTimeTotal() + tr.getTimeSession(), 3)));
-//          }
-//      });
+        sender.sendMessage(Global.getMessages().get("ontime.header", "player", player.getDisplayName()));
+
+        // Player join date/time + number of days
+        String firstJoin = String.format("%s %s", DateFormat.getDateInstance(DateFormat.MEDIUM).format(player.getFirstJoined()), DateFormat.getTimeInstance(DateFormat.SHORT).format(player.getFirstJoined()));
+        String days = String.valueOf(TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis() - player.getFirstJoined()));
+        sender.sendMessage(Global.getMessages().get("ontime.first-joined", "date", firstJoin, "days", days));
+
+        // Current session length
+        if (online) {
+            sender.sendMessage(Global.getMessages().get("ontime.time-session", "diff", new DateDiff(record.getTimeSession()).toLongString(3)));
+        }
+        
+        sender.sendMessage(Global.getMessages().get("ontime.time-today", "diff", new DateDiff(record.getTimeToday() + record.getTimeSession()).toLongString(3)));
+        sender.sendMessage(Global.getMessages().get("ontime.time-week", "diff", new DateDiff(record.getTimeWeek() + record.getTimeSession()).toLongString(3)));
+        sender.sendMessage(Global.getMessages().get("ontime.time-month", "diff", new DateDiff(record.getTimeMonth() + record.getTimeSession()).toLongString(3)));
+        sender.sendMessage(Global.getMessages().get("ontime.time-year", "diff", new DateDiff(record.getTimeYear() + record.getTimeSession()).toLongString(3)));
+        sender.sendMessage(Global.getMessages().get("ontime.time-total", "diff", new DateDiff(record.getTimeTotal() + record.getTimeSession()).toLongString(3)));
     }
     
     @Command(name="namehistory", async=true, aliases={"names"}, permission="gesuit.bans.command.namehistory", usage="/<command> <player>")

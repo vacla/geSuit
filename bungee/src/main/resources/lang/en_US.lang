@@ -60,6 +60,7 @@ tpahere.request.timeout = &cYour request to have {player} teleport to you has ti
 tpahere.request.receive = &6{player} has requested you teleport to them. Type /tpaccept to allow
 back.not-set = &cYou do not have anywhere to go back to
 back.teleport = &6You have been sent back
+top.success = &6Teleporting to top.
 
 # warp specific messages
 warp.create = &6Successfully created a warp
@@ -160,6 +161,7 @@ seen.header.offline = &6Player &c{player} &6is &4offline&6 since {timediff}\n&6 
 seen.format = &6 - {name}: &r{value}
 
 # Ontime related messages
+ontime.header = &3-------- &e{player}'s OnTime Statistics&3 --------
 ontime.first-joined = &6First joined:&f {date} ({days} days)
 ontime.time-session = &6This login:&f {diff}
 ontime.time-today = &6Today:&f {diff}

@@ -55,6 +55,7 @@ public class DateDiff {
     }
     
     private static String[] unitNames = {"y", "mo", "w", "d", "h", "m", "s"};
+    private static String[] unitLongNames = {"Year", "Month", "Week", "Day", "Hour", "Minute", "Second"};
     private static int[] unitValues = {365, 30, 7, 1, 1, 1, 1};
     private static TimeUnit[] units = {TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
     
@@ -92,6 +93,10 @@ public class DateDiff {
     
     @Override
     public String toString() {
+        return toString(units.length);
+    }
+    
+    public String toString(int numUnits) {
         StringBuilder builder = new StringBuilder();
         
         long value = time;
@@ -104,6 +109,48 @@ public class DateDiff {
                     builder.append(unitNames[i]);
                     
                     value -= units[i].toMillis(unitValue * unitValues[i]);
+                    --numUnits;
+                    if (numUnits <= 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return builder.toString();
+    }
+    
+    public String toLongString() {
+        return toLongString(units.length);
+    }
+    
+    public String toLongString(int numUnits) {
+        StringBuilder builder = new StringBuilder();
+        
+        long value = time;
+        boolean first = true;
+        
+        while(value >= 1000) {
+            for (int i = 0; i < units.length; ++i) {
+                long unitValue = units[i].convert(value, TimeUnit.MILLISECONDS) / unitValues[i];
+                if (unitValue > 0) {
+                    if (!first) {
+                        builder.append(' ');
+                    }
+                    first = false;
+                    
+                    builder.append(unitValue);
+                    builder.append(' ');
+                    builder.append(unitLongNames[i]);
+                    if (unitValue > 1) {
+                        builder.append('s');
+                    }
+                    
+                    value -= units[i].toMillis(unitValue * unitValues[i]);
+                    --numUnits;
+                    if (numUnits <= 0) {
+                        break;
+                    }
                 }
             }
         }
