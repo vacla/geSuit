@@ -185,6 +185,11 @@ public final class Global {
         return instance.getServer(id);
     }
     
+    /**
+     * Gets the messages provider for doing language translations
+     * and custom formatting.
+     * @return The Messages instance
+     */
     public static Messages getMessages() {
         return instance.getMessages();
     }
