@@ -29,6 +29,7 @@ public class Tracking extends BaseRepository {
     private StatementKey nameHistory;
     private StatementKey checkNameChange;
     private StatementKey getPlayerAlt;
+    private StatementKey matchPlayers;
     
     private String bansTable;
     
@@ -51,6 +52,7 @@ public class Tracking extends BaseRepository {
         nameHistory = registerStatement("nameHistory", "SELECT p1.`name`, p1.`nickname`, p1.`uuid`, p1.`ip`, p1.`firstseen`, p1.`lastseen`, 0 as `name_ban`, 0 as `ip_ban` FROM `%tracking%` p1 INNER JOIN (SELECT max(lastseen) lastseen, name FROM `%tracking%` WHERE uuid=? GROUP BY name) p2 ON p1.name = p2.name AND p1.lastseen = p2.lastseen WHERE p1.uuid=? ORDER BY p1.lastseen DESC;".replace("%tracking%", getName()));
         checkNameChange = registerStatement("checkNameChange", "SELECT `name`, `nickname`, `uuid`, `ip`, `firstseen`, `lastseen`, 0 AS `name_ban`, 0 AS `ip_ban` FROM " + getName() + " WHERE `uuid`=? AND `player`!=? ORDER BY `lastseen` DESC LIMIT 1;");
         getPlayerAlt = registerStatement("getPlayerAlt", "SELECT t.`name`, t.`nickname`, t.`uuid`, t.`ip`, t.`firstseen`, t.`lastseen`, IF(b1.`date` IS NOT NULL, IF (b1.`until` IS NULL,1,2), 0) as `name_ban`, IF(b2.`date` IS NOT NULL, IF (b2.`until` IS NULL,1,2), 0) as `ip_ban` FROM `%tracking%` AS t LEFT JOIN `%bans%` AS b1 ON (t.`uuid`=b1.`who`) AND b1.`action`='ban' AND b1.`unban_id` IS NULL  AND (b1.`until` IS NULL OR b1.`until` > NOW()) LEFT JOIN `%bans%` AS b2 ON (t.`ip`=b2.`who`) AND b2.`action`='ban' AND b2.`unban_id` IS NULL  AND (b2.`until` IS NULL OR b2.`until` > NOW()) WHERE `ip`=? AND `uuid`!=? GROUP BY `uuid` ORDER BY `lastseen` DESC LIMIT 1;".replace("%tracking%", getName()).replace("%bans%", bansTable));
+        matchPlayers = registerStatement("matchPlayers", "SELECT `uuid` FROM `%tracking%` WHERE `name` LIKE ? OR `nickname` LIKE ? OR `uuid` LIKE ? GROUP BY `uuid`;".replace("%tracking%", getName()));
     }
     
     public void insertTracking(GlobalPlayer player) throws SQLException {
@@ -179,6 +181,26 @@ public class Tracking extends BaseRepository {
             } else {
                 return null;
             }
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            handler.release();
+        }
+    }
+    
+    public List<UUID> matchPlayers(String nameOrId) throws SQLException {
+        nameOrId = String.format("%%%s%%", nameOrId);
+        ConnectionHandler handler = getConnection();
+        ResultSet result = null;
+        try {
+            result = handler.executeQuery(matchPlayers, nameOrId, nameOrId, nameOrId);
+            List<UUID> ids = Lists.newArrayList();
+            while (result.next()) {
+                ids.add(Utilities.makeUUID(result.getString(1)));
+            }
+            
+            return ids;
         } finally {
             if (result != null) {
                 result.close();

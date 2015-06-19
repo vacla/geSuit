@@ -119,6 +119,16 @@ public class TrackingManager implements TrackingActions {
         }
     }
     
+    @Override
+    public List<UUID> matchPlayers(String name) throws StorageException {
+        try {
+            return trackingRepo.matchPlayers(name);
+        } catch (SQLException e) {
+            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to match players", e);
+            throw new StorageException("Unable to match the name");
+        }
+    }
+    
     public void addPlayerInfo(ProxiedPlayer player, GlobalPlayer gPlayer) {
         // Check for alt accounts and notify staff (used later)
         if (!ConfigManager.bans.ShowAltAccounts) {
