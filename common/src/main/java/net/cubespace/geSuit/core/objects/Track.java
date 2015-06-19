@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.UUID;
 
+import com.google.common.base.Strings;
+
 import net.cubespace.geSuit.core.storage.ByteStorable;
 import net.cubespace.geSuit.core.util.NetworkUtils;
 import net.cubespace.geSuit.core.util.Utilities;
@@ -22,6 +24,7 @@ public class Track implements ByteStorable {
 
     public Track(String name, String nickname, UUID uuid, InetAddress ip, long firstseen, long lastseen, int nameBanned, int ipBanned) {
         this.name = name;
+        this.nickname = (Strings.isNullOrEmpty(nickname) ? null : nickname);
         this.uuid = uuid;
         this.ip = ip;
         this.firstseen = firstseen;

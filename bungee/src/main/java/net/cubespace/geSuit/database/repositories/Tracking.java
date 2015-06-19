@@ -61,7 +61,7 @@ public class Tracking extends BaseRepository {
         try {
             handler.executeUpdate(insertTracking,
                     player.getName(),
-                    player.getNickname(),
+                    (player.hasNickname() ? player.getNickname() : ""),
                     Utilities.toString(player.getUniqueId()),
                     player.getAddress().getHostAddress()
                     );
