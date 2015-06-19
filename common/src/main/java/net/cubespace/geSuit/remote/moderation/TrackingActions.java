@@ -16,5 +16,6 @@ public interface TrackingActions {
     public List<Track> getNameHistory(GlobalPlayer player) throws StorageException;
     public TimeRecord getOntime(GlobalPlayer player) throws StorageException;
     public List<TimeRecord> getOntimeTop(int offset, int size) throws StorageException;
-    public List<UUID> matchPlayers(String name) throws StorageException; 
+    public List<UUID> matchPlayers(String name) throws StorageException;
+    public List<UUID> matchFullPlayers(String name) throws StorageException;
 }

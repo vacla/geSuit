@@ -207,49 +207,70 @@ public class LookupCommands {
     }
     
     @Command(name="namehistory", async=true, aliases={"names"}, permission="gesuit.bans.command.namehistory", usage="/<command> <player>")
-    public void nameHistory(CommandSender sender, String playerName) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    @CommandPriority(1)
+    public void nameHistory(CommandSender sender, UUID id) {
+        GlobalPlayer player = Global.getOfflinePlayer(id);
         
-//      ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
-//      @Override
-//      public void run() {
-//          GSPlayer s = PlayerManager.getPlayer(sentBy);
-//          final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
-//          
-//          UUID id;
-//          try {
-//              id = Utilities.makeUUID(nameOrId);
-//          } catch (IllegalArgumentException e) {
-//              Map<String, UUID> result = DatabaseManager.players.resolvePlayerNamesHistoric(Arrays.asList(nameOrId));
-//              if (result.isEmpty()) {
-//                  PlayerManager.sendMessageToTarget(sender,
-//                          ChatColor.RED + "Unknown player " + nameOrId);
-//                  return;
-//              } else {
-//                  id = Iterables.getFirst(result.values(), null);
-//              }
-//          }
-//  
-//          List<Track> names = DatabaseManager.tracking.getNameHistory(id);
-//          
-//          PlayerManager.sendMessageToTarget(sender,
-//              ChatColor.GREEN + "Player " + nameOrId + " has had " + names.size() + " different names:");
-//          
-//          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//          for (Track t : names) {
-//              StringBuilder builder = new StringBuilder();
-//              builder.append(ChatColor.DARK_GREEN);
-//              builder.append(" - ");
-//              builder.append(t.getPlayer());
-//              
-//              builder.append(' ');
-//              
-//              builder.append(ChatColor.GRAY);
-//              builder.append(sdf.format(t.getLastSeen()));
-//              
-//              PlayerManager.sendMessageToTarget(sender, builder.toString());
-//          }
-//      }
-//  });
+        if (player == null) {
+            sender.sendMessage(Global.getMessages().get("player.unknown", "player", id.toString()));
+            return;
+        }
+        
+        nameHistory0(sender, player, id);
+    }
+    
+    @Command(name="namehistory", async=true, aliases={"names"}, permission="gesuit.bans.command.namehistory", usage="/<command> <player>")
+    @CommandPriority(2)
+    public void nameHistory(CommandSender sender, String playerName) {
+        GlobalPlayer player = Global.getOfflinePlayer(playerName);
+        
+        if (player == null) {
+            List<UUID> owners = lookup.matchFullPlayers(playerName);
+            
+            if (owners.isEmpty()) {
+                sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
+                return;
+            }
+            
+            if (owners.size() == 1) {
+                nameHistory0(sender, Global.getOfflinePlayer(owners.get(0)), playerName);
+            } else {
+                // Display ambiguity thing
+                List<String> names = Lists.newArrayListWithCapacity(owners.size());
+                for (UUID id : owners) {
+                    GlobalPlayer target = Global.getOfflinePlayer(id);
+                    names.add(target.getDisplayName());
+                }
+                
+                Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
+                
+                // Display the list
+                sender.sendMessage(ChatColor.GOLD + playerName + " is ambiguous and can refer to the following players:");
+                for (String name : names) {
+                    sender.sendMessage(ChatColor.AQUA + " - " + name);
+                }
+            }
+        } else {
+            nameHistory0(sender, player, playerName);
+        }
+    }
+    
+    private void nameHistory0(CommandSender sender, GlobalPlayer player, Object input) {
+        List<Track> names = lookup.getNameHistory(player);
+        sender.sendMessage(ChatColor.GREEN + "Player " + input + " has had " + names.size() + " different names:");
+
+        for (Track t : names) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(ChatColor.DARK_GREEN);
+            builder.append(" - ");
+            builder.append(t.getDisplayName());
+
+            builder.append(' ');
+
+            builder.append(ChatColor.GRAY);
+            builder.append(Utilities.formatDate(t.getLastSeen()));
+
+            sender.sendMessage(builder.toString());
+        }
     }
 }

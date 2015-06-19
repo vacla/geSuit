@@ -49,7 +49,7 @@ public class Tracking extends BaseRepository {
         nameTracking = registerStatement("nameTracking", "SELECT t2.`name`, t2.`nickname`, t2.`uuid`, t2.`ip`, t2.`firstseen`, t2.`lastseen`, IF(b1.`date` IS NOT NULL, IF (b1.`until` IS NULL,1,2), 0) as `name_ban`, IF(b2.`date` IS NOT NULL, IF (b2.`until` IS NULL,1,2), 0) as `ip_ban` FROM `%tracking%` AS t1 JOIN `%tracking%` AS t2 ON (t1.`ip`=t2.`ip` OR t1.`uuid`=t2.`uuid`) LEFT JOIN `%bans%` AS b1 ON (t2.`uuid`=b1.`who`) AND b1.`action`='ban' AND b1.`unban_id` IS NULL AND (b1.`until` IS NULL OR b1.`until` > NOW())LEFT JOIN `%bans%` AS b2 ON (t2.`ip`=b2.`who`) AND b2.`action`='ban' AND b2.`unban_id` IS NULL AND (b2.`until` IS NULL OR b2.`until` > NOW()) WHERE t1.`name`=? GROUP BY t2.`name`,t2.`nickname`,t2.`uuid`,t2.`ip` ORDER BY t2.`lastseen`;".replace("%tracking%", getName()).replace("%bans%", bansTable));
         uuidTracking = registerStatement("uuidTracking", "SELECT t2.`name`, t2.`nickname`, t2.`uuid`, t2.`ip`, t2.`firstseen`, t2.`lastseen`, IF(b1.`date` IS NOT NULL, IF (b1.`until` IS NULL,1,2), 0) as `name_ban`, IF(b2.`date` IS NOT NULL, IF (b2.`until` IS NULL,1,2), 0) as `ip_ban` FROM `%tracking%` AS t1 JOIN `%tracking%` AS t2 ON (t1.`ip`=t2.`ip`) LEFT JOIN `%bans%` AS b1 ON (t2.`uuid`=b1.`who`) AND b1.`action`='ban' AND b1.`unban_id` IS NULL AND (b1.`until` IS NULL OR b1.`until` > NOW()) LEFT JOIN `%bans%` AS b2 ON (t2.`ip`=b2.`who`) AND b2.`action`='ban' AND b2.`unban_id` IS NULL AND (b2.`until` IS NULL OR b2.`until` > NOW()) WHERE t1.`uuid`=? GROUP BY t2.`name`,t2.`nickname`,t2.`uuid`,t2.`ip` ORDER BY t2.`lastseen`;".replace("%tracking%", getName()).replace("%bans%", bansTable));
         ipTracking = registerStatement("ipTracking", "SELECT t.`name`, t.`nickname`, t.`uuid`, t.`ip`, t.`firstseen`, t.`lastseen`, IF(b1.`date` IS NOT NULL, IF (b1.`until` IS NULL,1,2), 0) as `name_ban`, IF(b2.`date` IS NOT NULL, IF (b2.`until` IS NULL,1,2), 0) as `ip_ban` FROM `%tracking%` AS t LEFT JOIN `%bans%` AS b1 ON (t.`uuid`=b1.`who`) AND b1.`action`='ban' AND b1.`unban_id` IS NULL AND (b1.`until` IS NULL OR b1.`until` > NOW()) LEFT JOIN `%bans%` AS b2 ON (t.`ip`=b2.`who`) AND b2.`action`='ban' AND b2.`unban_id` IS NULL AND (b2.`until` IS NULL OR b2.`until` > NOW()) WHERE t.`ip`=? GROUP BY t.`name`,t.`nickname`,t.`uuid`,t.`ip` ORDER BY t.`lastseen`;".replace("%tracking%", getName()).replace("%bans%", bansTable));
-        nameHistory = registerStatement("nameHistory", "SELECT p1.`name`, p1.`nickname`, p1.`uuid`, p1.`ip`, p1.`firstseen`, p1.`lastseen`, 0 as `name_ban`, 0 as `ip_ban` FROM `%tracking%` p1 INNER JOIN (SELECT max(lastseen) lastseen, name FROM `%tracking%` WHERE uuid=? GROUP BY name) p2 ON p1.name = p2.name AND p1.lastseen = p2.lastseen WHERE p1.uuid=? ORDER BY p1.lastseen DESC;".replace("%tracking%", getName()));
+        nameHistory = registerStatement("nameHistory", "SELECT p1.`name`, p1.`nickname`, p1.`uuid`, p1.`ip`, p1.`firstseen`, p1.`lastseen`, 0 as `name_ban`, 0 as `ip_ban` FROM `%tracking%` p1 INNER JOIN (SELECT max(lastseen) lastseen, name FROM `%tracking%` WHERE uuid=? GROUP BY name,nickname) p2 ON p1.name = p2.name AND p1.lastseen = p2.lastseen WHERE p1.uuid=? ORDER BY p1.lastseen DESC;".replace("%tracking%", getName()));
         checkNameChange = registerStatement("checkNameChange", "SELECT `name`, `nickname`, `uuid`, `ip`, `firstseen`, `lastseen`, 0 AS `name_ban`, 0 AS `ip_ban` FROM " + getName() + " WHERE `uuid`=? AND `player`!=? ORDER BY `lastseen` DESC LIMIT 1;");
         getPlayerAlt = registerStatement("getPlayerAlt", "SELECT t.`name`, t.`nickname`, t.`uuid`, t.`ip`, t.`firstseen`, t.`lastseen`, IF(b1.`date` IS NOT NULL, IF (b1.`until` IS NULL,1,2), 0) as `name_ban`, IF(b2.`date` IS NOT NULL, IF (b2.`until` IS NULL,1,2), 0) as `ip_ban` FROM `%tracking%` AS t LEFT JOIN `%bans%` AS b1 ON (t.`uuid`=b1.`who`) AND b1.`action`='ban' AND b1.`unban_id` IS NULL  AND (b1.`until` IS NULL OR b1.`until` > NOW()) LEFT JOIN `%bans%` AS b2 ON (t.`ip`=b2.`who`) AND b2.`action`='ban' AND b2.`unban_id` IS NULL  AND (b2.`until` IS NULL OR b2.`until` > NOW()) WHERE `ip`=? AND `uuid`!=? GROUP BY `uuid` ORDER BY `lastseen` DESC LIMIT 1;".replace("%tracking%", getName()).replace("%bans%", bansTable));
         matchPlayers = registerStatement("matchPlayers", "SELECT `uuid` FROM `%tracking%` WHERE `name` LIKE ? OR `nickname` LIKE ? OR `uuid` LIKE ? GROUP BY `uuid`;".replace("%tracking%", getName()));
@@ -191,6 +191,25 @@ public class Tracking extends BaseRepository {
     
     public List<UUID> matchPlayers(String nameOrId) throws SQLException {
         nameOrId = String.format("%%%s%%", nameOrId);
+        ConnectionHandler handler = getConnection();
+        ResultSet result = null;
+        try {
+            result = handler.executeQuery(matchPlayers, nameOrId, nameOrId, nameOrId);
+            List<UUID> ids = Lists.newArrayList();
+            while (result.next()) {
+                ids.add(Utilities.makeUUID(result.getString(1)));
+            }
+            
+            return ids;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            handler.release();
+        }
+    }
+    
+    public List<UUID> matchFullPlayers(String nameOrId) throws SQLException {
         ConnectionHandler handler = getConnection();
         ResultSet result = null;
         try {
