@@ -105,6 +105,10 @@ class ParseNode {
         return transformer.apply(value);
     }
     
+    public Function<String, ?> getTransformer() {
+        return transformer;
+    }
+    
     public String getDebugName() {
         String text;
         if (isTerminal) {

@@ -22,7 +22,7 @@ import com.google.common.reflect.Parameter;
 import com.google.common.reflect.TypeToken;
 
 class ParseTree {
-    private ParseNode root;
+    protected ParseNode root;
     private Set<Variant> variants;
     
     public ParseTree(List<Method> methods) {

@@ -157,4 +157,18 @@ public class DateDiff {
         
         return builder.toString();
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof DateDiff)) {
+            return false;
+        }
+        
+        return ((DateDiff)obj).time == time;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Long.valueOf(time).hashCode();
+    }
 }
