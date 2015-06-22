@@ -40,6 +40,7 @@ teleport.toggle.on = &6Telports have been toggled on
 teleport.toggle.off = &cTelports have been toggled off
 teleport.error.server = &c Unable to teleport to unknown server {server}
 teleport.error.world = &cUnable to teleport to unknown world {world}
+teleport.error.location = &cInvalid coordinate {value}
 
 teleport.delay.start = &6Teleportation will commence in &c{time}&6. Don't move.
 teleport.delay.end = &6Teleportation commencing...
@@ -112,10 +113,12 @@ ban.display.personal = &cYou have been banned. Reason: {message}
 ban.display.broadcast = &b{player} has been banned. Reason: {message}
 ban.display.broadcast.auto = &b{player} has been auto banned.
 
+ipban.not-ip = &cThat is not an IP address
 ipban.display.personal = &cYour IP has been banned. Reason: {message}
 ipban.display.broadcast = &b{player} has been ip banned. Reason: {message}
 ipban.display.broadcast.auto = &b{player} has been auto ip banned.
 
+tempban.not-date = &cInvalid date. Needs to be in the format of <time><unit>... eg. 6h, 20m, 5d6h
 tempban.display.personal = &cYou have been temporarily banned ({shortleft}). Reason: {message}
 tempban.display.broadcast = &b{player} has been temporarily banned ({shortleft}). Reason: {message}
 tempban.display.broadcast.auto = &b{player} has been auto temp-banned ({shortleft}).

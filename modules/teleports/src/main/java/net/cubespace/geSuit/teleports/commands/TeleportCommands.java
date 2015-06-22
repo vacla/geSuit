@@ -3,6 +3,7 @@ package net.cubespace.geSuit.teleports.commands;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.commands.Command;
+import net.cubespace.geSuit.core.commands.CommandContext;
 import net.cubespace.geSuit.core.commands.CommandPriority;
 import net.cubespace.geSuit.core.commands.Optional;
 import net.cubespace.geSuit.core.objects.Location;
@@ -148,12 +149,25 @@ public class TeleportCommands {
     }
     
     @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <x> <y> <z> [world]")
-    public void tp(Player sender, int x, int y, int z, @Optional String worldName) {
-        GlobalPlayer player = Global.getPlayer(sender.getUniqueId());
+    public void tp(CommandContext<Player> context, int x, int y, int z, @Optional String worldName) {
+    	if (context.isErrored()) {
+    		switch (context.getErrorArg()) {
+    		case 0:
+    		case 1:
+    		case 2:
+    			context.setErrorMessage(Global.getMessages().get("teleport.error.location", "value", context.getErrorInput()));
+    			break;
+    		}
+    		
+    		return;
+    	}
+    	
+    	Player sender = context.getSender();
+        GlobalPlayer player = Global.getPlayer(context.getSender().getUniqueId());
         
         if (worldName != null) {
             if (Bukkit.getWorld(worldName) == null) {
-                sender.sendMessage(Global.getMessages().get("teleport.error.world", "world", worldName));
+                context.sendMessage(Global.getMessages().get("teleport.error.world", "world", worldName));
                 return;
             }
         } else {
@@ -162,7 +176,7 @@ public class TeleportCommands {
         
         // See if teleporting is allowed here
         if (!sender.teleport(sender.getLocation(), TeleportCause.COMMAND)) {
-            sender.sendMessage(Global.getMessages().get("teleport.blocked.area"));
+        	sender.sendMessage(Global.getMessages().get("teleport.blocked.area"));
             return;
         }
         
@@ -177,7 +191,20 @@ public class TeleportCommands {
     
     @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <server> <world> <x> <y> <z>")
     @CommandPriority(1)
-    public void tp(Player sender, String serverName, String worldName, int x, int y, int z) {
+    public void tp(CommandContext<Player> context, String serverName, String worldName, int x, int y, int z) {
+    	if (context.isErrored()) {
+    		switch (context.getErrorArg()) {
+    		case 2:
+    		case 3:
+    		case 4:
+    			context.setErrorMessage(Global.getMessages().get("teleport.error.location", "value", context.getErrorInput()));
+    			break;
+    		}
+    		
+    		return;
+    	}
+    	
+    	Player sender = context.getSender();
         GlobalPlayer player = Global.getPlayer(sender.getUniqueId());
         
         // See if teleporting is allowed here
@@ -242,17 +269,29 @@ public class TeleportCommands {
     
     @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <player> <x> <y> <z> [world]")
     @CommandPriority(2)
-    public void tp(CommandSender sender, String playerName, int x, int y, int z, @Optional String worldName) {
+    public void tp(CommandContext<CommandSender> context, String playerName, int x, int y, int z, @Optional String worldName) {
+    	if (context.isErrored()) {
+    		switch (context.getErrorArg()) {
+    		case 1:
+    		case 2:
+    		case 3:
+    			context.setErrorMessage(Global.getMessages().get("teleport.error.location", "value", context.getErrorInput()));
+    			break;
+    		}
+    		
+    		return;
+    	}
+    	
         GlobalPlayer player = Global.getPlayer(playerName);
         
         if (player == null) {
-            sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
+            context.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         
         if (worldName != null) {
             if (Bukkit.getWorld(worldName) == null) {
-                sender.sendMessage(Global.getMessages().get("teleport.error.world", "world", worldName));
+                context.sendMessage(Global.getMessages().get("teleport.error.world", "world", worldName));
                 return;
             }
         }
@@ -262,16 +301,28 @@ public class TeleportCommands {
         Result result = actions.teleport(player, target);
         
         if (result.getMessage() != null) {
-            sender.sendMessage(result.getMessage());
+            context.sendMessage(result.getMessage());
         }
     }
     
     @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <player> <server> <world> <x> <y> <z>")
-    public void tp(CommandSender sender, String playerName, String serverName, String worldName, int x, int y, int z) {
+    public void tp(CommandContext<CommandSender> context, String playerName, String serverName, String worldName, int x, int y, int z) {
+    	if (context.isErrored()) {
+    		switch (context.getErrorArg()) {
+    		case 3:
+    		case 4:
+    		case 5:
+    			context.setErrorMessage(Global.getMessages().get("teleport.error.location", "value", context.getErrorInput()));
+    			break;
+    		}
+    		
+    		return;
+    	}
+    	
         GlobalPlayer player = Global.getPlayer(playerName);
         
         if (player == null) {
-            sender.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
+            context.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
         
@@ -280,7 +331,7 @@ public class TeleportCommands {
         Result result = actions.teleport(player, target);
         
         if (result.getMessage() != null) {
-            sender.sendMessage(result.getMessage());
+            context.sendMessage(result.getMessage());
         }
     }
 }

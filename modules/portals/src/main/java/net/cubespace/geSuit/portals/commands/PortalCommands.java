@@ -3,8 +3,10 @@ package net.cubespace.geSuit.portals.commands;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.commands.Command;
+import net.cubespace.geSuit.core.commands.CommandContext;
 import net.cubespace.geSuit.core.commands.Optional;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Portal;
@@ -34,10 +36,25 @@ public class PortalCommands {
     }
     
     @Command(name="setportal", async=true, aliases={"createportal", "makeportal", "sportal"}, permission="gesuit.portals.command.setportal", usage="/<command> <name> <type> <destination> [<fill>]")
-    public void setportal(Player player, String portalName, Portal.Type type, String destination, @Optional Portal.FillType fill) {
+    public void setportal(CommandContext<Player> context, String portalName, Portal.Type type, String destination, @Optional Portal.FillType fill) {
+        // Handle parse errors
+        if (context.isErrored()) {
+            switch (context.getErrorArg()) {
+            case 1: // type
+                context.setErrorMessage(Global.getMessages().get("portal.command.error.type"));
+                break;
+            case 3: // filltype
+                context.setErrorMessage(Global.getMessages().get("portal.command.error.fill"));
+                break;
+            }
+            return;
+        }
+        
         if (fill == null) {
             fill = Portal.FillType.Air;
         }
+        
+        Player player = context.getSender();
         
         Selection selection = worldEdit.getSelection(player);
         if (selection == null) {

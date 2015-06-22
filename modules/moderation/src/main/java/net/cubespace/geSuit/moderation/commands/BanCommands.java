@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.commands.Command;
+import net.cubespace.geSuit.core.commands.CommandContext;
 import net.cubespace.geSuit.core.commands.CommandPriority;
 import net.cubespace.geSuit.core.commands.Optional;
 import net.cubespace.geSuit.core.commands.Varargs;
@@ -44,10 +45,15 @@ public class BanCommands {
     
     @Command(name="ipban", async=true, aliases={"dbip","banip"}, permission="gesuit.bans.command.ipban", usage="/<command> <ip> [reason]")
     @CommandPriority(2)
-    public void ipBan(CommandSender sender, InetAddress ip, @Optional @Varargs String reason) {
-        Result result = actions.ban(ip, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
+    public void ipBan(CommandContext<CommandSender> context, InetAddress ip, @Optional @Varargs String reason) {
+    	if (context.isErrored()) {
+    		context.setErrorMessage(Global.getMessages().get("ipban.not-ip"));
+    		return;
+    	}
+    	
+        Result result = actions.ban(ip, reason, context.getSender().getName(), (context.getSender() instanceof Player ? ((Player)context.getSender()).getUniqueId() : null));
         if (result.getMessage() != null) {
-            sender.sendMessage(result.getMessage());
+            context.sendMessage(result.getMessage());
         }
     }
     
@@ -67,24 +73,40 @@ public class BanCommands {
     }
     
     @Command(name="tempbanip", async=true, aliases={"tbanip","dtbip"}, permission="gesuit.bans.command.tempbanip", usage="/<command> <ip> <time> [reason]")
-    public void tempBan(CommandSender sender, InetAddress ip, DateDiff date, @Optional @Varargs String reason) {
-        Result result = actions.banUntil(ip, reason, date.fromNow(), sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
+    public void tempBan(CommandContext<CommandSender> context, InetAddress ip, DateDiff date, @Optional @Varargs String reason) {
+    	if (context.isErrored()) {
+    		switch (context.getErrorArg()) {
+    		case 0: // ip
+    			context.setErrorMessage(Global.getMessages().get("ipban.not-ip"));
+    			break;
+    		case 1: // date
+    			context.setErrorMessage(Global.getMessages().get("tempban.not-date"));
+    			break;
+    		}
+    		return;
+    	}
+    	
+        Result result = actions.banUntil(ip, reason, date.fromNow(), context.getSender().getName(), (context.getSender() instanceof Player ? ((Player)context.getSender()).getUniqueId() : null));
         if (result.getMessage() != null) {
-            sender.sendMessage(result.getMessage());
+            context.sendMessage(result.getMessage());
         }
     }
     
     @Command(name="tempban", async=true, aliases={"tban","bant","bantemp","dtb"}, permission="gesuit.bans.command.tempban", usage="/<command> <player> <time> [reason]")
-    public void tempBan(CommandSender sender, String playerName, DateDiff date, @Optional @Varargs String reason) {
+    public void tempBan(CommandContext<CommandSender> context, String playerName, DateDiff date, @Optional @Varargs String reason) {
+    	if (context.isErrored()) {
+    		context.setErrorMessage(Global.getMessages().get("tempban.not-date"));
+    		return;
+    	}
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
             throw new IllegalArgumentException(Global.getMessages().get("ban.unknown-player", "player", playerName));
         }
         
-        Result result = actions.banUntil(player, reason, date.fromNow(), sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
+        Result result = actions.banUntil(player, reason, date.fromNow(), context.getSender().getName(), (context.getSender() instanceof Player ? ((Player)context.getSender()).getUniqueId() : null));
         if (result.getMessage() != null) {
-            sender.sendMessage(result.getMessage());
+            context.sendMessage(result.getMessage());
         }
     }
     
@@ -119,10 +141,15 @@ public class BanCommands {
     
     @Command(name="unbanip", async=true, aliases={"ipunban","unipban", "ipsafe", "safeip", "pardonip", "dubip"}, permission="gesuit.bans.command.ipban", usage="/<command> <player> [reason]")
     @CommandPriority(2)
-    public void unbanIp(CommandSender sender, InetAddress ip, @Optional @Varargs String reason) {
-        Result result = actions.unban(ip, reason, sender.getName(), (sender instanceof Player ? ((Player)sender).getUniqueId() : null));
+    public void unbanIp(CommandContext<CommandSender> context, InetAddress ip, @Optional @Varargs String reason) {
+    	if (context.isErrored()) {
+    		context.setErrorMessage(Global.getMessages().get("ipban.not-ip"));
+    		return;
+    	}
+    	
+        Result result = actions.unban(ip, reason, context.getSender().getName(), (context.getSender() instanceof Player ? ((Player)context.getSender()).getUniqueId() : null));
         if (result.getMessage() != null) {
-            sender.sendMessage(result.getMessage());
+            context.sendMessage(result.getMessage());
         }
     }
     
