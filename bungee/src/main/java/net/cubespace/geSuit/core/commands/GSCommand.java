@@ -97,4 +97,27 @@ abstract class GSCommand extends Command implements TabExecutor {
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
         return tabComplete((Object)sender, getName(), args);
     }
+    
+    protected CommandContext<?> createContext(final Object sender, net.cubespace.geSuit.core.commands.Command command, String label) {
+        return new BungeeCommandContext<CommandSender>((CommandSender)sender, command, label);
+    }
+    
+    protected CommandContext<?> createErrorContext(Object sender, net.cubespace.geSuit.core.commands.Command command, String label, Throwable error, int argument, String input) {
+        return new BungeeCommandContext<CommandSender>((CommandSender)sender, command, label, error, argument, input);
+    }
+    
+    private static class BungeeCommandContext<T extends CommandSender> extends CommandContext<T> {
+        BungeeCommandContext(T sender, net.cubespace.geSuit.core.commands.Command command, String label) {
+            super(sender, command, label);
+        }
+        
+        BungeeCommandContext(T sender, net.cubespace.geSuit.core.commands.Command command, String label, Throwable error, int argument, String argumentValue) {
+            super(sender, command, label, error, argument, argumentValue);
+        }
+        
+        @Override
+        public void sendMessage(String message) {
+            getSender().sendMessage(TextComponent.fromLegacyText(message));
+        }
+    }
 }

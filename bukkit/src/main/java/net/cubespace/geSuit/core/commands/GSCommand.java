@@ -83,4 +83,27 @@ abstract class GSCommand extends org.bukkit.command.Command implements PluginIde
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
         return tabComplete((Object)sender, alias, args);
     }
+    
+    protected CommandContext<?> createContext(final Object sender, net.cubespace.geSuit.core.commands.Command command, String label) {
+        return new BukkitCommandContext<CommandSender>((CommandSender)sender, command, label);
+    }
+    
+    protected CommandContext<?> createErrorContext(Object sender, net.cubespace.geSuit.core.commands.Command command, String label, Throwable error, int argument, String input) {
+        return new BukkitCommandContext<CommandSender>((CommandSender)sender, command, label, error, argument, input);
+    }
+    
+    private static class BukkitCommandContext<T extends CommandSender> extends CommandContext<T> {
+        BukkitCommandContext(T sender, net.cubespace.geSuit.core.commands.Command command, String label) {
+            super(sender, command, label);
+        }
+        
+        BukkitCommandContext(T sender, net.cubespace.geSuit.core.commands.Command command, String label, Throwable error, int argument, String argumentValue) {
+            super(sender, command, label, error, argument, argumentValue);
+        }
+        
+        @Override
+        public void sendMessage(String message) {
+            getSender().sendMessage(message);
+        }
+    }
 }

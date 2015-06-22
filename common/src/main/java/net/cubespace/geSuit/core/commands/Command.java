@@ -5,7 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.cubespace.geSuit.core.serialization.Serialization;
 import net.cubespace.geSuit.core.storage.DataConversion;
 
 /**
@@ -13,7 +12,12 @@ import net.cubespace.geSuit.core.storage.DataConversion;
  * 
  * <h2>Method Requirements</h2>
  * <ul>
- *   <li>The first parameter must be a CommandSender or a sub class</li>
+ *   <li>The first parameter must be either:
+ *       <ul>
+ *          <li>A CommandSender or a sub class</li>
+ *          <li>A CommandContext with type CommandSender or a sub class</li>
+ *       </ul>
+ *   </li>
  *   <li>The return type must be void</li>
  *   <li>Each parameter (except the first) must be a type that is serializable through the {@link DataConversion} system</li>
  * </ul>
@@ -37,6 +41,13 @@ import net.cubespace.geSuit.core.storage.DataConversion;
  * <p>When you require a bunch of arguments to be provided as one, for example for a message, you can use the {@link Varargs} annotation
  * which will combine all remaining provided arguments into one item. This works with non string types too as it will attempt to parse the combined
  * text as the target type.</p>
+ * 
+ * <h2>CommandContexts vs CommandSenders</h2>
+ * <p>Sometimes you need to handle error cases with custom messages or other actions. To this end, there is the {@link CommandContext}.
+ * When the input cannot be converted to the target type, the command <b>will</b> still be executed but you will, through
+ * the CommandContext, be provided with the error details. When this happens, you should not execute the command. During an error execution,
+ * no arguments will be provided with values even if some of them successfully parsed.</p>
+ * <p>CommandSenders when used do not allow you to handle error cases. The method will only be called when the command is parsed successfully.</p>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

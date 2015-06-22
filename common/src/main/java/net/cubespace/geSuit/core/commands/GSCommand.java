@@ -51,4 +51,12 @@ abstract class GSCommand {
     protected abstract boolean execute(Object sender, String label, String[] args);
     
     protected abstract List<String> tabComplete(Object sender, String label, String[] args);
+    
+    protected CommandContext<?> createContext(Object sender, Command command, String label) {
+        throw new UnsupportedOperationException("Should have been overridden");
+    }
+    
+    protected CommandContext<?> createErrorContext(Object sender, Command command, String label, Throwable error, int argument, String input) {
+        throw new UnsupportedOperationException("Should have been overridden");
+    }
 }

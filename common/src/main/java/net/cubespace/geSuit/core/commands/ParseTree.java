@@ -125,7 +125,7 @@ class ParseTree {
         if (node.isTerminal()) {
             if (arguments.length > node.getArgumentIndex()) {
                 //DebugPrintStream.systemOut.println("#" + arguments[node.getArgumentIndex()]);
-                throw new ArgumentParseException(node, node.getArgumentIndex(), arguments[node.getArgumentIndex()], "More input");
+                throw new CommandSyntaxException(node, true);
             }
             //DebugPrintStream.systemOut.println("*fin*");
             return new ParseResult(node.getVariant());
@@ -133,7 +133,7 @@ class ParseTree {
         
         if (arguments.length <= node.getArgumentIndex()) {
             //DebugPrintStream.systemOut.println("*eol*");
-            throw new ArgumentParseException(node, node.getArgumentIndex(), null, "Premature end");
+            throw new CommandSyntaxException(node, false);
         }
         
         String argument = arguments[node.getArgumentIndex()];
@@ -149,7 +149,7 @@ class ParseTree {
             //DebugPrintStream.systemOut.println("*ok*");
         } catch (IllegalArgumentException e) {
             //DebugPrintStream.systemOut.println("*err* " + e.getMessage());
-            throw new ArgumentParseException(node, node.getArgumentIndex(), argument, "Wrong value");
+            throw new CommandInterpretException(node, argument, e);
         }
         
         // Now combine with children

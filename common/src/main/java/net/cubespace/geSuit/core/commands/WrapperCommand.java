@@ -2,6 +2,8 @@ package net.cubespace.geSuit.core.commands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +14,6 @@ import net.cubespace.geSuit.core.commands.ParseTree.ParseResult;
 
 import com.google.common.collect.Lists;
 import com.google.common.reflect.Invokable;
-import com.google.common.reflect.Parameter;
 
 public class WrapperCommand extends GSCommand {
     private Object commandHolder;
@@ -49,8 +50,25 @@ public class WrapperCommand extends GSCommand {
             throw new IllegalArgumentException(String.format("Method %s in class %s requires at least one parameter of type CommandSender or subclass to be used as a command", method.getName(), method.getDeclaringClass().getName()));
         }
         
+        Class<?> senderType;
         if (!isCommandSender(params[0])) {
-            throw new IllegalArgumentException(String.format("Method %s in class %s requires the first parameter be of type CommandSender or subclass to be used as a command", method.getName(), method.getDeclaringClass().getName()));
+            if (!CommandContext.class.equals(params[0])) {
+                throw new IllegalArgumentException(String.format("Method %s in class %s requires the first parameter be of type CommandSender, a subclass of CommandSender, or a CommandContext to be used as a command", method.getName(), method.getDeclaringClass().getName()));
+            } else {
+                Type raw = method.getGenericParameterTypes()[0];
+                Type argType = ((ParameterizedType)raw).getActualTypeArguments()[0];
+                if (argType instanceof Class<?>) {
+                    if (!isCommandSender((Class<?>)argType)) {
+                        throw new IllegalArgumentException(String.format("Method %s in class %s has invalid CommandContext type %s. The parameter must be CommandSender or a subclass.", method.getName(), method.getDeclaringClass().getName(), ((Class<?>)argType).getName()));
+                    } else {
+                        senderType = (Class<?>)argType;
+                    }
+                } else {
+                    throw new IllegalArgumentException(String.format("Method %s in class %s has invalid CommandContext type %s. The parameter must be CommandSender or a subclass.", method.getName(), method.getDeclaringClass().getName(), argType));
+                }
+            }
+        } else {
+            senderType = params[0];
         }
         
         if (!method.getReturnType().equals(Void.TYPE) && !method.getReturnType().equals(Void.class)) {
@@ -63,7 +81,7 @@ public class WrapperCommand extends GSCommand {
             priority = priorityTag.value();
         }
         
-        variants.add(new MethodWrapper(method, tag.async(), priority));
+        variants.add(new MethodWrapper(method, tag.async(), priority, tag, senderType));
         if (getUsage0().isEmpty()) {
             setUsage0(tag.usage());
         } else { 
@@ -82,27 +100,63 @@ public class WrapperCommand extends GSCommand {
         parseTree = new ParseTree(methods);
         parseTree.build();
     }
-
+    
+    private Object[] createEmptyParameters(Method method) {
+        Class<?>[] params = method.getParameterTypes();
+        Object[] emptyParams = new Object[params.length];
+        
+        for (int i = 1; i < emptyParams.length; ++i) {
+            Class<?> param = params[i];
+            if (param.isPrimitive()) {
+                if (param.equals(Byte.TYPE)) {
+                    emptyParams[i] = (byte)0;
+                } else if (param.equals(Short.TYPE)) {
+                    emptyParams[i] = (short)0;
+                } else if (param.equals(Integer.TYPE)) {
+                    emptyParams[i] = (int)0;
+                } else if (param.equals(Long.TYPE)) {
+                    emptyParams[i] = (long)0;
+                } else if (param.equals(Float.TYPE)) {
+                    emptyParams[i] = (float)0;
+                } else if (param.equals(Double.TYPE)) {
+                    emptyParams[i] = (double)0;
+                } else if (param.equals(Character.TYPE)) {
+                    emptyParams[i] = (char)0;
+                } else if (param.equals(Boolean.TYPE)) {
+                    emptyParams[i] = false;
+                } else {
+                    throw new AssertionError();
+                }
+            }
+        }
+        
+        return emptyParams;
+    }
+    
     @Override
     public boolean execute(final Object sender, String label, String[] args) {
         try {
-            System.out.println("Executing command " + label);
-            
             ParseResult result = parseTree.parse(args);
+            MethodWrapper variant = variants.get(result.variant);
+            
             final Invokable<Object, Void> method = parseTree.getVariant(result.variant);
             System.out.println("Parse complete: " + method.toString() + " in " + method.getDeclaringClass().getName());
             
-            
             // Ensure the caller is the right type
-            Parameter senderParam = method.getParameters().get(0);
-            if (!senderParam.getType().getRawType().isInstance(sender)) {
+            if (!variant.senderType.isInstance(sender)) {
                 displayWrongSenderError(sender);
                 return true;
             }
             
             // Make parameter list
             final Object[] parameters = new Object[result.parameters.size() + 1];
-            parameters[0] = sender;
+            
+            if (variant.useContext) {
+                parameters[0] = createContext(sender, variant.tag, label);
+            } else {
+                parameters[0] = sender;
+            }
+            
             int index = 1;
             for (Object object : result.parameters) {
                 parameters[index++] = object;
@@ -121,9 +175,36 @@ public class WrapperCommand extends GSCommand {
             } else {
                 execute(sender, method, parameters);
             }
-        } catch (ArgumentParseException e) {
+        } catch (CommandSyntaxException e) {
+            // Syntax doesnt match at all
+            
             sendMessage(sender, getUsage0().replace("<command>", label));
-            System.out.println("APE: argument " + e.getArgument() + " in variant " + e.getNode().getVariant() + " value " + e.getValue() + " reason " + e.getReason());
+        } catch (CommandInterpretException e) {
+            // Possible match, but content cant convert
+            
+            MethodWrapper variant = variants.get(e.getNode().getVariant());
+            if (variant.useContext) {
+                // If the sender is not the right type, only show the usage
+                if (!variant.senderType.isInstance(sender)) {
+                    sendMessage(sender, getUsage0().replace("<command>", label));
+                    return true;
+                // Execute the method to handle error messages
+                } else {
+                    Object[] parameters = createEmptyParameters(variant.method);
+                    CommandContext<?> context = createErrorContext(sender, variant.tag, label, e.getCause(), e.getNode().getArgumentIndex(), e.getInput());
+                    parameters[0] = context;
+                    execute(sender, parseTree.getVariant(e.getNode().getVariant()), parameters);
+                    
+                    if (context.getErrorMessage() == null) {
+                        sendMessage(sender, getUsage0().replace("<command>", label));
+                    } else {
+                        sendMessage(sender, "&c" + context.getErrorMessage());
+                    }
+                }
+            // For non context mode, just display the errors message
+            } else {
+                sendMessage(sender, "&c" + e.getCause().getMessage());
+            }
         }
         
         return true;
@@ -154,11 +235,18 @@ public class WrapperCommand extends GSCommand {
         public Method method;
         public int priority;
         public boolean async;
+        public Command tag;
+        public Class<?> senderType;
+        public boolean useContext;
         
-        public MethodWrapper(Method method, boolean async, int priority) {
+        public MethodWrapper(Method method, boolean async, int priority, Command tag, Class<?> senderType) {
             this.method = method;
             this.priority = priority;
             this.async = async;
+            this.tag = tag;
+            this.senderType = senderType;
+            
+            useContext = method.getParameterTypes()[0].equals(CommandContext.class);
         }
 
         @Override
