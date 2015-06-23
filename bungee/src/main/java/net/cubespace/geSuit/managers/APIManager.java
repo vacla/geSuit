@@ -15,7 +15,6 @@ import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.core.objects.Track;
-import net.cubespace.geSuit.tasks.SendPluginMessage;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 
@@ -48,7 +47,7 @@ public class APIManager {
                     
                     out.writeUTF(builder.toString());
                     
-                    new SendPluginMessage("geSuitAPI", server, stream).run();
+                    //new SendPluginMessage("geSuitAPI", server, stream).run();
                 } catch (IOException e) {
                     throw new AssertionError(e);
                 }
@@ -93,7 +92,7 @@ public class APIManager {
                     
                     out.writeUTF(builder.toString());
                     
-                    new SendPluginMessage("geSuitAPI", server, stream).run();
+                    //new SendPluginMessage("geSuitAPI", server, stream).run();
                 } catch (IOException e) {
                     throw new AssertionError(e);
                 }
