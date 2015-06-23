@@ -2,9 +2,9 @@ package net.cubespace.geSuit.commands;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.geSuitPlugin;
+import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.managers.AnnouncementManager;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
@@ -15,10 +15,12 @@ import net.md_5.bungee.api.plugin.Command;
 public class ReloadCommand extends Command
 {
     private geSuitPlugin plugin;
-    public ReloadCommand(geSuitPlugin plugin)
+    private ConfigManager configManager;
+    public ReloadCommand(geSuitPlugin plugin, ConfigManager manager)
     {
         super("gsreload");
         this.plugin = plugin;
+        this.configManager = manager;
     }
 
     @Override
@@ -31,12 +33,8 @@ public class ReloadCommand extends Command
         }
 
         try {
-            ConfigManager.announcements.reload();
-            ConfigManager.bans.reload();
-            ConfigManager.main.reload();
-            ConfigManager.spawn.reload();
+            configManager.reloadAll();
             plugin.loadLanguage();
-            ConfigManager.teleport.reload();
 
             AnnouncementManager.reloadAnnouncements();
             PlayerManager.sendMessageToTarget(sender, "All Configs reloaded");

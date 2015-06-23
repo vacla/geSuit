@@ -6,7 +6,6 @@ import au.com.addstar.bc.event.BCPlayerJoinEvent;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.objects.Track;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;

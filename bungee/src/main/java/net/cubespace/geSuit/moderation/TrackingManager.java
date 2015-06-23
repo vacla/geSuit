@@ -13,6 +13,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.config.ConfigManager;
+import net.cubespace.geSuit.config.ConfigReloadListener;
+import net.cubespace.geSuit.config.ModerationConfig;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.objects.TimeRecord;
@@ -20,20 +23,30 @@ import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.core.storage.StorageException;
 import net.cubespace.geSuit.database.repositories.OnTime;
 import net.cubespace.geSuit.database.repositories.Tracking;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class TrackingManager implements TrackingActions {
+public class TrackingManager implements TrackingActions, ConfigReloadListener {
     private Tracking trackingRepo;
     private OnTime ontimeRepo;
     private Logger logger;
+    
+    private ModerationConfig config;
     
     public TrackingManager(Tracking tracking, OnTime ontime, Logger logger) {
         this.trackingRepo = tracking;
         this.ontimeRepo = ontime;
         this.logger = logger;
+    }
+    
+    public void loadConfig(ModerationConfig config) {
+        this.config = config;
+    }
+    
+    @Override
+    public void onConfigReloaded(ConfigManager manager) {
+        loadConfig(manager.moderation());
     }
     
     public void updateTracking(GlobalPlayer player) {
@@ -142,7 +155,7 @@ public class TrackingManager implements TrackingActions {
     
     public void addPlayerInfo(ProxiedPlayer player, GlobalPlayer gPlayer) {
         // Check for alt accounts and notify staff (used later)
-        if (!ConfigManager.bans.ShowAltAccounts) {
+        if (!config.ShowAltAccounts) {
             return;
         }
         
@@ -155,7 +168,7 @@ public class TrackingManager implements TrackingActions {
             
             String message;
             // Is banned?
-            if (ConfigManager.bans.ShowBannedAltAccounts && (alt.isIpBanned() || alt.isNameBanned())) {
+            if (config.ShowBannedAltAccounts && (alt.isIpBanned() || alt.isNameBanned())) {
                 message = Global.getMessages().get(
                         "connect.alt-join.banned",
                         "player", gPlayer.getDisplayName(),

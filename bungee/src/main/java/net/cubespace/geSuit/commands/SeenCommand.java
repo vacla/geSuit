@@ -9,11 +9,11 @@ import com.google.common.collect.Maps;
 
 import au.com.addstar.bc.BungeeChat;
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.config.MainConfig;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.general.GeoIPLookup;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -29,11 +29,13 @@ import net.md_5.bungee.api.plugin.Command;
 public class SeenCommand extends Command {
     private BanManager bans;
     private GeoIPLookup geoipLookup;
+    private MainConfig config;
     
-    public SeenCommand(BanManager bans, GeoIPLookup geoipLookup) {
+    public SeenCommand(BanManager bans, GeoIPLookup geoipLookup, MainConfig config) {
         super("seen");
         this.bans = bans;
         this.geoipLookup = geoipLookup;
+        this.config = config;
     }
 
     @SuppressWarnings("deprecation")
@@ -62,7 +64,7 @@ public class SeenCommand extends Command {
         boolean online = pPlayer != null;
 
         // Vanished and not online
-        if (ConfigManager.main.BungeeChatIntegration && !seeVanish) {
+        if (config.BungeeChatIntegration && !seeVanish) {
             if (BungeeChat.instance.getSyncManager().getPropertyBoolean(pPlayer, "VNP:vanished", false) && !BungeeChat.instance.getSyncManager().getPropertyBoolean(pPlayer, "VNP:online", true)) {
                 online = false;
             }

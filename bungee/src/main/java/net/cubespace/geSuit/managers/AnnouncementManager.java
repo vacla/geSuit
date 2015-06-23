@@ -2,8 +2,7 @@ package net.cubespace.geSuit.managers;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.geSuit;
-import net.cubespace.geSuit.geSuitPlugin;
-import net.cubespace.geSuit.configs.SubConfig.AnnouncementEntry;
+import net.cubespace.geSuit.config.AnnouncementsConfig.AnnouncementEntry;
 import net.cubespace.geSuit.tasks.GlobalAnnouncements;
 import net.cubespace.geSuit.tasks.ServerAnnouncements;
 import net.md_5.bungee.api.ProxyServer;
@@ -23,10 +22,10 @@ public class AnnouncementManager {
         setDefaults();
 
         // load global announcements
-        if (ConfigManager.announcements.Enabled) {
-            List<String> global = ConfigManager.announcements.Announcements.get("global").Messages;
+        if (geSuit.getPlugin().getConfigManager().announcements().Enabled) {
+            List<String> global = geSuit.getPlugin().getConfigManager().announcements().Announcements.get("global").Messages;
             if (!global.isEmpty()) {
-                int interval = ConfigManager.announcements.Announcements.get("global").Interval;
+                int interval = geSuit.getPlugin().getConfigManager().announcements().Announcements.get("global").Interval;
                 if (interval > 0) {
                     GlobalAnnouncements g = new GlobalAnnouncements();
                     for (String messages : global) {
@@ -39,9 +38,9 @@ public class AnnouncementManager {
 
             //load server announcements
             for (String server : proxy.getServers().keySet()) {
-                List<String> servermes = ConfigManager.announcements.Announcements.get(server).Messages;
+                List<String> servermes = geSuit.getPlugin().getConfigManager().announcements().Announcements.get(server).Messages;
                 if (!servermes.isEmpty()) {
-                    int interval = ConfigManager.announcements.Announcements.get(server).Interval;
+                    int interval = geSuit.getPlugin().getConfigManager().announcements().Announcements.get(server).Interval;
                     if (interval > 0) {
                         ServerAnnouncements s = new ServerAnnouncements(proxy.getServerInfo(server));
                         for (String messages : servermes) {
@@ -56,7 +55,7 @@ public class AnnouncementManager {
     }
 
     private static void setDefaults() {
-        Map<String, AnnouncementEntry> check = ConfigManager.announcements.Announcements;
+        Map<String, AnnouncementEntry> check = geSuit.getPlugin().getConfigManager().announcements().Announcements;
         if (!check.containsKey("global")) {
             AnnouncementEntry announcementEntry = new AnnouncementEntry();
             announcementEntry.Interval = 300;
@@ -78,7 +77,7 @@ public class AnnouncementManager {
         }
 
         try {
-            ConfigManager.announcements.save();
+            geSuit.getPlugin().getConfigManager().announcements().save();
         } catch (InvalidConfigurationException e) {
 
         }

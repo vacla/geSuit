@@ -1,6 +1,6 @@
 package net.cubespace.geSuit.database;
 
-import net.cubespace.geSuit.configs.SubConfig.Database;
+import net.cubespace.geSuit.config.MainConfig.Database;
 import net.cubespace.geSuit.database.repositories.BanHistory;
 import net.cubespace.geSuit.database.repositories.OnTime;
 import net.cubespace.geSuit.database.repositories.Tracking;

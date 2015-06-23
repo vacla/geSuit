@@ -11,35 +11,40 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.config.ConfigManager;
+import net.cubespace.geSuit.config.ConfigReloadListener;
+import net.cubespace.geSuit.config.ModerationConfig.GeoIPSettings;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import com.maxmind.geoip.Location;
 import com.maxmind.geoip.LookupService;
 import com.maxmind.geoip.regionName;
 
-public class GeoIPLookup {
+public class GeoIPLookup implements ConfigReloadListener {
     private LookupService lookup;
     private File databaseFile;
     private Logger logger;
     private File base;
     
-    public GeoIPLookup(File directory, Logger logger) {
+    private GeoIPSettings settings;
+    
+    public GeoIPLookup(File directory, GeoIPSettings settings, Logger logger) {
         this.base = directory;
+        this.settings = settings;
         this.logger = logger;
     }
     
     public void initialize() {
-        if (ConfigManager.bans.GeoIP.ShowCity) {
+        if (settings.ShowCity) {
             databaseFile = new File(base, "GeoIPCity.dat");
         } else {
             databaseFile = new File(base, "GeoIP.dat");
         }
         
         if (!databaseFile.exists()) {
-            if (ConfigManager.bans.GeoIP.DownloadIfMissing) {
+            if (settings.DownloadIfMissing) {
                 if (!updateDatabase()) {
                     return;
                 }
@@ -56,13 +61,19 @@ public class GeoIPLookup {
         }
     }
     
-    public String lookup(InetAddress address)
-    {
+    @Override
+    public void onConfigReloaded(ConfigManager manager) {
+        settings = manager.moderation().GeoIP;
+        
+        initialize();
+    }
+    
+    public String lookup(InetAddress address) {
         if (lookup == null) { 
             return null;
         }
         
-        if (ConfigManager.bans.GeoIP.ShowCity) {
+        if (settings.ShowCity) {
             Location loc = lookup.getLocation(address);
             if (loc == null) {
                 return null;
@@ -88,10 +99,10 @@ public class GeoIPLookup {
     
     private boolean updateDatabase() {
         String url;
-        if (ConfigManager.bans.GeoIP.ShowCity) {
-            url = ConfigManager.bans.GeoIP.CityDownloadURL;
+        if (settings.ShowCity) {
+            url = settings.CityDownloadURL;
         } else {
-            url = ConfigManager.bans.GeoIP.DownloadURL;
+            url = settings.DownloadURL;
         }
         
         if (url == null || url.trim().isEmpty()) {
@@ -148,7 +159,7 @@ public class GeoIPLookup {
     
     public void addPlayerInfo(ProxiedPlayer player, GlobalPlayer gPlayer) {
         // Show Geo location notifications for player (if enabled)
-        if (ConfigManager.bans.GeoIP.ShowOnLogin) {
+        if (settings.ShowOnLogin) {
             String location = lookup(player.getAddress().getAddress());
             if (location != null) {
                 String msg = Global.getMessages().get("connect.geoip", "player", gPlayer.getDisplayName(), "location", location);

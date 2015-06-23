@@ -1,7 +1,7 @@
 package net.cubespace.geSuit.database;
 
 import net.cubespace.geSuit.geSuitPlugin;
-import net.cubespace.geSuit.configs.SubConfig.Database;
+import net.cubespace.geSuit.config.MainConfig.Database;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.sql.Connection;

@@ -11,6 +11,7 @@ import java.util.logging.Level;
 
 import com.google.common.base.Strings;
 
+import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.commands.BanCommands;
 import net.cubespace.geSuit.commands.DebugCommand;
 import net.cubespace.geSuit.commands.KickCommands;
@@ -23,7 +24,8 @@ import net.cubespace.geSuit.commands.WarnCommand;
 import net.cubespace.geSuit.commands.WarnCommands;
 import net.cubespace.geSuit.commands.WarnHistoryCommand;
 import net.cubespace.geSuit.commands.WhereCommand;
-import net.cubespace.geSuit.configs.SubConfig.Redis;
+import net.cubespace.geSuit.config.ConfigManager;
+import net.cubespace.geSuit.config.MainConfig.Redis;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.geCore;
 import net.cubespace.geSuit.core.channel.Channel;
@@ -38,7 +40,6 @@ import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.DatabaseManager;
 import net.cubespace.geSuit.general.GeoIPLookup;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.cubespace.geSuit.moderation.TrackingManager;
 import net.cubespace.geSuit.moderation.WarningsManager;
@@ -58,6 +59,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
 
     public static ProxyServer proxy;
     private boolean DebugEnabled = false;
+    private ConfigManager configManager;
+    
     private RedisConnection redis;
     private RedisChannelManager channelManager;
     private BungeePlayerManager playerManager;
@@ -78,15 +81,24 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         getLogger().info(ChatColor.GREEN + "Starting geSuit");
         proxy = ProxyServer.getInstance();
         
+        // Initialize config
+        configManager = new ConfigManager(this, getDataFolder());
+        try {
+            configManager.initialize();
+        } catch (IOException | InvalidConfigurationException e) {
+            getLogger().log(Level.SEVERE, "Failed to load configuration files. Please fix the problem and restart BungeeCord.", e);
+            return;
+        }
+        
         // Initialize database
-        databaseManager = new DatabaseManager(new ConnectionPool(this), ConfigManager.main.Database);
+        databaseManager = new DatabaseManager(new ConnectionPool(this), configManager.config().Database);
         if (!databaseManager.initialize()) {
             getLogger().severe("Database connection failed to initialize. Please fix the problem and restart BungeeCord.");
             return;
         }
         
         // Initialize backend
-        redis = createRedis(ConfigManager.main.Redis);
+        redis = createRedis(configManager.config().Redis);
         if (redis == null) {
             getLogger().severe("Redis failed to initialize. Please fix the problem and restart BungeeCord.");
             return;
@@ -99,7 +111,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
         
-        playerManager = new BungeePlayerManager(channel, redis, this);
+        playerManager = new BungeePlayerManager(channel, configManager, redis, this);
         
         // Initialize core
         commandManager = new BungeeCommandManager();
@@ -122,13 +134,13 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
 
     private void registerCommands() {
         PluginManager manager = getProxy().getPluginManager();
-        if (ConfigManager.main.MOTD_Enabled) {
-            manager.registerCommand(this, new MOTDCommand());
+        if (configManager.config().MOTD_Enabled) {
+            manager.registerCommand(this, new MOTDCommand(configManager));
         }
-        if (ConfigManager.main.Seen_Enabled) {
-            manager.registerCommand(this, new SeenCommand(bans, geoIpLookup));
+        if (configManager.config().Seen_Enabled) {
+            manager.registerCommand(this, new SeenCommand(bans, geoIpLookup, configManager.config()));
         }
-        if (ConfigManager.bans.TrackOnTime) {
+        if (configManager.moderation().TrackOnTime) {
             proxy.getPluginManager().registerCommand(this, new OnTimeCommand());
         }
         
@@ -138,7 +150,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         
         manager.registerCommand(this, new WarnCommand());
         manager.registerCommand(this, new WhereCommand());
-        manager.registerCommand(this, new ReloadCommand(this));
+        manager.registerCommand(this, new ReloadCommand(this, configManager));
         manager.registerCommand(this, new DebugCommand());
         manager.registerCommand(this, new WarnHistoryCommand());
         manager.registerCommand(this, new NamesCommand());
@@ -216,33 +228,41 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         // Create managers
         spawns = new SpawnManager();
         warps = new WarpManager(warpsChannel);
-        geoIpLookup = new GeoIPLookup(getDataFolder(), getLogger());
+        geoIpLookup = new GeoIPLookup(getDataFolder(), configManager.moderation().GeoIP, getLogger());
+        configManager.addReloadListener(geoIpLookup);
         
         // Load everything
-        warnings.loadConfig();
-        teleports.loadConfig();
+        bans.loadConfig(configManager.moderation());
+        tracking.loadConfig(configManager.moderation());
+        warnings.loadConfig(configManager.moderation());
+        teleports.loadConfig(configManager.teleports());
+        configManager.addReloadListener(bans);
+        configManager.addReloadListener(tracking);
+        configManager.addReloadListener(warnings);
+        configManager.addReloadListener(teleports);
+        
         spawns.loadSpawns();
         geoIpLookup.initialize();
     }
     
     public void loadLanguage() {
-        if (!Strings.isNullOrEmpty(ConfigManager.main.Lang)) {
+        if (!Strings.isNullOrEmpty(configManager.config().Lang)) {
             Messages messages = Global.getMessages();
             
             try {
-                File langFile = new File(getDataFolder(), "lang/" + ConfigManager.main.Lang + ".lang");
+                File langFile = new File(getDataFolder(), "lang/" + configManager.config().Lang + ".lang");
                 if (langFile.exists()) {
                     messages.load(langFile);
                 } else {
-                    InputStream stream = getResourceAsStream("lang/" + ConfigManager.main.Lang + ".lang");
+                    InputStream stream = getResourceAsStream("lang/" + configManager.config().Lang + ".lang");
                     if (stream != null) {
                         messages.load(stream);
                     } else {
-                        getLogger().warning("Failed to load language " + ConfigManager.main.Lang + ". Cannot find it either in the filesystem or in the jar.");
+                        getLogger().warning("Failed to load language " + configManager.config().Lang + ". Cannot find it either in the filesystem or in the jar.");
                     }
                 }
             } catch (IOException e) {
-                getLogger().log(Level.WARNING, "Failed to load language " + ConfigManager.main.Lang + ":", e);
+                getLogger().log(Level.WARNING, "Failed to load language " + configManager.config().Lang + ":", e);
             }
         }
     }
@@ -297,6 +317,10 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     
     public GeoIPLookup getGeoIPLookup() {
         return geoIpLookup;
+    }
+    
+    public ConfigManager getConfigManager() {
+        return configManager;
     }
 
     @Override

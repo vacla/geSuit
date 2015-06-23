@@ -1,7 +1,7 @@
 package net.cubespace.geSuit.commands;
 
+import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.core.Global;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
@@ -13,8 +13,11 @@ import net.md_5.bungee.api.plugin.Command;
  * What does it do: Prints out the MOTD
  */
 public class MOTDCommand extends Command {
-    public MOTDCommand() {
+    private ConfigManager configManager;
+    public MOTDCommand(ConfigManager configManager) {
         super("motd");
+        
+        this.configManager = configManager;
     }
 
     @Override
@@ -24,7 +27,7 @@ public class MOTDCommand extends Command {
 
             return;
         }
-        PlayerManager.sendMessageToTarget(sender, ConfigManager.motd.getMOTD().replace("{player}", sender.getName()));
+        PlayerManager.sendMessageToTarget(sender, configManager.getMOTD(false).replace("{player}", sender.getName()));
     }
 }
 

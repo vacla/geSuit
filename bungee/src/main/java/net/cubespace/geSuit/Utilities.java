@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.profile.Profile;
 import net.md_5.bungee.api.ChatColor;
 
@@ -177,7 +176,7 @@ public class Utilities {
         geSuit.getLogger().info(ChatColor.translateAlternateColorCodes('&', msg));
 
 		// If BungeeChat integration is disabled, just log the message and exit
-		if (!ConfigManager.main.BungeeChatIntegration)
+		if (!geSuit.getPlugin().getConfigManager().config().BungeeChatIntegration)
 			return true;
 
 		ByteArrayOutputStream ostream = new ByteArrayOutputStream();

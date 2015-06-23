@@ -12,6 +12,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.config.ConfigManager;
+import net.cubespace.geSuit.config.ConfigReloadListener;
+import net.cubespace.geSuit.config.ModerationConfig;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.channel.Channel;
@@ -25,7 +28,6 @@ import net.cubespace.geSuit.core.objects.Result.Type;
 import net.cubespace.geSuit.core.storage.StorageException;
 import net.cubespace.geSuit.core.storage.StorageSection;
 import net.cubespace.geSuit.database.repositories.BanHistory;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.remote.moderation.BanActions;
 import net.md_5.bungee.api.ChatColor;
@@ -34,15 +36,26 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class BanManager implements BanActions {
+public class BanManager implements BanActions, ConfigReloadListener {
     private BanHistory banRepo;
     private Logger logger;
     private Channel<BaseMessage> channel;
+    
+    private ModerationConfig config;
     
     public BanManager(BanHistory banRepo, Channel<BaseMessage> channel, Logger logger) {
         this.banRepo = banRepo;
         this.logger = logger;
         this.channel = channel;
+    }
+    
+    public void loadConfig(ModerationConfig config) {
+        this.config = config;
+    }
+    
+    @Override
+    public void onConfigReloaded(ConfigManager manager) {
+        loadConfig(manager.moderation());
     }
     
     @Override
@@ -150,7 +163,7 @@ public class BanManager implements BanActions {
             
             // Finally broadcast message
             String message = Global.getMessages().get("unban.broadcast", "player", player.getDisplayName(), "sender", by);
-            if (ConfigManager.bans.BroadcastUnbans) {
+            if (config.BroadcastUnbans) {
                 PlayerManager.sendBroadcast(message, null);
                 return new Result(Type.Success, (byId == null ? message : null));
             } else {
@@ -183,7 +196,7 @@ public class BanManager implements BanActions {
             }
             
             if (Strings.isNullOrEmpty(reason)) {
-                reason = ConfigManager.bans.DefaultBanReason;
+                reason = config.DefaultBanReason;
             }
             
             BanInfo<?> ban = new BanInfo<Object>(who);
@@ -217,7 +230,7 @@ public class BanManager implements BanActions {
             
             // Finally broadcast message
             String message = getBanBroadcast(ban, isAuto);
-            if (ConfigManager.bans.BroadcastBans) {
+            if (config.BroadcastBans) {
                 PlayerManager.sendBroadcast(message, null);
                 return new Result(Type.Success, (byId == null ? message : null));
             } else {
@@ -260,7 +273,7 @@ public class BanManager implements BanActions {
             }
             
             if (Strings.isNullOrEmpty(reason)) {
-                reason = ConfigManager.bans.DefaultBanReason;
+                reason = config.DefaultBanReason;
             }
             
             // Un-temp ban if needed
@@ -306,7 +319,7 @@ public class BanManager implements BanActions {
             
             // Finally broadcast message
             String message = getBanBroadcast(ipCurrent, isAuto);
-            if (ConfigManager.bans.BroadcastBans) {
+            if (config.BroadcastBans) {
                 PlayerManager.sendBroadcast(message, null);
                 return new Result(Type.Success, (byId == null ? message : null));
             } else {
@@ -352,7 +365,7 @@ public class BanManager implements BanActions {
                     "unban.broadcast", 
                     "player", (who instanceof GlobalPlayer ? ((GlobalPlayer)who).getDisplayName() : ((InetAddress)who).getHostAddress()),
                     "sender", by);
-            if (ConfigManager.bans.BroadcastUnbans) {
+            if (config.BroadcastUnbans) {
                 PlayerManager.sendBroadcast(message, null);
                 return new Result(Type.Success, (byId == null ? message : null));
             } else {
@@ -486,12 +499,12 @@ public class BanManager implements BanActions {
         }
         
         if (Strings.isNullOrEmpty(reason)) {
-            reason = ConfigManager.bans.DefaultKickReason;
+            reason = config.DefaultKickReason;
         }
 
         proxied.disconnect(TextComponent.fromLegacyText(Global.getMessages().get("kick.display.personal", "message", reason)));
         
-        if (ConfigManager.bans.BroadcastKicks) {
+        if (config.BroadcastKicks) {
             if (isAuto) {
                 PlayerManager.sendBroadcast(Global.getMessages().get("kick.display.broadcast.auto", "player", player.getDisplayName(), "message", reason), player.getName());
             } else {
@@ -505,7 +518,7 @@ public class BanManager implements BanActions {
     @Override
     public Result kickAll(String reason) {
         if (Strings.isNullOrEmpty(reason)) {
-            reason = ConfigManager.bans.DefaultKickReason;
+            reason = config.DefaultKickReason;
         }
 
         reason = Global.getMessages().get("kick.display.personal", "message", reason);

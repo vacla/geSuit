@@ -1,15 +1,14 @@
-package net.cubespace.geSuit.configs;
+package net.cubespace.geSuit.config;
+
+import java.io.File;
 
 import net.cubespace.Yamler.Config.Comment;
 import net.cubespace.Yamler.Config.Comments;
 import net.cubespace.Yamler.Config.Config;
-import net.cubespace.geSuit.configs.SubConfig.Database;
-import net.cubespace.geSuit.configs.SubConfig.Redis;
-import net.cubespace.geSuit.geSuit;
 
 public class MainConfig extends Config {
-    public MainConfig() {
-        CONFIG_FILE = geSuit.getFile("config.yml");
+    public MainConfig(File file) {
+        CONFIG_FILE = file;
     }
 
     public Database Database = new Database();
@@ -71,4 +70,28 @@ public class MainConfig extends Config {
     public Integer Version_Database_Warps = 1;
     @Comment("Stored version informations. If you alter this you can damage your Database")
     public Integer Version_Database_Tracking = 1;
+    
+    public static class Redis extends Config {
+        public String host = "localhost";
+        public String password = "";
+        
+        public int port = 6379;
+    }
+    
+    /**
+     * @author geNAZt (fabian.fassbender42@googlemail.com)
+     */
+    public static class Database extends Config {
+        public String Host = "localhost";
+        public String Database = "minecraft";
+        public String Port = "3306";
+        public String Username = "username";
+        public String Password = "password";
+        public Integer Threads = 5;
+        
+        public String NameBanhistory = "banhistory";
+        public String NameWarnhistory = "warnhistory";
+        public String NameOntime = "ontime";
+        public String NameTracking = "tracking";
+    }
 }

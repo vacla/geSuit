@@ -9,6 +9,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.cubespace.geSuit.config.ConfigManager;
+import net.cubespace.geSuit.config.ConfigReloadListener;
+import net.cubespace.geSuit.config.ModerationConfig;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.channel.Channel;
@@ -23,19 +26,22 @@ import net.cubespace.geSuit.core.objects.WarnInfo;
 import net.cubespace.geSuit.core.objects.Result.Type;
 import net.cubespace.geSuit.core.storage.StorageException;
 import net.cubespace.geSuit.database.repositories.WarnHistory;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.remote.moderation.WarnActions;
 import net.md_5.bungee.api.ChatColor;
 
 import com.google.common.base.Preconditions;
 
-public class WarningsManager implements WarnActions {
+public class WarningsManager implements WarnActions, ConfigReloadListener {
     private Logger logger;
     private WarnHistory warnRepo;
     private BanManager banManager;
     private WarnAction[] actions;
     private Channel<BaseMessage> channel;
+    
+    private long warnExpiryTime;
+    private boolean broadcastWarns;
+    private String defaultReason;
     
     public WarningsManager(WarnHistory warnRepo, BanManager banManager, Channel<BaseMessage> channel, Logger logger) {
         this.warnRepo = warnRepo;
@@ -44,8 +50,12 @@ public class WarningsManager implements WarnActions {
         this.logger = logger;
     }
     
-    public void loadConfig() {
-        Map<Integer, String> defs = ConfigManager.bans.Actions;
+    public void loadConfig(ModerationConfig config) {
+        warnExpiryTime = TimeUnit.DAYS.toMillis(config.WarningExpiryDays);
+        broadcastWarns = config.BroadcastWarns;
+        defaultReason = config.DefaultWarnReason;
+        
+        Map<Integer, String> defs = config.Actions;
         if (defs == null) {
             actions = new WarnAction[0];
         }
@@ -81,6 +91,11 @@ public class WarningsManager implements WarnActions {
                 last = actions[i];
             }
         }
+    }
+    
+    @Override
+    public void onConfigReloaded(ConfigManager manager) {
+        loadConfig(manager.moderation());
     }
     
     private WarnAction parseAction(String def) {
@@ -142,6 +157,10 @@ public class WarningsManager implements WarnActions {
     @Override
     public Result warn(GlobalPlayer player, String reason, String by, UUID byId) {
         try {
+            if (reason == null) {
+                reason = defaultReason;
+            }
+            
             // Record warning
             WarnInfo warning = new WarnInfo(
                     player, 
@@ -149,7 +168,7 @@ public class WarningsManager implements WarnActions {
                     by, 
                     byId, 
                     System.currentTimeMillis(), 
-                    System.currentTimeMillis() + TimeUnit.DAYS.toMillis(ConfigManager.bans.WarningExpiryDays)
+                    System.currentTimeMillis() + warnExpiryTime
                     );
             
             warnRepo.recordWarn(warning);
@@ -185,7 +204,7 @@ public class WarningsManager implements WarnActions {
             
             // Broadcast
             String message = Global.getMessages().get("warn.display.broadcast", "player", player.getDisplayName(), "message", reason, "sender", by);
-            if (ConfigManager.bans.BroadcastWarns) {
+            if (broadcastWarns) {
                 PlayerManager.sendBroadcast(message);
                 return new Result(Type.Success, null);
             } else {

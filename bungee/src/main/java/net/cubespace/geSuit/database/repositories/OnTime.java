@@ -7,7 +7,6 @@ import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.database.BaseRepository;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.StatementKey;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 
 import java.sql.ResultSet;
@@ -133,7 +132,7 @@ public class OnTime extends BaseRepository {
         	// Sadly, we can't use prepared statements here because the statement is dynamic
             // TODO: This could probably be a prepared statement if we use batching
             stmt = connectionHandler.getConnection().createStatement();
-        	stmt.executeUpdate("INSERT DELAYED INTO "+ ConfigManager.main.Table_OnTime + " " +
+        	stmt.executeUpdate("INSERT DELAYED INTO "+ getName() + " " +
         			"(uuid,timeslot,time) VALUES " + sqlvalues + " " +
         			"ON DUPLICATE KEY UPDATE time=time+VALUES(time)"
         	);

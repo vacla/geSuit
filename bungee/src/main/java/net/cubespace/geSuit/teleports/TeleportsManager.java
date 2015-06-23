@@ -7,6 +7,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import net.cubespace.geSuit.geSuitPlugin;
+import net.cubespace.geSuit.config.ConfigManager;
+import net.cubespace.geSuit.config.ConfigReloadListener;
+import net.cubespace.geSuit.config.TeleportsConfig;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.channel.Channel;
@@ -18,7 +21,6 @@ import net.cubespace.geSuit.core.messages.UpdateBackMessage;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.core.objects.Result.Type;
-import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.remote.teleports.TeleportActions;
 import net.md_5.bungee.api.ChatColor;
@@ -29,7 +31,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
-public class TeleportsManager implements TeleportActions, ChannelDataReceiver<BaseMessage> {
+public class TeleportsManager implements TeleportActions, ChannelDataReceiver<BaseMessage>, ConfigReloadListener {
     private Channel<BaseMessage> channel;
     private Multimap<ServerInfo, ServerInfo> tpaWhitelist;
     private int tpaExpireTime;
@@ -64,10 +66,10 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         return null;
     }
     
-    public void loadConfig() {
+    public void loadConfig(TeleportsConfig config) {
         tpaWhitelist = HashMultimap.create();
         
-        for (String definition : ConfigManager.teleport.TPAWhitelist) {
+        for (String definition : config.TPAWhitelist) {
             String[] parts = definition.split(":");
             
             Preconditions.checkArgument(parts.length == 2, "Error in TPA whitelist definition '" + definition + "'. Should be in the format '<server>:<server>'. <server> can be replaced with 'ALL' as a wildcard");
@@ -91,7 +93,12 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             tpaWhitelist.put(source, dest);
         }
         
-        tpaExpireTime = ConfigManager.teleport.TeleportRequestExpireTime;
+        tpaExpireTime = config.TeleportRequestExpireTime;
+    }
+    
+    @Override
+    public void onConfigReloaded(ConfigManager manager) {
+        loadConfig(manager.teleports());
     }
     
     public boolean isTPAWhitelisted(ServerInfo source, ServerInfo target) {
