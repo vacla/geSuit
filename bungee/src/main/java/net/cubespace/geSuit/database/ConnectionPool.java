@@ -1,6 +1,6 @@
 package net.cubespace.geSuit.database;
 
-import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.md_5.bungee.api.ProxyServer;
 
@@ -20,8 +20,9 @@ public class ConnectionPool {
     private String connectionString;
     private List<BaseRepository> repositories;
     private List<ConnectionHandler> connections;
+    private geSuitPlugin plugin;
 
-    public ConnectionPool() {
+    public ConnectionPool(geSuitPlugin plugin) {
         repositories = Lists.newArrayList();
         connections = Lists.newArrayList();
         
@@ -48,11 +49,11 @@ public class ConnectionPool {
                 createConnection();
             }
         } catch (SQLException e) {
-            geSuit.getLogger().severe("Unable to connect to MySQL.");
+            plugin.getLogger().severe("Unable to connect to MySQL.");
             throw new IllegalArgumentException("Unable to connect to MySQL");
         }
 
-        ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+        ProxyServer.getInstance().getScheduler().schedule(plugin, new Runnable() {
             public void run() {
                 Iterator<ConnectionHandler> cons = connections.iterator();
                 while (cons.hasNext()) {
@@ -87,7 +88,7 @@ public class ConnectionPool {
                     try {
                         setupRepository(repository, statement);
                     } catch (SQLException ex) {
-                        geSuit.getLogger().log(Level.SEVERE, "There was an SQLException while attempting to create the " + repository.getName() + " table", ex);
+                        plugin.getLogger().log(Level.SEVERE, "There was an SQLException while attempting to create the " + repository.getName() + " table", ex);
                     }
                 }
             }
@@ -113,7 +114,7 @@ public class ConnectionPool {
         try {
             return createConnection();
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE, "Unable to create new MySQL connection", e);
+            plugin.getLogger().log(Level.SEVERE, "Unable to create new MySQL connection", e);
             return null;
         }
     }

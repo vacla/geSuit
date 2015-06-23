@@ -6,12 +6,12 @@ import java.text.DateFormat;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import net.cubespace.geSuit.Utilities;
-import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.channel.Channel;
@@ -36,10 +36,12 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BanManager implements BanActions {
     private BanHistory banRepo;
+    private Logger logger;
     private Channel<BaseMessage> channel;
     
-    public BanManager(BanHistory banRepo, Channel<BaseMessage> channel) {
+    public BanManager(BanHistory banRepo, Logger logger, Channel<BaseMessage> channel) {
         this.banRepo = banRepo;
+        this.logger = logger;
         this.channel = channel;
     }
     
@@ -155,7 +157,7 @@ public class BanManager implements BanActions {
                 return new Result(Type.Success, message);
             }
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE, "A database exception occured while attempting to ipunban " + player.getDisplayName(), e);
+            logger.log(Level.SEVERE, "A database exception occured while attempting to ipunban " + player.getDisplayName(), e);
             return new Result(Type.Fail, ChatColor.RED + "An internal error occured");
         }
     }
@@ -222,7 +224,7 @@ public class BanManager implements BanActions {
                 return new Result(Type.Success, message);
             }
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE, "A database exception occured while attempting to ban " + who, e);
+            logger.log(Level.SEVERE, "A database exception occured while attempting to ban " + who, e);
             return new Result(Type.Fail, ChatColor.RED + "An internal error occured");
         }
     }
@@ -311,7 +313,7 @@ public class BanManager implements BanActions {
                 return new Result(Type.Success, message);
             }
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE, "A database exception occured while attempting to ipban " + player.getName(), e);
+            logger.log(Level.SEVERE, "A database exception occured while attempting to ipban " + player.getName(), e);
             return new Result(Type.Fail, ChatColor.RED + "An internal error occured");
         }
     }
@@ -357,7 +359,7 @@ public class BanManager implements BanActions {
                 return new Result(Type.Success, message);
             }
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE, "A database exception occured while attempting to unban " + who, e);
+            logger.log(Level.SEVERE, "A database exception occured while attempting to unban " + who, e);
             return new Result(Type.Fail, ChatColor.RED + "An internal error occured");
         }
     }
@@ -558,7 +560,7 @@ public class BanManager implements BanActions {
         try {
             return banRepo.getBanHistory(player);
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get banhistory for " + player.getDisplayName(), e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to get banhistory for " + player.getDisplayName(), e);
             throw new StorageException("Unable to retrieve banhistory");
         }
     }
@@ -568,7 +570,7 @@ public class BanManager implements BanActions {
         try {
             return banRepo.getBanHistory(ip);
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get banhistory for " + ip.getHostAddress(), e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to get banhistory for " + ip.getHostAddress(), e);
             throw new StorageException("Unable to retrieve banhistory");
         }
     }

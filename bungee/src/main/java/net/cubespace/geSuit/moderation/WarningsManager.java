@@ -7,8 +7,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.channel.Channel;
@@ -31,15 +31,17 @@ import net.md_5.bungee.api.ChatColor;
 import com.google.common.base.Preconditions;
 
 public class WarningsManager implements WarnActions {
+    private Logger logger;
     private WarnHistory warnRepo;
     private BanManager banManager;
     private WarnAction[] actions;
     private Channel<BaseMessage> channel;
     
-    public WarningsManager(WarnHistory warnRepo, BanManager banManager, Channel<BaseMessage> channel) {
+    public WarningsManager(WarnHistory warnRepo, BanManager banManager, Channel<BaseMessage> channel, Logger logger) {
         this.warnRepo = warnRepo;
         this.banManager = banManager;
         this.channel = channel;
+        this.logger = logger;
         
         loadConfig();
     }
@@ -192,7 +194,7 @@ public class WarningsManager implements WarnActions {
                 return new Result(Type.Success, message);
             }
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE, "A database exception occured while attempting to warn " + player.getDisplayName(), e);
+            logger.log(Level.SEVERE, "A database exception occured while attempting to warn " + player.getDisplayName(), e);
             return new Result(Type.Fail, ChatColor.RED + "An internal error occured");
         }
     }
@@ -202,7 +204,7 @@ public class WarningsManager implements WarnActions {
         try {
             return warnRepo.getActiveWarnings(player);
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get active warns for " + player.getDisplayName(), e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to get active warns for " + player.getDisplayName(), e);
             throw new StorageException("Unable to retrieve active warnings");
         }
     }
@@ -212,7 +214,7 @@ public class WarningsManager implements WarnActions {
         try {
             return warnRepo.getWarnHistory(player);
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get warnhistory for " + player.getDisplayName(), e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to get warnhistory for " + player.getDisplayName(), e);
             throw new StorageException("Unable to retrieve warnhistory");
         }
     }

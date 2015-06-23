@@ -16,8 +16,6 @@ import com.google.common.collect.Maps;
 
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
-import net.cubespace.geSuit.core.channel.ChannelManager;
-import net.cubespace.geSuit.core.channel.RedisChannelManager;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerJoinEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerQuitEvent;
@@ -51,7 +49,7 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     private RedisConnection redis;
     private boolean proxyMode;
     
-    public PlayerManager(boolean proxyMode, ChannelManager manager) {
+    public PlayerManager(boolean proxyMode, Channel<BaseMessage> channel, RedisConnection redis) {
         playersById = Maps.newHashMap();
         playersByName = Maps.newHashMap();
         playersByNickname = Maps.newHashMap();
@@ -63,11 +61,10 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         offlineCache = new PlayerCache(TimeUnit.MINUTES.toMillis(10));
         
         this.proxyMode = proxyMode;
-        channel = manager.createChannel("players", BaseMessage.class);
-        channel.setCodec(new BaseMessage.Codec());
+        this.channel = channel;
         channel.addReceiver(this);
         
-        redis = ((RedisChannelManager)manager).getRedis();
+        this.redis = redis;
         loadScripts();
     }
     

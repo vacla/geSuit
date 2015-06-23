@@ -6,9 +6,11 @@ import java.util.logging.Level;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.geCore;
+import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
+import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 
 import org.bukkit.Bukkit;
@@ -34,7 +36,9 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         }
         
         initializeChannelManager();
-        playerManager = new BukkitPlayerManager(channelManager);
+        Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
+        channel.setCodec(new BaseMessage.Codec());
+        playerManager = new BukkitPlayerManager(channel, channelManager.getRedis());
         commandManager = new BukkitCommandManager();
         geCore core = new geCore(new BukkitPlatform(this), playerManager, channelManager, commandManager);
         Global.setInstance(core);

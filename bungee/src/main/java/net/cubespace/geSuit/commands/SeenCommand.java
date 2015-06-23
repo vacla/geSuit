@@ -9,11 +9,12 @@ import com.google.common.collect.Maps;
 
 import au.com.addstar.bc.BungeeChat;
 import net.cubespace.geSuit.Utilities;
-import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.objects.BanInfo;
+import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.managers.ConfigManager;
+import net.cubespace.geSuit.moderation.BanManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -26,8 +27,13 @@ import net.md_5.bungee.api.plugin.Command;
  * What does it do: Displays <player> last online time
  */
 public class SeenCommand extends Command {
-    public SeenCommand() {
+    private BanManager bans;
+    private GeoIPLookup geoipLookup;
+    
+    public SeenCommand(BanManager bans, GeoIPLookup geoipLookup) {
         super("seen");
+        this.bans = bans;
+        this.geoipLookup = geoipLookup;
     }
 
     @SuppressWarnings("deprecation")
@@ -84,7 +90,7 @@ public class SeenCommand extends Command {
         }
         
         // IP ban check
-        BanInfo<InetAddress> ipBan = geSuit.getPlugin().getBanManager().getBan(player.getAddress());
+        BanInfo<InetAddress> ipBan = bans.getBan(player.getAddress());
         if (ipBan != null) {
             if (ipBan.isTemporary()) {
                 if (ipBan.getUntil() > System.currentTimeMillis()) {
@@ -109,7 +115,7 @@ public class SeenCommand extends Command {
             items.put("IP", player.getAddress().getHostAddress());
 
             // Do GeoIP lookup
-            String location = geSuit.getGeoIPLookup().lookup(player.getAddress());
+            String location = geoipLookup.lookup(player.getAddress());
 
             if (location != null) {
                 items.put("Location", location);

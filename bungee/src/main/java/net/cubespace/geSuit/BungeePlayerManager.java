@@ -3,20 +3,26 @@ package net.cubespace.geSuit;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import com.google.common.collect.Maps;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.PlayerManager;
+import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
+import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.LangUpdateMessage;
 import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.objects.BanInfo;
+import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
+import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.moderation.BanManager;
+import net.cubespace.geSuit.moderation.TrackingManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -30,13 +36,19 @@ import net.md_5.bungee.event.EventHandler;
 
 public class BungeePlayerManager extends PlayerManager implements Listener {
     private BanManager bans;
+    private TrackingManager tracking;
+    private GeoIPLookup geoipLookup;
+    private geSuitPlugin plugin;
     
-    public BungeePlayerManager(ChannelManager manager) {
-        super(true, manager);
+    public BungeePlayerManager(Channel<BaseMessage> channel, RedisConnection connection, geSuitPlugin plugin) {
+        super(true, channel, connection);
+        this.plugin = plugin;
     }
     
-    public void initialize(BanManager bans) {
+    public void initialize(BanManager bans, TrackingManager tracking, GeoIPLookup geoipLookup) {
         this.bans = bans;
+        this.tracking = tracking;
+        this.geoipLookup = geoipLookup;
         
         broadcastFullUpdate();
         broadcastNetworkInfo();
@@ -76,12 +88,12 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
     
     @EventHandler
     public void onLogin(final LoginEvent event) {
-        event.registerIntent(geSuit.getPlugin());
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), new Runnable() {
+        event.registerIntent(plugin);
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
             @Override
             public void run() {
                 handleLogin(event);
-                event.completeIntent(geSuit.getPlugin());
+                event.completeIntent(plugin);
             }
         });
     }
@@ -97,13 +109,13 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                     player.removeBan();
                 } else {
                     event.setCancelReason(bans.getBanKickReason(player.getBanInfo()));
-                    geSuit.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being temp banned!");
+                    plugin.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being temp banned!");
                     event.setCancelled(true);
                     return;
                 }
             } else {
                 event.setCancelReason(bans.getBanKickReason(player.getBanInfo()));
-                geSuit.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being banned!");
+                plugin.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being banned!");
                 event.setCancelled(true);
                 return;
             }
@@ -118,13 +130,13 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                     bans.setBan(player.getAddress(), null);
                 } else {
                     event.setCancelReason(bans.getBanKickReason(ipBan));
-                    geSuit.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being temp ip-banned!");
+                    plugin.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being temp ip-banned!");
                     event.setCancelled(true);
                     return;
                 }
             } else {
                 event.setCancelReason(bans.getBanKickReason(ipBan));
-                geSuit.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being ip-banned!");
+                plugin.getLogger().info(ChatColor.RED + player.getName() + "'s connection refused due to being ip-banned!");
                 event.setCancelled(true);
                 return;
             }
@@ -134,7 +146,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             player.setNewPlayer(true);
         }
         
-        geSuit.getLogger().info("Player " + player.getDisplayName() + " (" + player.getUniqueId().toString() + ") connected from " + player.getAddress().getHostAddress());
+        plugin.getLogger().info("Player " + player.getDisplayName() + " (" + player.getUniqueId().toString() + ") connected from " + player.getAddress().getHostAddress());
         onPlayerLoginInitComplete(player);
     }
     
@@ -150,7 +162,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
     public void onServerConnect(final ServerConnectedEvent event) {
         // Ensure they are still online before continuing
         if (ProxyServer.getInstance().getPlayer(event.getPlayer().getUniqueId()) == null) {
-            geSuit.getLogger().warning("ServerConnectedEvent was called on " + event.getPlayer().getName() + " but they're not online");
+            plugin.getLogger().warning("ServerConnectedEvent was called on " + event.getPlayer().getName() + " but they're not online");
             return;
         }
         
@@ -158,10 +170,10 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             final GlobalPlayer player = Global.getPlayer(event.getPlayer().getUniqueId());
             
             // Update the tracking data for this player
-            geSuit.getPlugin().getTrackingManager().updateTracking(player);
+            tracking.updateTracking(player);
             
             if (player.isNewPlayer()) {
-                geSuit.getLogger().info(Global.getMessages().get("log.player-create", "player", player.getName(), "uuid", player.getUniqueId()));
+                plugin.getLogger().info(Global.getMessages().get("log.player-create", "player", player.getName(), "uuid", player.getUniqueId()));
 
                 if (ConfigManager.main.NewPlayerBroadcast) {
                     String welcomeMsg = Global.getMessages().get("connect.join.new", "player", player.getDisplayName());
@@ -173,9 +185,9 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                 }
 
                 // Teleport to new player spawn
-                if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && geSuit.getPlugin().getSpawnManager().isSetNewPlayer()) {
+                if (ConfigManager.spawn.SpawnNewPlayerAtNewspawn && plugin.getSpawnManager().isSetNewPlayer()) {
                     // Somehow we need to make it not connect to this server, only others
-                    geSuit.getPlugin().getTeleportManager().teleportToInConnection(event.getPlayer(), geSuit.getPlugin().getSpawnManager().getSpawnNewPlayer(), event.getServer().getInfo(), true);
+                    plugin.getTeleportManager().teleportToInConnection(event.getPlayer(), plugin.getSpawnManager().getSpawnNewPlayer(), event.getServer().getInfo(), true);
                 }
             } else {
                 if (ConfigManager.main.BroadcastProxyConnectionMessages) {
@@ -186,11 +198,11 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             // TODO: do all other setup
             
             // Notifications
-            ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+            ProxyServer.getInstance().getScheduler().schedule(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    geSuit.getGeoIPLookup().addPlayerInfo(event.getPlayer(), player);
-                    geSuit.getPlugin().getTrackingManager().addPlayerInfo(event.getPlayer(), player);
+                    geoipLookup.addPlayerInfo(event.getPlayer(), player);
+                    tracking.addPlayerInfo(event.getPlayer(), player);
                 }
             }, 100, TimeUnit.MILLISECONDS);
         }
@@ -199,7 +211,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
     @EventHandler
     public void onNickname(GlobalPlayerNicknameEvent event) {
         // Update the tracking data for this player
-        geSuit.getPlugin().getTrackingManager().updateTracking(event.getPlayer());
+        tracking.updateTracking(event.getPlayer());
     }
     
     @EventHandler
@@ -208,7 +220,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
         
         // Send the final disconnect message at this delay
         if (ConfigManager.main.BroadcastProxyConnectionMessages) {
-            ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+            ProxyServer.getInstance().getScheduler().schedule(plugin, new Runnable() {
                 @Override
                 public void run() {
                     net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(Global.getMessages().get("connect.quit", "player", player.getName()));
@@ -218,7 +230,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
         
         // Update time tracking (if enabled)
         if (ConfigManager.bans.TrackOnTime) {
-            geSuit.getPlugin().getTrackingManager().updatePlayerOnTime(player);
+            tracking.updatePlayerOnTime(player);
         }
         
         // This is the end of their first session. They wont be a new player next time

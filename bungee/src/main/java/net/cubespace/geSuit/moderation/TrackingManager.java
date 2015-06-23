@@ -7,18 +7,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import net.cubespace.geSuit.Utilities;
-import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.objects.TimeRecord;
 import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.core.storage.StorageException;
-import net.cubespace.geSuit.database.DatabaseManager;
 import net.cubespace.geSuit.database.repositories.OnTime;
 import net.cubespace.geSuit.database.repositories.Tracking;
 import net.cubespace.geSuit.managers.ConfigManager;
@@ -29,17 +28,19 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class TrackingManager implements TrackingActions {
     private Tracking trackingRepo;
     private OnTime ontimeRepo;
+    private Logger logger;
     
-    public TrackingManager(DatabaseManager database) {
-        trackingRepo = database.getTracking();
-        ontimeRepo = database.getOntime();
+    public TrackingManager(Tracking tracking, OnTime ontime, Logger logger) {
+        this.trackingRepo = tracking;
+        this.ontimeRepo = ontime;
+        this.logger = logger;
     }
     
     public void updateTracking(GlobalPlayer player) {
         try {
             trackingRepo.insertTracking(player);
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to update tracking history for " + player.getDisplayName(), e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to update tracking history for " + player.getDisplayName(), e);
         }
     }
     
@@ -48,7 +49,7 @@ public class TrackingManager implements TrackingActions {
         try {
             return trackingRepo.getTrackingForUUID(id);
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get tracking history for " + id, e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to get tracking history for " + id, e);
             throw new StorageException("Unable to retrieve tracking history");
         }
     }
@@ -58,7 +59,7 @@ public class TrackingManager implements TrackingActions {
         try {
             return trackingRepo.getTrackingForName(name);
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get tracking history for " + name, e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to get tracking history for " + name, e);
             throw new StorageException("Unable to retrieve tracking history");
         }
     }
@@ -68,7 +69,7 @@ public class TrackingManager implements TrackingActions {
         try {
             return trackingRepo.getTrackingForIP(ip);
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get tracking history for " + ip.getHostAddress(), e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to get tracking history for " + ip.getHostAddress(), e);
             throw new StorageException("Unable to retrieve tracking history");
         }
     }
@@ -78,7 +79,7 @@ public class TrackingManager implements TrackingActions {
         try {
             return trackingRepo.getNameHistory(player.getUniqueId());
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get name history for " + player.getDisplayName(), e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to get name history for " + player.getDisplayName(), e);
             throw new StorageException("Unable to retrieve name history");
         }
     }
@@ -88,7 +89,7 @@ public class TrackingManager implements TrackingActions {
         try {
             return ontimeRepo.getPlayerOnTime(player.getUniqueId());
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get ontime for " + player.getDisplayName(), e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to get ontime for " + player.getDisplayName(), e);
             throw new StorageException("Unable to retrieve ontime");
         }
     }
@@ -104,7 +105,7 @@ public class TrackingManager implements TrackingActions {
             
             return results;
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to get ontime top", e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to get ontime top", e);
             throw new StorageException("Unable to retrieve ontime top");
         }
     }
@@ -114,7 +115,7 @@ public class TrackingManager implements TrackingActions {
         try {
             ontimeRepo.updatePlayerOnTime(player, player.getSessionJoin(), System.currentTimeMillis());
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to update " + player.getDisplayName() + "'s ontime records", e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to update " + player.getDisplayName() + "'s ontime records", e);
             throw new StorageException("Unable to update ontime");
         }
     }
@@ -124,7 +125,7 @@ public class TrackingManager implements TrackingActions {
         try {
             return trackingRepo.matchPlayers(name);
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to match players", e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to match players", e);
             throw new StorageException("Unable to match the name");
         }
     }
@@ -134,7 +135,7 @@ public class TrackingManager implements TrackingActions {
         try {
             return trackingRepo.matchFullPlayers(name);
         } catch (SQLException e) {
-            geSuit.getLogger().log(Level.SEVERE,  "A database exception occured while attempting to match players", e);
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to match players", e);
             throw new StorageException("Unable to match the name");
         }
     }

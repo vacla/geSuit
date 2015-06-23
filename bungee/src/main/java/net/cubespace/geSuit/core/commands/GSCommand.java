@@ -2,7 +2,6 @@ package net.cubespace.geSuit.core.commands;
 
 import java.util.List;
 
-import net.cubespace.geSuit.geSuit;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -69,7 +68,7 @@ abstract class GSCommand extends Command implements TabExecutor {
     }
     
     protected void runAsync(Runnable runnable) {
-        ProxyServer.getInstance().getScheduler().runAsync(geSuit.getPlugin(), runnable);
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, runnable);
     }
     
     protected void displayWrongSenderError(Object sender) {

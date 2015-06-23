@@ -76,7 +76,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         proxy = ProxyServer.getInstance();
         getLogger().info(ChatColor.GREEN + "Initialising Managers");
         
-        databaseManager = new DatabaseManager(ConfigManager.main.Database);
+        databaseManager = new DatabaseManager(this, ConfigManager.main.Database);
         if (!databaseManager.initialize()) {
             return;
         }
@@ -87,7 +87,9 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         }
 
         initializeChannelManager();
-        playerManager = new BungeePlayerManager(channelManager);
+        Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
+        channel.setCodec(new BaseMessage.Codec());
+        playerManager = new BungeePlayerManager(channel, channelManager.getRedis(), this);
         commandManager = new BungeeCommandManager();
         getProxy().getPluginManager().registerListener(this, playerManager);
         geCore core = new geCore(new BungeePlatform(this), playerManager, channelManager, commandManager);
@@ -98,7 +100,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         
         initializeRemotes();
         
-        playerManager.initialize(bans);
+        playerManager.initialize(bans, tracking, geoIpLookup);
 
         registerListeners();
         registerCommands();
@@ -113,7 +115,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
             proxy.getPluginManager().registerCommand(this, new MOTDCommand());
         }
         if (ConfigManager.main.Seen_Enabled) {
-            proxy.getPluginManager().registerCommand(this, new SeenCommand());
+            proxy.getPluginManager().registerCommand(this, new SeenCommand(bans, geoIpLookup));
         }
         
         Global.getCommandManager().registerAll(new BanCommands(bans), this);
@@ -122,7 +124,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         
         proxy.getPluginManager().registerCommand(this, new WarnCommand());
         proxy.getPluginManager().registerCommand(this, new WhereCommand());
-        proxy.getPluginManager().registerCommand(this, new ReloadCommand());
+        proxy.getPluginManager().registerCommand(this, new ReloadCommand(this));
         proxy.getPluginManager().registerCommand(this, new DebugCommand());
         proxy.getPluginManager().registerCommand(this, new WarnHistoryCommand());
         proxy.getPluginManager().registerCommand(this, new NamesCommand());
@@ -194,18 +196,18 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         moderationChannel.setCodec(new BaseMessage.Codec());
         
         RemoteManager manager = Global.getRemoteManager();
-        manager.registerRemote("bans", BanActions.class, bans = new BanManager(databaseManager.getBanHistory(), moderationChannel));
-        manager.registerRemote("warns", WarnActions.class, warnings = new WarningsManager(databaseManager.getWarnHistory(), (BanManager)manager.getRemote(BanActions.class), moderationChannel));
-        manager.registerRemote("tracking", TrackingActions.class, tracking = new TrackingManager(databaseManager));
+        manager.registerRemote("bans", BanActions.class, bans = new BanManager(databaseManager.getBanHistory(), getLogger(), moderationChannel));
+        manager.registerRemote("warns", WarnActions.class, warnings = new WarningsManager(databaseManager.getWarnHistory(), (BanManager)manager.getRemote(BanActions.class), moderationChannel, getLogger()));
+        manager.registerRemote("tracking", TrackingActions.class, tracking = new TrackingManager(databaseManager.getTracking(), databaseManager.getOntime(), getLogger()));
         
-        manager.registerRemote("teleports", TeleportActions.class, teleports = new TeleportsManager());
+        manager.registerRemote("teleports", TeleportActions.class, teleports = new TeleportsManager(this));
         
         spawns = new SpawnManager();
         warps = new WarpManager();
     }
     
     private void registerGenerals() {
-        geoIpLookup = new GeoIPLookup();
+        geoIpLookup = new GeoIPLookup(getDataFolder(), getLogger());
         geoIpLookup.initialize();
     }
     

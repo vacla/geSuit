@@ -6,7 +6,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.channel.Channel;
@@ -34,9 +34,12 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
     private Multimap<ServerInfo, ServerInfo> tpaWhitelist;
     private int tpaExpireTime;
     
+    private geSuitPlugin plugin;
     private ProxyServer proxy;
     
-    public TeleportsManager() {
+    public TeleportsManager(geSuitPlugin plugin) {
+        this.plugin = plugin;
+        
         proxy = ProxyServer.getInstance();
         channel = Global.getChannelManager().createChannel("tp", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
@@ -191,7 +194,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             return new Result(Type.Fail, Global.getMessages().get("teleport.blocked.server"));
         }
         
-        ScheduledTask expireTask = ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+        ScheduledTask expireTask = ProxyServer.getInstance().getScheduler().schedule(plugin, new Runnable() {
             @Override
             public void run() {
                 if (targetTp.getTPAHere() != null) {
@@ -264,7 +267,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             return new Result(Type.Fail, Global.getMessages().get("teleport.blocked.server"));
         }
         
-        ScheduledTask expireTask = ProxyServer.getInstance().getScheduler().schedule(geSuit.getPlugin(), new Runnable() {
+        ScheduledTask expireTask = ProxyServer.getInstance().getScheduler().schedule(plugin, new Runnable() {
             @Override
             public void run() {
                 if (targetTp.getTPA() != null) {

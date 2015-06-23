@@ -7,10 +7,10 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 import net.cubespace.geSuit.Utilities;
-import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.managers.ConfigManager;
@@ -23,12 +23,19 @@ import com.maxmind.geoip.regionName;
 public class GeoIPLookup {
     private LookupService lookup;
     private File databaseFile;
+    private Logger logger;
+    private File base;
+    
+    public GeoIPLookup(File directory, Logger logger) {
+        this.base = directory;
+        this.logger = logger;
+    }
     
     public void initialize() {
         if (ConfigManager.bans.GeoIP.ShowCity) {
-            databaseFile = geSuit.getFile("GeoIPCity.dat");
+            databaseFile = new File(base, "GeoIPCity.dat");
         } else {
-            databaseFile = geSuit.getFile("GeoIP.dat");
+            databaseFile = new File(base, "GeoIP.dat");
         }
         
         if (!databaseFile.exists()) {
@@ -37,7 +44,7 @@ public class GeoIPLookup {
                     return;
                 }
             } else {
-                geSuit.getLogger().warning("[GeoIP] No GeoIP database is available locally and updating is off. Lookups will be unavailable");
+                logger.warning("[GeoIP] No GeoIP database is available locally and updating is off. Lookups will be unavailable");
                 return;
             }
         }
@@ -45,7 +52,7 @@ public class GeoIPLookup {
         try {
             lookup = new LookupService(databaseFile);
         } catch(IOException e) {
-            geSuit.getLogger().warning("[GeoIP] Unable to read GeoIP database, if this No GeoIP database is available locally and updating is off. Lookups will be unavailable");
+            logger.warning("[GeoIP] Unable to read GeoIP database, if this No GeoIP database is available locally and updating is off. Lookups will be unavailable");
         }
     }
     
@@ -88,12 +95,12 @@ public class GeoIPLookup {
         }
         
         if (url == null || url.trim().isEmpty()) {
-            geSuit.getLogger().severe("[GeoIP] There is no configured update url!");
+            logger.severe("[GeoIP] There is no configured update url!");
             return false;
         }
         
         try {
-            geSuit.getLogger().info("[GeoIP] Downloading GeoIP database... This may take a while");
+            logger.info("[GeoIP] Downloading GeoIP database... This may take a while");
             long lastNotify = System.currentTimeMillis();
             URLConnection con = new URL(url).openConnection();
             con.setConnectTimeout(10000);
@@ -115,14 +122,14 @@ public class GeoIPLookup {
                 current += length;
                 if (System.currentTimeMillis() - lastNotify > 2000) {
                     if (total == -1) {
-                        geSuit.getLogger().info(String.format("[GeoIP] Downloading GeoIP database... %d bytes", current));
+                        logger.info(String.format("[GeoIP] Downloading GeoIP database... %d bytes", current));
                     } else {
                         double percent = current / (double)total;
                         percent *= 100;
                         if (percent > 100) {
                             percent = 100;
                         }
-                        geSuit.getLogger().info(String.format("[GeoIP] Downloading GeoIP database... %.0f%%", percent));
+                        logger.info(String.format("[GeoIP] Downloading GeoIP database... %.0f%%", percent));
                     }
                     lastNotify = System.currentTimeMillis();
                 }
@@ -131,10 +138,10 @@ public class GeoIPLookup {
             }
             output.close();
             input.close();
-            geSuit.getLogger().info("[GeoIP] Download complete");
+            logger.info("[GeoIP] Download complete");
             return true;
         } catch(IOException e) {
-            geSuit.getLogger().severe("[GeoIP] Download failed. IOException: " + e.getMessage());
+            logger.severe("[GeoIP] Download failed. IOException: " + e.getMessage());
             return false;
         }
     }

@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.database;
 
+import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.database.repositories.BanHistory;
 import net.cubespace.geSuit.database.repositories.OnTime;
@@ -15,10 +16,10 @@ public class DatabaseManager {
     private Database config;
     private ConnectionPool pool;
     
-    public DatabaseManager(Database config) {
+    public DatabaseManager(geSuitPlugin plugin, Database config) {
         this.config = config;
         
-        pool = new ConnectionPool();
+        pool = new ConnectionPool(plugin);
     }
     
     public boolean initialize() {
