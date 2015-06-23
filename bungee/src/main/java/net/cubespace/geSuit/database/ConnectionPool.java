@@ -23,6 +23,7 @@ public class ConnectionPool {
     private geSuitPlugin plugin;
 
     public ConnectionPool(geSuitPlugin plugin) {
+        this.plugin = plugin;
         repositories = Lists.newArrayList();
         connections = Lists.newArrayList();
         

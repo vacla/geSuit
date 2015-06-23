@@ -23,7 +23,7 @@ public class ConfigManager {
     private MainConfig mainConfig;
     private ModerationConfig moderationConfig;
     private TeleportsConfig teleportsConfig;
-    private AnnouncementsConfig announcementsConfig;
+    private BroadcastsConfig broadcastsConfig;
     
     // MOTDs
     private MOTDFile motd;
@@ -37,7 +37,7 @@ public class ConfigManager {
         mainConfig = new MainConfig(new File(base, "config.yml"));
         moderationConfig = new ModerationConfig(new File(base, "moderation.yml"));
         teleportsConfig = new TeleportsConfig(new File(base, "teleports.yml"));
-        announcementsConfig = new AnnouncementsConfig(new File(base, "announcements.yml"));
+        broadcastsConfig = new BroadcastsConfig(new File(base, "broadcasts.yml"));
         
         motd = new MOTDFile(new File(base, "motd.txt"));
         motdNew = new MOTDFile(new File(base, "motd-new.txt"));
@@ -56,7 +56,7 @@ public class ConfigManager {
         mainConfig.init();
         moderationConfig.init();
         teleportsConfig.init();
-        announcementsConfig.init();
+        broadcastsConfig.init();
         
         if (!motd.getFile().exists()) {
             saveDefaultFile(motd.getFile().getName(), motd.getFile());
@@ -78,7 +78,7 @@ public class ConfigManager {
         mainConfig.load();
         moderationConfig.load();
         teleportsConfig.load();
-        announcementsConfig.load();
+        broadcastsConfig.load();
         
         try {
             motd.load();
@@ -141,10 +141,10 @@ public class ConfigManager {
     }
     
     /**
-     * @return Returns the configuration for announcements
+     * @return Returns the configuration for broadcasts
      */
-    public AnnouncementsConfig announcements() {
-        return announcementsConfig;
+    public BroadcastsConfig broadcasts() {
+        return broadcastsConfig;
     }
     
     /**

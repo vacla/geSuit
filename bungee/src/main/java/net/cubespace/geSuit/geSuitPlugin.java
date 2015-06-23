@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import com.google.common.base.Strings;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
+import net.cubespace.geSuit.commands.AnnounceCommand;
 import net.cubespace.geSuit.commands.BanCommands;
 import net.cubespace.geSuit.commands.DebugCommand;
 import net.cubespace.geSuit.commands.KickCommands;
@@ -39,6 +40,7 @@ import net.cubespace.geSuit.core.remote.RemoteManager;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.DatabaseManager;
+import net.cubespace.geSuit.general.BroadcastManager;
 import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.cubespace.geSuit.moderation.TrackingManager;
@@ -68,6 +70,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private BungeeCommandManager commandManager;
     
     private GeoIPLookup geoIpLookup;
+    private BroadcastManager broadcastManager;
     
     private BanManager bans;
     private TrackingManager tracking;
@@ -154,6 +157,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         manager.registerCommand(this, new DebugCommand());
         manager.registerCommand(this, new WarnHistoryCommand());
         manager.registerCommand(this, new NamesCommand());
+        manager.registerCommand(this, new AnnounceCommand(broadcastManager));
     }
 
     private RedisConnection createRedis(final Redis config) {
@@ -230,16 +234,19 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         warps = new WarpManager(warpsChannel);
         geoIpLookup = new GeoIPLookup(getDataFolder(), configManager.moderation().GeoIP, getLogger());
         configManager.addReloadListener(geoIpLookup);
+        broadcastManager = new BroadcastManager(this, getProxy(), getLogger());
         
         // Load everything
         bans.loadConfig(configManager.moderation());
         tracking.loadConfig(configManager.moderation());
         warnings.loadConfig(configManager.moderation());
         teleports.loadConfig(configManager.teleports());
+        broadcastManager.loadConfig(configManager.broadcasts());
         configManager.addReloadListener(bans);
         configManager.addReloadListener(tracking);
         configManager.addReloadListener(warnings);
         configManager.addReloadListener(teleports);
+        configManager.addReloadListener(broadcastManager);
         
         spawns.loadSpawns();
         geoIpLookup.initialize();

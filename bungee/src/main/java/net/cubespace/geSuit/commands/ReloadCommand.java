@@ -4,7 +4,6 @@ import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.core.Global;
-import net.cubespace.geSuit.managers.AnnouncementManager;
 import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
@@ -36,7 +35,6 @@ public class ReloadCommand extends Command
             configManager.reloadAll();
             plugin.loadLanguage();
 
-            AnnouncementManager.reloadAnnouncements();
             PlayerManager.sendMessageToTarget(sender, "All Configs reloaded");
         }
         catch (InvalidConfigurationException e) {

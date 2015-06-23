@@ -173,3 +173,10 @@ ontime.time-month = &6This month:&f {diff}
 ontime.time-year = &6This year:&f {diff}
 ontime.time-total = &6Total ontime:&f {diff}
 ontime.time-top = &e{num}: &b{time}&a {player}
+
+# Broadcast messages
+broadcast.unknown = &cUnknown broadcast {name}
+broadcast.test = &6This broadcast is sent to you only:
+broadcast.last.not-used = &6No broadcasts have been done
+broadcast.cooldown = &cUnable to do broadcast, too soon after previous broadcast  
+broadcast.last = &6Last broadcast was &c{name}\n&6 at &c{time} &7({diff} ago)\n&6 by &c{by}
