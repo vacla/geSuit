@@ -30,19 +30,26 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     public void onEnable() {
         getLogger().info("Starting geSuit");
         
-        if (!initializeRedis()) {
-            getLogger().severe("Unable to connect to redis");
+        redis = createRedis();
+        if (redis == null) {
+            getLogger().severe("Redis failed to initialize. Please fix the problem and restart the server.");
             return;
         }
+        redis.setNotifier(this);
         
-        initializeChannelManager();
+        channelManager = initializeChannelManager();
+        
+        // Create player manager
         Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
         playerManager = new BukkitPlayerManager(channel, channelManager.getRedis());
+        
+        // Initialize core
         commandManager = new BukkitCommandManager();
         geCore core = new geCore(new BukkitPlatform(this), playerManager, channelManager, commandManager);
         Global.setInstance(core);
         
+        // Load player manager
         playerManager.initialize();
         
         getLogger().info("Initializing modules:");
@@ -59,21 +66,21 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         redis.shutdown();
     }
     
-    private boolean initializeRedis() {
+    private RedisConnection createRedis() {
         FileConfiguration config = getConfig();
         
         try {
-            redis = new RedisConnection(config.getString("redis.host", "localhost"), config.getInt("redis.port", 6379), config.getString("redis.password", ""), Bukkit.getPort());
-            redis.setNotifier(this);
-            return true;
+            RedisConnection redis = new RedisConnection(config.getString("redis.host", "localhost"), config.getInt("redis.port", 6379), config.getString("redis.password", ""), Bukkit.getPort());
+            redis.connect();
+            return redis;
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Unable to connect to redis:", e);
-            return false;
+            return null;
         }
     }
     
-    private void initializeChannelManager() {
-        channelManager = new RedisChannelManager(redis, getLogger());
+    private RedisChannelManager initializeChannelManager() {
+        final RedisChannelManager channelManager = new RedisChannelManager(redis, getLogger());
         
         final CountDownLatch latch = new CountDownLatch(1);
         Thread thread = new Thread(new Runnable() {
@@ -89,6 +96,8 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
             latch.await();
         } catch (InterruptedException e) {
         }
+        
+        return channelManager;
     }
     
     public ChannelManager getChannelManager() {

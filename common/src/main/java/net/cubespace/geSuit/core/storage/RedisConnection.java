@@ -24,7 +24,7 @@ public class RedisConnection {
     
     private Set<Jedis> loaned = Sets.newIdentityHashSet();
 
-    public RedisConnection(String host, int port, String password, int serverId) throws IOException {
+    public RedisConnection(String host, int port, String password, int serverId) {
         connectionId = serverId;
 
         connectionActive = false;
@@ -33,7 +33,9 @@ public class RedisConnection {
             pool = new JedisPool(new JedisPoolConfig(), host, port, 0);
         else
             pool = new JedisPool(new JedisPoolConfig(), host, port, 0, password);
-
+    }
+    
+    public void connect() throws IOException {
         // Test the connection
         JedisRunner<Void> runner = new JedisRunner<Void>() {
             @Override

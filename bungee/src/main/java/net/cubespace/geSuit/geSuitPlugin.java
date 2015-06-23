@@ -3,7 +3,10 @@ package net.cubespace.geSuit;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 import com.google.common.base.Strings;
@@ -32,10 +35,9 @@ import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.remote.RemoteManager;
 import net.cubespace.geSuit.core.storage.RedisConnection;
+import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.DatabaseManager;
 import net.cubespace.geSuit.general.GeoIPLookup;
-import net.cubespace.geSuit.listeners.APIMessageListener;
-import net.cubespace.geSuit.listeners.BungeeChatListener;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.cubespace.geSuit.moderation.TrackingManager;
@@ -50,6 +52,7 @@ import net.cubespace.geSuit.teleports.warps.WarpManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 
 public class geSuitPlugin extends Plugin implements ConnectionNotifier {
 
@@ -74,107 +77,101 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         geSuit.setPlugin(this);
         getLogger().info(ChatColor.GREEN + "Starting geSuit");
         proxy = ProxyServer.getInstance();
-        getLogger().info(ChatColor.GREEN + "Initialising Managers");
         
-        databaseManager = new DatabaseManager(this, ConfigManager.main.Database);
+        // Initialize database
+        databaseManager = new DatabaseManager(new ConnectionPool(this), ConfigManager.main.Database);
         if (!databaseManager.initialize()) {
+            getLogger().severe("Database connection failed to initialize. Please fix the problem and restart BungeeCord.");
             return;
         }
-
-        if (!initializeRedis()) {
-            getLogger().info("Unable to connect to redis");
+        
+        // Initialize backend
+        redis = createRedis(ConfigManager.main.Redis);
+        if (redis == null) {
+            getLogger().severe("Redis failed to initialize. Please fix the problem and restart BungeeCord.");
             return;
         }
+        redis.setNotifier(this);
 
-        initializeChannelManager();
+        channelManager = createChannelManager();
+        
+        // Create player manager
         Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
-        playerManager = new BungeePlayerManager(channel, channelManager.getRedis(), this);
+        
+        playerManager = new BungeePlayerManager(channel, redis, this);
+        
+        // Initialize core
         commandManager = new BungeeCommandManager();
-        getProxy().getPluginManager().registerListener(this, playerManager);
+        
         geCore core = new geCore(new BungeePlatform(this), playerManager, channelManager, commandManager);
         Global.setInstance(core);
         
+        // Load addons
+        initializeAddons();
+        registerCommands();
+        
+        // Load language
         core.getMessages().loadDefaults();
         loadLanguage();
         
-        initializeRemotes();
-        
+        // Begin all
+        getProxy().getPluginManager().registerListener(this, playerManager);
         playerManager.initialize(bans, tracking, geoIpLookup);
-
-        registerListeners();
-        registerCommands();
-        
-        registerGenerals();
     }
 
     private void registerCommands() {
-        // A little hardcore. Prevent updating without a restart. But command
-        // squatting = bad!
+        PluginManager manager = getProxy().getPluginManager();
         if (ConfigManager.main.MOTD_Enabled) {
-            proxy.getPluginManager().registerCommand(this, new MOTDCommand());
+            manager.registerCommand(this, new MOTDCommand());
         }
         if (ConfigManager.main.Seen_Enabled) {
-            proxy.getPluginManager().registerCommand(this, new SeenCommand(bans, geoIpLookup));
+            manager.registerCommand(this, new SeenCommand(bans, geoIpLookup));
+        }
+        if (ConfigManager.bans.TrackOnTime) {
+            proxy.getPluginManager().registerCommand(this, new OnTimeCommand());
         }
         
         Global.getCommandManager().registerAll(new BanCommands(bans), this);
         Global.getCommandManager().registerAll(new KickCommands(bans), this);
         Global.getCommandManager().registerAll(new WarnCommands(warnings), this);
         
-        proxy.getPluginManager().registerCommand(this, new WarnCommand());
-        proxy.getPluginManager().registerCommand(this, new WhereCommand());
-        proxy.getPluginManager().registerCommand(this, new ReloadCommand(this));
-        proxy.getPluginManager().registerCommand(this, new DebugCommand());
-        proxy.getPluginManager().registerCommand(this, new WarnHistoryCommand());
-        proxy.getPluginManager().registerCommand(this, new NamesCommand());
-        if (ConfigManager.bans.TrackOnTime) {
-            proxy.getPluginManager().registerCommand(this, new OnTimeCommand());
-        }
+        manager.registerCommand(this, new WarnCommand());
+        manager.registerCommand(this, new WhereCommand());
+        manager.registerCommand(this, new ReloadCommand(this));
+        manager.registerCommand(this, new DebugCommand());
+        manager.registerCommand(this, new WarnHistoryCommand());
+        manager.registerCommand(this, new NamesCommand());
     }
 
-    private void registerListeners() {
-        getProxy().registerChannel("geSuitTeleport"); // Teleport out/in
-        getProxy().registerChannel("geSuitSpawns"); // Spawns out/in
-        getProxy().registerChannel("geSuitPortals"); // Portals out/in
-        getProxy().registerChannel("geSuitWarps"); // Warps in
-        getProxy().registerChannel("geSuitHomes"); // Homes in
-        getProxy().registerChannel("geSuitAPI"); // API messages in
-
-        proxy.getPluginManager().registerListener(this, new APIMessageListener());
-        if (ConfigManager.main.BungeeChatIntegration) {
-            proxy.getPluginManager().registerListener(this, new BungeeChatListener());
-        }
-    }
-
-    private boolean initializeRedis() {
-        final CountDownLatch latch = new CountDownLatch(1);
-
-        getProxy().getScheduler().runAsync(this, new Runnable() {
+    private RedisConnection createRedis(final Redis config) {
+        @SuppressWarnings("deprecation")
+        Future<RedisConnection> future = getExecutorService().submit(new Callable<RedisConnection>() {
             @Override
-            public void run() {
+            public RedisConnection call() throws Exception {
                 try {
-                    Redis config = ConfigManager.main.Redis;
-                    redis = new RedisConnection(config.host, config.port, config.password, 0);
-                    redis.setNotifier(geSuitPlugin.this);
+                    RedisConnection redis = new RedisConnection(config.host, config.port, config.password, 0);
+                    redis.connect();
+                    return redis;
                 } catch (IOException e) {
                     getLogger().log(Level.SEVERE, "Unable to connect to Redis:", e);
-                } finally {
-                    latch.countDown();
+                    return null;
                 }
             }
         });
-
+        
         try {
-            latch.await();
+            return future.get();
         } catch (InterruptedException e) {
+            return null;
+        } catch (ExecutionException e) {
+            getLogger().log(Level.SEVERE, "An unhandled exception occurred while starting redis", e.getCause());
+            return null;
         }
-
-        return redis != null;
     }
     
-    private void initializeChannelManager() {
-        channelManager = new RedisChannelManager(redis, getLogger());
+    private RedisChannelManager createChannelManager() {
+        final RedisChannelManager channelManager = new RedisChannelManager(redis, getLogger());
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -189,9 +186,11 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
             latch.await();
         } catch (InterruptedException e) {
         }
+        
+        return channelManager;
     }
     
-    private void initializeRemotes() {
+    private void initializeAddons() {
         // Create channels
         Channel<BaseMessage> moderationChannel = channelManager.createChannel("moderation", BaseMessage.class);
         moderationChannel.setCodec(new BaseMessage.Codec());
@@ -217,15 +216,12 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         // Create managers
         spawns = new SpawnManager();
         warps = new WarpManager(warpsChannel);
+        geoIpLookup = new GeoIPLookup(getDataFolder(), getLogger());
         
         // Load everything
         warnings.loadConfig();
         teleports.loadConfig();
         spawns.loadSpawns();
-    }
-    
-    private void registerGenerals() {
-        geoIpLookup = new GeoIPLookup(getDataFolder(), getLogger());
         geoIpLookup.initialize();
     }
     
