@@ -192,18 +192,36 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     }
     
     private void initializeRemotes() {
+        // Create channels
         Channel<BaseMessage> moderationChannel = channelManager.createChannel("moderation", BaseMessage.class);
         moderationChannel.setCodec(new BaseMessage.Codec());
+        Channel<BaseMessage> warpsChannel = channelManager.createChannel("warps", BaseMessage.class);
+        warpsChannel.setCodec(new BaseMessage.Codec());
+        Channel<BaseMessage> teleportsChannel = Global.getChannelManager().createChannel("tp", BaseMessage.class);
+        teleportsChannel.setCodec(new BaseMessage.Codec());
         
+        // Create each remote
+        bans = new BanManager(databaseManager.getBanHistory(), moderationChannel, getLogger());
+        warnings = new WarningsManager(databaseManager.getWarnHistory(), bans, moderationChannel, getLogger());
+        tracking = new TrackingManager(databaseManager.getTracking(), databaseManager.getOntime(), getLogger());
+        teleports = new TeleportsManager(teleportsChannel, this);
+        
+        // Register them
         RemoteManager manager = Global.getRemoteManager();
-        manager.registerRemote("bans", BanActions.class, bans = new BanManager(databaseManager.getBanHistory(), getLogger(), moderationChannel));
-        manager.registerRemote("warns", WarnActions.class, warnings = new WarningsManager(databaseManager.getWarnHistory(), (BanManager)manager.getRemote(BanActions.class), moderationChannel, getLogger()));
-        manager.registerRemote("tracking", TrackingActions.class, tracking = new TrackingManager(databaseManager.getTracking(), databaseManager.getOntime(), getLogger()));
+        manager.registerRemote("bans", BanActions.class, bans);
+        manager.registerRemote("warns", WarnActions.class, warnings);
+        manager.registerRemote("tracking", TrackingActions.class, tracking);
         
-        manager.registerRemote("teleports", TeleportActions.class, teleports = new TeleportsManager(this));
+        manager.registerRemote("teleports", TeleportActions.class, teleports);
         
+        // Create managers
         spawns = new SpawnManager();
-        warps = new WarpManager();
+        warps = new WarpManager(warpsChannel);
+        
+        // Load everything
+        warnings.loadConfig();
+        teleports.loadConfig();
+        spawns.loadSpawns();
     }
     
     private void registerGenerals() {

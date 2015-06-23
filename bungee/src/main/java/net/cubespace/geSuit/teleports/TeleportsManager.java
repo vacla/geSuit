@@ -37,15 +37,12 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
     private geSuitPlugin plugin;
     private ProxyServer proxy;
     
-    public TeleportsManager(geSuitPlugin plugin) {
+    public TeleportsManager(Channel<BaseMessage> channel, geSuitPlugin plugin) {
         this.plugin = plugin;
+        this.channel = channel;
         
-        proxy = ProxyServer.getInstance();
-        channel = Global.getChannelManager().createChannel("tp", BaseMessage.class);
-        channel.setCodec(new BaseMessage.Codec());
+        proxy = plugin.getProxy();
         channel.addReceiver(this);
-        
-        loadConfig();
     }
     
     private int getServerId(ServerInfo server) {

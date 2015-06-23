@@ -11,14 +11,7 @@ import net.cubespace.geSuit.core.storage.StorageSection;
 public class SpawnManager implements ChannelDataReceiver<BaseMessage> {
     private Location spawnNewPlayer;
     
-    private Channel<BaseMessage> channel;
-    
     public SpawnManager() {
-        channel = Global.getChannelManager().createChannel("spawns", BaseMessage.class);
-        channel.setCodec(new BaseMessage.Codec());
-        channel.addReceiver(this);
-        
-        loadSpawns();
     }
     
     public void loadSpawns() {

@@ -3,7 +3,9 @@ package net.cubespace.geSuit.teleports;
 import com.google.common.base.Preconditions;
 
 import net.cubespace.geSuit.GSPlugin;
+import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.commands.CommandManager;
+import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.modules.BaseModule;
 import net.cubespace.geSuit.teleports.commands.WarpCommands;
 import net.cubespace.geSuit.teleports.warps.WarpManager;
@@ -18,7 +20,10 @@ public class WarpsModule extends BaseModule {
     
     @Override
     public boolean onLoad() throws Exception {
-        manager = new WarpManager();
+        Channel<BaseMessage> warpsChannel = getChannelManager().createChannel("warps", BaseMessage.class);
+        warpsChannel.setCodec(new BaseMessage.Codec());
+        
+        manager = new WarpManager(warpsChannel);
         return true;
     }
     

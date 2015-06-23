@@ -26,12 +26,11 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
     private boolean serverChanged;
     private Channel<BaseMessage> channel;
     
-    public WarpManager() {
+    public WarpManager(Channel<BaseMessage> channel) {
         globalWarps = Maps.newHashMap();
         serverWarps = Maps.newHashMap();
         
-        channel = Global.getChannelManager().createChannel("warps", BaseMessage.class);
-        channel.setCodec(new BaseMessage.Codec());
+        this.channel = channel;
         channel.addReceiver(this);
     }
     

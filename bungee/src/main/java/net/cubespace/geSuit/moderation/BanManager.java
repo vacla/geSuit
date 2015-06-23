@@ -39,7 +39,7 @@ public class BanManager implements BanActions {
     private Logger logger;
     private Channel<BaseMessage> channel;
     
-    public BanManager(BanHistory banRepo, Logger logger, Channel<BaseMessage> channel) {
+    public BanManager(BanHistory banRepo, Channel<BaseMessage> channel, Logger logger) {
         this.banRepo = banRepo;
         this.logger = logger;
         this.channel = channel;

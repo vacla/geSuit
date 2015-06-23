@@ -42,8 +42,6 @@ public class WarningsManager implements WarnActions {
         this.banManager = banManager;
         this.channel = channel;
         this.logger = logger;
-        
-        loadConfig();
     }
     
     public void loadConfig() {
