@@ -190,6 +190,63 @@ public class Location implements SimpleStorable {
         pitch = Float.parseFloat(parts[6]);
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Location)) {
+            return false;
+        }
+        
+        final double variance = 0.00001;
+        
+        Location other = (Location)obj;
+        
+        // Server can be null
+        if (server == null) {
+            if (other.server != null) {
+                return false;
+            }
+        } else {
+            if (!server.equals(other.server)) {
+                return false;
+            }
+        }
+        
+        // World can be null
+        if (world == null) {
+            if (other.world != null) {
+                return false;
+            }
+        } else {
+            if (!world.equals(other.world)) {
+                return false;
+            }
+        }
+        
+        // x y z with variance
+        if (Math.abs(x - other.x) > variance) {
+            return false;
+        }
+        
+        if (Math.abs(y - other.y) > variance) {
+            return false;
+        }
+        
+        if (Math.abs(z - other.z) > variance) {
+            return false;
+        }
+        
+        // Yaw and pitch with variance
+        if (Math.abs(yaw - other.yaw) > variance) {
+            return false;
+        }
+        
+        if (Math.abs(pitch - other.pitch) > variance) {
+            return false;
+        }
+        
+        return true;
+    }
+    
     /**
      * Creates a Location from a serialized string made with {@link #toSerialized()}
      * @param serialized The serialized string

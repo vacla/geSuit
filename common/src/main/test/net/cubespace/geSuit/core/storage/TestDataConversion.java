@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import net.cubespace.geSuit.core.objects.DateDiff;
 import net.cubespace.geSuit.core.objects.WarnAction.ActionType;
@@ -36,7 +37,7 @@ public class TestDataConversion {
     
     @Test
     public void testDateDiff() {
-        testConverter(DataConversion.getConverter(DateDiff.class), new DateDiff(123456));
+        testConverter(DataConversion.getConverter(DateDiff.class), new DateDiff(TimeUnit.MINUTES.toMillis(4) + TimeUnit.SECONDS.toMillis(43)));
     }
     
     @Test

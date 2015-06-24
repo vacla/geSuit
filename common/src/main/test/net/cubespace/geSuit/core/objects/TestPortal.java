@@ -17,19 +17,13 @@ public class TestPortal {
         Portal portal = new Portal("name", Type.Warp, "warpName", FillType.Water, null, null);
         assertEquals(Type.Warp, portal.getType());
         assertEquals("warpName", portal.getDestWarp());
-        
-        assertNull(portal.getDestLocation());
-        assertNull(portal.getDestServer());
     }
 
     @Test
     public void testGetDestServer() {
         Portal portal = new Portal("name", Type.Server, "serverName", FillType.Water, null, null);
         assertEquals(Type.Server, portal.getType());
-        assertEquals("serverName", portal.getDestWarp());
-        
-        assertNull(portal.getDestLocation());
-        assertNull(portal.getDestWarp());
+        assertEquals("serverName", portal.getDestServer());
     }
 
     @Test
@@ -39,9 +33,6 @@ public class TestPortal {
         Portal portal = new Portal("name", loc, FillType.Water, null, null);
         assertEquals(Type.Teleport, portal.getType());
         assertEquals(loc, portal.getDestLocation());
-        
-        assertNull(portal.getDestWarp());
-        assertNull(portal.getDestServer());
     }
 
     @Test
@@ -51,9 +42,6 @@ public class TestPortal {
         
         assertEquals(Type.Warp, portal.getType());
         assertEquals("warpName", portal.getDestWarp());
-        
-        assertNull(portal.getDestLocation());
-        assertNull(portal.getDestServer());
     }
 
     @Test
@@ -63,9 +51,6 @@ public class TestPortal {
         
         assertEquals(Type.Server, portal.getType());
         assertEquals("serverName", portal.getDestServer());
-        
-        assertNull(portal.getDestLocation());
-        assertNull(portal.getDestWarp());
     }
 
     @Test
@@ -76,9 +61,6 @@ public class TestPortal {
         
         assertEquals(Type.Teleport, portal.getType());
         assertEquals(loc, portal.getDestLocation());
-        
-        assertNull(portal.getDestWarp());
-        assertNull(portal.getDestServer());
     }
 
     @Test
@@ -140,7 +122,7 @@ public class TestPortal {
         values.put("type", "Server");
         values.put("dest", "serverName");
         values.put("min", minExpected.toSerialized());
-        values.put("min", maxExpected.toSerialized());
+        values.put("max", maxExpected.toSerialized());
         
         portal.load(values);
         
@@ -159,7 +141,7 @@ public class TestPortal {
         values.put("type", "Warp");
         values.put("dest", "warpName");
         values.put("min", minExpected.toSerialized());
-        values.put("min", maxExpected.toSerialized());
+        values.put("max", maxExpected.toSerialized());
         
         portal.load(values);
         
@@ -179,7 +161,7 @@ public class TestPortal {
         values.put("type", "Teleport");
         values.put("dest", dest.toSerialized());
         values.put("min", minExpected.toSerialized());
-        values.put("min", maxExpected.toSerialized());
+        values.put("max", maxExpected.toSerialized());
         
         portal.load(values);
         

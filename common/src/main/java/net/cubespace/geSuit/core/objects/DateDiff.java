@@ -59,8 +59,8 @@ public class DateDiff {
     private static int[] unitValues = {365, 30, 7, 1, 1, 1, 1};
     private static TimeUnit[] units = {TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
     
-    private static Pattern overallPattern = Pattern.compile("([0-9]+[a-zA-Z]+)(\\s*[0-9]+[a-zA-Z]+)*");
-    private static Pattern pattern = Pattern.compile("([0-9]+)([a-zA-Z]+)");
+    private static Pattern overallPattern = Pattern.compile("([0-9]+(?:[ywdhms]|mo))(\\s*[0-9]+(?:[ywdhms]|mo))*");
+    private static Pattern pattern = Pattern.compile("([0-9]+)([ywdhms]|mo)");
     /**
      * Parses the string as a date difference. See {@link DateDiff} for details on the format expected
      * @param text The formatted text to parse
@@ -101,7 +101,7 @@ public class DateDiff {
         
         long value = time;
         
-        while(value >= 1000) {
+        outer: while(value >= 1000) {
             for (int i = 0; i < units.length; ++i) {
                 long unitValue = units[i].convert(value, TimeUnit.MILLISECONDS) / unitValues[i];
                 if (unitValue > 0) {
@@ -111,7 +111,7 @@ public class DateDiff {
                     value -= units[i].toMillis(unitValue * unitValues[i]);
                     --numUnits;
                     if (numUnits <= 0) {
-                        break;
+                        break outer;
                     }
                 }
             }
@@ -130,7 +130,7 @@ public class DateDiff {
         long value = time;
         boolean first = true;
         
-        while(value >= 1000) {
+        outer: while(value >= 1000) {
             for (int i = 0; i < units.length; ++i) {
                 long unitValue = units[i].convert(value, TimeUnit.MILLISECONDS) / unitValues[i];
                 if (unitValue > 0) {
@@ -149,7 +149,7 @@ public class DateDiff {
                     value -= units[i].toMillis(unitValue * unitValues[i]);
                     --numUnits;
                     if (numUnits <= 0) {
-                        break;
+                        break outer;
                     }
                 }
             }
