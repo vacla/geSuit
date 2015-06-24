@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import net.cubespace.geSuit.core.commands.ParseTreeBuilder.Variant;
 import net.cubespace.geSuit.core.storage.DataConversion;
 
 import org.junit.Test;
@@ -29,16 +30,23 @@ public class TestParseTreeBuild {
         fail("Error in test. Invalid method name " + name);
         return null;
     }
+    
+    private List<Variant> getVariants(String... methods) {
+        List<Variant> variants = Lists.newArrayList();
+        for (String method : methods) {
+            variants.add(Variant.fromMethod(variants.size(), getMethod(method)));
+        }
+        
+        return variants;
+    }
 
     @Test
 	public void testSinglePlain() {
-        List<Method> variants = Lists.newArrayList(getMethod("command0"));
-        ParseTree tree = new ParseTree(variants);
+        ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command0"));
         
-        tree.build();
+        ParseNode node = builder.build();
         
         // Confirm the correct tree was generated
-        ParseNode node = tree.root;
         assertEquals(1, node.getChildren().size());
         // arg1
         node = node.getChildren().get(0);
@@ -59,14 +67,12 @@ public class TestParseTreeBuild {
     
     @Test
     public void testDualPlain() {
-        List<Method> variants = Lists.newArrayList(getMethod("command0"), getMethod("command1"));
-        ParseTree tree = new ParseTree(variants);
+        ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command0", "command1"));
         
-        tree.build();
+        ParseNode left = builder.build();
+        ParseNode right = null;
         
         // Confirm the correct tree was generated
-        ParseNode left = tree.root;
-        ParseNode right = null;
         assertEquals(1, left.getChildren().size());
         // arg1 both
         left = right = left.getChildren().get(0);
@@ -98,14 +104,12 @@ public class TestParseTreeBuild {
 
     @Test
     public void testOptional() {
-        List<Method> variants = Lists.newArrayList(getMethod("command2"));
-        ParseTree tree = new ParseTree(variants);
+        ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command2"));
         
-        tree.build();
+        ParseNode parent = builder.build();
         
         // Confirm the correct tree was generated
         ParseNode node;
-        ParseNode parent = tree.root;
         assertEquals(1, parent.getChildren().size());
         // arg1
         node = parent = parent.getChildren().get(0);
@@ -123,13 +127,11 @@ public class TestParseTreeBuild {
     
     @Test
     public void testVarargs() {
-        List<Method> variants = Lists.newArrayList(getMethod("command3"));
-        ParseTree tree = new ParseTree(variants);
+        ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command3"));
         
-        tree.build();
+        ParseNode node = builder.build();
         
         // Confirm the correct tree was generated
-        ParseNode node = tree.root;
         assertEquals(1, node.getChildren().size());
         // arg1
         node = node.getChildren().get(0);
@@ -147,14 +149,12 @@ public class TestParseTreeBuild {
     
     @Test
     public void testOptionalVarargs() {
-        List<Method> variants = Lists.newArrayList(getMethod("command4"));
-        ParseTree tree = new ParseTree(variants);
+        ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command4"));
         
-        tree.build();
+        ParseNode parent = builder.build();
         
         // Confirm the correct tree was generated
         ParseNode node;
-        ParseNode parent = tree.root;
         assertEquals(1, parent.getChildren().size());
         // arg1
         node = parent = parent.getChildren().get(0);
@@ -173,13 +173,11 @@ public class TestParseTreeBuild {
     
     @Test
     public void testDualComplex() {
-        List<Method> variants = Lists.newArrayList(getMethod("command0"), getMethod("command2"), getMethod("command3"));
-        ParseTree tree = new ParseTree(variants);
+        ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command0", "command2", "command3"));
         
-        tree.build();
+        ParseNode parent = builder.build();
         
         // Confirm the correct tree was generated
-        ParseNode parent = tree.root;
         ParseNode node;
         assertEquals(2, parent.getChildren().size());
         

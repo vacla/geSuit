@@ -11,6 +11,7 @@ import java.util.logging.Level;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.commands.ParseTree.ParseResult;
+import net.cubespace.geSuit.core.commands.ParseTreeBuilder.Variant;
 
 import com.google.common.collect.Lists;
 import com.google.common.reflect.Invokable;
@@ -92,13 +93,15 @@ public class WrapperCommand extends GSCommand {
     public void bake() {
         Collections.sort(variants);
         
-        List<Method> methods = Lists.newArrayListWithCapacity(variants.size());
+        List<Variant> methods = Lists.newArrayListWithCapacity(variants.size());
         for (MethodWrapper variant : variants) {
-            methods.add(variant.method);
+            methods.add(Variant.fromMethod(methods.size(), variant.method));
         }
         
-        parseTree = new ParseTree(methods);
-        parseTree.build();
+        ParseTreeBuilder builder = new ParseTreeBuilder(methods);
+        ParseNode root = builder.build();
+        
+        parseTree = new ParseTree(root, methods);
     }
     
     private Object[] createEmptyParameters(Method method) {

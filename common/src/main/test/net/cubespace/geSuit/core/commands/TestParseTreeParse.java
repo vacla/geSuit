@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import net.cubespace.geSuit.core.commands.ParseTree.ParseResult;
+import net.cubespace.geSuit.core.commands.ParseTreeBuilder.Variant;
 
 import org.junit.Test;
 
@@ -20,7 +21,7 @@ public class TestParseTreeParse {
     void command4(Object sender, int arg1, @Varargs String arg2) {}
     
     private Method getMethod(String name) {
-        for (Method method : TestParseTreeBuild.class.getDeclaredMethods()) {
+        for (Method method : TestParseTreeParse.class.getDeclaredMethods()) {
             if (method.getName().equals(name)) {
                 return method;
             }
@@ -31,14 +32,14 @@ public class TestParseTreeParse {
     }
     
     private ParseTree makeParseTree(String... methodNames) {
-        List<Method> methods = Lists.newArrayListWithCapacity(methodNames.length);
+        List<Variant> methods = Lists.newArrayListWithCapacity(methodNames.length);
         for (String name : methodNames) {
-            methods.add(getMethod(name));
+            methods.add(Variant.fromMethod(methods.size(), getMethod(name)));
         }
         
-        ParseTree tree = new ParseTree(methods);
-        tree.build();
-        return tree;
+        ParseTreeBuilder builder = new ParseTreeBuilder(methods);
+        ParseNode root = builder.build();
+        return new ParseTree(root, methods);
     }
     
     private <T> void assertResultEquals(Class<T> clazz, T expected, Object actual) {

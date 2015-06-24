@@ -135,7 +135,7 @@ class ParseNode {
             }
         }
         
-        return text;
+        return String.format("%s varargs: %s arg: %d var: %d", text, isVarArgs, argumentIndex, variant);
     }
     
     @Override
