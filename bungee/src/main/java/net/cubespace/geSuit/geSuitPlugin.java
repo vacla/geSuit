@@ -38,6 +38,7 @@ import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.remote.RemoteManager;
 import net.cubespace.geSuit.core.storage.RedisConnection;
+import net.cubespace.geSuit.core.storage.StorageProvider;
 import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.DatabaseManager;
 import net.cubespace.geSuit.general.BroadcastManager;
@@ -119,7 +120,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         // Initialize core
         commandManager = new BungeeCommandManager();
         
-        geCore core = new geCore(new BungeePlatform(this), playerManager, channelManager, commandManager);
+        geCore core = new geCore(new BungeePlatform(this), playerManager, channelManager, commandManager, new StorageProvider(redis));
         Global.setInstance(core);
         
         // Load addons

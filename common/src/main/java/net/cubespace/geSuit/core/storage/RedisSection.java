@@ -32,13 +32,17 @@ public class RedisSection implements StorageSection {
     private Jedis jedis;
     
     public RedisSection(RedisConnection connection) {
+        this(connection, "");
+    }
+    
+    public RedisSection(RedisConnection connection, String root) {
         this.connection = connection;
         
         cached = Maps.newHashMap();
-        path = "";
-        fullPath = "";
+        path = root.indexOf('.') == -1 ? root : root.substring(root.lastIndexOf('.')+1);
+        fullPath = root;
         parent = null;
-        root = this;
+        this.root = this;
     }
     
     protected RedisSection(RedisSection parent, String path) {
@@ -51,7 +55,7 @@ public class RedisSection implements StorageSection {
     }
     
     private String getSubPath(String key) {
-        if (root == this) {
+        if (fullPath.isEmpty()) {
             return key;
         } else {
             return fullPath + "." + key;

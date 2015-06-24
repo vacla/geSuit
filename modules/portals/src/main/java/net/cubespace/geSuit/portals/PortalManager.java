@@ -58,7 +58,7 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
      * Loads all portals from the backend. This method is blocking
      */
     public void loadPortals() {
-        StorageSection root = Global.getStorage().getSubsection("geSuit.portals");
+        StorageSection root = Global.getStorageProvider().create("geSuit.portals");
         
         Set<String> portalNames = root.getSetString("#names");
         portals.clear();
@@ -177,7 +177,7 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
         }
         
         // Sync it
-        StorageSection root = Global.getStorage().getSubsection("geSuit.portals");
+        StorageSection root = Global.getStorageProvider().create("geSuit.portals");
         
         root.set("#names", portals.keySet());
         root.set(portal.getName().toLowerCase(), portal);
@@ -221,7 +221,7 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
         }
         
         // Sync it
-        StorageSection root = Global.getStorage().getSubsection("geSuit.portals");
+        StorageSection root = Global.getStorageProvider().create("geSuit.portals");
         
         root.set("#names", portals.keySet());
         root.set(portal.getName().toLowerCase(), portal);

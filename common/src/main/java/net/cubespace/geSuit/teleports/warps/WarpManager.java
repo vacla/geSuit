@@ -38,7 +38,7 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
      * Loads the warps from the backend
      */
     public void loadWarps() {
-        StorageSection root = Global.getStorage().getSubsection("geSuit.warps");
+        StorageSection root = Global.getStorageProvider().create("geSuit.warps");
         
         // Load global warps
         globalWarps.clear();
@@ -64,7 +64,7 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     private void saveWarps() {
-        StorageSection root = Global.getStorage().getSubsection("geSuit.warps");
+        StorageSection root = Global.getStorageProvider().create("geSuit.warps");
         // Save global
         if (globalChanged) {
             root.set("#global", toRedis(globalWarps));

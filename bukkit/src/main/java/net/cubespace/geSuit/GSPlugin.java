@@ -12,6 +12,7 @@ import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.storage.RedisConnection;
+import net.cubespace.geSuit.core.storage.StorageProvider;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -46,7 +47,7 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         
         // Initialize core
         commandManager = new BukkitCommandManager();
-        geCore core = new geCore(new BukkitPlatform(this), playerManager, channelManager, commandManager);
+        geCore core = new geCore(new BukkitPlatform(this), playerManager, channelManager, commandManager, new StorageProvider(redis));
         Global.setInstance(core);
         
         // Load player manager

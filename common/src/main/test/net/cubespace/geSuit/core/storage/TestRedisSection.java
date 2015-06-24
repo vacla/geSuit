@@ -17,6 +17,19 @@ import redis.clients.jedis.Jedis;
 import static org.mockito.Mockito.*;
 
 public class TestRedisSection {
+    @Test
+    public void testOffsetRoot() {
+        RedisSection root = new RedisSection((RedisConnection)null, "test.other");
+        
+        assertEquals("test.other", root.getCurrentPath());
+        assertEquals("other", root.getName());
+        assertNull(root.getParent());
+        assertSame(root, root.getRoot());
+        
+        // Now try to do a subsection
+        RedisSection section = root.getSubsection("next");
+        assertEquals("test.other.next", section.getCurrentPath());
+    }
 
     @Test
     public void testSubsection() {

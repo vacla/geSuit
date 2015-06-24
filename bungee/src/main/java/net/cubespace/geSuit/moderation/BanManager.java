@@ -535,8 +535,8 @@ public class BanManager implements BanActions, ConfigReloadListener {
     
     @Override
     public BanInfo<InetAddress> getBan(InetAddress ip) {
-        StorageSection storage = Global.getStorage();
-        String name = "geSuit.ipbans." + ip.getHostAddress();
+        StorageSection storage = Global.getStorageProvider().create("geSuit.ipbans");
+        String name = ip.getHostAddress();
         if (!storage.contains(name)) {
             return null;
         }
@@ -551,8 +551,8 @@ public class BanManager implements BanActions, ConfigReloadListener {
     public void setBan(InetAddress ip, BanInfo<InetAddress> ban) {
         Preconditions.checkArgument(ban == null || ban.getWho().equals(ip));
         
-        StorageSection storage = Global.getStorage();
-        String name = "geSuit.ipbans." + ip.getHostAddress();
+        StorageSection storage = Global.getStorageProvider().create("geSuit.ipbans");
+        String name = ip.getHostAddress();
         
         if (ban == null) {
             storage.remove(name);

@@ -7,6 +7,7 @@ import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.commands.CommandManager;
 import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.remote.RemoteManager;
+import net.cubespace.geSuit.core.storage.StorageProvider;
 import net.cubespace.geSuit.core.storage.StorageSection;
 
 import com.google.common.base.Preconditions;
@@ -136,10 +137,10 @@ public final class Global {
     
     /**
      * Provides access to read and write into redis.
-     * @return A StorageSection you can manipulate
+     * @return The StorageProvider to get a StorageSection
      */
-    public static StorageSection getStorage() {
-        return instance.getStorage();
+    public static StorageProvider getStorageProvider() {
+        return instance.getStorageProvider();
     }
     
     /**

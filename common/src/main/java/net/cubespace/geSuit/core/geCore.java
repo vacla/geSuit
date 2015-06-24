@@ -4,27 +4,27 @@ import java.util.Collection;
 import java.util.UUID;
 
 import net.cubespace.geSuit.core.channel.ChannelManager;
-import net.cubespace.geSuit.core.channel.RedisChannelManager;
 import net.cubespace.geSuit.core.commands.CommandManager;
 import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.remote.RemoteManager;
-import net.cubespace.geSuit.core.storage.RedisSection;
-import net.cubespace.geSuit.core.storage.StorageSection;
+import net.cubespace.geSuit.core.storage.StorageProvider;
 
 public class geCore {
     private PlayerManager playerManager;
     private ChannelManager channelManager;
     private RemoteManager remoteManager;
     private CommandManager commandManager;
+    private StorageProvider storageProvider;
     private Messages messages;
     
     private Platform platform;
     
-    public geCore(Platform platform, PlayerManager playerManager, ChannelManager channelManager, CommandManager commandManager) {
+    public geCore(Platform platform, PlayerManager playerManager, ChannelManager channelManager, CommandManager commandManager, StorageProvider storageProvider) {
         this.platform = platform;
         this.playerManager = playerManager;
         this.channelManager = channelManager;
         this.commandManager = commandManager;
+        this.storageProvider = storageProvider;
         
         remoteManager = new RemoteManager(channelManager);
         messages = new Messages();
@@ -74,8 +74,8 @@ public class geCore {
         return platform;
     }
     
-    public StorageSection getStorage() {
-        return new RedisSection(((RedisChannelManager)channelManager).getRedis());
+    public StorageProvider getStorageProvider() {
+        return storageProvider;
     }
     
     public CommandManager getCommandManager() {

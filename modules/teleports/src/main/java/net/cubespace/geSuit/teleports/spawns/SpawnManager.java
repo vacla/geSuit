@@ -45,7 +45,7 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
      * Loads all relevant spawns for this server from the backend
      */
     public void loadSpawns() {
-        StorageSection spawns = Global.getStorage().getSubsection("gesuit.spawns");
+        StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns");
         spawnGlobal = spawns.getSimpleStorable("#global", Location.class);
         spawnNewPlayer = spawns.getSimpleStorable("#new-player", Location.class);
         
@@ -70,7 +70,7 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
     public void updateSpawn(SpawnType type, org.bukkit.Location location) {
         Location spawnLoc = LocationUtil.fromBukkit(location, Global.getServer().getName());
         
-        StorageSection spawns = Global.getStorage().getSubsection("gesuit.spawns");
+        StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns");
         switch (type) {
         case Global:
             spawnGlobal = spawnLoc;
@@ -155,7 +155,7 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
      * @param world The world of the spawn used for {@code SpawnType.World}. Can be null for any other type
      */
     public void removeSpawn(SpawnType type, World world) {
-        StorageSection spawns = Global.getStorage().getSubsection("gesuit.spawns");
+        StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns");
         switch (type) {
         case Global:
             spawnGlobal = null;
