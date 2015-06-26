@@ -83,16 +83,16 @@ public abstract class CommandManager {
      * Finishes the registration making the commands fully available for use
      */
     private void finishRegistration(Object plugin, Object holder) {
-        List<WrapperCommand> commands = Lists.newArrayListWithCapacity(builders.size());
+        List<CommandWrapper> commands = Lists.newArrayListWithCapacity(builders.size());
         for (CommandBuilder builder : builders.values()) {
             builder.build();
-            WrapperCommand command = new WrapperCommand(plugin, holder, builder.getName(), builder.getAliases(), builder.getPermission(), builder.getUsage(), builder.getUsage(), builder.getParseTree(), builder.getVariants());
-            commands.add(command);
+            commands.add(createCommand(plugin, holder, builder));
         }
         
         installCommands(commands);
     }
     
     protected abstract CommandBuilder createBuilder();
-    protected abstract void installCommands(Collection<WrapperCommand> commands);
+    protected abstract CommandWrapper createCommand(Object plugin, Object holder, CommandBuilder builder);
+    protected abstract void installCommands(Collection<CommandWrapper> commands);
 }
