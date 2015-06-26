@@ -63,10 +63,6 @@ abstract class GSCommand extends Command implements TabExecutor {
         this.aliases = aliases;
     }
     
-    protected boolean isCommandSender(Class<?> clazz) {
-        return CommandSender.class.isAssignableFrom(clazz);
-    }
-    
     protected void runAsync(Runnable runnable) {
         ProxyServer.getInstance().getScheduler().runAsync(plugin, runnable);
     }

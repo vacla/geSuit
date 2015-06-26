@@ -2,106 +2,40 @@ package net.cubespace.geSuit.core.commands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
 import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.commands.CommandBuilder.CommandDefinition;
 import net.cubespace.geSuit.core.commands.ParseTree.ParseResult;
-import net.cubespace.geSuit.core.commands.ParseTreeBuilder.Variant;
-
-import com.google.common.collect.Lists;
 import com.google.common.reflect.Invokable;
 
 public class WrapperCommand extends GSCommand {
     private Object commandHolder;
-    private List<MethodWrapper> variants;
+    private List<CommandDefinition> variants;
     private ParseTree parseTree;
     
-    public WrapperCommand(Object plugin, Object holder, Method method, net.cubespace.geSuit.core.commands.Command tag) {
-        super(tag.name(), plugin);
+    public WrapperCommand(Object plugin, Object holder, String name, String[] aliases, String permission, String usage, String description, ParseTree parseTree, List<CommandDefinition> variants) {
+        super(name, plugin);
         
-        commandHolder = holder;
+        this.commandHolder = holder;
+        this.parseTree = parseTree;
+        this.variants = variants;
         
-        variants = Lists.newArrayList();
-        setUsage0("");
+        setUsage0(usage);
         
-        if (!tag.description().isEmpty()) {
-            setDescription0(tag.description());
-        }
-        if (tag.aliases().length != 0) {
-            setAliases0(tag.aliases());
-        }
-        if (!tag.permission().isEmpty()) {
-            setPermission0(tag.permission());
+        if (description != null) {
+            setDescription0(description);
         }
         
-        addVariant(method, tag);
-    }
-    
-    public void addVariant(Method method, net.cubespace.geSuit.core.commands.Command tag) {
-        method.setAccessible(true);
-        
-        Class<?>[] params = method.getParameterTypes();
-        
-        if (params.length == 0) {
-            throw new IllegalArgumentException(String.format("Method %s in class %s requires at least one parameter of type CommandSender or subclass to be used as a command", method.getName(), method.getDeclaringClass().getName()));
+        if (aliases.length > 0) {
+            setAliases0(aliases);
         }
         
-        Class<?> senderType;
-        if (!isCommandSender(params[0])) {
-            if (!CommandContext.class.equals(params[0])) {
-                throw new IllegalArgumentException(String.format("Method %s in class %s requires the first parameter be of type CommandSender, a subclass of CommandSender, or a CommandContext to be used as a command", method.getName(), method.getDeclaringClass().getName()));
-            } else {
-                Type raw = method.getGenericParameterTypes()[0];
-                Type argType = ((ParameterizedType)raw).getActualTypeArguments()[0];
-                if (argType instanceof Class<?>) {
-                    if (!isCommandSender((Class<?>)argType)) {
-                        throw new IllegalArgumentException(String.format("Method %s in class %s has invalid CommandContext type %s. The parameter must be CommandSender or a subclass.", method.getName(), method.getDeclaringClass().getName(), ((Class<?>)argType).getName()));
-                    } else {
-                        senderType = (Class<?>)argType;
-                    }
-                } else {
-                    throw new IllegalArgumentException(String.format("Method %s in class %s has invalid CommandContext type %s. The parameter must be CommandSender or a subclass.", method.getName(), method.getDeclaringClass().getName(), argType));
-                }
-            }
-        } else {
-            senderType = params[0];
+        if (permission != null) {
+            setPermission0(permission);
         }
-        
-        if (!method.getReturnType().equals(Void.TYPE) && !method.getReturnType().equals(Void.class)) {
-            throw new IllegalArgumentException(String.format("Method %s in class %s requires the return type to be void", method.getName(), method.getDeclaringClass().getName()));
-        }
-        
-        CommandPriority priorityTag = method.getAnnotation(CommandPriority.class);
-        int priority = 0;
-        if (priorityTag != null) {
-            priority = priorityTag.value();
-        }
-        
-        variants.add(new MethodWrapper(method, tag.async(), priority, tag, senderType));
-        if (getUsage0().isEmpty()) {
-            setUsage0(tag.usage());
-        } else { 
-            setUsage0(getUsage0() + "\n" + tag.usage());
-        }
-    }
-    
-    public void bake() {
-        Collections.sort(variants);
-        
-        List<Variant> methods = Lists.newArrayListWithCapacity(variants.size());
-        for (MethodWrapper variant : variants) {
-            methods.add(Variant.fromMethod(methods.size(), variant.method));
-        }
-        
-        ParseTreeBuilder builder = new ParseTreeBuilder(methods);
-        ParseNode root = builder.build();
-        
-        parseTree = new ParseTree(root, methods);
     }
     
     private Object[] createEmptyParameters(Method method) {
@@ -140,7 +74,7 @@ public class WrapperCommand extends GSCommand {
     public boolean execute(final Object sender, String label, String[] args) {
         try {
             ParseResult result = parseTree.parse(args);
-            MethodWrapper variant = variants.get(result.variant);
+            CommandDefinition variant = variants.get(result.variant);
             
             final Invokable<Object, Void> method = parseTree.getVariant(result.variant);
             System.out.println("Parse complete: " + method.toString() + " in " + method.getDeclaringClass().getName());
@@ -185,7 +119,7 @@ public class WrapperCommand extends GSCommand {
         } catch (CommandInterpretException e) {
             // Possible match, but content cant convert
             
-            MethodWrapper variant = variants.get(e.getNode().getVariant());
+            CommandDefinition variant = variants.get(e.getNode().getVariant());
             if (variant.useContext) {
                 // If the sender is not the right type, only show the usage
                 if (!variant.senderType.isInstance(sender)) {
@@ -232,34 +166,5 @@ public class WrapperCommand extends GSCommand {
     @Override
     public List<String> tabComplete(Object sender, String label, String[] args) throws IllegalArgumentException {
         return null;
-    }
-    
-    private static class MethodWrapper implements Comparable<MethodWrapper> {
-        public Method method;
-        public int priority;
-        public boolean async;
-        public Command tag;
-        public Class<?> senderType;
-        public boolean useContext;
-        
-        public MethodWrapper(Method method, boolean async, int priority, Command tag, Class<?> senderType) {
-            this.method = method;
-            this.priority = priority;
-            this.async = async;
-            this.tag = tag;
-            this.senderType = senderType;
-            
-            useContext = method.getParameterTypes()[0].equals(CommandContext.class);
-        }
-
-        @Override
-        public int compareTo(MethodWrapper other) {
-            return Integer.compare(other.priority, priority);
-        }
-        
-        @Override
-        public String toString() {
-            return String.format("%d %s", priority, method);
-        }
     }
 }

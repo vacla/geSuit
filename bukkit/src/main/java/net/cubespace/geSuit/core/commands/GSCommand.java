@@ -45,10 +45,6 @@ abstract class GSCommand extends org.bukkit.command.Command implements PluginIde
         super.setAliases(Arrays.asList(aliases));
     }
     
-    protected boolean isCommandSender(Class<?> clazz) {
-        return CommandSender.class.isAssignableFrom(clazz);
-    }
-    
     protected void runAsync(Runnable runnable) {
         Bukkit.getScheduler().runTaskAsynchronously(GSPlugin.getPlugin(GSPlugin.class),runnable);
     }

@@ -32,10 +32,6 @@ abstract class GSCommand {
         throw new UnsupportedOperationException("Should have been overridden");
     }
     
-    protected boolean isCommandSender(Class<?> clazz) {
-        throw new UnsupportedOperationException("Should have been overridden");
-    }
-    
     protected void runAsync(Runnable runnable) {
         throw new UnsupportedOperationException("Should have been overridden");
     }

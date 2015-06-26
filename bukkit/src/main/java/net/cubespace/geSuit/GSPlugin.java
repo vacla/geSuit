@@ -10,6 +10,7 @@ import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
+import net.cubespace.geSuit.core.commands.BukkitCommandManager;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.core.storage.StorageProvider;

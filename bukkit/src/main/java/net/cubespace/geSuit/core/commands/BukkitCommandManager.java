@@ -1,11 +1,13 @@
-package net.cubespace.geSuit;
+package net.cubespace.geSuit.core.commands;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+
 import net.cubespace.geSuit.core.commands.CommandManager;
 import net.cubespace.geSuit.core.commands.WrapperCommand;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 
 public class BukkitCommandManager extends CommandManager {
@@ -27,11 +29,20 @@ public class BukkitCommandManager extends CommandManager {
     protected void installCommands(Collection<WrapperCommand> commands) {
         for (WrapperCommand command : commands) {
             try {
-                command.bake();
                 commandMap.register("gesuit", command);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
         }
+    }
+    
+    @Override
+    protected CommandBuilder createBuilder() {
+        return new CommandBuilder() {
+            @Override
+            protected boolean isCommandSender(Class<?> clazz) {
+                return CommandSender.class.isAssignableFrom(clazz);
+            }
+        };
     }
 }

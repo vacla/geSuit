@@ -2,9 +2,11 @@ package net.cubespace.geSuit.core.commands;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -15,11 +17,11 @@ import com.google.common.collect.Sets;
  * See {@link Command} for a detailed description of how to make the commands
  */
 public abstract class CommandManager {
-    private Map<String, WrapperCommand> commands;
+    private Map<String, CommandBuilder> builders;
     private Set<String> registered; 
     
     public CommandManager() {
-        commands = Maps.newHashMap();
+        builders = Maps.newHashMap();
         registered = Sets.newHashSet();
     }
     
@@ -38,7 +40,7 @@ public abstract class CommandManager {
             
             registerCommand0(instance, method, tag, plugin);
         }
-        finishRegistration();
+        finishRegistration(plugin, instance);
     }
     
     /**
@@ -55,7 +57,7 @@ public abstract class CommandManager {
         }
         
         registerCommand0(instance, method, tag, plugin);
-        finishRegistration();
+        finishRegistration(plugin, instance);
     }
     
     /*
@@ -66,21 +68,31 @@ public abstract class CommandManager {
             throw new IllegalArgumentException("The command " + tag.name() + " has already been registered. You can only register vairants of a command using registerAll");
         }
         
-        if (commands.containsKey(tag.name())) {
-            WrapperCommand command = commands.get(tag.name());
-            command.addVariant(method, tag);
+        CommandBuilder builder;
+        if (builders.containsKey(tag.name())) {
+            builder = builders.get(tag.name());
         } else {
-            WrapperCommand command = new WrapperCommand(plugin, instance, method, tag);
-            commands.put(tag.name(), command);
+            builder = createBuilder();
+            builders.put(tag.name(), builder);
         }
+        
+        builder.addVariant(method);
     }
     
     /*
      * Finishes the registration making the commands fully available for use
      */
-    private void finishRegistration() {
-        installCommands(commands.values());
+    private void finishRegistration(Object plugin, Object holder) {
+        List<WrapperCommand> commands = Lists.newArrayListWithCapacity(builders.size());
+        for (CommandBuilder builder : builders.values()) {
+            builder.build();
+            WrapperCommand command = new WrapperCommand(plugin, holder, builder.getName(), builder.getAliases(), builder.getPermission(), builder.getUsage(), builder.getUsage(), builder.getParseTree(), builder.getVariants());
+            commands.add(command);
+        }
+        
+        installCommands(commands);
     }
     
+    protected abstract CommandBuilder createBuilder();
     protected abstract void installCommands(Collection<WrapperCommand> commands);
 }

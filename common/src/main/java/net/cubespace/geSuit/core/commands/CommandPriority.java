@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Command priority allows you to enforce a specific ordering on same named commands. <br>
- * The order is from the lowest number to the highest number.
+ * The order is from the highest number to the lowest number.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
