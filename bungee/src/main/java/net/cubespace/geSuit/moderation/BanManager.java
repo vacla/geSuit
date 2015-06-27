@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
-import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.config.ConfigReloadListener;
 import net.cubespace.geSuit.config.ModerationConfig;
@@ -23,6 +22,7 @@ import net.cubespace.geSuit.core.events.moderation.GlobalUnbanEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.FireBanEventMessage;
 import net.cubespace.geSuit.core.objects.BanInfo;
+import net.cubespace.geSuit.core.objects.DateDiff;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.core.objects.Result.Type;
 import net.cubespace.geSuit.core.storage.StorageException;
@@ -381,8 +381,9 @@ public class BanManager implements BanActions, ConfigReloadListener {
         if (ban.isTemporary()) {
             long remaining = ban.getUntil() - ban.getDate();
             
-            String remainingShort = Utilities.buildShortTimeDiffString(remaining, 10);
-            String remainingLong = Utilities.buildTimeDiffString(remaining, 2);
+            DateDiff diff = new DateDiff(remaining);
+            String remainingShort = diff.toString();
+            String remainingLong = diff.toLongString(2);
             String time = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG).format(ban.getUntil());
             
             if (ban.getWho() instanceof GlobalPlayer) {
@@ -430,8 +431,9 @@ public class BanManager implements BanActions, ConfigReloadListener {
         if (ban.isTemporary()) {
             long remaining = ban.getUntil() - ban.getDate();
             
-            String remainingShort = Utilities.buildShortTimeDiffString(remaining, 10);
-            String remainingLong = Utilities.buildTimeDiffString(remaining, 2);
+            DateDiff diff = new DateDiff(remaining);
+            String remainingShort = diff.toString();
+            String remainingLong = diff.toLongString(2);
             
             String id;
             if (ban.getWho() instanceof GlobalPlayer) {

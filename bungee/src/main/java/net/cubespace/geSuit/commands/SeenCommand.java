@@ -8,11 +8,11 @@ import java.util.Map.Entry;
 import com.google.common.collect.Maps;
 
 import au.com.addstar.bc.BungeeChat;
-import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.config.MainConfig;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.objects.BanInfo;
+import net.cubespace.geSuit.core.objects.DateDiff;
 import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.md_5.bungee.api.CommandSender;
@@ -77,7 +77,7 @@ public class SeenCommand extends Command {
             BanInfo<GlobalPlayer> nameBan = player.getBanInfo();
             if (nameBan.isTemporary()) {
                 if (nameBan.getUntil() > System.currentTimeMillis()) {
-                    items.put("Temp Banned", Utilities.buildShortTimeDiffString(nameBan.getUntil() - System.currentTimeMillis(), 3) + " remaining");
+                    items.put("Temp Banned", new DateDiff(nameBan.getUntil() - System.currentTimeMillis()).toString(3) + " remaining");
                     items.put(" Reason", nameBan.getReason());
                     if (seeExtra) {
                         items.put(" By", nameBan.getBannedBy());
@@ -96,7 +96,7 @@ public class SeenCommand extends Command {
         if (ipBan != null) {
             if (ipBan.isTemporary()) {
                 if (ipBan.getUntil() > System.currentTimeMillis()) {
-                    items.put("Temp IP Banned", Utilities.buildShortTimeDiffString(ipBan.getUntil() - System.currentTimeMillis(), 3) + " remaining");
+                    items.put("Temp IP Banned", new DateDiff(ipBan.getUntil() - System.currentTimeMillis()).toString(3) + " remaining");
                     items.put(" Reason", ipBan.getReason());
                     if (seeExtra) {
                         items.put(" By", ipBan.getBannedBy());
@@ -132,11 +132,11 @@ public class SeenCommand extends Command {
         
         if (online) {
             fullDate = String.format("%s @ %s", DateFormat.getDateInstance(DateFormat.MEDIUM).format(player.getSessionJoin()), DateFormat.getTimeInstance(DateFormat.MEDIUM).format(player.getSessionJoin()));
-            diff = Utilities.buildTimeDiffString(System.currentTimeMillis() - player.getSessionJoin(), 2);
+            diff = new DateDiff(System.currentTimeMillis() - player.getSessionJoin()).toLongString(2);
         } else {
             if (player.getFirstJoined() != 0) {
                 fullDate = String.format("%s @ %s", DateFormat.getDateInstance(DateFormat.MEDIUM).format(player.getLastOnline()), DateFormat.getTimeInstance(DateFormat.MEDIUM).format(player.getLastOnline()));
-                diff = Utilities.buildTimeDiffString(System.currentTimeMillis() - player.getLastOnline(), 2);
+                diff = new DateDiff(System.currentTimeMillis() - player.getLastOnline()).toLongString(2);
             } else {
                 fullDate = diff = "Never";
             }
