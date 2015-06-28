@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -152,6 +153,30 @@ public class TrackingManager implements TrackingActions, ConfigReloadListener {
         } catch (SQLException e) {
             logger.log(Level.SEVERE,  "A database exception occured while attempting to match players", e);
             throw new StorageException("Unable to match the name");
+        }
+    }
+    
+    public Track checkNameChange(GlobalPlayer player) throws StorageException {
+        try {
+            Track track = trackingRepo.checkNameChange(player.getUniqueId(), player.getName());
+            if (track == null) {
+                return null;
+            }
+            
+            // If there is still the same nickname (even though the name changed) dont show the change
+            if (player.hasNickname() && player.getNickname().equalsIgnoreCase(track.getNickname())) {
+                return null;
+            }
+            
+            // See if its too old
+            if (System.currentTimeMillis() - track.getLastSeen() > TimeUnit.DAYS.toMillis(config.NameChangeNotifyTime)) {
+                return null;
+            }
+            
+            return track;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,  "A database exception occured while attempting to check name change on " + player.getName(), e);
+            throw new StorageException("Unable to check for name change");
         }
     }
     

@@ -17,6 +17,7 @@ import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.LangUpdateMessage;
 import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.objects.BanInfo;
+import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
 import net.cubespace.geSuit.general.BroadcastManager;
@@ -197,7 +198,21 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                 }
             } else {
                 if (configManager.config().BroadcastProxyConnectionMessages) {
-                    broadcasts.broadcastGlobal(Global.getMessages().get("connect.join", "player", player.getDisplayName()));
+                    // Name change
+                    Track previousName = tracking.checkNameChange(player);
+                    if (previousName != null) {
+                        broadcasts.broadcastGlobal(Global.getMessages().get(
+                                "connect.join.namechange",
+                                "player", player.getDisplayName(),
+                                "old", previousName.getDisplayName()));
+                        plugin.getLogger().info(Global.getMessages().get(
+                              "connect.join.namechange.log",
+                              "player", event.getPlayer().getDisplayName(),
+                              "old", previousName.getName()));
+                    // Normal join
+                    } else {
+                        broadcasts.broadcastGlobal(Global.getMessages().get("connect.join", "player", player.getDisplayName()));
+                    }
                 }
             }
             
