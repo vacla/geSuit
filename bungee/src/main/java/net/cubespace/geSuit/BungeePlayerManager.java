@@ -3,6 +3,7 @@ package net.cubespace.geSuit;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import com.google.common.collect.Maps;
 
 import net.cubespace.geSuit.config.ConfigManager;
@@ -18,6 +19,7 @@ import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.events.NewPlayerJoinEvent;
+import net.cubespace.geSuit.general.BroadcastManager;
 import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.cubespace.geSuit.moderation.TrackingManager;
@@ -36,6 +38,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
     private BanManager bans;
     private TrackingManager tracking;
     private GeoIPLookup geoipLookup;
+    private BroadcastManager broadcasts;
     private geSuitPlugin plugin;
     
     private ConfigManager configManager;
@@ -46,10 +49,11 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
         this.plugin = plugin;
     }
     
-    public void initialize(BanManager bans, TrackingManager tracking, GeoIPLookup geoipLookup) {
+    public void initialize(BanManager bans, TrackingManager tracking, GeoIPLookup geoipLookup, BroadcastManager broadcasts) {
         this.bans = bans;
         this.tracking = tracking;
         this.geoipLookup = geoipLookup;
+        this.broadcasts = broadcasts;
         
         broadcastFullUpdate();
         broadcastNetworkInfo();
@@ -182,7 +186,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                     // Firing custom event
                     ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
                 } else if (configManager.config().BroadcastProxyConnectionMessages) {
-                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(Global.getMessages().get("connect.join", "player", player.getDisplayName()));
+                    broadcasts.broadcastGlobal(Global.getMessages().get("connect.join", "player", player.getDisplayName()));
                 }
 
                 // Teleport to new player spawn
@@ -192,7 +196,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                 }
             } else {
                 if (configManager.config().BroadcastProxyConnectionMessages) {
-                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(Global.getMessages().get("connect.join", "player", player.getDisplayName()));
+                    broadcasts.broadcastGlobal(Global.getMessages().get("connect.join", "player", player.getDisplayName()));
                 }
             }
             
@@ -224,7 +228,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             ProxyServer.getInstance().getScheduler().schedule(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    net.cubespace.geSuit.managers.PlayerManager.sendBroadcast(Global.getMessages().get("connect.quit", "player", player.getName()));
+                    broadcasts.broadcastGlobal(Global.getMessages().get("connect.quit", "player", player.getName()));
                 }
             }, configManager.config().PlayerDisconnectDelay, TimeUnit.SECONDS);
         }

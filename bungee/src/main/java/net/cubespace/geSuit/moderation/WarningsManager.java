@@ -26,7 +26,7 @@ import net.cubespace.geSuit.core.objects.WarnInfo;
 import net.cubespace.geSuit.core.objects.Result.Type;
 import net.cubespace.geSuit.core.storage.StorageException;
 import net.cubespace.geSuit.database.repositories.WarnHistory;
-import net.cubespace.geSuit.managers.PlayerManager;
+import net.cubespace.geSuit.general.BroadcastManager;
 import net.cubespace.geSuit.remote.moderation.WarnActions;
 import net.md_5.bungee.api.ChatColor;
 
@@ -36,6 +36,7 @@ public class WarningsManager implements WarnActions, ConfigReloadListener {
     private Logger logger;
     private WarnHistory warnRepo;
     private BanManager banManager;
+    private BroadcastManager broadcasts;
     private WarnAction[] actions;
     private Channel<BaseMessage> channel;
     
@@ -43,9 +44,10 @@ public class WarningsManager implements WarnActions, ConfigReloadListener {
     private boolean broadcastWarns;
     private String defaultReason;
     
-    public WarningsManager(WarnHistory warnRepo, BanManager banManager, Channel<BaseMessage> channel, Logger logger) {
+    public WarningsManager(WarnHistory warnRepo, BanManager banManager, BroadcastManager broadcasts, Channel<BaseMessage> channel, Logger logger) {
         this.warnRepo = warnRepo;
         this.banManager = banManager;
+        this.broadcasts = broadcasts;
         this.channel = channel;
         this.logger = logger;
     }
@@ -205,7 +207,7 @@ public class WarningsManager implements WarnActions, ConfigReloadListener {
             // Broadcast
             String message = Global.getMessages().get("warn.display.broadcast", "player", player.getDisplayName(), "message", reason, "sender", by);
             if (broadcastWarns) {
-                PlayerManager.sendBroadcast(message);
+                broadcasts.broadcastGlobal(message);
                 return new Result(Type.Success, null);
             } else {
                 return new Result(Type.Success, message);

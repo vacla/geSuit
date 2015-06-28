@@ -133,7 +133,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         
         // Begin all
         getProxy().getPluginManager().registerListener(this, playerManager);
-        playerManager.initialize(bans, tracking, geoIpLookup);
+        playerManager.initialize(bans, tracking, geoIpLookup, broadcastManager);
     }
 
     private void registerCommands() {
@@ -217,9 +217,9 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         teleportsChannel.setCodec(new BaseMessage.Codec());
         
         // Create each remote
-        bans = new BanManager(databaseManager.getBanHistory(), moderationChannel, getLogger());
-        warnings = new WarningsManager(databaseManager.getWarnHistory(), bans, moderationChannel, getLogger());
-        tracking = new TrackingManager(databaseManager.getTracking(), databaseManager.getOntime(), getLogger());
+        bans = new BanManager(databaseManager.getBanHistory(), broadcastManager, moderationChannel, getLogger());
+        warnings = new WarningsManager(databaseManager.getWarnHistory(), bans, broadcastManager, moderationChannel, getLogger());
+        tracking = new TrackingManager(databaseManager.getTracking(), databaseManager.getOntime(), broadcastManager, getLogger());
         teleports = new TeleportsManager(teleportsChannel, this);
         
         // Register them
@@ -233,7 +233,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         // Create managers
         spawns = new SpawnManager();
         warps = new WarpManager(warpsChannel);
-        geoIpLookup = new GeoIPLookup(getDataFolder(), configManager.moderation().GeoIP, getLogger());
+        geoIpLookup = new GeoIPLookup(getDataFolder(), configManager.moderation().GeoIP, broadcastManager, getLogger());
         configManager.addReloadListener(geoIpLookup);
         broadcastManager = new BroadcastManager(this, getProxy(), getLogger());
         

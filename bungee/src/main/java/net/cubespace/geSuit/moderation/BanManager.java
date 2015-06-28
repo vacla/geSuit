@@ -28,7 +28,7 @@ import net.cubespace.geSuit.core.objects.Result.Type;
 import net.cubespace.geSuit.core.storage.StorageException;
 import net.cubespace.geSuit.core.storage.StorageSection;
 import net.cubespace.geSuit.database.repositories.BanHistory;
-import net.cubespace.geSuit.managers.PlayerManager;
+import net.cubespace.geSuit.general.BroadcastManager;
 import net.cubespace.geSuit.remote.moderation.BanActions;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -38,13 +38,15 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BanManager implements BanActions, ConfigReloadListener {
     private BanHistory banRepo;
+    private BroadcastManager broadcasts;
     private Logger logger;
     private Channel<BaseMessage> channel;
     
     private ModerationConfig config;
     
-    public BanManager(BanHistory banRepo, Channel<BaseMessage> channel, Logger logger) {
+    public BanManager(BanHistory banRepo, BroadcastManager broadcasts, Channel<BaseMessage> channel, Logger logger) {
         this.banRepo = banRepo;
+        this.broadcasts = broadcasts;
         this.logger = logger;
         this.channel = channel;
     }
@@ -164,7 +166,7 @@ public class BanManager implements BanActions, ConfigReloadListener {
             // Finally broadcast message
             String message = Global.getMessages().get("unban.broadcast", "player", player.getDisplayName(), "sender", by);
             if (config.BroadcastUnbans) {
-                PlayerManager.sendBroadcast(message, null);
+                broadcasts.broadcastGlobal(message);
                 return new Result(Type.Success, (byId == null ? message : null));
             } else {
                 return new Result(Type.Success, message);
@@ -231,7 +233,7 @@ public class BanManager implements BanActions, ConfigReloadListener {
             // Finally broadcast message
             String message = getBanBroadcast(ban, isAuto);
             if (config.BroadcastBans) {
-                PlayerManager.sendBroadcast(message, null);
+                broadcasts.broadcastGlobal(message);
                 return new Result(Type.Success, (byId == null ? message : null));
             } else {
                 return new Result(Type.Success, message);
@@ -320,7 +322,7 @@ public class BanManager implements BanActions, ConfigReloadListener {
             // Finally broadcast message
             String message = getBanBroadcast(ipCurrent, isAuto);
             if (config.BroadcastBans) {
-                PlayerManager.sendBroadcast(message, null);
+                broadcasts.broadcastGlobal(message);
                 return new Result(Type.Success, (byId == null ? message : null));
             } else {
                 return new Result(Type.Success, message);
@@ -366,7 +368,7 @@ public class BanManager implements BanActions, ConfigReloadListener {
                     "player", (who instanceof GlobalPlayer ? ((GlobalPlayer)who).getDisplayName() : ((InetAddress)who).getHostAddress()),
                     "sender", by);
             if (config.BroadcastUnbans) {
-                PlayerManager.sendBroadcast(message, null);
+                broadcasts.broadcastGlobal(message);
                 return new Result(Type.Success, (byId == null ? message : null));
             } else {
                 return new Result(Type.Success, message);
@@ -508,9 +510,9 @@ public class BanManager implements BanActions, ConfigReloadListener {
         
         if (config.BroadcastKicks) {
             if (isAuto) {
-                PlayerManager.sendBroadcast(Global.getMessages().get("kick.display.broadcast.auto", "player", player.getDisplayName(), "message", reason), player.getName());
+                broadcasts.broadcastGlobal(Global.getMessages().get("kick.display.broadcast.auto", "player", player.getDisplayName(), "message", reason));
             } else {
-                PlayerManager.sendBroadcast(Global.getMessages().get("kick.display.broadcast", "player", player.getDisplayName(), "message", reason), player.getName());
+                broadcasts.broadcastGlobal(Global.getMessages().get("kick.display.broadcast", "player", player.getDisplayName(), "message", reason));
             }
         }
         

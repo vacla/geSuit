@@ -4,7 +4,6 @@ import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.geSuitPlugin;
 import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.core.Global;
-import net.cubespace.geSuit.managers.PlayerManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
@@ -26,7 +25,7 @@ public class ReloadCommand extends Command
     public void execute(CommandSender sender, String[] args)
     {
         if (!(sender.hasPermission("gesuit.reload") || sender.hasPermission("gesuit.admin"))) {
-            PlayerManager.sendMessageToTarget(sender, Global.getMessages().get("player.no-permission"));
+            sender.sendMessage(Global.getMessages().get("player.no-permission"));
 
             return;
         }
@@ -35,11 +34,11 @@ public class ReloadCommand extends Command
             configManager.reloadAll();
             plugin.loadLanguage();
 
-            PlayerManager.sendMessageToTarget(sender, "All Configs reloaded");
+            sender.sendMessage("All Configs reloaded");
         }
         catch (InvalidConfigurationException e) {
             e.printStackTrace();
-            PlayerManager.sendMessageToTarget(sender, "Could not reload. Check the logs");
+            sender.sendMessage("Could not reload. Check the logs");
         }
     }
 }

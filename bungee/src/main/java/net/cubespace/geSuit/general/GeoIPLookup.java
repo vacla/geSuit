@@ -10,7 +10,6 @@ import java.net.URLConnection;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
-import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.config.ConfigReloadListener;
 import net.cubespace.geSuit.config.ModerationConfig.GeoIPSettings;
@@ -25,14 +24,16 @@ import com.maxmind.geoip.regionName;
 public class GeoIPLookup implements ConfigReloadListener {
     private LookupService lookup;
     private File databaseFile;
+    private BroadcastManager broadcasts;
     private Logger logger;
     private File base;
     
     private GeoIPSettings settings;
     
-    public GeoIPLookup(File directory, GeoIPSettings settings, Logger logger) {
+    public GeoIPLookup(File directory, GeoIPSettings settings, BroadcastManager broadcasts, Logger logger) {
         this.base = directory;
         this.settings = settings;
+        this.broadcasts = broadcasts;
         this.logger = logger;
     }
     
@@ -163,7 +164,7 @@ public class GeoIPLookup implements ConfigReloadListener {
             String location = lookup(player.getAddress().getAddress());
             if (location != null) {
                 String msg = Global.getMessages().get("connect.geoip", "player", gPlayer.getDisplayName(), "location", location);
-                Utilities.doBungeeChatMirror("StaffNotice", msg);
+                broadcasts.broadcastGroup("StaffNotice", msg);
             }
         }
     }

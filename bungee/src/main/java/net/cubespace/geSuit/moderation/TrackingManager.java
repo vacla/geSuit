@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.config.ConfigReloadListener;
 import net.cubespace.geSuit.config.ModerationConfig;
@@ -23,6 +22,7 @@ import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.core.storage.StorageException;
 import net.cubespace.geSuit.database.repositories.OnTime;
 import net.cubespace.geSuit.database.repositories.Tracking;
+import net.cubespace.geSuit.general.BroadcastManager;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -30,13 +30,15 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class TrackingManager implements TrackingActions, ConfigReloadListener {
     private Tracking trackingRepo;
     private OnTime ontimeRepo;
+    private BroadcastManager broadcasts;
     private Logger logger;
     
     private ModerationConfig config;
     
-    public TrackingManager(Tracking tracking, OnTime ontime, Logger logger) {
+    public TrackingManager(Tracking tracking, OnTime ontime, BroadcastManager broadcasts, Logger logger) {
         this.trackingRepo = tracking;
         this.ontimeRepo = ontime;
+        this.broadcasts = broadcasts;
         this.logger = logger;
     }
     
@@ -184,7 +186,7 @@ public class TrackingManager implements TrackingActions, ConfigReloadListener {
                         );
             }
             
-            Utilities.doBungeeChatMirror("StaffNotice", message);
+            broadcasts.broadcastGroup("StaffNotice", message);
         } catch (SQLException e) {
             e.printStackTrace();
         }

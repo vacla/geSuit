@@ -47,6 +47,8 @@ public class BroadcastManager implements ConfigReloadListener {
     private List<ScheduledBroadcast> broadcasts;
     private Set<ServerInfo> excludedServers;
     
+    private BroadcastHandler broadcastHandler;
+    
     private long manualBroadcastCooldown;
     
     private Map<String, BaseComponent[]> definedBroadcasts;
@@ -60,6 +62,7 @@ public class BroadcastManager implements ConfigReloadListener {
         broadcasts = Lists.newArrayList();
         excludedServers = Sets.newHashSet();
         definedBroadcasts = Maps.newHashMap();
+        broadcastHandler = new InternalBroadcastHandler();
     }
     
     /**
@@ -271,11 +274,28 @@ public class BroadcastManager implements ConfigReloadListener {
     }
     
     /**
+     * Broadcasts a message to a server
+     * @param server The server to broadcast on
+     * @param message The message to broadcast
+     */
+    public void broadcastServer(ServerInfo server, String message) {
+        broadcastServer(server, TextComponent.fromLegacyText(message));
+    }
+    
+    /**
      * Broadcast a message globally
      * @param message The message to broadcast
      */
     public void broadcastGlobal(BaseComponent[] message) {
         broadcastGlobal(message, Collections.<ServerInfo>emptySet());
+    }
+    
+    /**
+     * Broadcast a message globally
+     * @param message The message to broadcast
+     */
+    public void broadcastGlobal(String message) {
+        broadcastGlobal(TextComponent.fromLegacyText(message));
     }
     
     /**
@@ -295,6 +315,77 @@ public class BroadcastManager implements ConfigReloadListener {
             }
             // Show on console
             proxy.getConsole().sendMessage(message);
+        }
+    }
+    
+    /**
+     * Broadcast a message globally except on servers specified
+     * @param message The message to broadcast
+     * @param excludedServers A set of all servers to exclude
+     */
+    public void broadcastGlobal(String message, Set<ServerInfo> excludedServers) {
+        broadcastGlobal(TextComponent.fromLegacyText(message), excludedServers);
+    }
+    
+    /**
+     * Broadcast a message globally to the group specified.
+     * The interpretation of this group depends on whether
+     * {@link #setGroupBroadcastHandler(BroadcastHandler)}
+     * has been set. 
+     * @param group The group to broadcast to
+     * @param message The message to broadcast
+     */
+    public void broadcastGroup(String group, BaseComponent[] message) {
+        broadcastHandler.broadcastOn(group, message);
+    }
+    
+    /**
+     * Broadcast a message globally to the group specified.
+     * The interpretation of this group depends on whether
+     * {@link #setGroupBroadcastHandler(BroadcastHandler)}
+     * has been set. 
+     * @param group The group to broadcast to
+     * @param message The message to broadcast
+     */
+    public void broadcastGroup(String group, String message) {
+        broadcastGroup(group, TextComponent.fromLegacyText(message));
+    }
+    
+    /**
+     * Broadcast a message globally to anyone that has the specified permission
+     * on BungeeCord
+     * @param permission The permission receivers need to have
+     * @param message The message to broadcast
+     */
+    public void broadcastPermission(String permission, BaseComponent[] message) {
+        for (ProxiedPlayer player : proxy.getPlayers()) {
+            if (player.hasPermission(permission)) {
+                player.sendMessage(message);
+            }
+        }
+        
+        proxy.getConsole().sendMessage(message);
+    }
+    
+    /**
+     * Broadcast a message globally to anyone that has the specified permission
+     * on BungeeCord
+     * @param permission The permission receivers need to have
+     * @param message The message to broadcast
+     */
+    public void broadcastPermission(String permission, String message) {
+        broadcastPermission(permission, TextComponent.fromLegacyText(message));
+    }
+    
+    /**
+     * Sets the BroadcastHandler used for group broadcasts.
+     * @param handler The handler to use, or null to use the default
+     */
+    public void setGroupBroadcastHandler(BroadcastHandler handler) {
+        if (handler == null) {
+            broadcastHandler = new InternalBroadcastHandler();
+        } else {
+            broadcastHandler = handler;
         }
     }
     
@@ -369,6 +460,14 @@ public class BroadcastManager implements ConfigReloadListener {
         @Override
         public int compareTo(ScheduledBroadcast other) {
             return Long.compare(nextExecuteTime, other.nextExecuteTime);
+        }
+    }
+    
+    private class InternalBroadcastHandler implements BroadcastHandler {
+        @Override
+        public void broadcastOn(String group, BaseComponent[] message) {
+            String permission = "gesuit.broadcast." + group;
+            broadcastPermission(permission, message);
         }
     }
 }

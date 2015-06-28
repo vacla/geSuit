@@ -21,7 +21,6 @@ import net.cubespace.geSuit.core.messages.UpdateBackMessage;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.core.objects.Result.Type;
-import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.remote.teleports.TeleportActions;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -226,13 +225,14 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
             return new Result(Type.Fail, Global.getMessages().get("player.not-online", "player", target.getDisplayName()));
         }
 
+        String message = Global.getMessages().get("teleport.all", "player", target.getDisplayName());
         for (ProxiedPlayer pPlayer : proxy.getPlayers()) {
             if (pPlayer.getUniqueId().equals(target.getUniqueId())) {
                 continue;
             }
             
             teleportTo(Global.getPlayer(pPlayer.getUniqueId()), target, true);
-            PlayerManager.sendMessageToTarget(pPlayer, Global.getMessages().get("teleport.all", "player", target.getDisplayName()));
+            pPlayer.sendMessage(message);
         }
         
         return new Result(Type.Success, null);
