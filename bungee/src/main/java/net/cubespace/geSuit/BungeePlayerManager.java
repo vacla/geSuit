@@ -177,6 +177,7 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             // Update the tracking data for this player
             tracking.updateTracking(player);
             
+            // Join broadcast
             if (player.isNewPlayer()) {
                 plugin.getLogger().info(Global.getMessages().get("log.player-create", "player", player.getName(), "uuid", player.getUniqueId()));
 
@@ -200,7 +201,11 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                 }
             }
             
-            // TODO: do all other setup
+            // Show MOTD
+            if (configManager.config().MOTD_Enabled) {
+                String motd = configManager.getMOTD(player.isNewPlayer()).replace("{player}", player.getDisplayName());
+                event.getPlayer().sendMessage(motd);
+            }
             
             // Notifications
             ProxyServer.getInstance().getScheduler().schedule(plugin, new Runnable() {
