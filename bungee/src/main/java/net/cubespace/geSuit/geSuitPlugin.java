@@ -16,15 +16,11 @@ import net.cubespace.geSuit.commands.AnnounceCommand;
 import net.cubespace.geSuit.commands.BanCommands;
 import net.cubespace.geSuit.commands.DebugCommand;
 import net.cubespace.geSuit.commands.KickCommands;
+import net.cubespace.geSuit.commands.LookupCommands;
 import net.cubespace.geSuit.commands.MOTDCommand;
-import net.cubespace.geSuit.commands.NamesCommand;
-import net.cubespace.geSuit.commands.OnTimeCommand;
 import net.cubespace.geSuit.commands.ReloadCommand;
 import net.cubespace.geSuit.commands.SeenCommand;
-import net.cubespace.geSuit.commands.WarnCommand;
 import net.cubespace.geSuit.commands.WarnCommands;
-import net.cubespace.geSuit.commands.WarnHistoryCommand;
-import net.cubespace.geSuit.commands.WhereCommand;
 import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.config.MainConfig.Redis;
 import net.cubespace.geSuit.core.Global;
@@ -144,20 +140,14 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         if (configManager.config().Seen_Enabled) {
             manager.registerCommand(this, new SeenCommand(bans, geoIpLookup, configManager.config()));
         }
-        if (configManager.moderation().TrackOnTime) {
-            proxy.getPluginManager().registerCommand(this, new OnTimeCommand());
-        }
         
         Global.getCommandManager().registerAll(new BanCommands(bans), this);
         Global.getCommandManager().registerAll(new KickCommands(bans), this);
         Global.getCommandManager().registerAll(new WarnCommands(warnings), this);
+        Global.getCommandManager().registerAll(new LookupCommands(tracking), this);
         
-        manager.registerCommand(this, new WarnCommand());
-        manager.registerCommand(this, new WhereCommand());
         manager.registerCommand(this, new ReloadCommand(this, configManager));
         manager.registerCommand(this, new DebugCommand());
-        manager.registerCommand(this, new WarnHistoryCommand());
-        manager.registerCommand(this, new NamesCommand());
         manager.registerCommand(this, new AnnounceCommand(broadcastManager));
     }
 
