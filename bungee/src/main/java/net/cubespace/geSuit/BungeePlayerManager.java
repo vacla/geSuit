@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import net.cubespace.geSuit.config.ConfigManager;
@@ -19,14 +20,13 @@ import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.core.storage.RedisConnection;
-import net.cubespace.geSuit.events.NewPlayerJoinEvent;
+import net.cubespace.geSuit.events.GlobalPlayerJoinMessageEvent;
 import net.cubespace.geSuit.general.BroadcastManager;
 import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.moderation.BanManager;
 import net.cubespace.geSuit.moderation.TrackingManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -178,17 +178,15 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
             // Update the tracking data for this player
             tracking.updateTracking(player);
             
+            String joinMessage = null;
             // Join broadcast
             if (player.isNewPlayer()) {
                 plugin.getLogger().info(Global.getMessages().get("log.player-create", "player", player.getName(), "uuid", player.getUniqueId()));
 
                 if (configManager.config().NewPlayerBroadcast) {
-                    String welcomeMsg = Global.getMessages().get("connect.join.new", "player", player.getDisplayName());
-                    ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(welcomeMsg));
-                    // Firing custom event
-                    ProxyServer.getInstance().getPluginManager().callEvent(new NewPlayerJoinEvent(player.getName(), welcomeMsg));
+                    joinMessage = Global.getMessages().get("connect.join.new", "player", player.getDisplayName());
                 } else if (configManager.config().BroadcastProxyConnectionMessages) {
-                    broadcasts.broadcastGlobal(Global.getMessages().get("connect.join", "player", player.getDisplayName()));
+                    joinMessage = Global.getMessages().get("connect.join", "player", player.getDisplayName());
                 }
 
                 // Teleport to new player spawn
@@ -201,18 +199,30 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
                     // Name change
                     Track previousName = tracking.checkNameChange(player);
                     if (previousName != null) {
-                        broadcasts.broadcastGlobal(Global.getMessages().get(
+                        joinMessage = Global.getMessages().get(
                                 "connect.join.namechange",
                                 "player", player.getDisplayName(),
-                                "old", previousName.getDisplayName()));
+                                "old", previousName.getDisplayName());
                         plugin.getLogger().info(Global.getMessages().get(
                               "connect.join.namechange.log",
                               "player", event.getPlayer().getDisplayName(),
                               "old", previousName.getName()));
                     // Normal join
                     } else {
-                        broadcasts.broadcastGlobal(Global.getMessages().get("connect.join", "player", player.getDisplayName()));
+                        joinMessage = Global.getMessages().get("connect.join", "player", player.getDisplayName());
                     }
+                }
+            }
+            
+            // Provide ability for plugins to change the message
+            if (joinMessage != null) {
+                GlobalPlayerJoinMessageEvent messageEvent = new GlobalPlayerJoinMessageEvent(player, joinMessage);
+                Global.getPlatform().callEvent(messageEvent);
+                
+                joinMessage = messageEvent.getMessage();
+                
+                if (!Strings.isNullOrEmpty(joinMessage)) {
+                    broadcasts.broadcastGlobal(joinMessage);
                 }
             }
             

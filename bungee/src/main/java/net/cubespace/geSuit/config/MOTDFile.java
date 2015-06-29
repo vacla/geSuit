@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import net.cubespace.geSuit.core.util.Utilities;
+
 public class MOTDFile {
     private File file;
     private String MOTD;
@@ -34,7 +36,7 @@ public class MOTDFile {
         }
         
         reader.close();
-        MOTD = builder.toString();
+        MOTD = Utilities.colorize(builder.toString());
     }
     
     public String getMOTD() {
