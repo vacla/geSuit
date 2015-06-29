@@ -5,6 +5,7 @@ import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.database.BaseRepository;
 import net.cubespace.geSuit.database.ConnectionHandler;
+import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.StatementKey;
 
 import java.net.InetAddress;
@@ -33,8 +34,8 @@ public class Tracking extends BaseRepository {
     
     private String bansTable;
     
-    public Tracking(String name, String bansName) {
-        super(name);
+    public Tracking(String name, String bansName, ConnectionPool pool) {
+        super(name, pool);
         bansTable = bansName;
     }
     

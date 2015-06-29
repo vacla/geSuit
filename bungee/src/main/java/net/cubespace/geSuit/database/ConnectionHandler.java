@@ -11,8 +11,9 @@ import com.google.common.collect.Maps;
 
 public class ConnectionHandler {
     private Connection connection;
-    private boolean used;
-    private long lastUsed;
+    private boolean inUse;
+    private long openTime;
+    private long closeTime;
     private Map<StatementKey, PreparedStatement> preparedStatements;
 
     public ConnectionHandler(Connection connection) {
@@ -20,40 +21,47 @@ public class ConnectionHandler {
         
         preparedStatements = Maps.newIdentityHashMap();
     }
-
-    public Connection getConnection() {
-        lastUsed = System.currentTimeMillis();
-        used = true;
-        return connection;
-    }
-
-    public boolean isOldConnection() {
-        return (System.currentTimeMillis() - lastUsed) > 30000;
-    }
-
-    void registerStatementKey(StatementKey key) {
-        try {
-            PreparedStatement statement = key.createPreparedStatement(connection);
-            preparedStatements.put(key, statement);
-        } catch (SQLException e) {
-            e.printStackTrace();
+    
+    public boolean lease() {
+        if (inUse) {
+            return false;
+        } else {
+            inUse = true;
+            openTime = System.currentTimeMillis();
+            return true;
         }
     }
     
-    public ResultSet executeQuery(StatementKey key, Object... arguments) throws SQLException {
+    public Connection getConnection() {
+        return connection;
+    }
+
+    private PreparedStatement getStatement(StatementKey key) throws SQLException {
+        // Check if its already registered
         PreparedStatement statement = preparedStatements.get(key);
+        if (statement == null) {
+            // Register it
+            statement = key.createPreparedStatement(connection);
+            preparedStatements.put(key, statement);
+        }
+        
+        return statement;
+    }
+    
+    public ResultSet executeQuery(StatementKey key, Object... arguments) throws SQLException {
+        PreparedStatement statement = getStatement(key);
         Preconditions.checkNotNull(statement, "Statement was never registered (or failed)");
         
-        used = true;
+        inUse = true;
         applyArguments(statement, arguments);
         return statement.executeQuery();
     }
     
     public int executeUpdate(StatementKey key, Object... arguments) throws SQLException {
-        PreparedStatement statement = preparedStatements.get(key);
+        PreparedStatement statement = getStatement(key);
         Preconditions.checkNotNull(statement, "Statement was never registered (or failed)");
         
-        used = true;
+        inUse = true;
         applyArguments(statement, arguments);
         return statement.executeUpdate();
     }
@@ -61,10 +69,10 @@ public class ConnectionHandler {
     public ResultSet executeUpdateWithResults(StatementKey key, Object... arguments) throws SQLException {
         Preconditions.checkArgument(key.returnsGeneratedKeys(), "Statement does not return generated keys");
         
-        PreparedStatement statement = preparedStatements.get(key);
+        PreparedStatement statement = getStatement(key);
         Preconditions.checkNotNull(statement, "Statement was never registered (or failed)");
         
-        used = true;
+        inUse = true;
         applyArguments(statement, arguments);
         statement.executeUpdate();
         return statement.getGeneratedKeys();
@@ -77,20 +85,29 @@ public class ConnectionHandler {
     }
     
     public void release() {
-        used = false;
+        inUse = false;
+    }
+    
+    public boolean isInUse() {
+        return inUse;
+    }
+    
+    public long getOpenTime() {
+        return openTime;
+    }
+    
+    public long getCloseTime() {
+        return closeTime;
     }
 
-    public boolean isUsed() {
-        return used;
-    }
-
-    public void closeConnection() {
-        used = true;
+    void closeConnection() {
+        inUse = false;
         if (connection != null) {
             try {
                 connection.close();
+                connection = null;
             } catch (SQLException e) {
-                e.printStackTrace();
+                // Ignore
             }
         }
     }

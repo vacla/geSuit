@@ -3,10 +3,12 @@ package net.cubespace.geSuit;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import com.google.common.base.Strings;
@@ -22,6 +24,7 @@ import net.cubespace.geSuit.commands.ReloadCommand;
 import net.cubespace.geSuit.commands.SeenCommand;
 import net.cubespace.geSuit.commands.WarnCommands;
 import net.cubespace.geSuit.config.ConfigManager;
+import net.cubespace.geSuit.config.MainConfig.Database;
 import net.cubespace.geSuit.config.MainConfig.Redis;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.geCore;
@@ -91,9 +94,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         }
         
         // Initialize database
-        databaseManager = new DatabaseManager(new ConnectionPool(this), configManager.config().Database);
-        if (!databaseManager.initialize()) {
-            getLogger().severe("Database connection failed to initialize. Please fix the problem and restart BungeeCord.");
+        databaseManager = createDatabaseManager(configManager.config().Database);
+        if (databaseManager == null) {
             return;
         }
         
@@ -149,6 +151,36 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         manager.registerCommand(this, new ReloadCommand(this, configManager));
         manager.registerCommand(this, new DebugCommand());
         manager.registerCommand(this, new AnnounceCommand(broadcastManager));
+    }
+    
+    private DatabaseManager createDatabaseManager(Database config) {
+        // Load the JDBC driver if not already
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new AssertionError("Mysql jdbc driver missing. This is should not happen");
+        }
+        
+        String connectionURL = String.format("jdbc:mysql://%s:%s/%s", config.Host, config.Port, config.Database);
+        final ConnectionPool pool = new ConnectionPool(connectionURL, config.Username, config.Password);
+        
+        proxy.getScheduler().schedule(this, new Runnable() {
+            @Override
+            public void run() {
+                pool.removeExpired();
+            }
+        }, 10, 10, TimeUnit.SECONDS);
+        DatabaseManager manager = new DatabaseManager(pool, configManager.config().Database);
+        
+        try {
+            manager.initialize();
+        } catch (SQLException e) {
+            getLogger().severe("Database connection failed to initialize. Please fix the problem and restart BungeeCord.");
+            e.printStackTrace();
+            return null;
+        }
+        
+        return manager;
     }
 
     private RedisConnection createRedis(final Redis config) {
@@ -206,6 +238,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         Channel<BaseMessage> teleportsChannel = Global.getChannelManager().createChannel("tp", BaseMessage.class);
         teleportsChannel.setCodec(new BaseMessage.Codec());
         
+        broadcastManager = new BroadcastManager(this, getProxy(), getLogger());
+        
         // Create each remote
         bans = new BanManager(databaseManager.getBanHistory(), broadcastManager, moderationChannel, getLogger());
         warnings = new WarningsManager(databaseManager.getWarnHistory(), bans, broadcastManager, moderationChannel, getLogger());
@@ -225,7 +259,6 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         warps = new WarpManager(warpsChannel);
         geoIpLookup = new GeoIPLookup(getDataFolder(), configManager.moderation().GeoIP, broadcastManager, getLogger());
         configManager.addReloadListener(geoIpLookup);
-        broadcastManager = new BroadcastManager(this, getProxy(), getLogger());
         
         // Load everything
         bans.loadConfig(configManager.moderation());

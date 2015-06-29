@@ -15,6 +15,7 @@ import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.database.BaseRepository;
 import net.cubespace.geSuit.database.ConnectionHandler;
+import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.StatementKey;
 
 public class BanHistory extends BaseRepository {
@@ -23,8 +24,8 @@ public class BanHistory extends BaseRepository {
     private StatementKey updateBan;
     private StatementKey history;
     
-    public BanHistory(String name) {
-        super(name);
+    public BanHistory(String name, ConnectionPool pool) {
+        super(name, pool);
     }
     
     @Override

@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.database;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 import com.google.common.base.Preconditions;
@@ -10,14 +11,11 @@ public abstract class BaseRepository {
     private Map<String, StatementKey> keys;
     private ConnectionPool pool;
     
-    public BaseRepository(String name) {
+    public BaseRepository(String name, ConnectionPool pool) {
         this.name = name;
+        this.pool = pool;
         
         keys = Maps.newLinkedHashMap();
-    }
-    
-    void initialize(ConnectionPool pool) {
-        this.pool = pool;
     }
     
     public final String getName() {
@@ -42,17 +40,9 @@ public abstract class BaseRepository {
         return keys.get(name);
     }
     
-    void createStatements(ConnectionHandler connection) {
-        for (StatementKey key : keys.values()) {
-            if (key.isValid()) {
-                connection.registerStatementKey(key);
-            }
-        }
-    }
-    
     public abstract void registerStatements();
     
-    protected final ConnectionHandler getConnection() {
+    protected final ConnectionHandler getConnection() throws SQLException {
         return pool.getConnection();
     }
 }

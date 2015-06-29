@@ -6,6 +6,7 @@ import net.cubespace.geSuit.core.objects.TimeRecord;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.database.BaseRepository;
 import net.cubespace.geSuit.database.ConnectionHandler;
+import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.StatementKey;
 import net.md_5.bungee.api.ChatColor;
 
@@ -32,8 +33,8 @@ public class OnTime extends BaseRepository {
     
     private StatementKey ontimeTop;
     
-    public OnTime(String name) {
-        super(name);
+    public OnTime(String name, ConnectionPool pool) {
+        super(name, pool);
     }
     
     @Override

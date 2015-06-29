@@ -13,6 +13,7 @@ import net.cubespace.geSuit.core.objects.WarnInfo;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.database.BaseRepository;
 import net.cubespace.geSuit.database.ConnectionHandler;
+import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.StatementKey;
 
 public class WarnHistory extends BaseRepository {
@@ -20,8 +21,8 @@ public class WarnHistory extends BaseRepository {
     private StatementKey history;
     private StatementKey activeHistory;
     
-    public WarnHistory(String name) {
-        super(name);
+    public WarnHistory(String name, ConnectionPool pool) {
+        super(name, pool);
     }
     
     @Override
