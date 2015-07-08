@@ -7,7 +7,7 @@ import net.cubespace.geSuit.core.attachments.Attachment;
 import net.cubespace.geSuit.core.objects.Location;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
-public class TeleportsAttachment implements Attachment {
+public class TeleportsAttachment extends Attachment {
     private Location lastDeath;
     private Location lastTeleport;
     private boolean useLastDeath;
@@ -92,8 +92,8 @@ public class TeleportsAttachment implements Attachment {
     }
     
     @Override
-    public boolean isSaved() {
-        return false;
+    public AttachmentType getType() {
+        return AttachmentType.Local;
     }
     
     @Override

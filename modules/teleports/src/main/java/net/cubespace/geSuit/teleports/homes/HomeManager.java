@@ -28,7 +28,7 @@ public class HomeManager {
         Homes homes = player.getAttachment(Homes.class);
         if (homes == null) {
             homes = new Homes();
-            player.addAttachment(Homes.class, homes);
+            player.addAttachment(homes);
         }
         
         homes.setHome(home, location);

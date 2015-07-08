@@ -14,6 +14,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import net.cubespace.geSuit.core.attachments.AttachmentContainer;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerJoinEvent;
@@ -23,10 +24,12 @@ import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.LangUpdateMessage;
 import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
+import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Action;
 import net.cubespace.geSuit.core.messages.PlayerUpdateRequestMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Item;
 import net.cubespace.geSuit.core.storage.RedisConnection;
+import net.cubespace.geSuit.core.storage.StorageSection;
 import net.cubespace.geSuit.core.storage.RedisConnection.JedisRunner;
 import net.cubespace.geSuit.core.util.PlayerCache;
 import net.cubespace.geSuit.core.util.Utilities;
@@ -272,6 +275,19 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         Global.getMessages().load(message);
     }
     
+    private void onSyncAttachment(SyncAttachmentMessage message) {
+        GlobalPlayer player = playersById.get(message.owner);
+        if (player == null) {
+            player = offlineCache.get(message.owner);
+            
+            if (player == null) {
+                return;
+            }
+        }
+        
+        player.getAttachmentContainer().onAttachmentUpdate(message);
+    }
+    
     @Override
     public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value, int sourceId, boolean isBroadcast) {
         System.out.println("Got message " + value);
@@ -283,6 +299,8 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
             onNetworkInfo((NetworkInfoMessage)value);
         } else if (value instanceof LangUpdateMessage && !proxyMode) {
             onLanguageUpdate((LangUpdateMessage)value);
+        } else if (value instanceof SyncAttachmentMessage) {
+            onSyncAttachment((SyncAttachmentMessage)value);
         }
     }
     
@@ -290,11 +308,15 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     //               Player manipulation
     //=================================================
     
+    private StorageSection getStorageSection(UUID playerId) {
+        return Global.getStorageProvider().create("geSuit.players." + Utilities.toString(playerId));
+    }
     
     private void addPlayer(UUID id, String name, String nickname, boolean isReset) {
         GlobalPlayer player = offlineCache.get(id);
         if (player == null) {
-            player = new GlobalPlayer(id, this, name, nickname);
+            AttachmentContainer attachments = new AttachmentContainer(id, channel, getStorageSection(id));
+            player = new GlobalPlayer(id, name, nickname, this, attachments);
         }
         
         addPlayer(player, isReset);
@@ -339,7 +361,8 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     private GlobalPlayer loadOfflinePlayer(UUID id) {
-        GlobalPlayer player = new GlobalPlayer(id, this);
+        AttachmentContainer attachments = new AttachmentContainer(id, channel, getStorageSection(id));
+        GlobalPlayer player = new GlobalPlayer(id, this, attachments);
         player.loadLite();
         
         offlineCache.add(player);
@@ -358,7 +381,8 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         GlobalPlayer player = offlineCache.get(id);
         
         if (player == null) {
-            player = new GlobalPlayer(id, this, name, null);
+            AttachmentContainer attachments = new AttachmentContainer(id, channel, getStorageSection(id));
+            player = new GlobalPlayer(id, name, null, this, attachments);
         }
         
         if (!player.isLoaded()) {

@@ -115,7 +115,7 @@ public class TeleportsManager implements TeleportActions, ChannelDataReceiver<Ba
         TeleportsAttachment attachment = player.getAttachment(TeleportsAttachment.class);
         if (attachment == null) {
             attachment = new TeleportsAttachment();
-            player.addAttachment(TeleportsAttachment.class, attachment);
+            player.addAttachment(attachment);
         }
         
         return attachment;

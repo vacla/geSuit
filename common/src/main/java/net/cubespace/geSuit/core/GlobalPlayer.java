@@ -1,15 +1,15 @@
 package net.cubespace.geSuit.core;
 
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.UUID;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Transaction;
 import net.cubespace.geSuit.core.attachments.Attachment;
+import net.cubespace.geSuit.core.attachments.AttachmentContainer;
 import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.core.storage.RedisInterface;
 import net.cubespace.geSuit.core.util.Utilities;
@@ -17,7 +17,6 @@ import net.cubespace.geSuit.remote.moderation.BanActions;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * This class represents a player that is either online or offline. The player can be anywhere on the server network.
@@ -47,25 +46,25 @@ public class GlobalPlayer {
     private boolean tpEnabled = true;
     private boolean newPlayer;
     
-    private Map<Class<? extends Attachment>, Attachment> attachments;
+    private AttachmentContainer attachments;
     
     private boolean isDirty;
     private boolean isLoaded;
     private boolean isReal;
     private PlayerManager manager;
     
-    GlobalPlayer(UUID id, PlayerManager manager, String name, String nickname) {
-        this(id, manager);
+    GlobalPlayer(UUID id, String name, String nickname, PlayerManager manager, AttachmentContainer attachments) {
+        this(id, manager, attachments);
         
         this.name = name;
         this.nickname = nickname;
     }
     
-    GlobalPlayer(UUID id, PlayerManager manager) {
+    GlobalPlayer(UUID id, PlayerManager manager, AttachmentContainer attachments) {
         this.id = id;
         this.manager = manager;
+        this.attachments = attachments;
         
-        attachments = Maps.newIdentityHashMap();
         isReal = true;
     }
     
@@ -304,46 +303,47 @@ public class GlobalPlayer {
      * @see #removeAttachment(Class)
      * @see #addAttachment(Class, Attachment)
      */
-    @SuppressWarnings("unchecked")
     public <T extends Attachment> T getAttachment(Class<T> type) {
-        loadIfNeeded();
-        return (T)attachments.get(type);
+        attachments.loadIfNeeded();
+        return attachments.getAttachment(type);
     }
     
     /**
-     * Removes an attachment from this player. This can remove either stored or non-stored attachments.
+     * Removes an attachment from this player. This can remove any attachment available on this server.
      * @param type The class of the attachment. This cannot be a subclass or superclass.   
      * @return The attachment instance that was removed, or null if nothing was removed
      * @see #addAttachment(Class, Attachment)
      * @see #getAttachment(Class)
      */
-    @SuppressWarnings("unchecked")
     public <T extends Attachment> T removeAttachment(Class<T> type) {
-        loadIfNeeded();
-        return (T)attachments.remove(type);
+        attachments.loadIfNeeded();
+        return attachments.removeAttachment(type);
     }
     
     /**
      * Adds a new attachment to this player. 
-     * <p>Attachments are available in 2 types: storable and non-storable. Which one it is depends on the value of {@link Attachment#isSaved()}</p>
-     * <dl>
-     *   <dt>Storable</dt>
-     *     <dd>Storable attachments are synchronized to all servers that can have them (all classes are available)</dd>
-     *   <dt>Non-Storable</dt>
-     *     <dd>Non-Storable attachments are <b>not</b> synchronized and are available on this server for this session only</dd>
-     * </dl>
-     * 
-     * Both types can be accessed through {@link #getAttachment(Class)} using the class specified in {@code type}.
-     * <p>A final note about Storable attachables: Unlike the other methods in this class, changing something in an attachment will not
+     * Attachments can be accessed through {@link #getAttachment(Class)} using the type of the attachment.
+     * <p>A final note about attachables: Unlike the other methods in this class, changing something in an attachment will not
      * mark the player as modified. You will need to call {@link #save()} to sync the changes.</p>
      * 
-     * @param type The class this attachment will be registered under. This class can be used in the other attachment methods to retrieve this attachment.
      * @param attachment The instance of the attachment to add
+     * @throws IllegalStateException thrown if the attachment type is already registered
      */
-    public <T extends Attachment> void addAttachment(Class<T> type, T attachment) {
-        loadIfNeeded();
-        Preconditions.checkState(!attachments.containsKey(type));
-        attachments.put(type, attachment);
+    public <T extends Attachment> void addAttachment(T attachment) throws IllegalStateException {
+        attachments.loadIfNeeded();
+        attachments.addAttachment(attachment);
+    }
+    
+    /**
+     * @return Returns an unmodifiable collection of all attachments currently loaded. 
+     */
+    public Collection<Attachment> getAttachments() {
+        attachments.loadIfNeeded();
+        return attachments.getAttachments();
+    }
+    
+    AttachmentContainer getAttachmentContainer() {
+        return attachments;
     }
     
     /**
@@ -369,6 +369,7 @@ public class GlobalPlayer {
      */
     public void invalidate() {
         isLoaded = false;
+        attachments.invalidate();
     }
     
     /**
@@ -460,41 +461,11 @@ public class GlobalPlayer {
         }
         
         // Attachments
-        Set<String> attachmentNames = redis.getJedis().smembers(String.format("geSuit.players.%s.attachments", Utilities.toString(id)));
-        
-        for (String name : attachmentNames) {
-            try {
-                // Resolve attachment class
-                Class<?> clazz = Class.forName(name);
-                if (!Attachment.class.isAssignableFrom(clazz)) {
-                    continue;
-                }
-                
-                Class<? extends Attachment> attachmentClass = clazz.asSubclass(Attachment.class);
-                
-                // Get or create the attachment instance
-                Attachment attachment;
-                if (attachments.containsKey(attachmentClass)) {
-                    attachment = attachments.get(attachmentClass);
-                } else {
-                    attachment = clazz.asSubclass(Attachment.class).newInstance();
-                }
-                
-                // Load it
-                redis.load(String.format("geSuit.players.%s.%s", Utilities.toString(id), clazz.getSimpleName().toLowerCase()), attachment);
-                attachments.put(attachmentClass, attachment);
-            } catch (ClassNotFoundException e) {
-                continue;
-            } catch (IllegalAccessException e) {
-                continue;
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            }
-        }
+        attachments.load();
     }
     
     private void save0(Jedis jedis) {
-        Pipeline pipe = jedis.pipelined();
+        Transaction transaction = jedis.multi();
         
         // Player settings
         Map<String, String> values = Maps.newHashMap();
@@ -515,34 +486,21 @@ public class GlobalPlayer {
         
         values.put("ip", address.getHostAddress());
         
-        pipe.hmset(String.format("geSuit.players.%s.info", Utilities.toString(id)), values);
-        pipe.sadd("geSuit.players.all", Utilities.toString(id));
+        transaction.hmset(String.format("geSuit.players.%s.info", Utilities.toString(id)), values);
+        transaction.sadd("geSuit.players.all", Utilities.toString(id));
         
         // Ban info
         if (isBanned) {
             values.clear();
             banInfo.save(values);
-            pipe.hmset(String.format("geSuit.players.%s.baninfo", Utilities.toString(id)), values);
+            transaction.hmset(String.format("geSuit.players.%s.baninfo", Utilities.toString(id)), values);
         }
         
         // Attachments
-        Set<String> classes = Sets.newHashSet();
-        for (Entry<Class<? extends Attachment>, Attachment> attachment : attachments.entrySet()) {
-            if (attachment.getValue().isSaved()) {
-                classes.add(attachment.getKey().getName());
-                
-                // Create the map
-                Map<String, String> attachmentValues = Maps.newHashMap();
-                attachment.getValue().save(attachmentValues);
-                
-                // Save it
-                pipe.hmset(String.format("geSuit.players.%s.%s", Utilities.toString(id), attachment.getKey().getSimpleName().toLowerCase()), attachmentValues);
-            }
-        }
+        // TODO: We need to make it so attachments do not have to be loaded and saved with everything else
+        attachments.update();
         
-        pipe.sadd(String.format("geSuit.players.%s.attachments", Utilities.toString(id)), classes.toArray(new String[classes.size()]));
-        
-        pipe.sync();
+        transaction.exec();
     }
     
     void loadLite() {

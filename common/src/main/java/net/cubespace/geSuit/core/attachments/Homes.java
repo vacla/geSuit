@@ -8,11 +8,16 @@ import com.google.common.collect.Maps;
 
 import net.cubespace.geSuit.core.objects.Location;
 
-public class Homes implements Attachment {
+public class Homes extends Attachment {
     private Map<String, Location> homes;
     
     public Homes() {
         homes = Maps.newHashMap();
+    }
+    
+    @Override
+    public AttachmentType getType() {
+        return AttachmentType.Persistent;
     }
     
     public void setHome(String name, Location location) {
@@ -29,11 +34,6 @@ public class Homes implements Attachment {
     
     public Map<String, Location> getAllHomes() {
         return Collections.unmodifiableMap(homes);
-    }
-    
-    @Override
-    public boolean isSaved() {
-        return true;
     }
     
     @Override
