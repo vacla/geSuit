@@ -789,6 +789,51 @@ public class RedisSection implements StorageSection {
     }
     
     @Override
+    public Map<String, String> getMapPartial(String key, String... fields) throws StorageException {
+        return getMapPartial(key, null, fields);
+    }
+    
+    @Override
+    public Map<String, String> getMapPartial(String key, Map<String, String> def, String... fields) throws StorageException {
+        RedisSection section = getParentSubsection(key);
+        
+        if (section == this) {
+            if (cached.containsKey(key)) {
+                Object value = cached.get(key);
+                if (value instanceof Map<?, ?>) {
+                    Map<String, String> base = (Map<String, String>)value;
+                    Map<String, String> completed = Maps.newHashMap();
+                    for (int i = 0; i < fields.length; ++i) {
+                        completed.put(fields[i], base.get(fields[i]));
+                    }
+                    return completed;
+                } else {
+                    return def;
+                }
+            } else {
+                try {
+                    Jedis jedis = getJedis();
+                    List<String> values = jedis.hmget(getSubPath(key), fields);
+                    
+                    if (values == null) {
+                        return def;
+                    } else {
+                        Map<String, String> map = Maps.newHashMap();
+                        for (int i = 0; i < fields.length; ++i) {
+                            map.put(fields[i], values.get(i));
+                        }
+                        return map;
+                    }
+                } catch (JedisException e) {
+                    throw handleJedisException(e);
+                }
+            }
+        } else {
+            return section.getMapPartial(getName(key), def, fields);
+        }
+    }
+    
+    @Override
     public boolean isMap(String key) {
         return getMap(key, null) != null;
     }

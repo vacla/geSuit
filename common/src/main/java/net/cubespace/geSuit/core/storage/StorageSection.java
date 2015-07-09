@@ -144,6 +144,27 @@ public interface StorageSection {
      */
     public Map<String, String> getMap(String key, Map<String, String> def) throws StorageException;
     /**
+     * Gets the key as a {@code Map<String,String>}.
+     * This allows retrieving just the specified fields for when you dont need all values
+     * <b>This method may need to contact the backend and is blocking</b>
+     * @param key The key to get
+     * @param fields The only fields you want retrieved
+     * @return The loaded value or null if it did not exist or was not the correct type.
+     * @throws StorageException Thrown if an error occurs reading from the backend.
+     */
+    public Map<String, String> getMapPartial(String key, String... fields) throws StorageException;
+    /**
+     * Gets the key as a {@code Map<String,String>}.
+     * This allows retrieving just the specified fields for when you dont need all values
+     * <b>This method may need to contact the backend and is blocking</b>
+     * @param key The key to get
+     * @param def The default value to use if the key does not exist or is of the wrong type.
+     * @param fields The only fields you want retrieved
+     * @return The loaded value or the default value if it did not exist or was not the correct type.
+     * @throws StorageException Thrown if an error occurs reading from the backend.
+     */
+    public Map<String, String> getMapPartial(String key, Map<String, String> def, String... fields) throws StorageException;
+    /**
      * Sets the key as a {@code Map<String,String>}
      * @param key The key to set
      * @param value The value to set
