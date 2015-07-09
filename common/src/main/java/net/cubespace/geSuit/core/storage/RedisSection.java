@@ -11,6 +11,8 @@ import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.util.Utilities;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.RedisPipeline;
+import redis.clients.jedis.Transaction;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
 
@@ -135,6 +137,27 @@ public class RedisSection implements StorageSection {
             Pipeline pipe = jedis.pipelined();
             
             saveAll(pipe);
+            pipe.sync();
+        } catch (JedisException e) {
+            throw handleJedisException(e);
+        }
+        
+        reset();
+    }
+    
+    @Override
+    public void updateAtomic() throws StorageException {
+        if (this != root) {
+            root.updateAtomic();
+            return;
+        }
+        
+        try {
+            Jedis jedis = getJedis();
+            Transaction transaction = jedis.multi();
+            
+            saveAll(transaction);
+            transaction.exec();
         } catch (JedisException e) {
             throw handleJedisException(e);
         }
@@ -143,7 +166,7 @@ public class RedisSection implements StorageSection {
     }
     
     @SuppressWarnings("unchecked")
-    private void saveAll(Pipeline pipe) {
+    private void saveAll(RedisPipeline pipe) {
         for (Entry<String, Object> entry : cached.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
@@ -174,17 +197,17 @@ public class RedisSection implements StorageSection {
         cached.clear();
     }
     
-    private void saveStorable(Pipeline pipe, String path, Storable s) {
+    private void saveStorable(RedisPipeline pipe, String path, Storable s) {
         Map<String, String> values = Maps.newHashMap();
         s.save(values);
         pipe.hmset(path, values);
     }
     
-    private void saveSimpleStorable(Pipeline pipe, String path, SimpleStorable s) {
+    private void saveSimpleStorable(RedisPipeline pipe, String path, SimpleStorable s) {
         pipe.set(path, s.save());
     }
     
-    private void saveList(Pipeline pipe, String path, List<?> list) {
+    private void saveList(RedisPipeline pipe, String path, List<?> list) {
         pipe.del(path);
         
         if (list.isEmpty()) {
@@ -199,7 +222,7 @@ public class RedisSection implements StorageSection {
         pipe.lpush(path, values);
     }
     
-    private void saveSet(Pipeline pipe, String path, Set<?> set) {
+    private void saveSet(RedisPipeline pipe, String path, Set<?> set) {
         pipe.del(path);
         
         if (set.isEmpty()) {
