@@ -9,8 +9,4 @@ public class BukkitPlayerManager extends PlayerManager {
     public BukkitPlayerManager(Channel<BaseMessage> channel, RedisConnection redis) {
         super(false, channel, redis);
     }
-    
-    public void initialize() {
-        requestFullUpdate();
-    }
 }

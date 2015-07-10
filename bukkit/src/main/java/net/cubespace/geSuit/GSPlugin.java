@@ -5,12 +5,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
 import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.ServerManager;
 import net.cubespace.geSuit.core.geCore;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
 import net.cubespace.geSuit.core.commands.BukkitCommandManager;
+import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.core.storage.StorageProvider;
@@ -23,7 +25,6 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     
     private RedisConnection redis;
     private RedisChannelManager channelManager;
-    private BukkitPlayerManager playerManager;
     
     private ModuleManager moduleManager;
     private BukkitCommandManager commandManager;
@@ -41,18 +42,21 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         
         channelManager = initializeChannelManager();
         
-        // Create player manager
+        // Create global manager
         Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
-        playerManager = new BukkitPlayerManager(channel, channelManager.getRedis());
+        BukkitPlayerManager playerManager = new BukkitPlayerManager(channel, channelManager.getRedis());
+        ServerManager serverManager = new ServerManager();
+        
+        GlobalBukkitManager globalManager = new GlobalBukkitManager(channel, playerManager, serverManager, new Messages());
         
         // Initialize core
         commandManager = new BukkitCommandManager();
-        geCore core = new geCore(new BukkitPlatform(this), playerManager, channelManager, commandManager, new StorageProvider(redis));
+        geCore core = new geCore(new BukkitPlatform(this), globalManager, channelManager, commandManager, new StorageProvider(redis));
         Global.setInstance(core);
         
         // Load player manager
-        playerManager.initialize();
+        globalManager.requestNetworkUpdate();
         
         getLogger().info("Initializing modules:");
         moduleManager = new ModuleManager(this);

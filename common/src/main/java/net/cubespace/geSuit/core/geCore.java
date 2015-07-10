@@ -10,24 +10,22 @@ import net.cubespace.geSuit.core.remote.RemoteManager;
 import net.cubespace.geSuit.core.storage.StorageProvider;
 
 public class geCore {
-    private PlayerManager playerManager;
+    private GlobalManager globalManager;
     private ChannelManager channelManager;
     private RemoteManager remoteManager;
     private CommandManager commandManager;
     private StorageProvider storageProvider;
-    private Messages messages;
     
     private Platform platform;
     
-    public geCore(Platform platform, PlayerManager playerManager, ChannelManager channelManager, CommandManager commandManager, StorageProvider storageProvider) {
+    public geCore(Platform platform, GlobalManager globalManager, ChannelManager channelManager, CommandManager commandManager, StorageProvider storageProvider) {
         this.platform = platform;
-        this.playerManager = playerManager;
+        this.globalManager = globalManager;
         this.channelManager = channelManager;
         this.commandManager = commandManager;
         this.storageProvider = storageProvider;
         
         remoteManager = new RemoteManager(channelManager);
-        messages = new Messages();
     }
     
     public GlobalPlayer getPlayer(String name) {
@@ -35,7 +33,7 @@ public class geCore {
     }
     
     public GlobalPlayer getPlayer(String name, boolean useNickname) {
-        return playerManager.getPlayer(name, useNickname);
+        return globalManager.getPlayerManager().getPlayer(name, useNickname);
     }
     
     public GlobalPlayer getPlayerExact(String name) {
@@ -43,15 +41,15 @@ public class geCore {
     }
     
     public GlobalPlayer getPlayerExact(String name, boolean useNickname) {
-        return playerManager.getPlayerExact(name, useNickname);
+        return globalManager.getPlayerManager().getPlayerExact(name, useNickname);
     }
     
     public GlobalPlayer getPlayer(UUID id) {
-        return playerManager.getPlayer(id);
+        return globalManager.getPlayerManager().getPlayer(id);
     }
     
     public GlobalPlayer getOfflinePlayer(UUID id) {
-        return playerManager.getOfflinePlayer(id);
+        return globalManager.getPlayerManager().getOfflinePlayer(id);
     }
     
     public GlobalPlayer getOfflinePlayer(String name) {
@@ -59,7 +57,7 @@ public class geCore {
     }
     
     public GlobalPlayer getOfflinePlayer(String name, boolean useNickname) {
-        return playerManager.getOfflinePlayer(name, useNickname);
+        return globalManager.getPlayerManager().getOfflinePlayer(name, useNickname);
     }
     
     public ChannelManager getChannelManager() {
@@ -83,22 +81,22 @@ public class geCore {
     }
     
     public GlobalServer getServer() {
-        return playerManager.getCurrentServer();
+        return globalManager.getServerManager().getCurrentServer();
     }
     
     public Collection<GlobalServer> getServers() {
-        return playerManager.getServers();
+        return globalManager.getServerManager().getServers();
     }
     
     public GlobalServer getServer(String name) {
-        return playerManager.getServer(name);
+        return globalManager.getServerManager().getServer(name);
     }
     
     public GlobalServer getServer(int id) {
-        return playerManager.getServer(id);
+        return globalManager.getServerManager().getServer(id);
     }
     
     public Messages getMessages() {
-        return messages;
+        return globalManager.getMessages();
     }
 }

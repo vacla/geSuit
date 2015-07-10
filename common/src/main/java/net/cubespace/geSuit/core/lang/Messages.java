@@ -143,4 +143,8 @@ public class Messages {
     public Properties getLang() {
         return messages;
     }
+
+    public LangUpdateMessage createUpdatePacket() {
+        return new LangUpdateMessage(messages, defaults);
+    }
 }

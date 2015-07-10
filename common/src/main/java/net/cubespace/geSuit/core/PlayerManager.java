@@ -1,11 +1,9 @@
 package net.cubespace.geSuit.core;
 
 import java.net.InetAddress;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import redis.clients.jedis.Jedis;
@@ -16,17 +14,13 @@ import com.google.common.collect.Maps;
 
 import net.cubespace.geSuit.core.attachments.AttachmentContainer;
 import net.cubespace.geSuit.core.channel.Channel;
-import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerJoinEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerQuitEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
-import net.cubespace.geSuit.core.messages.LangUpdateMessage;
-import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
 import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Action;
-import net.cubespace.geSuit.core.messages.PlayerUpdateRequestMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Item;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.core.storage.StorageSection;
@@ -34,7 +28,7 @@ import net.cubespace.geSuit.core.storage.RedisConnection.JedisRunner;
 import net.cubespace.geSuit.core.util.PlayerCache;
 import net.cubespace.geSuit.core.util.Utilities;
 
-public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
+public class PlayerManager {
     
     private Map<UUID, GlobalPlayer> playersById;
     private Map<String, GlobalPlayer> playersByName;
@@ -43,10 +37,6 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     private PlayerCache offlineCache;
     
     private Map<UUID, GlobalPlayer> loadingPlayers;
-    
-    private GlobalServer thisServer;
-    private Map<String, GlobalServer> serversByName;
-    private Map<Integer, GlobalServer> serversById;
     
     protected Channel<BaseMessage> channel;
     private RedisConnection redis;
@@ -58,14 +48,10 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         playersByNickname = Maps.newHashMap();
         loadingPlayers = Maps.newHashMap();
         
-        serversByName = Maps.newHashMap();
-        serversById = Maps.newHashMap();
-        
         offlineCache = new PlayerCache(TimeUnit.MINUTES.toMillis(10));
         
         this.proxyMode = proxyMode;
         this.channel = channel;
-        channel.addReceiver(this);
         
         this.redis = redis;
         loadScripts();
@@ -192,29 +178,10 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     //=================================================
-    //            Server retrieval methods
-    //=================================================
-    public GlobalServer getCurrentServer() {
-        return thisServer;
-    }
-    
-    public GlobalServer getServer(int id) {
-        return serversById.get(id);
-    }
-    
-    public GlobalServer getServer(String name) {
-        return serversByName.get(name);
-    }
-    
-    public Collection<GlobalServer> getServers() {
-        return serversById.values();
-    }
-    
-    //=================================================
     //            Packet handling methods
     //=================================================
     
-    private void onUpdateMessage(PlayerUpdateMessage update) {
+    public void handlePlayerUpdate(PlayerUpdateMessage update) {
         boolean isReset = false;
         switch (update.action) {
         case Reset:
@@ -251,31 +218,7 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         }
     }
     
-    protected void onUpdateRequestMessage() {
-        broadcastFullUpdate();
-    }
-    
-    protected void onNetworkInfo(NetworkInfoMessage message) {
-        serversById.clear();
-        serversByName.clear();
-        
-        for (Entry<Integer, String> server : message.servers.entrySet()) {
-            GlobalServer gs = new GlobalServer(server.getValue(), server.getKey());
-            serversById.put(gs.getId(), gs);
-            serversByName.put(gs.getName(), gs);
-            
-            // Update current server
-            if (gs.getId() == message.serverId) {
-                thisServer = gs;
-            }
-        }
-    }
-    
-    private void onLanguageUpdate(LangUpdateMessage message) {
-        Global.getMessages().load(message);
-    }
-    
-    private void onSyncAttachment(SyncAttachmentMessage message) {
+    public void handleSyncAttachment(SyncAttachmentMessage message) {
         GlobalPlayer player = playersById.get(message.owner);
         if (player == null) {
             player = offlineCache.get(message.owner);
@@ -286,22 +229,6 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         }
         
         player.getAttachmentContainer().onAttachmentUpdate(message);
-    }
-    
-    @Override
-    public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value, int sourceId, boolean isBroadcast) {
-        System.out.println("Got message " + value);
-        if (value instanceof PlayerUpdateMessage && !proxyMode) {
-            onUpdateMessage((PlayerUpdateMessage)value);
-        } else if (value instanceof PlayerUpdateRequestMessage && proxyMode) {
-            onUpdateRequestMessage();
-        } else if (value instanceof NetworkInfoMessage && !proxyMode) {
-            onNetworkInfo((NetworkInfoMessage)value);
-        } else if (value instanceof LangUpdateMessage && !proxyMode) {
-            onLanguageUpdate((LangUpdateMessage)value);
-        } else if (value instanceof SyncAttachmentMessage) {
-            onSyncAttachment((SyncAttachmentMessage)value);
-        }
     }
     
     //=================================================
@@ -442,6 +369,17 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         loadingPlayers.remove(id);
     }
     
+    public PlayerUpdateMessage createFullUpdatePacket() {
+        Item[] items = new Item[playersById.size()];
+        
+        int index = 0;
+        for (GlobalPlayer player : playersById.values()) {
+            items[index++] = new Item(player.getUniqueId(), player.getName(), player.getNickname());
+        }
+        
+        return new PlayerUpdateMessage(Action.Reset, items);
+    }
+    
     public void broadcastFullUpdate() {
         Preconditions.checkState(proxyMode);
         
@@ -453,16 +391,6 @@ public class PlayerManager implements ChannelDataReceiver<BaseMessage> {
         }
         
         channel.broadcast(new PlayerUpdateMessage(Action.Reset, items));
-    }
-    
-    //=================================================
-    //               Client ONLY methods
-    //=================================================
-    
-    public void requestFullUpdate() {
-        Preconditions.checkState(!proxyMode);
-        
-        channel.broadcast(new PlayerUpdateRequestMessage());
     }
     
     //=================================================

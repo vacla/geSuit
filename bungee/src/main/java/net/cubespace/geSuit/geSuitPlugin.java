@@ -65,7 +65,6 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     
     private RedisConnection redis;
     private RedisChannelManager channelManager;
-    private BungeePlayerManager playerManager;
     private DatabaseManager databaseManager;
     private BungeeCommandManager commandManager;
     
@@ -109,16 +108,20 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
 
         channelManager = createChannelManager();
         
-        // Create player manager
+        // Create global manager
         Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
         
-        playerManager = new BungeePlayerManager(channel, configManager, redis, this);
+        BungeePlayerManager playerManager = new BungeePlayerManager(channel, configManager, redis, this);
+        BungeeServerManager serverManager = new BungeeServerManager(getProxy());
+        serverManager.updateServers();
+        
+        GlobalBungeeManager globalManager = new GlobalBungeeManager(channel, playerManager, serverManager, new Messages());
         
         // Initialize core
         commandManager = new BungeeCommandManager();
         
-        geCore core = new geCore(new BungeePlatform(this), playerManager, channelManager, commandManager, new StorageProvider(redis));
+        geCore core = new geCore(new BungeePlatform(this), globalManager, channelManager, commandManager, new StorageProvider(redis));
         Global.setInstance(core);
         
         // Load addons
@@ -132,6 +135,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         // Begin all
         getProxy().getPluginManager().registerListener(this, playerManager);
         playerManager.initialize(bans, tracking, geoIpLookup, broadcastManager);
+        
+        globalManager.broadcastNetworkUpdate();
     }
 
     private void registerCommands() {
