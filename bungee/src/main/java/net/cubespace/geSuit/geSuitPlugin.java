@@ -26,7 +26,9 @@ import net.cubespace.geSuit.commands.WarnCommands;
 import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.config.MainConfig.Database;
 import net.cubespace.geSuit.config.MainConfig.Redis;
+import net.cubespace.geSuit.core.BungeePlayerManager;
 import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.PlayerListener;
 import net.cubespace.geSuit.core.geCore;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelManager;
@@ -42,7 +44,9 @@ import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.DatabaseManager;
 import net.cubespace.geSuit.general.BroadcastManager;
 import net.cubespace.geSuit.general.GeoIPLookup;
+import net.cubespace.geSuit.moderation.BanListener;
 import net.cubespace.geSuit.moderation.BanManager;
+import net.cubespace.geSuit.moderation.TrackingListener;
 import net.cubespace.geSuit.moderation.TrackingManager;
 import net.cubespace.geSuit.moderation.WarningsManager;
 import net.cubespace.geSuit.remote.moderation.BanActions;
@@ -108,11 +112,15 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
 
         channelManager = createChannelManager();
         
+        BungeePlatform platform = new BungeePlatform(this);
+        StorageProvider storageProvider = new StorageProvider(redis);
+        
         // Create global manager
         Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
         
-        BungeePlayerManager playerManager = new BungeePlayerManager(channel, configManager, redis, this);
+        BungeePlayerManager playerManager = new BungeePlayerManager(channel, redis, storageProvider, platform);
+        playerManager.initRedis();
         BungeeServerManager serverManager = new BungeeServerManager(getProxy());
         serverManager.updateServers();
         
@@ -121,7 +129,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         // Initialize core
         commandManager = new BungeeCommandManager();
         
-        geCore core = new geCore(new BungeePlatform(this), globalManager, channelManager, commandManager, new StorageProvider(redis));
+        geCore core = new geCore(platform, globalManager, channelManager, commandManager, storageProvider);
         Global.setInstance(core);
         
         // Load addons
@@ -134,7 +142,10 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         
         // Begin all
         getProxy().getPluginManager().registerListener(this, playerManager);
-        playerManager.initialize(bans, tracking, geoIpLookup, broadcastManager);
+        getProxy().getPluginManager().registerListener(this, geoIpLookup);
+        getProxy().getPluginManager().registerListener(this, new PlayerListener(this, playerManager, spawns, broadcastManager, configManager, globalManager.getMessages()));
+        getProxy().getPluginManager().registerListener(this, new TrackingListener(tracking, globalManager.getMessages(), getLogger()));
+        getProxy().getPluginManager().registerListener(this, new BanListener(bans, getLogger()));
         
         globalManager.broadcastNetworkUpdate();
     }
@@ -248,7 +259,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         // Create each remote
         bans = new BanManager(databaseManager.getBanHistory(), broadcastManager, moderationChannel, getLogger());
         warnings = new WarningsManager(databaseManager.getWarnHistory(), bans, broadcastManager, moderationChannel, getLogger());
-        tracking = new TrackingManager(databaseManager.getTracking(), databaseManager.getOntime(), broadcastManager, getLogger());
+        tracking = new TrackingManager(databaseManager.getTracking(), databaseManager.getOntime(), getLogger());
         teleports = new TeleportsManager(teleportsChannel, this);
         
         // Register them
@@ -260,9 +271,9 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         manager.registerRemote("teleports", TeleportActions.class, teleports);
         
         // Create managers
-        spawns = new SpawnManager();
+        spawns = new SpawnManager(teleports);
         warps = new WarpManager(warpsChannel);
-        geoIpLookup = new GeoIPLookup(getDataFolder(), configManager.moderation().GeoIP, broadcastManager, getLogger());
+        geoIpLookup = new GeoIPLookup(getDataFolder(), configManager.moderation().GeoIP, getLogger());
         configManager.addReloadListener(geoIpLookup);
         
         // Load everything

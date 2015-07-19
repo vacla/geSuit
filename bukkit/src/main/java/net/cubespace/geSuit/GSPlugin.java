@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
+import net.cubespace.geSuit.core.BukkitPlayerManager;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.ServerManager;
 import net.cubespace.geSuit.core.geCore;
@@ -42,17 +43,21 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         
         channelManager = initializeChannelManager();
         
+        BukkitPlatform platform = new BukkitPlatform(this);
+        StorageProvider storageProvider = new StorageProvider(redis);
+        
         // Create global manager
         Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
-        BukkitPlayerManager playerManager = new BukkitPlayerManager(channel, channelManager.getRedis());
+        BukkitPlayerManager playerManager = new BukkitPlayerManager(channel, channelManager.getRedis(), storageProvider, platform);
+        playerManager.initRedis();
         ServerManager serverManager = new ServerManager();
         
         GlobalBukkitManager globalManager = new GlobalBukkitManager(channel, playerManager, serverManager, new Messages());
         
         // Initialize core
         commandManager = new BukkitCommandManager();
-        geCore core = new geCore(new BukkitPlatform(this), globalManager, channelManager, commandManager, new StorageProvider(redis));
+        geCore core = new geCore(platform, globalManager, channelManager, commandManager, storageProvider);
         Global.setInstance(core);
         
         // Load player manager

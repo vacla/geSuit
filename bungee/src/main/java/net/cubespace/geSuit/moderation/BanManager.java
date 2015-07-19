@@ -591,4 +591,36 @@ public class BanManager implements BanActions, ConfigReloadListener {
             throw new StorageException("Unable to retrieve banhistory");
         }
     }
+    
+    public BanInfo<?> getAnyBan(GlobalPlayer player) {
+        if (player.isBanned()) {
+            if (player.getBanInfo().isTemporary()) {
+                // Has ban expired?
+                if (System.currentTimeMillis() >= player.getBanInfo().getUntil()) {
+                    player.removeBan();
+                } else {
+                    return player.getBanInfo();
+                }
+            } else {
+                return player.getBanInfo();
+            }
+        }
+        
+        // Check IP ban state
+        BanInfo<InetAddress> ipBan = getBan(player.getAddress());
+        if (ipBan != null) {
+            if (ipBan.isTemporary()) {
+                // Has ban expired?
+                if (System.currentTimeMillis() >= ipBan.getUntil()) {
+                    setBan(player.getAddress(), null);
+                } else {
+                    return ipBan;
+                }
+            } else {
+                return ipBan;
+            }
+        }
+        
+        return null;
+    }
 }

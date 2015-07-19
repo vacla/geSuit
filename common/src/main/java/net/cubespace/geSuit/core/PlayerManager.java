@@ -1,6 +1,5 @@
 package net.cubespace.geSuit.core;
 
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -8,27 +7,25 @@ import java.util.concurrent.TimeUnit;
 
 import redis.clients.jedis.Jedis;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.cubespace.geSuit.core.attachments.AttachmentContainer;
 import net.cubespace.geSuit.core.channel.Channel;
-import net.cubespace.geSuit.core.events.player.GlobalPlayerJoinEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
-import net.cubespace.geSuit.core.events.player.GlobalPlayerQuitEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
 import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Action;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Item;
 import net.cubespace.geSuit.core.storage.RedisConnection;
+import net.cubespace.geSuit.core.storage.StorageProvider;
 import net.cubespace.geSuit.core.storage.StorageSection;
 import net.cubespace.geSuit.core.storage.RedisConnection.JedisRunner;
 import net.cubespace.geSuit.core.util.PlayerCache;
 import net.cubespace.geSuit.core.util.Utilities;
 
-public class PlayerManager {
+public abstract class PlayerManager {
     
     private Map<UUID, GlobalPlayer> playersById;
     private Map<String, GlobalPlayer> playersByName;
@@ -36,29 +33,30 @@ public class PlayerManager {
     
     private PlayerCache offlineCache;
     
-    private Map<UUID, GlobalPlayer> loadingPlayers;
-    
     protected Channel<BaseMessage> channel;
     private RedisConnection redis;
-    private boolean proxyMode;
+    private Platform platform;
+    private StorageProvider storageProvider;
     
-    public PlayerManager(boolean proxyMode, Channel<BaseMessage> channel, RedisConnection redis) {
+    public PlayerManager(Channel<BaseMessage> channel, RedisConnection redis, StorageProvider storageProvider, Platform platform) {
         playersById = Maps.newHashMap();
         playersByName = Maps.newHashMap();
         playersByNickname = Maps.newHashMap();
-        loadingPlayers = Maps.newHashMap();
         
         offlineCache = new PlayerCache(TimeUnit.MINUTES.toMillis(10));
         
-        this.proxyMode = proxyMode;
         this.channel = channel;
-        
         this.redis = redis;
-        loadScripts();
+        this.storageProvider = storageProvider;
+        this.platform = platform;
     }
     
     public RedisConnection getRedis() {
         return redis;
+    }
+    
+    public void initRedis() {
+        loadScripts();
     }
     
     //=================================================
@@ -182,38 +180,30 @@ public class PlayerManager {
     //=================================================
     
     public void handlePlayerUpdate(PlayerUpdateMessage update) {
-        boolean isReset = false;
         switch (update.action) {
-        case Reset:
-            playersById.clear();
-            playersByName.clear();
-            playersByNickname.clear();
-            isReset = true;
-        case Add:
-            for (Item item : update.items) {
-                addPlayer(item.id, item.username, item.nickname, isReset);
-            }
-            break;
         case Name:
             for (Item item : update.items) {
-                GlobalPlayer player = playersById.get(item.id);
+                GlobalPlayer player = getPlayer(item.id);
                 if (player != null) {
-                    onNickname(player, item.nickname, false);
+                    updateNickname(player, item.nickname);
                 }
-            }
-            break;
-        case Remove:
-            for (Item item : update.items) {
-                removePlayer(item.id);
             }
             break;
         case Invalidate:
             for (Item item : update.items) {
-                GlobalPlayer player = playersById.get(item.id);
+                GlobalPlayer player = getPlayer(item.id);
                 if (player != null) {
                     player.invalidate();
+                } else {
+                    player = offlineCache.get(item.id);
+                    if (player != null) {
+                        player.invalidate();
+                    }
                 }
             }
+            break;
+        default:
+            // Not handled for common
             break;
         }
     }
@@ -235,56 +225,24 @@ public class PlayerManager {
     //               Player manipulation
     //=================================================
     
-    private StorageSection getStorageSection(UUID playerId) {
-        return Global.getStorageProvider().create("geSuit.players." + Utilities.toString(playerId));
+    protected void clearPlayers() {
+        playersById.clear();
+        playersByName.clear();
+        playersByNickname.clear();
     }
     
-    private void addPlayer(UUID id, String name, String nickname, boolean isReset) {
+    private StorageSection getStorageSection(UUID playerId) {
+        return storageProvider.create("geSuit.players." + Utilities.toString(playerId));
+    }
+    
+    protected GlobalPlayer loadPlayer(UUID id, String name, String nickname) {
         GlobalPlayer player = offlineCache.get(id);
         if (player == null) {
             AttachmentContainer attachments = new AttachmentContainer(id, channel, getStorageSection(id));
             player = new GlobalPlayer(id, name, nickname, this, attachments);
         }
         
-        addPlayer(player, isReset);
-    }
-    
-    private void addPlayer(GlobalPlayer player, boolean isReset) {
-        playersById.put(player.getUniqueId(), player);
-        playersByName.put(player.getName().toLowerCase(), player);
-        if (player.hasNickname()) {
-            playersByNickname.put(player.getNickname().toLowerCase(), player);
-        }
-        
-        offlineCache.remove(player);
-        
-        // Dont call the event on a reset
-        if (!isReset) {
-            Global.getPlatform().callEvent(new GlobalPlayerJoinEvent(player));
-            player.setSessionJoin(System.currentTimeMillis());
-        }
-        
-        System.out.println("Adding player " + player.getName());
-    }
-    
-    private boolean removePlayer(UUID id) {
-        GlobalPlayer player = playersById.remove(id);
-        if (player != null) {
-            Global.getPlatform().callEvent(new GlobalPlayerQuitEvent(player));
-            
-            playersByName.remove(player.getName().toLowerCase());
-            
-            if (player.hasNickname()) {
-                playersByNickname.remove(player.getNickname().toLowerCase());
-            }
-            
-            offlineCache.add(player);
-            
-            System.out.println("Removing player " + player.getName());
-            return true;
-        }
-        
-        return false;
+        return player;
     }
     
     private GlobalPlayer loadOfflinePlayer(UUID id) {
@@ -296,78 +254,34 @@ public class PlayerManager {
         return player;
     }
     
+    protected void addPlayer(GlobalPlayer player) {
+        playersById.put(player.getUniqueId(), player);
+        playersByName.put(player.getName().toLowerCase(), player);
+        if (player.hasNickname()) {
+            playersByNickname.put(player.getNickname().toLowerCase(), player);
+        }
+        
+        offlineCache.remove(player);
+    }
+    
+    protected void removePlayer(GlobalPlayer player) {
+        if (player == null) {
+            return;
+        }
+        
+        playersById.remove(player.getUniqueId());
+        playersByName.remove(player.getName());
+        
+        if (player.hasNickname()) {
+            playersByNickname.remove(player.getNickname());
+        }
+        
+        offlineCache.add(player);
+    }
+    
     //=================================================
     //               Proxy ONLY methods
     //=================================================
-    
-    protected GlobalPlayer getPreloadedPlayer(UUID id) {
-        return loadingPlayers.get(id);
-    }
-    
-    protected GlobalPlayer loadPlayer(UUID id, String name, InetAddress address) {
-        GlobalPlayer player = offlineCache.get(id);
-        
-        if (player == null) {
-            AttachmentContainer attachments = new AttachmentContainer(id, channel, getStorageSection(id));
-            player = new GlobalPlayer(id, name, null, this, attachments);
-        }
-        
-        if (!player.isLoaded()) {
-            player.refresh();
-        }
-        
-        // Update name for name changes
-        if (!player.getName().equals(name)) {
-            player.setName(name);
-        }
-        
-        // Update IP for address changes
-        if (!address.equals(player.getAddress())) {
-            player.setAddress(address);
-        }
-        
-        return player;
-    }
-    
-    /**
-     * To be called on the proxy upon completing the initial login stage.
-     * @param player The player that is joining
-     */
-    protected void onPlayerLoginInitComplete(GlobalPlayer player) {
-        // They are now loaded, but they are not yet ready to be visible to all servers
-        loadingPlayers.put(player.getUniqueId(), player);
-    }
-    
-    /**
-     * To be called on the proxy upon connecting to a server
-     * @param id The UUID of the joining player
-     * @return true if this was the first connection
-     */
-    protected boolean onServerConnect(UUID id) {
-        GlobalPlayer player = loadingPlayers.remove(id);
-        if (player != null) {
-            offlineCache.remove(player);
-            addPlayer(player, false);
-            player.saveIfModified();
-            channel.broadcast(new PlayerUpdateMessage(Action.Add, new Item(id, player.getName(), player.getNickname())));
-            
-            return true;
-        }
-        
-        return false;
-    }
-    
-    /**
-     * To be called upon a player disconnecting
-     * @param id The UUID of the quitting player
-     */
-    protected void onPlayerLeave(UUID id) {
-        if (removePlayer(id)) {
-            channel.broadcast(new PlayerUpdateMessage(Action.Remove, new Item(id, null, null)));
-        }
-        
-        loadingPlayers.remove(id);
-    }
     
     public PlayerUpdateMessage createFullUpdatePacket() {
         Item[] items = new Item[playersById.size()];
@@ -380,24 +294,11 @@ public class PlayerManager {
         return new PlayerUpdateMessage(Action.Reset, items);
     }
     
-    public void broadcastFullUpdate() {
-        Preconditions.checkState(proxyMode);
-        
-        Item[] items = new Item[playersById.size()];
-        
-        int index = 0;
-        for (GlobalPlayer player : playersById.values()) {
-            items[index++] = new Item(player.getUniqueId(), player.getName(), player.getNickname());
-        }
-        
-        channel.broadcast(new PlayerUpdateMessage(Action.Reset, items));
-    }
-    
     //=================================================
     //            GlobalPlayer interactions
     //=================================================
     
-    public void trySetNickname(GlobalPlayer player, String nickname) throws IllegalArgumentException {
+    void trySetNickname(GlobalPlayer player, String nickname) throws IllegalArgumentException {
         if (nickname != null) {
             // Make sure its not the same as any existing username or nickname
             if (!nickname.equalsIgnoreCase(player.getName())) {
@@ -412,10 +313,11 @@ public class PlayerManager {
             }
         }
         
-        onNickname(player, nickname, true);
+        updateNickname(player, nickname);
+        channel.broadcast(new PlayerUpdateMessage(Action.Name, new Item(player.getUniqueId(), null, nickname)));
     }
     
-    private void onNickname(GlobalPlayer player, String newName, boolean broadcast) {
+    private void updateNickname(GlobalPlayer player, String newName) {
         String previous = player.getNickname();
         player.setNickname0(newName);
 
@@ -426,12 +328,8 @@ public class PlayerManager {
             playersByNickname.put(player.getNickname().toLowerCase(), player);
         }
         
-        if (broadcast) {
-            channel.broadcast(new PlayerUpdateMessage(Action.Name, new Item(player.getUniqueId(), null, newName)));
-        }
-        
         offlineCache.onUpdateNickname(player, previous);
-        Global.getPlatform().callEvent(new GlobalPlayerNicknameEvent(player, previous));
+        platform.callEvent(new GlobalPlayerNicknameEvent(player, previous));
     }
     
     public void invalidate(GlobalPlayer player) {

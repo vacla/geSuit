@@ -14,26 +14,25 @@ import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.config.ConfigReloadListener;
 import net.cubespace.geSuit.config.ModerationConfig.GeoIPSettings;
 import net.cubespace.geSuit.core.Global;
-import net.cubespace.geSuit.core.GlobalPlayer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.cubespace.geSuit.events.JoinNotificationsEvent;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
 
 import com.maxmind.geoip.Location;
 import com.maxmind.geoip.LookupService;
 import com.maxmind.geoip.regionName;
 
-public class GeoIPLookup implements ConfigReloadListener {
+public class GeoIPLookup implements ConfigReloadListener, Listener {
     private LookupService lookup;
     private File databaseFile;
-    private BroadcastManager broadcasts;
     private Logger logger;
     private File base;
     
     private GeoIPSettings settings;
     
-    public GeoIPLookup(File directory, GeoIPSettings settings, BroadcastManager broadcasts, Logger logger) {
+    public GeoIPLookup(File directory, GeoIPSettings settings, Logger logger) {
         this.base = directory;
         this.settings = settings;
-        this.broadcasts = broadcasts;
         this.logger = logger;
     }
     
@@ -158,13 +157,14 @@ public class GeoIPLookup implements ConfigReloadListener {
         }
     }
     
-    public void addPlayerInfo(ProxiedPlayer player, GlobalPlayer gPlayer) {
+    @EventHandler
+    public void addPlayerNotifications(JoinNotificationsEvent event) {
         // Show Geo location notifications for player (if enabled)
         if (settings.ShowOnLogin) {
-            String location = lookup(player.getAddress().getAddress());
+            String location = lookup(event.getPlayer().getAddress());
             if (location != null) {
-                String msg = Global.getMessages().get("connect.geoip", "player", gPlayer.getDisplayName(), "location", location);
-                broadcasts.broadcastGroup("StaffNotice", msg);
+                String msg = Global.getMessages().get("connect.geoip", "player", event.getPlayer().getDisplayName(), "location", location);
+                event.addGroupNotification(msg, "StaffNotice");
             }
         }
     }

@@ -4,6 +4,7 @@ import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
 import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.messages.BaseMessage;
+import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
 import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
 
 public abstract class GlobalManager implements ChannelDataReceiver<BaseMessage> {
@@ -24,7 +25,9 @@ public abstract class GlobalManager implements ChannelDataReceiver<BaseMessage> 
     
     @Override
     public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value, int sourceId, boolean isBroadcast) {
-        if (value instanceof SyncAttachmentMessage) {
+        if (value instanceof PlayerUpdateMessage) {
+            playerManager.handlePlayerUpdate((PlayerUpdateMessage)value);
+        } else if (value instanceof SyncAttachmentMessage) {
             playerManager.handleSyncAttachment((SyncAttachmentMessage)value);
         }
     }

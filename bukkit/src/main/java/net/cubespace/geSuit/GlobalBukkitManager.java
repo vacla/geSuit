@@ -8,7 +8,6 @@ import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.LangUpdateMessage;
-import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateRequestMessage;
 
 public class GlobalBukkitManager extends GlobalManager {
@@ -28,9 +27,7 @@ public class GlobalBukkitManager extends GlobalManager {
     public void onDataReceive(Channel<BaseMessage> channel, BaseMessage value, int sourceId, boolean isBroadcast) {
         super.onDataReceive(channel, value, sourceId, isBroadcast);
         
-        if (value instanceof PlayerUpdateMessage) {
-            playerManager.handlePlayerUpdate((PlayerUpdateMessage)value);
-        } else if (value instanceof LangUpdateMessage) {
+        if (value instanceof LangUpdateMessage) {
             messages.load((LangUpdateMessage)value);
         }
     }

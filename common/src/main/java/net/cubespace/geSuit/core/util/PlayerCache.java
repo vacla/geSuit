@@ -29,7 +29,6 @@ public class PlayerCache {
         CacheEntry entry = playersById.get(id);
         if (entry != null) {
             entry.refresh();
-            System.out.println("Retrieved " + entry.player.getName() + " from cache by id");
             return entry.player;
         } else {
             return null;
@@ -51,7 +50,6 @@ public class PlayerCache {
         CacheEntry entry = playersById.get(id);
         if (entry != null) {
             entry.refresh();
-            System.out.println("Retrieved " + entry.player.getName() + " from cache by name");
             return entry.player;
         } else {
             return null;
@@ -66,8 +64,6 @@ public class PlayerCache {
         if (player.hasNickname()) {
             idsByNickname.put(player.getNickname().toLowerCase(), player.getUniqueId());
         }
-        
-        System.out.println("Adding " + player.getName() + " to cache");
     }
     
     public void remove(GlobalPlayer player) {
@@ -78,8 +74,6 @@ public class PlayerCache {
             if (entry.player.hasNickname()) {
                 idsByNickname.remove(entry.player.getNickname().toLowerCase());
             }
-            
-            System.out.println("Removing " + player.getName() + " from cache");
         }
     }
     
@@ -95,8 +89,6 @@ public class PlayerCache {
         if (player.hasNickname()) {
             idsByNickname.put(player.getNickname().toLowerCase(), player.getUniqueId());
         }
-        
-        System.out.println("Updated " + player.getName() + "'s nickname");
     }
     
     private void expireOld() {
@@ -109,7 +101,6 @@ public class PlayerCache {
                 it.remove();
                 
                 GlobalPlayer player = entry.player;
-                System.out.println("Expired " + player.getName() + ". Removed from cache");
                 idsByName.remove(player.getName().toLowerCase());
                 if (player.hasNickname()) {
                     idsByNickname.remove(player.getNickname().toLowerCase());

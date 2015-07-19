@@ -7,11 +7,16 @@ import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.UpdateSpawnMessage;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.storage.StorageSection;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class SpawnManager implements ChannelDataReceiver<BaseMessage> {
+    private final TeleportsManager teleportManager;
+    
     private Location spawnNewPlayer;
     
-    public SpawnManager() {
+    public SpawnManager(TeleportsManager teleportsManager) {
+        this.teleportManager = teleportsManager;
     }
     
     public void loadSpawns() {
@@ -25,6 +30,12 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage> {
     
     public Location getSpawnNewPlayer() {
         return spawnNewPlayer;
+    }
+    
+    public void teleportPlayerToNewSpawn(ProxiedPlayer player, ServerInfo current) {
+        if (isSetNewPlayer()) {
+            teleportManager.teleportToInConnection(player, spawnNewPlayer, current, true);
+        }
     }
     
     @Override

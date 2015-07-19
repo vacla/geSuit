@@ -23,23 +23,20 @@ import net.cubespace.geSuit.core.objects.Track;
 import net.cubespace.geSuit.core.storage.StorageException;
 import net.cubespace.geSuit.database.repositories.OnTime;
 import net.cubespace.geSuit.database.repositories.Tracking;
-import net.cubespace.geSuit.general.BroadcastManager;
+import net.cubespace.geSuit.events.JoinNotificationsEvent;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class TrackingManager implements TrackingActions, ConfigReloadListener {
     private Tracking trackingRepo;
     private OnTime ontimeRepo;
-    private BroadcastManager broadcasts;
     private Logger logger;
     
     private ModerationConfig config;
     
-    public TrackingManager(Tracking tracking, OnTime ontime, BroadcastManager broadcasts, Logger logger) {
+    public TrackingManager(Tracking tracking, OnTime ontime, Logger logger) {
         this.trackingRepo = tracking;
         this.ontimeRepo = ontime;
-        this.broadcasts = broadcasts;
         this.logger = logger;
     }
     
@@ -180,14 +177,16 @@ public class TrackingManager implements TrackingActions, ConfigReloadListener {
         }
     }
     
-    public void addPlayerInfo(ProxiedPlayer player, GlobalPlayer gPlayer) {
+    void addPlayerInfo(JoinNotificationsEvent event) {
         // Check for alt accounts and notify staff (used later)
         if (!config.ShowAltAccounts) {
             return;
         }
         
+        GlobalPlayer player = event.getPlayer();
+        
         try {
-            Track alt = trackingRepo.getPlayerAlt(gPlayer);
+            Track alt = trackingRepo.getPlayerAlt(player);
             
             if (alt == null) {
                 return;
@@ -198,22 +197,26 @@ public class TrackingManager implements TrackingActions, ConfigReloadListener {
             if (config.ShowBannedAltAccounts && (alt.isIpBanned() || alt.isNameBanned())) {
                 message = Global.getMessages().get(
                         "connect.alt-join.banned",
-                        "player", gPlayer.getDisplayName(),
+                        "player", player.getDisplayName(),
                         "alt", alt.getDisplayName(),
-                        "ip", player.getAddress().getAddress().getHostAddress()
+                        "ip", player.getAddress().getHostAddress()
                         );
             } else {
                 message = Global.getMessages().get(
                         "connect.alt-join",
-                        "player", gPlayer.getDisplayName(),
+                        "player", player.getDisplayName(),
                         "alt", alt.getDisplayName(),
-                        "ip", player.getAddress().getAddress().getHostAddress()
+                        "ip", player.getAddress().getHostAddress()
                         );
             }
             
-            broadcasts.broadcastGroup("StaffNotice", message);
+            event.addGroupNotification(message, "StaffNotice");
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+    public boolean shouldTrackOntime() {
+        return config.TrackOnTime;
     }
 }
