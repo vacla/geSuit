@@ -1,16 +1,20 @@
 package net.cubespace.geSuit.teleports;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
 import com.google.common.base.Preconditions;
 
 import net.cubespace.geSuit.GSPlugin;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.commands.CommandManager;
+import net.cubespace.geSuit.core.events.GlobalReloadEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.modules.BaseModule;
 import net.cubespace.geSuit.teleports.commands.WarpCommands;
 import net.cubespace.geSuit.teleports.warps.WarpManager;
 
-public class WarpsModule extends BaseModule {
+public class WarpsModule extends BaseModule implements Listener {
     private WarpManager manager;
     private static WarpsModule instance;
     
@@ -48,5 +52,10 @@ public class WarpsModule extends BaseModule {
         Preconditions.checkState(instance != null, "WarpsModule is not enabled");
         
         return instance.manager;
+    }
+    
+    @EventHandler
+    private void onReload(GlobalReloadEvent event) {
+        manager.loadWarps();
     }
 }

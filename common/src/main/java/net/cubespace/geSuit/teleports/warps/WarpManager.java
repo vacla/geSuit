@@ -38,6 +38,10 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
      * Loads the warps from the backend
      */
     public void loadWarps() {
+        if (Global.getServer() == null) {
+            return;
+        }
+        
         StorageSection root = Global.getStorageProvider().create("geSuit.warps");
         
         // Load global warps
@@ -64,6 +68,10 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     private void saveWarps() {
+        if (Global.getServer() == null) {
+            return;
+        }
+        
         StorageSection root = Global.getStorageProvider().create("geSuit.warps");
         // Save global
         if (globalChanged) {

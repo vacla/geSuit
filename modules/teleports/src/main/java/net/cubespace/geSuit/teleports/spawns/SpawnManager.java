@@ -17,6 +17,7 @@ import com.google.common.collect.Maps;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
+import net.cubespace.geSuit.core.events.GlobalReloadEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.UpdateSpawnMessage;
 import net.cubespace.geSuit.core.objects.Location;
@@ -45,6 +46,10 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
      * Loads all relevant spawns for this server from the backend
      */
     public void loadSpawns() {
+        if (Global.getServer() == null) {
+            return;
+        }
+        
         StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns");
         spawnGlobal = spawns.getSimpleStorable("#global", Location.class);
         spawnNewPlayer = spawns.getSimpleStorable("#new-player", Location.class);
@@ -68,6 +73,10 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
      * @param location The location for the spawn
      */
     public void updateSpawn(SpawnType type, org.bukkit.Location location) {
+        if (Global.getServer() == null) {
+            return;
+        }
+        
         Location spawnLoc = LocationUtil.fromBukkit(location, Global.getServer().getName());
         
         StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns");
@@ -155,6 +164,10 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
      * @param world The world of the spawn used for {@code SpawnType.World}. Can be null for any other type
      */
     public void removeSpawn(SpawnType type, World world) {
+        if (Global.getServer() == null) {
+            return;
+        }
+        
         StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns");
         switch (type) {
         case Global:
@@ -292,5 +305,10 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
                 teleportTo(SpawnType.Global, player, false);
             }
         }
+    }
+    
+    @EventHandler
+    private void onReload(GlobalReloadEvent event) {
+        loadSpawns();
     }
 }
