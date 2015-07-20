@@ -301,7 +301,7 @@ public class GlobalPlayer {
      * @param type The class of the attachment. This cannot be a subclass or superclass.  
      * @return The attachment instance, or null if not found
      * @see #removeAttachment(Class)
-     * @see #addAttachment(Class, Attachment)
+     * @see #addAttachment(Attachment)
      */
     public <T extends Attachment> T getAttachment(Class<T> type) {
         attachments.loadIfNeeded();
@@ -312,7 +312,7 @@ public class GlobalPlayer {
      * Removes an attachment from this player. This can remove any attachment available on this server.
      * @param type The class of the attachment. This cannot be a subclass or superclass.   
      * @return The attachment instance that was removed, or null if nothing was removed
-     * @see #addAttachment(Class, Attachment)
+     * @see #addAttachment(Attachment)
      * @see #getAttachment(Class)
      */
     public <T extends Attachment> T removeAttachment(Class<T> type) {

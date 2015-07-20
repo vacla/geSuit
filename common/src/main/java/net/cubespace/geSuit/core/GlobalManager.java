@@ -4,6 +4,7 @@ import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelDataReceiver;
 import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.messages.BaseMessage;
+import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
 import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
 
@@ -29,6 +30,8 @@ public abstract class GlobalManager implements ChannelDataReceiver<BaseMessage> 
             playerManager.handlePlayerUpdate((PlayerUpdateMessage)value);
         } else if (value instanceof SyncAttachmentMessage) {
             playerManager.handleSyncAttachment((SyncAttachmentMessage)value);
+        } else if (value instanceof NetworkInfoMessage) {
+            serverManager.handleNetworkInfoPacket((NetworkInfoMessage)value);
         }
     }
     

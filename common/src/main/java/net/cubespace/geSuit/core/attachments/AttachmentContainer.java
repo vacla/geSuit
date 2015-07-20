@@ -42,8 +42,6 @@ public class AttachmentContainer {
     /**
      * Adds a new attachment to this player. 
      * Attachments can be accessed through {@link #getAttachment(Class)} using the type of the attachment.
-     * <p>A final note about attachables: Unlike the other methods in this class, changing something in an attachment will not
-     * mark the player as modified. You will need to call {@link #save()} to sync the changes.</p>
      * 
      * @param attachment The instance of the attachment to add
      * @return Returns the provided attachment
@@ -69,7 +67,7 @@ public class AttachmentContainer {
      * @param attachmentClass The class of the attachment. This cannot be a subclass or superclass.  
      * @return The attachment instance, or null if not found
      * @see #removeAttachment(Class)
-     * @see #addAttachment(Class, Attachment)
+     * @see #addAttachment(Attachment)
      */
     @SuppressWarnings("unchecked")
     public <T extends Attachment> T getAttachment(Class<T> attachmentClass) {
@@ -80,7 +78,7 @@ public class AttachmentContainer {
      * Removes an attachment from this player. This can remove any attachment available on this server.
      * @param attachmentClass The class of the attachment. This cannot be a subclass or superclass.   
      * @return The attachment instance that was removed, or null if nothing was removed
-     * @see #addAttachment(Class, Attachment)
+     * @see #addAttachment(Attachment)
      * @see #getAttachment(Class)
      */
     @SuppressWarnings("unchecked")
