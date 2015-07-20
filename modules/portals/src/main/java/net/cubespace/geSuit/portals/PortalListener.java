@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.portals;
 
+import net.cubespace.geSuit.core.events.GlobalReloadEvent;
 import net.cubespace.geSuit.core.objects.Portal;
 
 import org.bukkit.Location;
@@ -23,6 +24,12 @@ public class PortalListener implements Listener {
     
     public PortalListener(PortalManager manager) {
         this.manager = manager;
+    }
+    
+    @EventHandler(priority=EventPriority.NORMAL)
+    private void onReload(GlobalReloadEvent event) {
+        manager.setCurrentServer(event.getCurrentServer());
+        manager.loadPortals();
     }
     
     //=========================

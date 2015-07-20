@@ -40,27 +40,40 @@ import net.cubespace.geSuit.teleports.TeleportsModule;
 import net.cubespace.geSuit.teleports.WarpsModule;
 
 public class PortalManager implements ChannelDataReceiver<BaseMessage> {
+    private GlobalServer currentServer;
     private Map<String, Portal> portals;
     private ListMultimap<World, Portal> worldPortals;
     
     private Channel<BaseMessage> channel;
+    private StorageSection portalStorage;
     
-    public PortalManager() {
+    public PortalManager(Channel<BaseMessage> channel, StorageSection portalStorage) {
+        this.channel = channel;
+        this.portalStorage = portalStorage;
+        
         portals = Maps.newHashMap();
         worldPortals = ArrayListMultimap.create();
         
-        channel = Global.getChannelManager().createChannel("portals", BaseMessage.class);
-        channel.setCodec(new BaseMessage.Codec());
         channel.addReceiver(this);
+    }
+    
+    /**
+     * Sets the current server for loading and saving portals
+     * @param server The current server
+     */
+    public void setCurrentServer(GlobalServer server) {
+        currentServer = server;
     }
     
     /**
      * Loads all portals from the backend. This method is blocking
      */
     public void loadPortals() {
-        StorageSection root = Global.getStorageProvider().create("geSuit.portals");
+        if (currentServer == null) {
+            return;
+        }
         
-        Set<String> portalNames = root.getSetString("#names");
+        Set<String> portalNames = portalStorage.getSetString("#names");
         portals.clear();
         worldPortals.clear();
         
@@ -69,7 +82,7 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
         }
         
         for (String name : portalNames) {
-            Portal portal = root.getStorable(name, new Portal(name));
+            Portal portal = portalStorage.getStorable(name, new Portal(name));
             if (portal == null) {
                 Global.getPlatform().getLogger().warning("Invalid portal stored in redis under " + name);
                 continue;
@@ -77,11 +90,18 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
             
             portals.put(name.toLowerCase(), portal);
             
-            if (Global.getServer().getName().equals(portal.getServer())) {
+            if (currentServer.getName().equals(portal.getServer())) {
                 World world = Bukkit.getWorld(portal.getMinCorner().getWorld());
                 worldPortals.put(world, portal);
             }
         }
+        
+        Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(GSPlugin.class), new Runnable() {
+            @Override
+            public void run() {
+                placePortals();
+            }
+        });
     }
     
     // Handle loading portals when a world loads
@@ -159,6 +179,10 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
      * @return True if the portal was created, false if it overrode another portal
      */
     public boolean addOrUpdatePortal(final Portal portal) {
+        if (currentServer == null) {
+            return false;
+        }
+        
         final Portal existing = portals.put(portal.getName().toLowerCase(), portal);
         // Remove old portal
         boolean remove = false;
@@ -170,18 +194,16 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
         
         // Add new portal
         boolean place = false;
-        if (Global.getServer().getName().equals(portal.getServer())) {
+        if (currentServer.getName().equals(portal.getServer())) {
             World world = Bukkit.getWorld(portal.getMinCorner().getWorld());
             worldPortals.put(world, portal);
             place = true;
         }
         
         // Sync it
-        StorageSection root = Global.getStorageProvider().create("geSuit.portals");
-        
-        root.set("#names", portals.keySet());
-        root.set(portal.getName().toLowerCase(), portal);
-        root.update();
+        portalStorage.set("#names", portals.keySet());
+        portalStorage.set(portal.getName().toLowerCase(), portal);
+        portalStorage.update();
         
         channel.broadcast(new UpdatePortalMessage());
         

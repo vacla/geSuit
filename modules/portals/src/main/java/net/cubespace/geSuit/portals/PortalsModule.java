@@ -7,7 +7,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 import net.cubespace.geSuit.GSPlugin;
+import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.commands.CommandManager;
+import net.cubespace.geSuit.core.messages.BaseMessage;
+import net.cubespace.geSuit.core.storage.StorageSection;
 import net.cubespace.geSuit.modules.BaseModule;
 import net.cubespace.geSuit.portals.commands.PortalCommands;
 
@@ -23,7 +27,12 @@ public class PortalsModule extends BaseModule {
     
     @Override
     public boolean onLoad() throws Exception {
-        manager = new PortalManager();
+        Channel<BaseMessage> channel = Global.getChannelManager().createChannel("portals", BaseMessage.class);
+        channel.setCodec(new BaseMessage.Codec());
+        
+        StorageSection section = Global.getStorageProvider().create("geSuit.portals");
+        
+        manager = new PortalManager(channel, section);
         worldEdit = JavaPlugin.getPlugin(WorldEditPlugin.class);
         
         return true;
@@ -31,16 +40,10 @@ public class PortalsModule extends BaseModule {
     
     @Override
     public boolean onEnable() throws Exception {
+        manager.setCurrentServer(Global.getServer());
         manager.loadPortals();
         listener = new PortalListener(manager);
         Bukkit.getPluginManager().registerEvents(listener, getPlugin());
-        
-        Bukkit.getScheduler().runTask(getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                manager.placePortals();
-            }
-        });
         
         return true;
     }
