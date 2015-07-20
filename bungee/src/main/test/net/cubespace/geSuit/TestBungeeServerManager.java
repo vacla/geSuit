@@ -36,7 +36,7 @@ public class TestBungeeServerManager {
         when(proxy.getServers()).thenReturn(servers);
         
         // Begin
-        BungeeServerManager serverManager = new BungeeServerManager(proxy);
+        BungeeServerManager serverManager = new BungeeServerManager(proxy, null);
         serverManager.updateServers();
         
         // Assertions

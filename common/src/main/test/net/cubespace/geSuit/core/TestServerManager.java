@@ -1,11 +1,13 @@
 package net.cubespace.geSuit.core;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Map;
 
 import net.cubespace.geSuit.core.GlobalServer;
 import net.cubespace.geSuit.core.ServerManager;
+import net.cubespace.geSuit.core.events.GlobalReloadEvent;
 import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 
 import org.junit.Test;
@@ -18,7 +20,7 @@ public class TestServerManager {
         // Prepare
         GlobalServer server = new GlobalServer("test", 10000);
         
-        ServerManager manager = new ServerManager();
+        ServerManager manager = new ServerManager(null);
         manager.addServer(server);
         
         // Assertions
@@ -31,7 +33,7 @@ public class TestServerManager {
         // Prepare
         GlobalServer server = new GlobalServer("test", 10000);
         
-        ServerManager manager = new ServerManager();
+        ServerManager manager = new ServerManager(null);
         manager.addServer(server);
         manager.setCurrentServer(server);
         
@@ -47,7 +49,7 @@ public class TestServerManager {
         GlobalServer server3 = new GlobalServer("test3", 10002);
         GlobalServer server4 = new GlobalServer("test4", 10003);
         
-        ServerManager manager = new ServerManager();
+        ServerManager manager = new ServerManager(null);
         manager.addServer(server1);
         manager.addServer(server2);
         manager.addServer(server3);
@@ -65,7 +67,7 @@ public class TestServerManager {
     @Test(expected = UnsupportedOperationException.class)
     public void testListServerModify() {
         GlobalServer server = new GlobalServer("test", 10000);
-        ServerManager manager = new ServerManager();
+        ServerManager manager = new ServerManager(null);
         
         // This should fail
         manager.getServers().add(server);
@@ -76,7 +78,7 @@ public class TestServerManager {
         GlobalServer server1 = new GlobalServer("test1", 10000);
         GlobalServer server2 = new GlobalServer("test2", 10001);
         
-        ServerManager manager = new ServerManager();
+        ServerManager manager = new ServerManager(null);
         manager.addServer(server1);
         manager.addServer(server2);
         
@@ -92,6 +94,7 @@ public class TestServerManager {
     
     @Test
     public void testLoadPacket() {
+        Platform platform = mock(Platform.class);
         Map<Integer, String> servers = Maps.newHashMap();
         servers.put(10000, "test1");
         servers.put(10001, "test2");
@@ -99,7 +102,7 @@ public class TestServerManager {
         NetworkInfoMessage packet = new NetworkInfoMessage(10000, servers);
         
         // Try and load it
-        ServerManager manager = new ServerManager();
+        ServerManager manager = new ServerManager(platform);
         manager.handleNetworkInfoPacket(packet);
         
         // Assertions
@@ -108,6 +111,8 @@ public class TestServerManager {
         assertNotNull(manager.getCurrentServer());
         
         assertSame(manager.getServer("test1"), manager.getCurrentServer());
+        
+        verify(platform).callEvent(any(GlobalReloadEvent.class));
     }
     
     @Test
@@ -118,7 +123,7 @@ public class TestServerManager {
         GlobalServer server3 = new GlobalServer("test3", 10002);
         GlobalServer server4 = new GlobalServer("test4", 10003);
         
-        ServerManager manager = new ServerManager();
+        ServerManager manager = new ServerManager(null);
         manager.addServer(server1);
         manager.addServer(server2);
         manager.addServer(server3);

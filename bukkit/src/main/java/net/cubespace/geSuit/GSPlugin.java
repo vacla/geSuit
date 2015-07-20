@@ -51,7 +51,7 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         channel.setCodec(new BaseMessage.Codec());
         BukkitPlayerManager playerManager = new BukkitPlayerManager(channel, channelManager.getRedis(), storageProvider, platform);
         playerManager.initRedis();
-        ServerManager serverManager = new ServerManager();
+        ServerManager serverManager = new ServerManager(platform);
         
         GlobalBukkitManager globalManager = new GlobalBukkitManager(channel, playerManager, serverManager, new Messages());
         

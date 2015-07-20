@@ -7,14 +7,18 @@ import java.util.Map.Entry;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
+import net.cubespace.geSuit.core.events.GlobalReloadEvent;
 import net.cubespace.geSuit.core.messages.NetworkInfoMessage;
 
 public class ServerManager {
     private GlobalServer thisServer;
     private Map<String, GlobalServer> serversByName;
     private Map<Integer, GlobalServer> serversById;
+    private Platform platform;
     
-    public ServerManager() {
+    public ServerManager(Platform platform) {
+        this.platform = platform;
+        
         serversByName = Maps.newHashMap();
         serversById = Maps.newHashMap();
     }
@@ -48,6 +52,8 @@ public class ServerManager {
                 setCurrentServer(gs);
             }
         }
+        
+        platform.callEvent(new GlobalReloadEvent(thisServer));
     }
     
     public NetworkInfoMessage createNetworkInfoPacket(GlobalServer dest) {

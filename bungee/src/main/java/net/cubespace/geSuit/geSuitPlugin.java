@@ -121,7 +121,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         
         BungeePlayerManager playerManager = new BungeePlayerManager(channel, redis, storageProvider, platform);
         playerManager.initRedis();
-        BungeeServerManager serverManager = new BungeeServerManager(getProxy());
+        BungeeServerManager serverManager = new BungeeServerManager(getProxy(), platform);
         serverManager.updateServers();
         
         GlobalBungeeManager globalManager = new GlobalBungeeManager(channel, playerManager, serverManager, new Messages());
