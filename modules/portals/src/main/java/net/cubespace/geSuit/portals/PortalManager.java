@@ -364,7 +364,11 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
         Preconditions.checkArgument(Bukkit.isPrimaryThread());
         
         for (Portal portal : worldPortals.get(world)) {
-            placePortal(portal);
+            if (portal.isEnabled()) {
+                placePortal(portal);
+            } else {
+                clearPortal(portal);
+            }
         }
     }
     
@@ -457,6 +461,10 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     void onEnterPortal(Player player, Portal portal) {
+        if (!portal.isEnabled()) {
+            return;
+        }
+        
         Location dest;
         switch (portal.getType()) {
         case Server:

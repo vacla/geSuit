@@ -201,4 +201,30 @@ public class PortalCommands {
         
         sender.sendMessage(builder.toString());
     }
+    
+    @Command(name="portalenable", permission="gesuit.portals.command.enableportal", usage="/<command> <portal> <true/false>")
+    public void enablePortal(CommandSender sender, String portalName, boolean enabled) {
+        if (!manager.hasPortal(portalName)) {
+            sender.sendMessage(Global.getMessages().get("portal.unknown-portal"));
+            return;
+        }
+        
+        Portal portal = manager.getPortal(portalName);
+        if (portal.isEnabled() == enabled) {
+            if (enabled) {
+                sender.sendMessage(Global.getMessages().get("portal.command.error.already-enabled", "name", portal.getName()));
+            } else {
+                sender.sendMessage(Global.getMessages().get("portal.command.error.already-disabled", "name", portal.getName()));
+            }
+        } else {
+            portal.setEnabled(enabled);
+            if (enabled) {
+                sender.sendMessage(Global.getMessages().get("portal.enabled", "name", portal.getName()));
+                manager.placePortal(portal);
+            } else {
+                sender.sendMessage(Global.getMessages().get("portal.disabled", "name", portal.getName()));
+                manager.clearPortal(portal);
+            }
+        }
+    }
 }

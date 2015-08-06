@@ -8,6 +8,7 @@ import net.cubespace.geSuit.core.storage.Storable;
 
 public class Portal implements Storable {
     private String name;
+    private boolean enabled;
     private Type type;
     private FillType fill;
     private Location min;
@@ -29,6 +30,8 @@ public class Portal implements Storable {
         this.fill = fill;
         this.min = min;
         this.max = max;
+        
+        enabled = true;
     }
     
     public Portal(String name, Location dest, FillType fill, Location min, Location max) {
@@ -38,6 +41,8 @@ public class Portal implements Storable {
         this.fill = fill;
         this.min = min;
         this.max = max;
+        
+        enabled = true;
     }
     
     public String getName() {
@@ -103,6 +108,14 @@ public class Portal implements Storable {
         destLocation = location;
     }
     
+    public boolean isEnabled() {
+        return enabled;
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    
     @Override
     public void save(Map<String, String> values) {
         values.put("fill", fill.name());
@@ -121,6 +134,8 @@ public class Portal implements Storable {
         
         values.put("min", min.toSerialized());
         values.put("max", max.toSerialized());
+        
+        values.put("enabled", String.valueOf(enabled));
     }
 
     @Override
@@ -141,6 +156,8 @@ public class Portal implements Storable {
         
         min = Location.fromSerialized(values.get("min"));
         max = Location.fromSerialized(values.get("max"));
+        
+        enabled = Boolean.parseBoolean(values.get("enabled"));
     }
 
     public enum FillType {

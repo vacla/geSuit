@@ -17,6 +17,7 @@ permissions:
             gesuit.portals.command.portals: true
             gesuit.portals.command.delportal: true
             gesuit.portals.command.setportal: true
+            gesuit.portals.command.enableportal: true
     gesuit.portals.user:
         description: Gives access to all gesuitPortal user commands
         children:

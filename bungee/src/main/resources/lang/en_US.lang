@@ -93,7 +93,10 @@ portal.command.error.unknown-world = &cUnknown world {world}
 portal.no-permission = &cYou do not have permission to enter this portal
 portal.list.header = &cListing portals:
 portal.list.empty = &cThere are no portals
-
+portal.enabled = &6Portal {name} is now enabled
+portal.disabled = &6Portal {name} is now &cdisabled
+portal.command.error.already-enabled = &cPortal {name} is already enabled
+portal.command.error.already-disabled = &cPortal {name} is already disabled
 
 # Spawn related messages
 spawn.not-set = &cThe spawn point has not been set yet

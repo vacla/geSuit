@@ -135,6 +135,10 @@ public class PortalListener implements Listener {
             return;
         }
         
+        if (!portal.isEnabled()) {
+            return;
+        }
+        
         // Check bypass and specific permissions
         if (!player.hasPermission("gesuit.portals.portal.*") && !player.hasPermission("gesuit.portals.portal." + portal.getName())) {
             return;
