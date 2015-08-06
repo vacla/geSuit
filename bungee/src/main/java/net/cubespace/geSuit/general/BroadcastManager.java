@@ -5,6 +5,7 @@ import net.cubespace.geSuit.config.BroadcastsConfig;
 import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.config.ConfigReloadListener;
 import net.cubespace.geSuit.config.BroadcastsConfig.BroadcastEntry;
+import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.objects.DateDiff;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.md_5.bungee.api.ChatColor;
@@ -375,6 +376,22 @@ public class BroadcastManager implements ConfigReloadListener {
      */
     public void broadcastPermission(String permission, String message) {
         broadcastPermission(permission, TextComponent.fromLegacyText(message));
+    }
+    
+    /**
+     * Sends a message specifically to the target player.
+     * @param target The target player
+     * @param message The message to send
+     * @deprecated This is deprecated because this is only temporary. This will be within GlobalPlayer
+     */
+    @Deprecated
+    public void sendMessage(GlobalPlayer target, String message) {
+        for (ProxiedPlayer player : proxy.getPlayers()) {
+            if (player.getUniqueId().equals(target.getUniqueId())) {
+                player.sendMessage(TextComponent.fromLegacyText(message));
+                break;
+            }
+        }
     }
     
     /**

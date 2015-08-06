@@ -5,6 +5,9 @@ import net.cubespace.Yamler.Config.Config;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 public class ModerationConfig extends Config {
     public ModerationConfig(File file) {
@@ -26,6 +29,8 @@ public class ModerationConfig extends Config {
     public String DefaultBanReason = "Unknown";
     public String DefaultWarnReason = "Unknown";
     public String DefaultKickReason = "Unknown";
+    
+    public MuteSettings Mutes = new MuteSettings();
 
     public HashMap<Integer, String> Actions = new HashMap<Integer, String>();
     
@@ -41,5 +46,27 @@ public class ModerationConfig extends Config {
         public String DownloadURL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
         @Comment("URL for the database that provides city level lookups")
         public String CityDownloadURL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz";
+    }
+    
+    public static class MuteSettings extends Config {
+        @Comment("When true, all player and ip mutes will be broadcast on mute")
+        public boolean BroadcastMute = true;
+        @Comment("When true, all player and ip mutes will be broadcast on manual unmute")
+        public boolean BroadcastUnmute = false;
+        @Comment("When true, all player and ip mutes will be broadcast on automatic unmute")
+        public boolean BroadcastAutoUnmute = false;
+        @Comment("When true, global mute will be broadcast on mute and unmute")
+        public boolean BroadcastGlobal = true;
+        
+        @Comment("The maximum duration for mutes. eg. 5m, 1h10m. Can be 'none'")
+        public String MaximumMuteDuration = "20m";
+        @Comment("When true, mutes without a time limit can be used")
+        public boolean AllowPermanentMutes = true;
+        @Comment("When false, players that are already muted cannot be muted again without unmuting them first")
+        public boolean AllowReMute = true;
+        
+        @Comment("The commands to block, or allow based on CommandListIsWhitelist. When in whitelist mode, these are the commands muted players can use")
+        public List<String> CommandsList = Lists.newArrayList();
+        public boolean CommandListIsWhitelist = true;
     }
 }

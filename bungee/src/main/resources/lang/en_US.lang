@@ -142,6 +142,49 @@ warn.history.empty = &aNo warning history for {player}
 warn.display.personal = &bYou has received a warning. Reason: {message}
 warn.display.broadcast = &b{player} has received a warning. Reason: {message}
 
+# Mute related messages
+mute.start.single = &bYou have been muted
+mute.start.single.broadcast = &b{player} has been muted
+mute.start.group = &bYou have been muted
+mute.start.group.broadcast = &b{player} and alternate accounts have been muted
+mute.start.global =&bA &cglobal &bmute has been started
+mute.start.single.time = &bYou have been muted for {time}
+mute.start.single.time.broadcast = &b{player} has been muted for {time}
+mute.start.group.time = &bYou have been muted for {time}
+mute.start.group.time.broadcast = &b{player} and alternate accounts have been muted for {time}
+mute.start.global.time =&bA &cglobal &bmute has been started for {time}
+
+mute.end.single = &bYou are no longer muted. You may talk again.
+mute.end.single.broadcast = &b{player} is no longer muted.
+mute.end.group = &bYou are no longer muted. You may talk again.
+mute.end.group.broadcast = &b{player} and alternate accounts are no longer muted. 
+mute.end.global = &bThe global mute has ended.
+
+mute.talk.single = &bYou are muted. You may not talk.
+mute.command.single = &bYou are muted. You may not use that command.
+mute.talk.group = &bYou are muted. You may not talk.
+mute.command.group = &bYou are muted. You may not use that command.
+mute.talk.global = &bEveryone is muted. You may not talk.
+mute.command.global = &bEveryone is muted. You may not use that command.
+
+mute.already-active.single = &c{player} is already muted
+mute.already-active.group = &c{player} and alternate accounts are already muted
+mute.already-active.global = &cA global mute is already active
+
+mute.not-active.single = &c{player} is not muted
+mute.not-active.group = &c{player} and alternate accounts are not muted
+mute.not-active.global = &cA global mute is not active
+
+mute.no-permanent = &Permanent mutes are not allowed.
+mute.too-long = &cMutes cannot be longer than {time}
+mute.list.empty = &6There are no muted players or IPs
+mute.list.color = &b
+mute.list.header = &6List of muted players:
+mute.list.info.player = {player} &7({time})
+mute.list.info.group = &a[IPMute] &b{player} &7({time})
+mute.list.info.global = &cGlobal Mute &7({time})
+mute.list.permanent = Permanent
+
 # Home related messages
 home.teleport = &6You have been sent home
 home.limit.server = &cYour are not allowed to set anymore homes on this server.

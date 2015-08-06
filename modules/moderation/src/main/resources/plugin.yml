@@ -123,6 +123,9 @@ permissions:
             gesuit.bans.command.kickall: true
             gesuit.bans.command.ipban: true
             gesuit.bans.command.reload: true
+            gesuit.mutes.command.ipmute: true
+            gesuit.mutes.command.ipunmute: true
+            gesuit.mutes.command.globalmute: true
             gesuit.bans.mod: true
     gesuit.bans.mod:
         description: Gives access to all bans mod commands
@@ -133,3 +136,6 @@ permissions:
             gesuit.bans.command.kick: true
             gesuit.bans.command.tempban: true
             gesuit.bans.command.namehistory: true
+            gesuit.mutes.command.mute: true
+            gesuit.mutes.command.unmute: true
+            gesuit.mutes.command.mutelist: true

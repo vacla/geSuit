@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.cubespace.geSuit.core.objects.Tuple;
 import net.cubespace.geSuit.core.storage.ByteStorable;
 import net.cubespace.geSuit.core.storage.SimpleStorable;
 
@@ -156,7 +157,7 @@ public final class Serialization {
     }
     
     /**
-     * Registeres a dynamic serializer. Dynamic serializers are for variable types. eg. {@code List<?>}, {@code Storable}, etc.
+     * Registers a dynamic serializer. Dynamic serializers are for variable types. eg. {@code List<?>}, {@code Storable}, etc.
      * These serializers are created as needed based on the type.
      * @param base The base type that things must implement to invoke this serializer
      * @param type The class to instantiate when one needs to be made. <b>NOTE:</b> This class requires a public constructor that takes a {@code TypeToken<T>} as a parameter 
@@ -194,5 +195,6 @@ public final class Serialization {
         registerDynamic(TypeToken.of(Map.class), MapSerializer.class);
         registerDynamic(TypeToken.of(ByteStorable.class), ByteStorableSerializer.class);
         registerDynamic(TypeToken.of(SimpleStorable.class), SimpleStorableSerializer.class);
+        registerDynamic(TypeToken.of(Tuple.class), TupleSerializer.class);
     }
 }

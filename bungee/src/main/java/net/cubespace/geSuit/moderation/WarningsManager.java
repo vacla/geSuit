@@ -36,6 +36,7 @@ public class WarningsManager implements WarnActions, ConfigReloadListener {
     private Logger logger;
     private WarnHistory warnRepo;
     private BanManager banManager;
+    private MuteManager muteManager;
     private BroadcastManager broadcasts;
     private WarnAction[] actions;
     private Channel<BaseMessage> channel;
@@ -44,9 +45,10 @@ public class WarningsManager implements WarnActions, ConfigReloadListener {
     private boolean broadcastWarns;
     private String defaultReason;
     
-    public WarningsManager(WarnHistory warnRepo, BanManager banManager, BroadcastManager broadcasts, Channel<BaseMessage> channel, Logger logger) {
+    public WarningsManager(WarnHistory warnRepo, BanManager banManager, MuteManager muteManager, BroadcastManager broadcasts, Channel<BaseMessage> channel, Logger logger) {
         this.warnRepo = warnRepo;
         this.banManager = banManager;
+        this.muteManager = muteManager;
         this.broadcasts = broadcasts;
         this.channel = channel;
         this.logger = logger;
@@ -181,7 +183,8 @@ public class WarningsManager implements WarnActions, ConfigReloadListener {
             
             switch (action.getType()) {
             case Mute:
-                throw new UnsupportedOperationException("Not yet implemented");
+                muteManager.mute(player, System.currentTimeMillis() + action.getTime(), by);
+                break;
             case Kick:
                 banManager.kick(player, reason, true);
                 break;

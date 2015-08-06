@@ -40,6 +40,10 @@ public class RemoteInvocationHandler implements InvocationHandler {
     
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if (args == null) {
+            args = new Object[0];
+        }
+        
         int id = idMap.get(method);
         
         RemoteInvokeMessage message = new RemoteInvokeMessage(name, id, nextInvokeNum++, args);

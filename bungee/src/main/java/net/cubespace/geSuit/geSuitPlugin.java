@@ -46,10 +46,13 @@ import net.cubespace.geSuit.general.BroadcastManager;
 import net.cubespace.geSuit.general.GeoIPLookup;
 import net.cubespace.geSuit.moderation.BanListener;
 import net.cubespace.geSuit.moderation.BanManager;
+import net.cubespace.geSuit.moderation.MuteListener;
+import net.cubespace.geSuit.moderation.MuteManager;
 import net.cubespace.geSuit.moderation.TrackingListener;
 import net.cubespace.geSuit.moderation.TrackingManager;
 import net.cubespace.geSuit.moderation.WarningsManager;
 import net.cubespace.geSuit.remote.moderation.BanActions;
+import net.cubespace.geSuit.remote.moderation.MuteActions;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
 import net.cubespace.geSuit.remote.moderation.WarnActions;
 import net.cubespace.geSuit.remote.teleports.TeleportActions;
@@ -72,6 +75,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private DatabaseManager databaseManager;
     private BungeeCommandManager commandManager;
     
+    private BungeePlayerManager playerManager;
+    
     private GeoIPLookup geoIpLookup;
     private BroadcastManager broadcastManager;
     
@@ -81,6 +86,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     private TeleportsManager teleports;
     private SpawnManager spawns;
     private WarpManager warps;
+    private MuteManager mutes;
     
     public void onEnable() {
         geSuit.setPlugin(this);
@@ -119,7 +125,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
         
-        BungeePlayerManager playerManager = new BungeePlayerManager(channel, redis, storageProvider, platform);
+        playerManager = new BungeePlayerManager(channel, redis, storageProvider, platform);
         playerManager.initRedis();
         BungeeServerManager serverManager = new BungeeServerManager(getProxy(), platform);
         serverManager.updateServers();
@@ -146,6 +152,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         getProxy().getPluginManager().registerListener(this, new PlayerListener(this, playerManager, spawns, broadcastManager, configManager, globalManager.getMessages()));
         getProxy().getPluginManager().registerListener(this, new TrackingListener(tracking, globalManager.getMessages(), getLogger()));
         getProxy().getPluginManager().registerListener(this, new BanListener(bans, getLogger()));
+        getProxy().getPluginManager().registerListener(this, new MuteListener(mutes));
         
         globalManager.broadcastNetworkUpdate();
     }
@@ -258,7 +265,8 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         
         // Create each remote
         bans = new BanManager(databaseManager.getBanHistory(), broadcastManager, moderationChannel, getLogger());
-        warnings = new WarningsManager(databaseManager.getWarnHistory(), bans, broadcastManager, moderationChannel, getLogger());
+        mutes = new MuteManager(broadcastManager, Global.getMessages(), getProxy(), playerManager);
+        warnings = new WarningsManager(databaseManager.getWarnHistory(), bans, mutes, broadcastManager, moderationChannel, getLogger());
         tracking = new TrackingManager(databaseManager.getTracking(), databaseManager.getOntime(), getLogger());
         teleports = new TeleportsManager(teleportsChannel, this);
         
@@ -267,6 +275,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         manager.registerRemote("bans", BanActions.class, bans);
         manager.registerRemote("warns", WarnActions.class, warnings);
         manager.registerRemote("tracking", TrackingActions.class, tracking);
+        manager.registerRemote("mutes", MuteActions.class, mutes);
         
         manager.registerRemote("teleports", TeleportActions.class, teleports);
         
@@ -280,16 +289,19 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         bans.loadConfig(configManager.moderation());
         tracking.loadConfig(configManager.moderation());
         warnings.loadConfig(configManager.moderation());
+        mutes.loadConfig(configManager.moderation());
         teleports.loadConfig(configManager.teleports());
         broadcastManager.loadConfig(configManager.broadcasts());
         configManager.addReloadListener(bans);
         configManager.addReloadListener(tracking);
         configManager.addReloadListener(warnings);
+        configManager.addReloadListener(mutes);
         configManager.addReloadListener(teleports);
         configManager.addReloadListener(broadcastManager);
         
         spawns.loadSpawns();
         geoIpLookup.initialize();
+        mutes.startMuteCheckTimer(this);
     }
     
     public void loadLanguage() {
@@ -368,6 +380,10 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
     
     public ConfigManager getConfigManager() {
         return configManager;
+    }
+    
+    public MuteManager getMuteManager() {
+        return mutes;
     }
 
     @Override

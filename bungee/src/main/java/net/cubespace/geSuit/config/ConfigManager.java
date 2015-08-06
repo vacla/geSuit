@@ -54,9 +54,13 @@ public class ConfigManager {
         Preconditions.checkState(!hasInitialized);
         
         mainConfig.init();
+        mainConfig.save();
         moderationConfig.init();
+        moderationConfig.save();
         teleportsConfig.init();
+        teleportsConfig.save();
         broadcastsConfig.init();
+        broadcastsConfig.save();
         
         if (!motd.getFile().exists()) {
             saveDefaultFile(motd.getFile().getName(), motd.getFile());

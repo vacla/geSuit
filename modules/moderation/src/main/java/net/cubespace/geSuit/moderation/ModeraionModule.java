@@ -16,10 +16,12 @@ import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.moderation.commands.BanCommands;
 import net.cubespace.geSuit.moderation.commands.KickCommands;
 import net.cubespace.geSuit.moderation.commands.LookupCommands;
+import net.cubespace.geSuit.moderation.commands.MuteCommands;
 import net.cubespace.geSuit.moderation.commands.WarnCommands;
 import net.cubespace.geSuit.modules.BaseModule;
 import net.cubespace.geSuit.modules.Module;
 import net.cubespace.geSuit.remote.moderation.BanActions;
+import net.cubespace.geSuit.remote.moderation.MuteActions;
 import net.cubespace.geSuit.remote.moderation.TrackingActions;
 import net.cubespace.geSuit.remote.moderation.WarnActions;
 
@@ -29,6 +31,7 @@ public class ModeraionModule extends BaseModule implements ChannelDataReceiver<B
     private BanActions bans;
     private WarnActions warns;
     private TrackingActions tracking;
+    private MuteActions mutes;
     private Channel<BaseMessage> channel;
     
     public ModeraionModule(GSPlugin plugin) {
@@ -40,10 +43,12 @@ public class ModeraionModule extends BaseModule implements ChannelDataReceiver<B
         Global.getRemoteManager().registerInterest("bans", BanActions.class);
         Global.getRemoteManager().registerInterest("warns", WarnActions.class);
         Global.getRemoteManager().registerInterest("tracking", TrackingActions.class);
+        Global.getRemoteManager().registerInterest("mutes", MuteActions.class);
         
         bans = Global.getRemoteManager().getRemote(BanActions.class);
         warns = Global.getRemoteManager().getRemote(WarnActions.class);
         tracking = Global.getRemoteManager().getRemote(TrackingActions.class);
+        mutes = Global.getRemoteManager().getRemote(MuteActions.class);
         
         return true;
     }
@@ -67,6 +72,7 @@ public class ModeraionModule extends BaseModule implements ChannelDataReceiver<B
         manager.registerAll(new WarnCommands(warns), getPlugin());
         manager.registerAll(new KickCommands(bans), getPlugin());
         manager.registerAll(new LookupCommands(tracking), getPlugin());
+        manager.registerAll(new MuteCommands(mutes), getPlugin());
     }
     
     @SuppressWarnings("unchecked")
