@@ -13,6 +13,7 @@ import com.google.common.collect.Sets;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.GlobalServer;
 
 public class Utilities {
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -123,6 +124,19 @@ public class Utilities {
                 if (player.getNickname().toLowerCase().startsWith(partial)) {
                     names.add(player.getNickname());
                 }
+            }
+        }
+        
+        return names;
+    }
+    
+    public static Set<String> matchServerNames(String partial) {
+        Set<String> names = Sets.newHashSet();
+        partial = partial.toLowerCase();
+        
+        for (GlobalServer server : Global.getServers()) {
+            if (server.getName().toLowerCase().startsWith(partial)) {
+                names.add(server.getName());
             }
         }
         

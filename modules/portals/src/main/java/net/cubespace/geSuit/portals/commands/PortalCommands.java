@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.portals.commands;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -7,9 +8,13 @@ import java.util.List;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.commands.Command;
 import net.cubespace.geSuit.core.commands.CommandContext;
+import net.cubespace.geSuit.core.commands.CommandTabCompleter;
 import net.cubespace.geSuit.core.commands.Optional;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Portal;
+import net.cubespace.geSuit.core.objects.Warp;
+import net.cubespace.geSuit.core.util.CustomPredicates;
+import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.portals.PortalManager;
 import net.cubespace.geSuit.teleports.WarpsModule;
 import net.cubespace.geSuit.teleports.misc.LocationUtil;
@@ -20,8 +25,11 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Functions;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -138,6 +146,37 @@ public class PortalCommands {
         }
     }
     
+    @CommandTabCompleter(name="setportal")
+    public Iterable<String> tabCompleterSetPortal(Player sender, int argument, String input, String portalName, Portal.Type type, String destination, Portal.FillType fill) {
+        switch (argument) {
+        case 0: // portalName
+            return null;
+        case 1: // type
+            return Iterables.filter(Iterables.transform(Arrays.asList(Portal.Type.values()), Functions.toStringFunction()), CustomPredicates.startsWithCaseInsensitive(input));
+        case 2: // destinationType
+            switch (type) {
+            case Server:
+                return Utilities.matchServerNames(input);
+            case Warp:
+                input = input.toLowerCase();
+                List<String> warps = Lists.newArrayList();
+                for (Warp warp : WarpsModule.getWarpManager().getWarps()) {
+                    if (warp.getName().toLowerCase().startsWith(input)) {
+                        warps.add(warp.getName());
+                    }
+                }
+                
+                return warps;
+            default:
+                return null;
+            }
+        case 3: // fill
+            return Iterables.filter(Iterables.transform(Arrays.asList(Portal.FillType.values()), Functions.toStringFunction()), CustomPredicates.startsWithCaseInsensitive(input));
+        }
+        
+        return null;
+    }
+    
     @Command(name="delportal", async=true, aliases={"deleteportal", "dportal", "removeportal"}, permission="gesuit.portals.command.delportal", usage="/<command> <name>")
     public void delportal(Player player, String portalName) {
         if (!manager.hasPortal(portalName)) {
@@ -147,6 +186,19 @@ public class PortalCommands {
         
         manager.removePortal(portalName);
         player.sendMessage(Global.getMessages().get("portal.delete", "portal", portalName));
+    }
+    
+    @CommandTabCompleter(name="delportal")
+    public Iterable<String> tabCompleterDelPortal(Player sender, int argument, String input, String portalName) {
+        input = input.toLowerCase();
+        List<String> portals = Lists.newArrayList();
+        for (Portal portal : manager.getPortals()) {
+            if (portal.getName().toLowerCase().startsWith(input)) {
+                portals.add(portal.getName());
+            }
+        }
+        
+        return portals;
     }
     
     @Command(name="portals", async=true, aliases={"portalslist", "portallist", "listportals"}, permission="gesuit.portals.command.portals", usage="/<command>")
@@ -225,6 +277,23 @@ public class PortalCommands {
                 sender.sendMessage(Global.getMessages().get("portal.disabled", "name", portal.getName()));
                 manager.clearPortal(portal);
             }
+        }
+    }
+    
+    @CommandTabCompleter(name="portalenable")
+    public Iterable<String> tabCompleterEnablePortal(CommandSender sender, int argument, String input, String portalName, boolean enabled) {
+        if (argument == 0) { // portalName
+            input = input.toLowerCase();
+            List<String> portals = Lists.newArrayList();
+            for (Portal portal : manager.getPortals()) {
+                if (portal.getName().toLowerCase().startsWith(input)) {
+                    portals.add(portal.getName());
+                }
+            }
+            
+            return portals;
+        } else {
+            return Iterables.filter(Arrays.asList("true", "false"), CustomPredicates.startsWithCaseInsensitive(input));
         }
     }
 }
