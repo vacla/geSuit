@@ -8,8 +8,6 @@ import net.cubespace.geSuit.core.commands.CommandManager;
 import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.remote.RemoteManager;
 import net.cubespace.geSuit.core.storage.StorageProvider;
-import net.cubespace.geSuit.core.storage.StorageSection;
-
 import com.google.common.base.Preconditions;
 
 /**
@@ -76,6 +74,14 @@ public final class Global {
      */
     public static GlobalPlayer getPlayer(UUID id) {
         return instance.getPlayer(id);
+    }
+    
+    /**
+     * Gets a collections of all online players.
+     * @return An unmodifiable collection of online players
+     */
+    public static Collection<GlobalPlayer> getPlayers() {
+        return instance.getPlayers();
     }
     
     /**

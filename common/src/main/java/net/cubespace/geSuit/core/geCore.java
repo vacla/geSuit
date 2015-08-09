@@ -48,6 +48,10 @@ public class geCore {
         return globalManager.getPlayerManager().getPlayer(id);
     }
     
+    public Collection<GlobalPlayer> getPlayers() {
+        return globalManager.getPlayerManager().getPlayers();
+    }
+    
     public GlobalPlayer getOfflinePlayer(UUID id) {
         return globalManager.getPlayerManager().getOfflinePlayer(id);
     }

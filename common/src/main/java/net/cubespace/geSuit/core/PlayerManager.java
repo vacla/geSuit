@@ -1,5 +1,7 @@
 package net.cubespace.geSuit.core;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -122,6 +124,10 @@ public abstract class PlayerManager {
     
     public GlobalPlayer getPlayer(UUID id) {
         return playersById.get(id);
+    }
+    
+    public Collection<GlobalPlayer> getPlayers() {
+        return Collections.unmodifiableCollection(playersById.values());
     }
     
     //=================================================
