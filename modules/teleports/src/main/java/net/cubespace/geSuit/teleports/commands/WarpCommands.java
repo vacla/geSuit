@@ -5,8 +5,10 @@ import java.util.List;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.commands.Command;
+import net.cubespace.geSuit.core.commands.CommandTabCompleter;
 import net.cubespace.geSuit.core.commands.Optional;
 import net.cubespace.geSuit.core.objects.Warp;
+import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.teleports.TeleportsModule;
 import net.cubespace.geSuit.teleports.misc.LocationUtil;
 import net.cubespace.geSuit.teleports.warps.WarpManager;
@@ -15,6 +17,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+
+import com.google.common.collect.Lists;
 
 public class WarpCommands {
     private WarpManager manager;
@@ -127,6 +131,29 @@ public class WarpCommands {
         }
     }
     
+    @CommandTabCompleter(name="warp")
+    public Iterable<String> tabCompleteWarp(CommandSender sender, int argument, String input, String playerName, String warpName) {
+        if (argument == 0) { // playerName
+            if (sender.hasPermission("gesuit.warps.command.warp.other")) {
+                return Utilities.matchPlayerNames(input, true);
+            } else {
+                return null;
+            }
+        } else {
+            input = input.toLowerCase();
+            List<String> warps = Lists.newArrayList();
+            for (Warp warp : manager.getWarps()) {
+                if (sender.hasPermission("gesuit.warps.warp.*") || sender.hasPermission("gesuit.warps.warp." + warp.getName().toLowerCase())) {
+                    if (warp.getName().toLowerCase().startsWith(input)) {
+                        warps.add(warp.getName());
+                    }
+                }
+            }
+            
+            return warps;
+        }
+    }
+    
     @Command(name="setwarp", async=true, aliases={"createwarp"}, permission="gesuit.warps.command.setwarp", description="Sets a warps at the players location", usage="/<command> <name>")
     public void setwarp(Player sender, String warp) {
         boolean isUpdate = manager.hasGlobalWarp(warp);
@@ -181,5 +208,18 @@ public class WarpCommands {
         }
         
         sender.sendMessage(Global.getMessages().get("warp.delete"));
+    }
+    
+    @CommandTabCompleter(name="delwarp")
+    public Iterable<String> tabCompleteDelWarp(CommandSender sender, int argument, String input, String name) {
+        input = input.toLowerCase();
+        List<String> warps = Lists.newArrayList();
+        for (Warp warp : manager.getWarps()) {
+            if (warp.getName().toLowerCase().startsWith(input)) {
+                warps.add(warp.getName());
+            }
+        }
+        
+        return warps;
     }
 }

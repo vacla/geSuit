@@ -5,10 +5,12 @@ import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.commands.Command;
 import net.cubespace.geSuit.core.commands.CommandContext;
 import net.cubespace.geSuit.core.commands.CommandPriority;
+import net.cubespace.geSuit.core.commands.CommandTabCompleter;
 import net.cubespace.geSuit.core.commands.Optional;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.core.objects.Result.Type;
+import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.remote.teleports.TeleportActions;
 import net.cubespace.geSuit.teleports.misc.LocationUtil;
 
@@ -52,6 +54,11 @@ public class TeleportCommands {
         }
     }
     
+    @CommandTabCompleter(name="tphere")
+    public Iterable<String> tabCompleteTpHere(Player sender, int argument, String input, String playerName) {
+        return Utilities.matchPlayerNames(input, true);
+    }
+    
     @Command(name="tpahere", async=true, permission="gesuit.teleports.command.tpahere", aliases={"teleportaskhere"}, description="Requests a player teleport to you", usage="/<command> <player>")
     public void tpahere(Player sender, String playerName) {
         GlobalPlayer player = Global.getPlayer(sender.getUniqueId());
@@ -67,6 +74,11 @@ public class TeleportCommands {
         if (result.getMessage() != null) {
             sender.sendMessage(result.getMessage());
         }
+    }
+    
+    @CommandTabCompleter(name="tpahere")
+    public Iterable<String> tabCompleteTpaHere(Player sender, int argument, String input, String playerName) {
+        return Utilities.matchPlayerNames(input, true);
     }
     
     @Command(name="tpall", async=true, permission="gesuit.teleports.command.tpall", aliases={"teleportall"}, description="Requests all players teleport to you", usage="/<command>")
@@ -95,6 +107,11 @@ public class TeleportCommands {
         if (result.getMessage() != null) {
             sender.sendMessage(result.getMessage());
         }
+    }
+    
+    @CommandTabCompleter(name="tpa")
+    public Iterable<String> tabCompleteTpa(Player sender, int argument, String input, String playerName) {
+        return Utilities.matchPlayerNames(input, true);
     }
     
     @Command(name="tpaccept", async=true, permission="gesuit.teleports.command.tpaccept", aliases={"teleportaccept", "tpyes"}, description="Accepts a players teleport request", usage="/<command>")
@@ -245,6 +262,11 @@ public class TeleportCommands {
         }
     }
     
+    @CommandTabCompleter(name="tp")
+    public Iterable<String> tabCompleteTp(Player sender, int argument, String input, String playerName) {
+        return Utilities.matchPlayerNames(input, true);
+    }
+    
     @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <player> <target>")
     public void tp(CommandSender sender, String playerName, String targetPlayer) {
         GlobalPlayer player = Global.getPlayer(playerName);
@@ -265,6 +287,11 @@ public class TeleportCommands {
         if (result.getMessage() != null) {
             sender.sendMessage(result.getMessage());
         }
+    }
+    
+    @CommandTabCompleter(name="tp")
+    public Iterable<String> tabCompleteTpHere(CommandSender sender, int argument, String input, String playerName, String targetName) {
+        return Utilities.matchPlayerNames(input, true);
     }
     
     @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <player> <x> <y> <z> [world]")
@@ -305,6 +332,15 @@ public class TeleportCommands {
         }
     }
     
+    @CommandTabCompleter(name="tp")
+    public Iterable<String> tabCompleteTpHere(CommandSender sender, int argument, String input, String playerName, int x, int y, int z, String worldName) {
+        if (argument == 0) { // playerName
+            return Utilities.matchPlayerNames(input, true);
+        } else {
+            return null;
+        }
+    }
+    
     @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <player> <server> <world> <x> <y> <z>")
     public void tp(CommandContext<CommandSender> context, String playerName, String serverName, String worldName, int x, int y, int z) {
     	if (context.isErrored()) {
@@ -332,6 +368,15 @@ public class TeleportCommands {
         
         if (result.getMessage() != null) {
             context.sendMessage(result.getMessage());
+        }
+    }
+    
+    @CommandTabCompleter(name="tp")
+    public Iterable<String> tabCompleteTpHere(CommandSender sender, int argument, String input, String playerName, String serverName, String worldName, int x, int y, int z) {
+        if (argument == 0) { // playerName
+            return Utilities.matchPlayerNames(input, true);
+        } else {
+            return null;
         }
     }
 }
