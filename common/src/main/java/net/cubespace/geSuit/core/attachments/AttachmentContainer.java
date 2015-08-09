@@ -54,9 +54,8 @@ public class AttachmentContainer {
         attachments.put(type, attachment);
         if (attachment.getType() == AttachmentType.Persistent) {
             attachmentSet.add(type.getName());
+            requiresSave = true;
         }
-        
-        requiresSave = true;
         
         return attachment;
     }
@@ -85,7 +84,7 @@ public class AttachmentContainer {
     public <T extends Attachment> T removeAttachment(Class<T> attachmentClass) {
         attachmentSet.remove(attachmentClass.getName());
         T attachment = (T)attachments.remove(attachmentClass);
-        if (attachment != null) {
+        if (attachment != null && attachment.getType() == AttachmentType.Persistent) {
             requiresSave = true;
         }
         

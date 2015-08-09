@@ -283,7 +283,7 @@ public class TestAttachmentContainer {
         
         container.update(true);
         // Assertions
-        verify(storage).set("attachments", Sets.newHashSet());
+        verify(storage, times(2)).set("attachments", Sets.newHashSet());
         
         verifyZeroInteractions(channel);
     }
