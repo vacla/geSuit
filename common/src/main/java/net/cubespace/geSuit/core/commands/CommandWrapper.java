@@ -15,7 +15,6 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.Invokable;
-import com.google.common.reflect.Parameter;
 
 abstract class CommandWrapper {
     private Object commandHolder;
@@ -238,13 +237,15 @@ abstract class CommandWrapper {
     private Iterable<String> doTabCompleteAt(CommandSenderProxy sender, int argument, String input, ParseResult result, Set<CommandDefinition> options) {
         Iterable<String> results = null;
         
-        
         for (CommandDefinition option : options) {
             if (option.tabCompleter == null) {
                 continue;
             }
             
-            Parameter p;
+            if (!option.senderType.isInstance(sender.getSender())) {
+                continue;
+            }
+            
             Class<?>[] paramTypes = option.tabCompleter.getParameterTypes();
             Object[] parameters = new Object[paramTypes.length];
             // CommandSender caller
@@ -282,7 +283,7 @@ abstract class CommandWrapper {
                 throw new AssertionError();
             } catch (IllegalArgumentException e) {
                 // Should have the correct inputed arguments
-                throw new AssertionError(e);
+                throw new AssertionError("in: " + Arrays.toString(parameters) + " types: " + Arrays.toString(paramTypes), e);
             }
         }
         

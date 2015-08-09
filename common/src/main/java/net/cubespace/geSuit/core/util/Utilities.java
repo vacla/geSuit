@@ -6,7 +6,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
+
+import com.google.common.collect.Sets;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
@@ -105,5 +108,24 @@ public class Utilities {
             }
         }
         return new String(b);
+    }
+    
+    public static Set<String> matchPlayerNames(String partial, boolean useNicknames) {
+        Set<String> names = Sets.newHashSet();
+        partial = partial.toLowerCase();
+        
+        for (GlobalPlayer player : Global.getPlayers()) {
+            if (player.getName().toLowerCase().startsWith(partial)) {
+                names.add(player.getName());
+            }
+            
+            if (useNicknames && player.hasNickname()) {
+                if (player.getNickname().toLowerCase().startsWith(partial)) {
+                    names.add(player.getNickname());
+                }
+            }
+        }
+        
+        return names;
     }
 }

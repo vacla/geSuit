@@ -1,5 +1,8 @@
 package net.cubespace.geSuit.teleports.homes;
 
+import java.util.Collections;
+import java.util.Set;
+
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.attachments.Homes;
@@ -78,6 +81,20 @@ public class HomeManager {
         }
         
         return homes.getHome(home) != null;
+    }
+    
+    /**
+     * Gets a set containing the names of all homes set by the player
+     * @param player The player to get the home names for
+     * @return A {@code Set<String>} containing the names of each home, or an empty set
+     */
+    public Set<String> getHomeNames(GlobalPlayer player) {
+        Homes homes = player.getAttachment(Homes.class);
+        if (homes == null) {
+            return Collections.emptySet();
+        }
+        
+        return Collections.unmodifiableSet(homes.getAllHomes().keySet());
     }
     
     public int getHomeCountServer(GlobalPlayer player) {

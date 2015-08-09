@@ -3,13 +3,16 @@ package net.cubespace.geSuit.teleports.commands;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.attachments.Homes;
 import net.cubespace.geSuit.core.commands.Command;
+import net.cubespace.geSuit.core.commands.CommandTabCompleter;
 import net.cubespace.geSuit.core.commands.Optional;
 import net.cubespace.geSuit.core.objects.Location;
+import net.cubespace.geSuit.core.util.CustomPredicates;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.teleports.TeleportsModule;
 import net.cubespace.geSuit.teleports.homes.HomeManager;
@@ -19,7 +22,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 
 public class HomeCommands {
@@ -61,6 +66,14 @@ public class HomeCommands {
         }
     }
     
+    @CommandTabCompleter(name="sethome")
+    public Iterable<String> tabCompleteSetHome(Player player, int argument, String input, String home) {
+        GlobalPlayer gPlayer = Global.getPlayer(player.getUniqueId());
+        Set<String> names = manager.getHomeNames(gPlayer);
+        
+        return Iterables.filter(names, CustomPredicates.startsWithCaseInsensitive(input));
+    }
+    
     @Command(name="sethome", async=true, permission="gesuit.homes.commands.sethome", description="Sets the players home location", usage="/<command> <player> <name>")
     public void sethomeOther(Player player, String playerName, String home) {
         if (!player.hasPermission("gesuit.homes.commands.sethome.other")) {
@@ -99,6 +112,26 @@ public class HomeCommands {
         }
     }
     
+    @CommandTabCompleter(name="sethome")
+    public Iterable<String> tabCompleteSetHome(Player player, int argument, String input, String playerName, String home) {
+        if (!player.hasPermission("gesuit.homes.commands.sethome.other")) {
+            return null;
+        }
+        
+        switch (argument) {
+        case 0: // playerName
+            return Utilities.matchPlayerNames(input, true);
+        case 1: // home
+            GlobalPlayer gPlayer = Global.getPlayer(playerName);
+            if (gPlayer != null) {
+                Set<String> names = manager.getHomeNames(gPlayer);
+                return Iterables.filter(names, CustomPredicates.startsWithCaseInsensitive(input));
+            }
+            break;
+        }
+        return null;
+    }
+    
     @Command(name="delhome", async=true, permission="gesuit.homes.commands.delhome", description="Deletes a players home", usage="/<command> [<name>]")
     public void delhome(Player player, @Optional String home) {
         if (home == null) {
@@ -115,6 +148,14 @@ public class HomeCommands {
         manager.deleteHome(gPlayer, home);
         
         player.sendMessage(Global.getMessages().get("home.delete", "home", home));
+    }
+    
+    @CommandTabCompleter(name="delhome")
+    public Iterable<String> tabCompleteDelHome(Player player, int argument, String input, String home) {
+        GlobalPlayer gPlayer = Global.getPlayer(player.getUniqueId());
+        Set<String> names = manager.getHomeNames(gPlayer);
+        
+        return Iterables.filter(names, CustomPredicates.startsWithCaseInsensitive(input));
     }
     
     @Command(name="delhome", async=true, permission="gesuit.homes.commands.delhome", description="Deletes a players home", usage="/<command> <player> <name>")
@@ -146,6 +187,26 @@ public class HomeCommands {
         manager.deleteHome(gPlayer, home);
         
         player.sendMessage(Global.getMessages().get("home.delete.other", "home", home, "player", gPlayer.getDisplayName()));
+    }
+    
+    @CommandTabCompleter(name="delhome")
+    public Iterable<String> tabCompleteDelHome(Player player, int argument, String input, String playerName, String home) {
+        if (!player.hasPermission("gesuit.homes.commands.delhome.other")) {
+            return null;
+        }
+        
+        switch (argument) {
+        case 0: // playerName
+            return Utilities.matchPlayerNames(input, true);
+        case 1: // home
+            GlobalPlayer gPlayer = Global.getPlayer(playerName);
+            if (gPlayer != null) {
+                Set<String> names = manager.getHomeNames(gPlayer);
+                return Iterables.filter(names, CustomPredicates.startsWithCaseInsensitive(input));
+            }
+            break;
+        }
+        return null;
     }
     
     @Command(name="home", async=true, permission="gesuit.homes.commands.home", description="Teleports you home", usage="/<command> [<name>]")
@@ -196,6 +257,38 @@ public class HomeCommands {
         TeleportsModule.getTeleportManager().teleportWithDelay(gPlayer, location, TeleportCause.COMMAND);
     }
     
+    @CommandTabCompleter(name="home")
+    public Iterable<String> tabCompleteHome(Player player, int argument, String input, String home) {
+        Iterable<String> homeNames;
+        
+        GlobalPlayer gPlayer;
+        if (input.contains(":")) {
+            if (!player.hasPermission("gesuit.homes.commands.homes.other")) {
+                return null;
+            }
+            
+            final String prefix = input.split(":")[0];
+            gPlayer = Global.getPlayer(prefix);
+            if (gPlayer == null) {
+                return null;
+            }
+            
+            homeNames = manager.getHomeNames(gPlayer);
+            // Prepend prefix onto it
+            homeNames = Iterables.transform(homeNames, new Function<String, String>() {
+                @Override
+                public String apply(String input) {
+                    return prefix + ":" + input;
+                }
+            });
+        } else {
+            gPlayer = Global.getPlayer(player.getUniqueId());
+            homeNames = manager.getHomeNames(gPlayer);
+        }
+        
+        return Iterables.filter(homeNames, CustomPredicates.startsWithCaseInsensitive(input));
+    }
+    
     @Command(name="homes", async=true, permission="gesuit.homes.commands.homes", description="Lists all of your homes", usage="/<command> [<player>]")
     public void homes(Player player, @Optional String playerName) {
         GlobalPlayer gTarget;
@@ -211,6 +304,19 @@ public class HomeCommands {
         }
         
         displayHomes(player, gTarget); 
+    }
+    
+    @CommandTabCompleter(name="homes")
+    public Iterable<String> tabCompleteHomes(Player player, int argument, String input, String playerName) {
+        if (!player.hasPermission("gesuit.homes.commands.homes.other")) {
+            return null;
+        }
+        
+        switch (argument) {
+        case 0: // playerName
+            return Utilities.matchPlayerNames(input, true);
+        }
+        return null;
     }
     
     private void displayHomes(Player sender, GlobalPlayer player) {
