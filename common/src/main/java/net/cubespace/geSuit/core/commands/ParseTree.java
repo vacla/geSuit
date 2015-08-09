@@ -49,10 +49,14 @@ class ParseTree {
         }
         
         // Now combine with children
-        ParseResult result = recurseChildren(node, arguments);
-        result.setParameter(node.getArgumentIndex(), value);
-        
-        return result;
+        try {
+            ParseResult result = recurseChildren(node, arguments);
+            result.setParameter(node.getArgumentIndex(), value, argument);
+            return result;
+        } catch (ArgumentParseException e) {
+            e.getPartialResult().setParameter(node.getArgumentIndex(), value, argument);
+            throw e;
+        }
     }
     
     private ParseResult recurseChildren(ParseNode node, String[] arguments) throws ArgumentParseException {
@@ -68,8 +72,10 @@ class ParseTree {
                 return parseNode(child, arguments);
             } catch (CommandInterpretException e) {
                 interpretException = true;
+                e.setChoices(node.getChildren());
                 caughtErrors.add(e);
             } catch (ArgumentParseException e) {
+                e.setChoices(node.getChildren());
                 caughtErrors.add(e);
             }
         }
@@ -91,18 +97,22 @@ class ParseTree {
     public static class ParseResult {
         public int variant;
         public List<Object> parameters;
+        public List<String> input;
         
         public ParseResult(int variant) {
             this.variant = variant;
             parameters = Lists.newArrayList();
+            input = Lists.newArrayList();
         }
         
-        public void setParameter(int index, Object param) {
+        public void setParameter(int index, Object param, String raw) {
             while (index >= parameters.size()) {
                 parameters.add(null);
+                input.add(null);
             }
             
             parameters.set(index, param);
+            input.set(index, raw);
         }
         
         public void ensureParameters(int count) {

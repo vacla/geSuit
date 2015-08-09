@@ -112,6 +112,10 @@ public class TestParseTreeParse {
         } catch (CommandInterpretException e) {
             assertEquals("string", e.getInput());
             assertEquals(2, e.getNode().getArgumentIndex());
+            
+            assertEquals(2, e.getPartialResult().parameters.size());
+            assertResultEquals(String.class, "string", e.getPartialResult().parameters.get(0));
+            assertResultEquals(String.class, "112334", e.getPartialResult().parameters.get(1));
         }
     }
     

@@ -31,6 +31,7 @@ public abstract class CommandManager {
      * @param plugin The owning plugin. This is not typed as this is a platform agnostic class.
      */
     public void registerAll(Object instance, Object plugin) {
+        // Register commands first
         for (Method method : instance.getClass().getDeclaredMethods()) {
             Command tag = method.getAnnotation(Command.class);
             
@@ -38,7 +39,18 @@ public abstract class CommandManager {
                 continue;
             }
             
-            registerCommand0(instance, method, tag, plugin);
+            registerCommand0(instance, method, tag);
+        }
+        
+        // Register tab completers next
+        for (Method method : instance.getClass().getDeclaredMethods()) {
+            CommandTabCompleter tag = method.getAnnotation(CommandTabCompleter.class);
+            
+            if (tag == null) {
+                continue;
+            }
+            
+            registerTabCompleter0(instance, method, tag);
         }
         finishRegistration(plugin, instance);
     }
@@ -56,14 +68,39 @@ public abstract class CommandManager {
             throw new IllegalArgumentException("Methods that will be commands require the @Command annotation");
         }
         
-        registerCommand0(instance, method, tag, plugin);
+        registerCommand0(instance, method, tag);
+        finishRegistration(plugin, instance);
+    }
+    
+    /**
+     * Registers the {@code command} as a command and the {@code tabCompleter} as a tab completer. Both method still require the {@link Command} {@link CommandTabCompleter} annotations respectively 
+     * @param instance The object that contains the methods
+     * @param command The method object for the command
+     * @param tabCompleter The method object for the tab completer
+     * @param plugin The owning plugin. This is not typed as this is a platform agnostic class.
+     */
+    public void registerCommand(Object instance, Method command, Method tabCompleter, Object plugin) {
+        Command commandTag = command.getAnnotation(Command.class);
+        
+        if (commandTag == null) {
+            throw new IllegalArgumentException("Methods that will be commands require the @Command annotation");
+        }
+        
+        CommandTabCompleter tabCompleteTag = command.getAnnotation(CommandTabCompleter.class);
+        
+        if (tabCompleteTag == null) {
+            throw new IllegalArgumentException("Methods that will be tab completeres require the @CommandTabCompleter annotation");
+        }
+        
+        registerCommand0(instance, command, commandTag);
+        registerTabCompleter0(instance, tabCompleter, tabCompleteTag);
         finishRegistration(plugin, instance);
     }
     
     /*
      * Adds the command to the list or adds variants, but doesnt actually register 
      */
-    private void registerCommand0(Object instance, Method method, Command tag, Object plugin) {
+    private void registerCommand0(Object instance, Method method, Command tag) {
         if (registered.contains(tag.name())) {
             throw new IllegalArgumentException("The command " + tag.name() + " has already been registered. You can only register vairants of a command using registerAll");
         }
@@ -77,6 +114,19 @@ public abstract class CommandManager {
         }
         
         builder.addVariant(method);
+    }
+    
+    private void registerTabCompleter0(Object instance, Method method, CommandTabCompleter tag) {
+        if (registered.contains(tag.name())) {
+            throw new IllegalArgumentException("The command " + tag.name() + " has already been registered. You can only register tab completeres for a command before it is registered");
+        }
+        
+        CommandBuilder builder = builders.get(tag.name());
+        if (builder == null) {
+            throw new IllegalArgumentException("Unknown command " + tag.name() + ". Unable to register tab completer");
+        }
+        
+        builder.addTabCompleter(method);
     }
     
     /*

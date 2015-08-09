@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 class CommandContainer extends Command implements PluginIdentifiableCommand {
     private CommandWrapper proxy;
@@ -29,7 +30,14 @@ class CommandContainer extends Command implements PluginIdentifiableCommand {
     
     @Override
     public List<String> tabComplete(CommandSender sender, String label, String[] args) throws IllegalArgumentException {
-        return proxy.tabComplete(new BukkitSenderProxy(sender), label, args);
+        Iterable<String> result = proxy.tabComplete(new BukkitSenderProxy(sender), label, args);
+        if (result instanceof List<?>) {
+            return (List<String>)result;
+        } else if (result == null) {
+            return null;
+        } else {
+            return Lists.newArrayList(result);
+        }
     }
     
     @Override

@@ -79,6 +79,80 @@ abstract class CommandBuilder {
         definitions.add(new CommandDefinition(method, tag.async(), priority, tag, senderType));
     }
     
+    public void addTabCompleter(Method method) throws IllegalArgumentException {
+        if (!method.isAnnotationPresent(CommandTabCompleter.class)) {
+            throw new IllegalArgumentException(String.format("Method %s in class %s requires the @CommandTabCompleter annotation to be used as a tab completer", method.getName(), method.getDeclaringClass().getName()));
+        }
+        
+        CommandTabCompleter tag = method.getAnnotation(CommandTabCompleter.class);
+        
+        if (!tag.name().equals(name)) {
+            throw new IllegalArgumentException(String.format("Method %s in class %s is being registered under command %s but is declared as %s", method.getName(), method.getDeclaringClass().getName(), name, tag.name()));
+        }
+        
+        method.setAccessible(true);
+        
+        Class<?>[] params = method.getParameterTypes();
+        
+        // Needs at least the sender/context
+        if (params.length < 3) {
+            throw new IllegalArgumentException(String.format("Method %s in class %s requires at least 3 parameters of type CommandSender or subclass, int or String, and String to be used as a tab completer", method.getName(), method.getDeclaringClass().getName()));
+        }
+        
+        // Try to determine the sender type and make sure it is one
+        Class<?> senderType = params[0];
+        if (!isCommandSender(senderType)) {
+            throw new IllegalArgumentException(String.format("Method %s in class %s requires the first parameter be of type CommandSender or a subclass of CommandSender to be used as a tab completer", method.getName(), method.getDeclaringClass().getName()));
+        }
+        
+        // Check the second param (index)
+        if (!params[1].equals(Integer.class) && !params[1].equals(Integer.TYPE)) {
+            throw new IllegalArgumentException(String.format("Method %s in class %s requires the second parameter be of type int, or Integer to be used as a tab completer", method.getName(), method.getDeclaringClass().getName()));
+        }
+        
+        // Check the third param (input)
+        if (!params[2].equals(String.class)) {
+            throw new IllegalArgumentException(String.format("Method %s in class %s requires the third parameter be of type String to be used as a tab completer", method.getName(), method.getDeclaringClass().getName()));
+        }
+        
+        // Check return type
+        if (!(Iterable.class.isAssignableFrom(method.getReturnType()) && (method.getGenericReturnType() instanceof ParameterizedType) && ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0].equals(String.class))) {
+            throw new IllegalArgumentException(String.format("Method %s in class %s requires the return type to be Iterable<String> or a subclass of Iterable<String>", method.getName(), method.getDeclaringClass().getName()));
+        }
+        
+        Type[] genericParameters = method.getGenericParameterTypes();
+        
+        // Now match it to a command variant
+        for (CommandDefinition def : definitions) {
+            if (!def.senderType.equals(senderType)) {
+                continue;
+            }
+            
+            Type[] defParams = def.method.getGenericParameterTypes();
+            if (genericParameters.length != defParams.length + 2) {
+                continue;
+            }
+            
+            boolean match = true;
+            for (int i = 0; i < defParams.length-1; ++i) {
+                if (!genericParameters[i+3].equals(defParams[i+1])) {
+                    match = false;
+                    break;
+                }
+            }
+            
+            if (!match) {
+                continue;
+            }
+            
+            // Ok we're done
+            def.tabCompleter = method;
+            return;
+        }
+        
+        throw new IllegalArgumentException(String.format("Method %s in class %s's parameters (excluding the first three) do not match one of the registered command variants.", method.getName(), method.getDeclaringClass().getName()));
+    }
+    
     private Class<?> getSenderType(Type argType) throws IllegalArgumentException {
         // Try for just CommandSender or subclass
         if (argType instanceof Class<?>) {
@@ -235,6 +309,7 @@ abstract class CommandBuilder {
     
     public static class CommandDefinition implements Comparable<CommandDefinition> {
         public Method method;
+        public Method tabCompleter;
         public int priority;
         public boolean async;
         public Command tag;

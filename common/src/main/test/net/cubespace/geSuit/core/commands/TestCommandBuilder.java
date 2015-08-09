@@ -3,6 +3,7 @@ package net.cubespace.geSuit.core.commands;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -56,6 +57,29 @@ public class TestCommandBuilder {
     @Command(name="test11", usage="/<command> <string> <int>")
     @CommandPriority(3)
     private void test11c(CommandSender sender, String arg1, int arg2) {}
+    
+    @CommandTabCompleter(name="test1")
+    private Iterable<String> tabCompleter1a(CommandSender sender, int argument, String input, String arg1, int arg2) {return null;}
+    @CommandTabCompleter(name="test1")
+    private Iterable<String> tabCompleter1b(CommandSender sender, int argument, String input, String arg1) {return null;}
+    @CommandTabCompleter(name="test1")
+    private Iterable<String> tabCompleter1c(CommandSender sender, int argument, int input, String arg1, int arg2) {return null;}
+    @CommandTabCompleter(name="test1")
+    private Iterable<String> tabCompleter1d(String sender, int argument, String input, String arg1, int arg2) {return null;}
+    @CommandTabCompleter(name="test1")
+    private void tabCompleter1e(CommandSender sender, int argument, String input, String arg1, int arg2) {}
+    @CommandTabCompleter(name="test1")
+    private Iterable<String> tabCompleter1f(CommandSender sender, double argument, String input, String arg1, int arg2) {return null;}
+    @CommandTabCompleter(name="test1")
+    private List<String> tabCompleter1g(CommandSender sender, int argument, String input, String arg1, int arg2) {return null;}
+    @CommandTabCompleter(name="test1")
+    private Iterable<String> tabCompleter1h() {return null;}
+    @CommandTabCompleter(name="test1")
+    private Iterable<String> tabCompleter1i(CommandSender sender, Integer argument, String input, String arg1, int arg2) {return null;}
+    @CommandTabCompleter(name="test1")
+    private List<?> tabCompleter1j(CommandSender sender, int argument, String input, String arg1, int arg2) {return null;}
+    @CommandTabCompleter(name="test1")
+    private Iterable<Integer> tabCompleter1k(CommandSender sender, int argument, String input, String arg1, int arg2) {return null;}
     
     private Method getMethod(String name) {
         for (Method method : TestCommandBuilder.class.getDeclaredMethods()) {
@@ -262,6 +286,151 @@ public class TestCommandBuilder {
         assertEquals("test11c", builder.getVariants().get(0).method.getName());
         assertEquals("test11a", builder.getVariants().get(1).method.getName());
         assertEquals("test11b", builder.getVariants().get(2).method.getName());
+    }
+    
+    @Test
+    public void testAddTabCompleter() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        
+        builder.addVariant(getMethod("test1a"));
+        builder.addTabCompleter(getMethod("tabCompleter1a"));
+        
+        builder.build();
+        assertNotNull(builder.getVariants().get(0).tabCompleter);
+    }
+    
+    @Test
+    public void testTCIntegerParam() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        
+        builder.addVariant(getMethod("test1a"));
+        builder.addTabCompleter(getMethod("tabCompleter1i"));
+    }
+    
+    @Test
+    public void testTCFailNoCommand() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        try {
+            builder.addTabCompleter(getMethod("tabCompleter1a"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("registered under command"));
+        }
+    }
+    
+    @Test
+    public void testTCFailFirstArg() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        try {
+            builder.addVariant(getMethod("test1a"));
+            builder.addTabCompleter(getMethod("tabCompleter1d"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("first parameter"));
+        }
+    }
+    
+    @Test
+    public void testTCFailSecondArg() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        try {
+            builder.addVariant(getMethod("test1a"));
+            builder.addTabCompleter(getMethod("tabCompleter1f"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("second parameter"));
+        }
+    }
+    
+    @Test
+    public void testTCFailThirdArg() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        try {
+            builder.addVariant(getMethod("test1a"));
+            builder.addTabCompleter(getMethod("tabCompleter1c"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("third parameter"));
+        }
+    }
+    
+    @Test
+    public void testTCFailNoMatch() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        try {
+            builder.addVariant(getMethod("test1a"));
+            builder.addTabCompleter(getMethod("tabCompleter1b"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("variants"));
+        }
+    }
+    
+    @Test
+    public void testTCFailReturn() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        try {
+            builder.addVariant(getMethod("test1a"));
+            builder.addTabCompleter(getMethod("tabCompleter1e"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("return"));
+        }
+    }
+    
+    @Test
+    public void testTCFailNoTag() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        try {
+            builder.addVariant(getMethod("test1a"));
+            builder.addTabCompleter(getMethod("test1a"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("@CommandTabCompleter"));
+        }
+    }
+    
+    @Test
+    public void testTCFailParamCount() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        try {
+            builder.addVariant(getMethod("test1a"));
+            builder.addTabCompleter(getMethod("tabCompleter1h"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("3 parameters"));
+        }
+    }
+    
+    @Test
+    public void testTCSubclassReturn() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        builder.addVariant(getMethod("test1a"));
+        builder.addTabCompleter(getMethod("tabCompleter1g"));
+    }
+    
+    @Test
+    public void testTCWildcardReturn() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        try {
+            builder.addVariant(getMethod("test1a"));
+            builder.addTabCompleter(getMethod("tabCompleter1j"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("return"));
+        }
+    }
+    
+    @Test
+    public void testTCIntReturn() {
+        CommandBuilder builder = new FakeCommandBuilder();
+        try {
+            builder.addVariant(getMethod("test1a"));
+            builder.addTabCompleter(getMethod("tabCompleter1k"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("return"));
+        }
     }
     
     private static class FakeCommandBuilder extends CommandBuilder {

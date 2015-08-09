@@ -4,13 +4,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.commands.CommandBuilder.CommandDefinition;
 import net.cubespace.geSuit.core.commands.ParseTree.ParseResult;
 
+import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.Invokable;
+import com.google.common.reflect.Parameter;
 
 abstract class CommandWrapper {
     private Object commandHolder;
@@ -65,31 +70,36 @@ abstract class CommandWrapper {
         Object[] emptyParams = new Object[params.length];
         
         for (int i = 1; i < emptyParams.length; ++i) {
-            Class<?> param = params[i];
-            if (param.isPrimitive()) {
-                if (param.equals(Byte.TYPE)) {
-                    emptyParams[i] = (byte)0;
-                } else if (param.equals(Short.TYPE)) {
-                    emptyParams[i] = (short)0;
-                } else if (param.equals(Integer.TYPE)) {
-                    emptyParams[i] = (int)0;
-                } else if (param.equals(Long.TYPE)) {
-                    emptyParams[i] = (long)0;
-                } else if (param.equals(Float.TYPE)) {
-                    emptyParams[i] = (float)0;
-                } else if (param.equals(Double.TYPE)) {
-                    emptyParams[i] = (double)0;
-                } else if (param.equals(Character.TYPE)) {
-                    emptyParams[i] = (char)0;
-                } else if (param.equals(Boolean.TYPE)) {
-                    emptyParams[i] = false;
-                } else {
-                    throw new AssertionError();
-                }
-            }
+            emptyParams[i] = createEmtpyParameter(params[i]);
         }
         
         return emptyParams;
+    }
+    
+    private Object createEmtpyParameter(Class<?> type) {
+        if (type.isPrimitive()) {
+            if (type.equals(Byte.TYPE)) {
+                return (byte)0;
+            } else if (type.equals(Short.TYPE)) {
+                return (short)0;
+            } else if (type.equals(Integer.TYPE)) {
+                return (int)0;
+            } else if (type.equals(Long.TYPE)) {
+                return (long)0;
+            } else if (type.equals(Float.TYPE)) {
+                return (float)0;
+            } else if (type.equals(Double.TYPE)) {
+                return (double)0;
+            } else if (type.equals(Character.TYPE)) {
+                return (char)0;
+            } else if (type.equals(Boolean.TYPE)) {
+                return false;
+            } else {
+                throw new AssertionError();
+            }
+        } else {
+            return null;
+        }
     }
     
     public void execute(CommandSenderProxy sender, String label, String[] args) {
@@ -155,7 +165,7 @@ abstract class CommandWrapper {
         CommandDefinition variant = variants.get(e.getNode().getVariant());
         if (variant.useContext) {
             // If the sender is not the right type, only show the usage
-            if (!variant.senderType.isInstance(sender)) {
+            if (!variant.senderType.isInstance(sender.getSender())) {
                 sender.sendMessage(getUsage().replace("<command>", label));
                 return;
             // Execute the method to handle error messages
@@ -177,6 +187,108 @@ abstract class CommandWrapper {
         }
     }
     
+    public Iterable<String> tabComplete(CommandSenderProxy sender, String label, String[] args) {
+        ParseResult result;
+        Set<CommandDefinition> options;
+        String input;
+        int argument;
+        try {
+            result = parseTree.parse(args);
+            // Successful parse should tab complete the last parameter
+            options = Sets.newHashSet(variants.get(result.variant));
+            argument = result.parameters.size()-1;
+            input = result.input.get(argument);
+        } catch (ArgumentParseException e) {
+            // Tab complete the one that failed
+            result = e.getPartialResult();
+            argument = e.getNode().getArgumentIndex();
+            // When we are short an argument, we have to go back to the previous item
+            // otherwise we will be tab completing the missing argument
+            if (e instanceof CommandSyntaxException) {
+                if (!((CommandSyntaxException)e).hasMoreInput() && argument > 0) {
+                    // We were short an argument
+                    --argument;
+                }
+            }
+            
+            options = Sets.newHashSet();
+            for (ParseNode node : e.getChoices()) {
+                options.add(variants.get(node.getVariant()));
+            }
+            
+            if (e instanceof CommandInterpretException) {
+                input = ((CommandInterpretException)e).getInput();
+            } else {
+                if (!((CommandSyntaxException)e).hasMoreInput()) {
+                    if (!result.input.isEmpty()) {
+                        input = result.input.get(result.input.size()-1);
+                    } else {
+                        input = "";
+                    }
+                } else {
+                    // We have no further parameters to tab complete
+                    return null;
+                }
+            }
+        }
+        
+        return doTabCompleteAt(sender, argument, input, result, options);
+    }
+    
+    private Iterable<String> doTabCompleteAt(CommandSenderProxy sender, int argument, String input, ParseResult result, Set<CommandDefinition> options) {
+        Iterable<String> results = null;
+        
+        
+        for (CommandDefinition option : options) {
+            if (option.tabCompleter == null) {
+                continue;
+            }
+            
+            Parameter p;
+            Class<?>[] paramTypes = option.tabCompleter.getParameterTypes();
+            Object[] parameters = new Object[paramTypes.length];
+            // CommandSender caller
+            parameters[0] = sender.getSender();
+            // int argument
+            parameters[1] = argument;
+            // String input
+            parameters[2] = input;
+            
+            // The rest of the params
+            for (int i = 3; i < parameters.length; ++i) {
+                int actual = i-3;
+                if (result.parameters.size() <= actual) {
+                    parameters[i] = createEmtpyParameter(paramTypes[i]);
+                } else {
+                    parameters[i] = result.parameters.get(actual);
+                }
+            }
+            
+            // Raise the tab completer
+            try {
+                Iterable<String> out = (Iterable<String>)option.tabCompleter.invoke(commandHolder, parameters);
+                if (out != null) {
+                    if (results != null) {
+                        results = Iterables.concat(results, out);
+                    } else {
+                        results = out;
+                    }
+                }
+            } catch (InvocationTargetException e) {
+                Throwables.propagateIfPossible(e.getCause());
+                throw new RuntimeException(e.getCause());
+            } catch (IllegalAccessException e) {
+                // Should have full access by now
+                throw new AssertionError();
+            } catch (IllegalArgumentException e) {
+                // Should have the correct inputed arguments
+                throw new AssertionError(e);
+            }
+        }
+        
+        return results;
+    }
+    
     private void execute(CommandSenderProxy sender, Invokable<Object, Void> method, Object[] params) {
         try {
             method.invoke(commandHolder, params);
@@ -191,11 +303,6 @@ abstract class CommandWrapper {
             // Should not happen
             throw new AssertionError(e);
         }
-    }
-    
-    public List<String> tabComplete(CommandSenderProxy sender, String label, String[] args) throws IllegalArgumentException {
-        // TODO: This needs to be implemented at some point
-        return null;
     }
     
     protected abstract void runAsync(Runnable block);
