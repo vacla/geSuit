@@ -38,7 +38,7 @@ public class TestCommandWrapper {
         when(builder.getAliases()).thenReturn(new String[] {"alias"});
         when(builder.getPermission()).thenReturn("permission");
         when(builder.getUsage()).thenReturn("usage");
-        when(builder.getParseTree()).thenReturn(new ParseTree(new ParseNode(-1, -1), Lists.<Variant>newArrayList()));
+        when(builder.getParseTree()).thenReturn(new ParseTree(ParseNode.newRootNode(), Lists.<Variant>newArrayList()));
         when(builder.getDescription()).thenReturn("description");
         when(builder.getVariants()).thenReturn(Lists.<CommandDefinition>newArrayList());
         
@@ -274,6 +274,153 @@ public class TestCommandWrapper {
         assertEquals(1, argument);
         assertEquals("", input);
         return null;
+    }
+    
+    @Test
+    public void testTCAlternates() {
+        // Prepare
+        CommandBuilder builder = new CommandBuilder() {
+            @Override
+            protected boolean isCommandSender(Class<?> clazz) {
+                return clazz.equals(String.class);
+            }
+        };
+        
+        builder.addVariant(getMethod("test3a"));
+        builder.addVariant(getMethod("test3b"));
+        builder.addTabCompleter(getMethod("test8TabCompleteA"));
+        builder.addTabCompleter(getMethod("test8TabCompleteB"));
+        
+        builder.build();
+        
+        CommandWrapper wrapper = new CommandWrapper("plugin", this, builder) {
+            @Override
+            protected void runAsync(Runnable block) {
+            }
+        };
+        
+        // Run the test
+        Iterable<String> result = wrapper.tabComplete(new CommandSenderProxyImpl("sender", false), wrapper.getName(), new String[] {"test", "a"});
+        
+        // Tests are in test8TabComplete A and B
+        
+        // Make sure that both tab completers were called
+        assertTrue(Iterables.contains(result, "A"));
+        assertTrue(Iterables.contains(result, "B"));
+    }
+    
+    @Command(name="test3", permission="permission.name", usage="/<command> <string> <int>")
+    private void test3a(String sender, String arg1, int arg2) {
+    }
+    
+    @Command(name="test3", permission="permission.name", usage="/<command> <string> <boolean>")
+    private void test3b(String sender, String arg1, boolean arg2) {
+    }
+    
+    @CommandTabCompleter(name="test3")
+    private Iterable<String> test8TabCompleteA(String sender, int argument, String input, String arg1, int arg2) {
+        assertEquals(1, argument);
+        assertEquals("a", input);
+        
+        return Arrays.asList("A");
+    }
+    
+    @CommandTabCompleter(name="test3")
+    private Iterable<String> test8TabCompleteB(String sender, int argument, String input, String arg1, boolean arg2) {
+        assertEquals(1, argument);
+        assertEquals("a", input);
+        
+        return Arrays.asList("B");
+    }
+    
+    @Test
+    public void testTCOptional() {
+        // Prepare
+        CommandBuilder builder = new CommandBuilder() {
+            @Override
+            protected boolean isCommandSender(Class<?> clazz) {
+                return clazz.equals(String.class);
+            }
+        };
+        
+        builder.addVariant(getMethod("test3"));
+        builder.addTabCompleter(getMethod("test9TabComplete"));
+        
+        builder.build();
+        
+        CommandWrapper wrapper = new CommandWrapper("plugin", this, builder) {
+            @Override
+            protected void runAsync(Runnable block) {
+            }
+        };
+        
+        // Run the test
+        Iterable<String> result = wrapper.tabComplete(new CommandSenderProxyImpl("sender", false), wrapper.getName(), new String[] {"test", "a"});
+        
+        // Make sure that both tab completers were called
+        assertTrue(Iterables.contains(result, "A"));
+        assertTrue(Iterables.contains(result, "B"));
+    }
+    
+    @Command(name="test3", permission="permission.name", usage="/<command> <string> <int>")
+    private void test3(String sender, String arg1, @Optional Integer arg2, String arg3) {
+    }
+    
+    @CommandTabCompleter(name="test3")
+    private Iterable<String> test9TabComplete(String sender, int argument, String input, String arg1, Integer arg2, String arg3) {
+        if (argument == 1) {
+            return Arrays.asList("A");
+        } else if (argument == 2) {
+            return Arrays.asList("B");
+        } else {
+            return null;
+        }
+    }
+    
+    @Test
+    public void testTCOptionalSameType() {
+        // Prepare
+        CommandBuilder builder = new CommandBuilder() {
+            @Override
+            protected boolean isCommandSender(Class<?> clazz) {
+                return clazz.equals(String.class);
+            }
+        };
+        
+        builder.addVariant(getMethod("test4"));
+        builder.addTabCompleter(getMethod("test10TabComplete"));
+        
+        builder.build();
+        
+        CommandWrapper wrapper = new CommandWrapper("plugin", this, builder) {
+            @Override
+            protected void runAsync(Runnable block) {
+            }
+        };
+        
+        // Run the test
+        Iterable<String> result = wrapper.tabComplete(new CommandSenderProxyImpl("sender", false), wrapper.getName(), new String[] {"t"});
+        
+        // Tests are in test10TabComplete A and B
+        
+        // Make sure that both tab completers were called
+        assertTrue(Iterables.contains(result, "A"));
+        assertTrue(Iterables.contains(result, "B"));
+    }
+    
+    @Command(name="test4", permission="permission.name", usage="/<command> <string> <int>")
+    private void test4(String sender, @Optional String arg2, String arg3) {
+    }
+    
+    @CommandTabCompleter(name="test4")
+    private Iterable<String> test10TabComplete(String sender, int argument, String input, String arg1, String arg2) {
+        if (argument == 0) {
+            return Arrays.asList("A");
+        } else if (argument == 1) {
+            return Arrays.asList("B");
+        } else {
+            return null;
+        }
     }
     
     private static class CommandSenderProxyImpl implements CommandSenderProxy {

@@ -10,8 +10,8 @@ public class CommandSyntaxException extends ArgumentParseException {
 
     private boolean hasMoreInput;
     
-    public CommandSyntaxException(ParseNode currentNode, boolean hasMore) {
-        super(currentNode);
+    public CommandSyntaxException(ParseNode currentNode, String input, boolean hasMore) {
+        super(currentNode, input);
         
         hasMoreInput = hasMore;
     }

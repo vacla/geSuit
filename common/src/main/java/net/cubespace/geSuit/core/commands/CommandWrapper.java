@@ -4,16 +4,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.commands.CommandBuilder.CommandDefinition;
 import net.cubespace.geSuit.core.commands.ParseTree.ParseResult;
+import net.cubespace.geSuit.core.objects.Tuple;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import com.google.common.reflect.Invokable;
 
 abstract class CommandWrapper {
@@ -115,9 +115,9 @@ abstract class CommandWrapper {
     }
     
     private void onParseComplete(final CommandSenderProxy sender, String label, ParseResult result) {
-        CommandDefinition variant = variants.get(result.variant);
+        CommandDefinition variant = variants.get(result.node.getVariant());
         
-        final Invokable<Object, Void> method = parseTree.getVariant(result.variant);
+        final Invokable<Object, Void> method = parseTree.getVariant(result.node.getVariant());
         System.out.println("Parse complete: " + method.toString() + " in " + method.getDeclaringClass().getName());
         
         // Ensure the caller is the right type
@@ -148,7 +148,7 @@ abstract class CommandWrapper {
         System.out.println("params: " + Arrays.toString(parameters));
         
         // Invoke the method
-        if (variants.get(result.variant).async) {
+        if (variant.async) {
             runAsync(new Runnable() {
                 @Override
                 public void run() {
@@ -188,70 +188,66 @@ abstract class CommandWrapper {
     
     public Iterable<String> tabComplete(CommandSenderProxy sender, String label, String[] args) {
         ParseResult result;
-        Set<CommandDefinition> options;
+        List<ParseNode> choices;
+        List<Tuple<Integer, CommandDefinition>> options = Lists.newArrayList();
         String input;
-        int argument;
+        boolean usePrevious = false;
         try {
             result = parseTree.parse(args);
             // Successful parse should tab complete the last parameter
-            options = Sets.newHashSet(variants.get(result.variant));
-            argument = result.parameters.size()-1;
-            input = result.input.get(argument);
+            
+            input = result.input.get(result.input.size()-1);
+            choices = result.options;
         } catch (ArgumentParseException e) {
             // Tab complete the one that failed
             result = e.getPartialResult();
-            argument = e.getNode().getArgumentIndex();
-            // When we are short an argument, we have to go back to the previous item
-            // otherwise we will be tab completing the missing argument
+            input = e.getInput();
+            choices = e.getChoices();
+            
+            // See if we have run out of params to tab complete
             if (e instanceof CommandSyntaxException) {
-                if (!((CommandSyntaxException)e).hasMoreInput() && argument > 0) {
-                    // We were short an argument
-                    --argument;
-                }
-            }
-            
-            options = Sets.newHashSet();
-            for (ParseNode node : e.getChoices()) {
-                options.add(variants.get(node.getVariant()));
-            }
-            
-            if (e instanceof CommandInterpretException) {
-                input = ((CommandInterpretException)e).getInput();
-            } else {
-                if (!((CommandSyntaxException)e).hasMoreInput()) {
-                    if (!result.input.isEmpty()) {
-                        input = result.input.get(result.input.size()-1);
-                    } else {
-                        input = "";
-                    }
-                } else {
+                if (((CommandSyntaxException)e).hasMoreInput()) {
                     // We have no further parameters to tab complete
                     return null;
+                } else {
+                    usePrevious = true;
                 }
             }
         }
         
-        return doTabCompleteAt(sender, argument, input, result, options);
+        // Find all possible alternatives to check
+        for (ParseNode node : choices) {
+            int index = node.getArgumentIndex();
+            if (node.isTerminal() || usePrevious) {
+                if (index > 0) {
+                    --index;
+                }
+            }
+            options.add(new Tuple<Integer, CommandDefinition>(index, variants.get(node.getVariant())));
+        }
+        
+        return doTabCompleteAt(sender, input, result, options);
     }
     
-    private Iterable<String> doTabCompleteAt(CommandSenderProxy sender, int argument, String input, ParseResult result, Set<CommandDefinition> options) {
+    private Iterable<String> doTabCompleteAt(CommandSenderProxy sender, String input, ParseResult result, List<Tuple<Integer, CommandDefinition>> options) {
         Iterable<String> results = null;
         
-        for (CommandDefinition option : options) {
-            if (option.tabCompleter == null) {
+        for (Tuple<Integer, CommandDefinition> option : options) {
+            CommandDefinition def = option.getB();
+            if (def.tabCompleter == null) {
                 continue;
             }
             
-            if (!option.senderType.isInstance(sender.getSender())) {
+            if (!def.senderType.isInstance(sender.getSender())) {
                 continue;
             }
             
-            Class<?>[] paramTypes = option.tabCompleter.getParameterTypes();
+            Class<?>[] paramTypes = def.tabCompleter.getParameterTypes();
             Object[] parameters = new Object[paramTypes.length];
             // CommandSender caller
             parameters[0] = sender.getSender();
             // int argument
-            parameters[1] = argument;
+            parameters[1] = option.getA();
             // String input
             parameters[2] = input;
             
@@ -267,7 +263,7 @@ abstract class CommandWrapper {
             
             // Raise the tab completer
             try {
-                Iterable<String> out = (Iterable<String>)option.tabCompleter.invoke(commandHolder, parameters);
+                Iterable<String> out = (Iterable<String>)def.tabCompleter.invoke(commandHolder, parameters);
                 if (out != null) {
                     if (results != null) {
                         results = Iterables.concat(results, out);

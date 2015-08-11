@@ -19,26 +19,26 @@ class ParseTree {
     
     public ParseResult parse(String[] arguments) throws ArgumentParseException {
         ParseResult result = recurseChildren(root, arguments);
-        result.ensureParameters(getVariant(result.variant).getParameters().size() - 1);
+        result.ensureParameters(getVariant(result.node.getVariant()).getParameters().size() - 1);
         return result;
     }
     
     private ParseResult parseNode(ParseNode node, String[] arguments) throws ArgumentParseException {
         if (node.isTerminal()) {
-            if (!node.getParent().isVarArgs() && arguments.length > node.getArgumentIndex()) {
-                throw new CommandSyntaxException(node, true);
+            if (!node.getParent().isVarArgs() && arguments.length > node.getInputIndex()) {
+                throw new CommandSyntaxException(node, arguments[node.getInputIndex()], true);
             }
             
-            return new ParseResult(node.getVariant());
+            return new ParseResult(node);
         }
         
-        if (arguments.length <= node.getArgumentIndex()) {
-            throw new CommandSyntaxException(node, false);
+        if (arguments.length <= node.getInputIndex()) {
+            throw new CommandSyntaxException(node, (arguments.length > 0 ? arguments[arguments.length-1] : ""), false);
         }
         
-        String argument = arguments[node.getArgumentIndex()];
+        String argument = arguments[node.getInputIndex()];
         if (node.isVarArgs()) {
-            argument = Joiner.on(' ').join(Arrays.copyOfRange(arguments, node.getArgumentIndex(), arguments.length));
+            argument = Joiner.on(' ').join(Arrays.copyOfRange(arguments, node.getInputIndex(), arguments.length));
         }
         
         Object value = null;
@@ -69,7 +69,15 @@ class ParseTree {
                 continue;
             }
             try {
-                return parseNode(child, arguments);
+                ParseResult result = parseNode(child, arguments);
+                // Fill all other options for tab complete use
+                for (ParseNode child2 : node.getChildren()) {
+                    if (child2.getInputIndex() == result.node.getInputIndex()-1) {
+                        result.options.add(child2);
+                    }
+                }
+                
+                return result;
             } catch (CommandInterpretException e) {
                 interpretException = true;
                 e.setChoices(node.getChildren());
@@ -95,14 +103,16 @@ class ParseTree {
     }
     
     public static class ParseResult {
-        public int variant;
         public List<Object> parameters;
         public List<String> input;
+        public List<ParseNode> options;
+        public ParseNode node;
         
-        public ParseResult(int variant) {
-            this.variant = variant;
+        public ParseResult(ParseNode node) {
+            this.node = node;
             parameters = Lists.newArrayList();
             input = Lists.newArrayList();
+            options = Lists.newArrayList();
         }
         
         public void setParameter(int index, Object param, String raw) {

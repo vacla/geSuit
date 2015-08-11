@@ -68,4 +68,9 @@ public class Tuple<A, B> {
         
         return v1 ^ v2;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("{%s, %s}", a, b);
+    }
 }

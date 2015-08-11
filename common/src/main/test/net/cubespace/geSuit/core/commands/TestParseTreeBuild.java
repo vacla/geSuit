@@ -19,6 +19,8 @@ public class TestParseTreeBuild {
     void command2(Object sender, int arg1, @Optional int arg2) {}
     void command3(Object sender, int arg1, @Varargs String arg2) {}
     void command4(Object sender, int arg1, @Optional @Varargs String arg2) {}
+    void command5(Object sender, int arg1, @Optional int arg2, String arg3) {}
+    void command6(Object sender, @Optional String arg1, String arg2) {}
     
     private Method getMethod(String name) {
         for (Method method : TestParseTreeBuild.class.getDeclaredMethods()) {
@@ -209,4 +211,80 @@ public class TestParseTreeBuild {
         assertTrue(node.isTerminal());
     }
 
+    @Test
+    public void testMidOptional() {
+        ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command5"));
+        
+        ParseNode parent = builder.build();
+        
+        // Confirm the correct tree was generated
+        ParseNode node;
+        assertEquals(1, parent.getChildren().size());
+        // arg1
+        node = parent = parent.getChildren().get(0);
+        assertEquals(DataConversion.getConverter(Integer.class), node.getTransformer());
+        assertEquals(0, node.getArgumentIndex());
+        assertEquals(0, node.getInputIndex());
+        assertEquals(2, node.getChildren().size());
+        
+        // arg2 (optional)
+        node = parent.getChildren().get(0);
+        assertEquals(DataConversion.getConverter(Integer.class), node.getTransformer());
+        assertEquals(1, node.getArgumentIndex());
+        assertEquals(1, node.getInputIndex());
+        assertEquals(1, node.getChildren().size());
+        ParseNode next = node.getChildren().get(0);
+        assertFalse(next.isTerminal());
+        
+        // arg3 (after optional)
+        node = next;
+        assertEquals(DataConversion.getConverter(String.class), node.getTransformer());
+        assertEquals(2, node.getArgumentIndex());
+        assertEquals(2, node.getInputIndex());
+        assertEquals(1, node.getChildren().size());
+        assertTrue(node.getChildren().get(0).isTerminal());
+        
+        // arg3 (without optional)
+        node = parent.getChildren().get(1);
+        assertEquals(DataConversion.getConverter(String.class), node.getTransformer());
+        assertEquals(2, node.getArgumentIndex());
+        assertEquals(1, node.getInputIndex());
+        assertEquals(1, node.getChildren().size());
+        assertTrue(node.getChildren().get(0).isTerminal());
+    }
+    
+    @Test
+    public void testSameTypeOptional() {
+        ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command6"));
+        
+        ParseNode parent = builder.build();
+        
+        // Confirm the correct tree was generated
+        ParseNode node;
+        assertEquals(2, parent.getChildren().size());
+        // arg1 (optional)
+        node = parent.getChildren().get(0);
+        assertEquals(DataConversion.getConverter(String.class), node.getTransformer());
+        assertEquals(0, node.getArgumentIndex());
+        assertEquals(0, node.getInputIndex());
+        assertEquals(1, node.getChildren().size());
+        
+        // arg2 (with optional)
+        node = node.getChildren().get(0);
+        assertEquals(DataConversion.getConverter(String.class), node.getTransformer());
+        assertEquals(1, node.getArgumentIndex());
+        assertEquals(1, node.getInputIndex());
+        assertEquals(1, node.getChildren().size());
+        ParseNode next = node.getChildren().get(0);
+        assertTrue(next.isTerminal());
+        
+        // arg2 (without optional)
+        node = parent.getChildren().get(1);
+        assertEquals(DataConversion.getConverter(String.class), node.getTransformer());
+        assertEquals(1, node.getArgumentIndex());
+        assertEquals(0, node.getInputIndex());
+        assertEquals(1, node.getChildren().size());
+        next = node.getChildren().get(0);
+        assertTrue(next.isTerminal());
+    }
 }

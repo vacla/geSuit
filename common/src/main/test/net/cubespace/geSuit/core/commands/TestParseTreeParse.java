@@ -19,6 +19,8 @@ public class TestParseTreeParse {
     void command2(Object sender, String arg1, int arg2, String arg3, int arg4) {}
     void command3(Object sender, int arg1, @Optional Integer arg2) {}
     void command4(Object sender, int arg1, @Varargs String arg2) {}
+    void command5(Object sender, @Optional Integer arg1, String arg2) {}
+    void command6(Object sender, @Optional Integer arg1, String arg2, String arg3) {}
     
     private Method getMethod(String name) {
         for (Method method : TestParseTreeParse.class.getDeclaredMethods()) {
@@ -57,7 +59,7 @@ public class TestParseTreeParse {
         ParseTree tree = makeParseTree("command0");
         
         ParseResult result = tree.parse(new String[] {"string", "112334", "4421"});
-        assertEquals(0, result.variant);
+        assertEquals(0, result.node.getVariant());
         assertEquals(3, result.parameters.size());
         
         assertResultEquals(String.class, "string", result.parameters.get(0));
@@ -70,7 +72,7 @@ public class TestParseTreeParse {
         ParseTree tree = makeParseTree("command1", "command0");
         
         ParseResult result = tree.parse(new String[] {"string", "112334", "4421"});
-        assertEquals(0, result.variant);
+        assertEquals(0, result.node.getVariant());
         assertEquals(3, result.parameters.size());
         
         assertResultEquals(String.class, "string", result.parameters.get(0));
@@ -99,6 +101,10 @@ public class TestParseTreeParse {
             fail();
         } catch (CommandSyntaxException e) {
             assertFalse(e.hasMoreInput());
+            
+            assertEquals(2, e.getNode().getInputIndex());
+            assertEquals(2, e.getNode().getArgumentIndex());
+            assertEquals("112334", e.getInput());
         }
     }
     
@@ -112,6 +118,7 @@ public class TestParseTreeParse {
         } catch (CommandInterpretException e) {
             assertEquals("string", e.getInput());
             assertEquals(2, e.getNode().getArgumentIndex());
+            assertEquals(2, e.getNode().getInputIndex());
             
             assertEquals(2, e.getPartialResult().parameters.size());
             assertResultEquals(String.class, "string", e.getPartialResult().parameters.get(0));
@@ -129,6 +136,7 @@ public class TestParseTreeParse {
         } catch (CommandInterpretException e) {
             // because of the order, command1 will be parsed, fail at arg 1, then try command0 which will fail at arg2 
             assertEquals(2, e.getNode().getArgumentIndex());
+            assertEquals(2, e.getNode().getInputIndex());
             assertEquals("string3", e.getInput());
         }
     }
@@ -140,7 +148,7 @@ public class TestParseTreeParse {
         // Test short one
         ParseResult result = tree.parse(new String[] {"string", "123", "442"});
         
-        assertEquals(0, result.variant);
+        assertEquals(0, result.node.getVariant());
         assertResultEquals(String.class, "string", result.parameters.get(0));
         assertResultEquals(Integer.class, 123, result.parameters.get(1));
         assertResultEquals(String.class, "442", result.parameters.get(2));
@@ -148,7 +156,7 @@ public class TestParseTreeParse {
         // Test long one
         result = tree.parse(new String[] {"string", "123", "442", "555"});
         
-        assertEquals(1, result.variant);
+        assertEquals(1, result.node.getVariant());
         assertResultEquals(String.class, "string", result.parameters.get(0));
         assertResultEquals(Integer.class, 123, result.parameters.get(1));
         assertResultEquals(String.class, "442", result.parameters.get(2));
@@ -165,6 +173,7 @@ public class TestParseTreeParse {
         } catch (CommandInterpretException e) {
             assertEquals(1, e.getNode().getVariant());
             assertEquals(3, e.getNode().getArgumentIndex());
+            assertEquals(3, e.getNode().getInputIndex());
             assertEquals("value", e.getInput());
         }
     }
@@ -176,14 +185,14 @@ public class TestParseTreeParse {
         // With optional specified
         ParseResult result = tree.parse(new String[] {"555", "123"});
         
-        assertEquals(0, result.variant);
+        assertEquals(0, result.node.getVariant());
         assertResultEquals(Integer.class, 555, result.parameters.get(0));
         assertResultEquals(Integer.class, 123, result.parameters.get(1));
         
         // Without optional specified
         result = tree.parse(new String[] {"555"});
         
-        assertEquals(0, result.variant);
+        assertEquals(0, result.node.getVariant());
         assertResultEquals(Integer.class, 555, result.parameters.get(0));
         assertResultEquals(Integer.class, null, result.parameters.get(1));
     }
@@ -197,6 +206,7 @@ public class TestParseTreeParse {
             fail();
         } catch (CommandInterpretException e) {
             assertEquals(1, e.getNode().getArgumentIndex());
+            assertEquals(1, e.getNode().getInputIndex());
             assertEquals("not-int", e.getInput());
         }
     }
@@ -208,7 +218,7 @@ public class TestParseTreeParse {
         // Just single argument
         ParseResult result = tree.parse(new String[] {"555", "value"});
         
-        assertEquals(0, result.variant);
+        assertEquals(0, result.node.getVariant());
         assertEquals(2, result.parameters.size());
         assertResultEquals(Integer.class, 555, result.parameters.get(0));
         assertResultEquals(String.class, "value", result.parameters.get(1));
@@ -216,7 +226,7 @@ public class TestParseTreeParse {
         // Multiple arguments
         result = tree.parse(new String[] {"555", "value1", "value2", "value3"});
         
-        assertEquals(0, result.variant);
+        assertEquals(0, result.node.getVariant());
         assertEquals(2, result.parameters.size());
         assertResultEquals(Integer.class, 555, result.parameters.get(0));
         assertResultEquals(String.class, "value1 value2 value3", result.parameters.get(1));
@@ -235,5 +245,29 @@ public class TestParseTreeParse {
         }
     }
     
+    @Test
+    public void testOptionalSkip() {
+        ParseTree tree = makeParseTree("command5");
+        
+        ParseResult result = tree.parse(new String[] {"abcd"});
+        assertEquals(2, result.parameters.size());
+        assertNull(result.parameters.get(0));
+        assertEquals("abcd", result.parameters.get(1));
+    }
     
+    @Test
+    public void testOptionalSkipSyntaxFail() {
+        ParseTree tree = makeParseTree("command6");
+        
+        try {
+            tree.parse(new String[] {"abcd"});
+            fail();
+        } catch (CommandSyntaxException e) {
+            // Should have failed as arg3 is not fulfilled
+            assertEquals("abcd", e.getInput());
+            assertFalse(e.hasMoreInput());
+            assertEquals(2, e.getNode().getArgumentIndex());
+            assertEquals(1, e.getNode().getInputIndex()); // Due to the optional, it will be one less than arg index
+        }
+    }
 }

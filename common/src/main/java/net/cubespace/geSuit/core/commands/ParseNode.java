@@ -14,23 +14,38 @@ class ParseNode {
     private ParseNode parent;
     private int variant;
     private int argumentIndex;
+    private int inputIndex;
     private Function<String, ?> transformer;
     private boolean isTerminal;
     private boolean isVarArgs;
     
-    public ParseNode(int variant, int argumentIndex, Function<String, ?> transformer, boolean varArgs) {
+    private ParseNode(int variant, int argumentIndex, int inputIndex, Function<String, ?> transformer, boolean varArgs) {
         this.variant = variant;
         this.argumentIndex = argumentIndex;
+        this.inputIndex = inputIndex;
         this.transformer = transformer;
         this.isVarArgs = varArgs;
         
         children = Lists.newArrayList();
     }
     
-    public ParseNode(int variant, int argumentIndex) {
+    private ParseNode(int variant, int argumentIndex, int inputIndex) {
         this.variant = variant;
         this.argumentIndex = argumentIndex;
+        this.inputIndex = inputIndex;
         isTerminal = true;
+    }
+    
+    public static ParseNode newTerminalNode(int variant, int argumentIndex, int inputIndex) {
+        return new ParseNode(variant, argumentIndex, inputIndex);
+    }
+    
+    public static ParseNode newTransformNode(int variant, int argumentIndex, int inputIndex, Function<String, ?> transformer, boolean varArgs) {
+        return new ParseNode(variant, argumentIndex, inputIndex, transformer, varArgs);
+    }
+    
+    public static ParseNode newRootNode() {
+        return new ParseNode(-1, -1, -1, null, false);
     }
     
     public void addChild(ParseNode node) {
@@ -101,6 +116,10 @@ class ParseNode {
         return argumentIndex;
     }
     
+    public int getInputIndex() {
+        return inputIndex;
+    }
+    
     public Object parse(String value) {
         return transformer.apply(value);
     }
@@ -135,7 +154,7 @@ class ParseNode {
             }
         }
         
-        return String.format("%s varargs: %s arg: %d var: %d", text, isVarArgs, argumentIndex, variant);
+        return String.format("%s varargs: %s arg: %d input: %d var: %d", text, isVarArgs, argumentIndex, inputIndex, variant);
     }
     
     @Override

@@ -9,16 +9,19 @@ public class ArgumentParseException extends RuntimeException implements Comparab
     private static final long serialVersionUID = -6382620486403725353L;
     
     private ParseNode node;
-    private ParseResult partial = new ParseResult(-1);
+    private ParseResult partial = new ParseResult(null);
     private List<ParseNode> choices = Collections.emptyList();
+    private String input;
     
-    protected ArgumentParseException(ParseNode node) {
+    protected ArgumentParseException(ParseNode node, String input) {
         this.node = node;
+        this.input = input;
     }
     
-    protected ArgumentParseException(ParseNode node, Throwable cause) {
+    protected ArgumentParseException(ParseNode node, String input, Throwable cause) {
         super(cause);
         this.node = node;
+        this.input = input;
     }
     
     public ParseNode getNode() {
@@ -37,6 +40,13 @@ public class ArgumentParseException extends RuntimeException implements Comparab
         if (this.choices.isEmpty()) {
             this.choices = Collections.unmodifiableList(choices);
         }
+    }
+    
+    /**
+     * @return Returns the input value that could not be converted
+     */
+    public String getInput() {
+        return input;
     }
     
     @Override

@@ -24,7 +24,7 @@ public class TestCommandContainer {
         when(builder.getAliases()).thenReturn(new String[] {"alias"});
         when(builder.getPermission()).thenReturn("permission");
         when(builder.getUsage()).thenReturn("usage");
-        when(builder.getParseTree()).thenReturn(new ParseTree(new ParseNode(-1, -1), Lists.<Variant>newArrayList()));
+        when(builder.getParseTree()).thenReturn(new ParseTree(ParseNode.newRootNode(), Lists.<Variant>newArrayList()));
         when(builder.getDescription()).thenReturn("description");
         when(builder.getVariants()).thenReturn(Lists.<CommandDefinition>newArrayList());
         
@@ -53,7 +53,7 @@ public class TestCommandContainer {
         when(builder.getAliases()).thenReturn(new String[] {});
         when(builder.getPermission()).thenReturn(null);
         when(builder.getUsage()).thenReturn("usage");
-        when(builder.getParseTree()).thenReturn(new ParseTree(new ParseNode(-1, -1), Lists.<Variant>newArrayList()));
+        when(builder.getParseTree()).thenReturn(new ParseTree(ParseNode.newRootNode(), Lists.<Variant>newArrayList()));
         when(builder.getDescription()).thenReturn(null);
         when(builder.getVariants()).thenReturn(Lists.<CommandDefinition>newArrayList());
         

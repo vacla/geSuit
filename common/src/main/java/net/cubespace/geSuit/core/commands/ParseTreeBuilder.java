@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import net.cubespace.geSuit.core.storage.DataConversion;
 
 import com.google.common.base.Converter;
@@ -17,89 +18,101 @@ import com.google.common.reflect.TypeToken;
 
 class ParseTreeBuilder {
     private List<Variant> variants;
+    private Map<TypeToken<?>, Map<Long, ParseNode>> typeMap;
     
     public ParseTreeBuilder(List<Variant> variants) {
-        
         this.variants = variants;
+        typeMap = Maps.newHashMap();
     }
     
     public ParseNode build() throws IllegalArgumentException {
-        ParseNode root = new ParseNode(-1, -1, null, false);
-        // First parameter is the command sender, so ignore it
-        buildLevel(root, variants, 1);
+        ParseNode root = ParseNode.newRootNode();
+        List<Marker> markers = Lists.newArrayList();
+        for (Variant variant : variants) {
+            markers.add(new Marker(variant, 0, 0));
+        }
+        
+        buildMarkers(root, markers);
         
         return root;
     }
     
-    private void buildLevel(ParseNode parent, List<Variant> active, int index) {
-        // Used to group the same types together
-        Map<TypeToken<?>, ParseNode> typeMap = Maps.newHashMap();
+    /*
+     * Converts all the markers provided into parse nodes as needed
+     */
+    private void buildMarkers(ParseNode parent, List<Marker> markers) {
         // Stores what will be next after each node
-        ListMultimap<ParseNode, Marker> markers = ArrayListMultimap.create();
+        ListMultimap<ParseNode, Marker> childMarkers = ArrayListMultimap.create();
         
         // Create this levels nodes
-        for (Variant var : active) {
-            buildVariant(var, parent, index, typeMap, markers);
+        for (Marker marker : markers) {
+            buildMarker(marker, parent, childMarkers);
         }
         
         // Recurse into deeper levels
-        for (ParseNode nextNode : markers.keySet()) {
-            for (Marker marker : markers.get(nextNode)) {
-                buildLevel(nextNode, marker.variants, marker.index);
-            }
+        for (ParseNode nextNode : childMarkers.keySet()) {
+            buildMarkers(nextNode, childMarkers.get(nextNode));
         }
     }
         
-    private void buildVariant(Variant var, ParseNode parent, int index, Map<TypeToken<?>, ParseNode> typeMap, ListMultimap<ParseNode, Marker> markers) {
-        List<Parameter> parameters = var.method.getParameters();
+    private void buildMarker(Marker marker, ParseNode parent, ListMultimap<ParseNode, Marker> childMarkers) {
+        List<Parameter> parameters = marker.variant.method.getParameters();
         
-        if (index >= parameters.size()) {
+        if (marker.argumentIndex >= parameters.size()-1) {
             // This variant is done
-            parent.addChild(new ParseNode(var.id, index-1));
+            parent.addChild(ParseNode.newTerminalNode(marker.variant.id, marker.argumentIndex, marker.inputIndex));
         } else {
-            Parameter current = parameters.get(index);
-            ParseNode node = typeMap.get(current.getType());
+            Parameter current = parameters.get(marker.argumentIndex+1);
             
             boolean optional = current.isAnnotationPresent(Optional.class);
             boolean varargs = current.isAnnotationPresent(Varargs.class);
             
-            // Need to create the node and get the converter
-            // Varargs will always be its own node
-            if (node == null || varargs) {
-                node = makeNode(var, index, current.getType(), varargs);
-                parent.addChild(node);
-                
-                if (!varargs)
-                    typeMap.put(current.getType(), node);
-            }
+            ParseNode node = getParseNode(marker, parent, current, varargs);
             
-            // Make note of what to do at this node
-            List<Marker> existingMarkers = markers.get(node);
-            if (existingMarkers.isEmpty()) {
-                existingMarkers.add(new Marker(var, index+1));
-            } else {
-                // Only add to the one at the same level
-                for (Marker marker : existingMarkers) {
-                    if (marker.index == index + 1) {
-                        marker.variants.add(var);
-                    }
-                }
-            }
+            childMarkers.put(node, new Marker(marker.variant, marker.argumentIndex+1, marker.inputIndex+1));
             
             // Optional needs to add the next node after this one as an alternate path
             if (optional) {
-                buildVariant(var, parent, index+1, typeMap, markers);
+                buildMarker(new Marker(marker.variant, marker.argumentIndex+1, marker.inputIndex), parent, childMarkers);
             }
         }
     }
     
-    private ParseNode makeNode(Variant variant, int index, TypeToken<?> type, boolean varargs) {
+    private ParseNode makeNode(Marker marker, TypeToken<?> type, boolean varargs) {
         Converter<String, ?> converter = DataConversion.getConverter(type.getRawType());
         if (converter == null) {
-            throw new IllegalArgumentException("Unable to register method " +  variant.method + " as command. There is no converter registered for type " + type.toString());
+            throw new IllegalArgumentException("Unable to register method " +  marker.variant.method + " as command. There is no converter registered for type " + type.toString());
         }
         
-        return new ParseNode(variant.id, index-1, converter, varargs);
+        return ParseNode.newTransformNode(marker.variant.id, marker.argumentIndex, marker.inputIndex, converter, varargs);
+    }
+    
+    private ParseNode getParseNode(Marker marker, ParseNode parent, Parameter param, boolean varArgs) {
+        Map<Long, ParseNode> nodes = typeMap.get(param.getType());
+        if (nodes == null) {
+            nodes = Maps.newHashMap();
+            typeMap.put(param.getType(), nodes);
+        }
+        
+        ParseNode node;
+        // Varargs do not use an existing node
+        if (!varArgs) {
+            node = nodes.get((long)marker.argumentIndex << 32L | (long)marker.inputIndex);
+            if (node != null) {
+                return node;
+            }
+        }
+        
+        // Create a new one
+        node = makeNode(marker, param.getType(), varArgs);
+        parent.addChild(node);
+        
+        // Store it
+        if (!varArgs) {
+            nodes.put((long)marker.argumentIndex << 32L | (long)marker.inputIndex, node);
+        }
+        
+        return node;
     }
     
     public List<Variant> getVariants() {
@@ -130,14 +143,24 @@ class ParseTreeBuilder {
         }
     }
     
+    /**
+     * Marks a position in the parse tree.
+     * This is used to mark the next path to build
+     */
     private static class Marker {
-        public List<Variant> variants;
-        public int index;
+        public final Variant variant;
+        public final int argumentIndex;
+        public final int inputIndex;
         
-        public Marker(Variant variant, int index) {
-            this.variants = Lists.newArrayList();
-            this.variants.add(variant);
-            this.index = index;
+        public Marker(Variant variant, int argumentIndex, int inputIndex) {
+            this.variant = variant;
+            this.argumentIndex = argumentIndex;
+            this.inputIndex = inputIndex;
+        }
+        
+        @Override
+        public String toString() {
+            return String.format("Marker: %d:%d %s", argumentIndex, inputIndex, variant);
         }
     }
 }
