@@ -21,6 +21,7 @@ public class TempBanCommand implements CommandExecutor {
             String reason = StringUtils.join(args, " ", 2, args.length);
             int seconds = TimeParser.parseString(timing);
             if (seconds == 0) {
+                sender.sendMessage("&c Couldn't convert "+args[1]+" to seconds");
                 return false;
             }
             BansManager.tempBanPlayer(sender.getName(), player, seconds, reason);

@@ -33,7 +33,7 @@ public class TimeParser
         Matcher m = TIME_PATTERN.matcher(string);
         int total = 0;
         while (m.find()) {
-            int amount = Integer.valueOf(m.group(1));
+            int amount = Integer.parseInt(m.group(1));
             switch (m.group(2).charAt(0)) {
                 case 's':
                     total += amount * SECOND;
@@ -49,6 +49,9 @@ public class TimeParser
                     break;
                 case 'w':
                     total += amount * WEEK;
+                    break;
+                default:
+                    total = 0;
                     break;
             }
         }

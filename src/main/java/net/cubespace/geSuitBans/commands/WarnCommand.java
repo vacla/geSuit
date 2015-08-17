@@ -20,13 +20,11 @@ public class WarnCommand implements CommandExecutor {
 			return true;
 		}
 		if(args.length>1){
-			String msg = "";
+			StringBuilder msg = new StringBuilder("");
 			for(String data: args){
-				if(!data.equals(args[0])){
-					msg+=data+" ";
-				}
+				if(!data.equals(args[0])) msg.append(data).append(" ");
 			}
-			BansManager.warnPlayer(sender.getName(),args[0],msg);
+			BansManager.warnPlayer(sender.getName(),args[0],msg.toString());
 			return true;
 		}
 

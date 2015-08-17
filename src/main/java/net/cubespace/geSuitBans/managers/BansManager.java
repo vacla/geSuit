@@ -214,6 +214,31 @@ public class BansManager {
         }
         new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
     }
+    public static void displayOnTimeTop( String sender, int pagenum ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "DisplayOnTimeTop" );
+            out.writeUTF( sender );
+            out.writeInt(pagenum);
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+    }
+    public static void displayLastLogins( String sender, String target, int pagenum ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "DisplayLastLogins" );
+            out.writeUTF( sender );
+            out.writeUTF( target );
+            out.writeInt( pagenum );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+    }
     
     public static void displayNameHistory( String sender, String nameOrId ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();

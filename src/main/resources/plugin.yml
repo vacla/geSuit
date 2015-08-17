@@ -47,7 +47,12 @@ commands:
         description: Gets the ontime statistics of a player
         permission: gesuit.bans.command.ontime
         permission-message: §cYou do not have permission for this command
-        usage: /<command> (player)
+        usage: /<command> (player)|((top) (page))
+    lastlogins:
+        description: Gets the last logins of a player
+        permission: gesuit.bans.command.lastlogins
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player) (number to return)
     ipban:
         description: Bans an IP from the proxy
         aliases: [banip,dbip]
