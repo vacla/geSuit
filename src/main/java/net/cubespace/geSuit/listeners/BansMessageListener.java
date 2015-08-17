@@ -1,10 +1,5 @@
 package net.cubespace.geSuit.listeners;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.sql.SQLException;
-
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.BansManager;
@@ -13,6 +8,11 @@ import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.sql.SQLException;
 
 public class BansMessageListener implements Listener {
 
@@ -39,70 +39,63 @@ public class BansMessageListener implements Listener {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
         String task = in.readUTF();
-        if (task.equals("KickPlayer")) {
-            BansManager.kickPlayer(in.readUTF(), in.readUTF(), in.readUTF());
-            return;
+        switch (task) {
+            case "KickPlayer":
+                BansManager.kickPlayer(in.readUTF(), in.readUTF(), in.readUTF());
+                break;
+            case "BanPlayer":
+                BansManager.banPlayer(in.readUTF(), in.readUTF(), in.readUTF());
+                break;
+            case "WarnPlayer":
+                BansManager.warnPlayer(in.readUTF(), in.readUTF(), in.readUTF());
+                break;
+            case "TempBanPlayer":
+                BansManager.tempBanPlayer(in.readUTF(), in.readUTF(), in.readInt(), in.readUTF());
+                break;
+            case "KickAll":
+                BansManager.kickAll(in.readUTF(), in.readUTF());
+                break;
+            case "UnbanPlayer":
+                BansManager.unbanPlayer(in.readUTF(), in.readUTF());
+                break;
+            case "IPBanPlayer":
+                BansManager.banIP(in.readUTF(), in.readUTF(), in.readUTF());
+                break;
+            case "CheckPlayerBans":
+                BansManager.checkPlayersBan(in.readUTF(), in.readUTF());
+                break;
+            case "DisplayPlayerBanHistory":
+                BansManager.displayPlayerBanHistory(in.readUTF(), in.readUTF());
+                break;
+            case "DisplayPlayerWarnHistory":
+                BansManager.displayPlayerWarnHistory(in.readUTF(), in.readUTF());
+                break;
+            case "DisplayWhereHistory":
+                BansManager.displayWhereHistory(in.readUTF(), in.readUTF(), in.readUTF());
+                break;
+            case "DisplayOnTimeHistory":
+                BansManager.displayPlayerOnTime(in.readUTF(), in.readUTF());
+                break;
+            case "DisplayOnTimeTop":
+                BansManager.displayOnTimeTop(in.readUTF(), in.readInt());
+                break;
+            case "DisplayLastLogins":
+                BansManager.displayLastLogins(in.readUTF(), in.readUTF(), in.readInt());
+                break;
+            case "ReloadBans":
+                BansManager.reloadBans(in.readUTF());
+                break;
+            case "SendVersion":
+                LoggingManager.log(in.readUTF());
+                break;
+            case "DisplayNameHistory":
+                BansManager.displayNameHistory(in.readUTF(), in.readUTF());
+                break;
+            default:
+                return;
+
         }
-        if (task.equals("BanPlayer")) {
-            BansManager.banPlayer(in.readUTF(), in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("WarnPlayer")) {
-            BansManager.warnPlayer(in.readUTF(), in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("TempBanPlayer")) {
-            BansManager.tempBanPlayer(in.readUTF(), in.readUTF(), in.readInt(), in.readUTF());
-            return;
-        }
-        if (task.equals("KickAll")) {
-            BansManager.kickAll(in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("UnbanPlayer")) {
-            BansManager.unbanPlayer(in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("IPBanPlayer")) {
-            BansManager.banIP(in.readUTF(), in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("CheckPlayerBans")) {
-            BansManager.checkPlayersBan(in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("DisplayPlayerBanHistory")) {
-            BansManager.displayPlayerBanHistory(in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("DisplayPlayerWarnHistory")) {
-            BansManager.displayPlayerWarnHistory(in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("DisplayWhereHistory")) {
-            BansManager.displayWhereHistory(in.readUTF(), in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("DisplayOnTimeHistory")) {
-            BansManager.displayPlayerOnTime(in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("DisplayOnTimeTop")) {
-            BansManager.displayOnTimeTop(in.readUTF(), in.readUTF());
-            return;
-        }
-        if (task.equals("ReloadBans")) {
-            BansManager.reloadBans(in.readUTF());
-            return;
-        }
-        if (task.equals("SendVersion")) {
-            LoggingManager.log(in.readUTF());
-            return;
-        }
-        if (task.equals("DisplayNameHistory")) {
-            BansManager.displayNameHistory(in.readUTF(), in.readUTF());
-            return;
-        }
+        return;
     }
 
 }
