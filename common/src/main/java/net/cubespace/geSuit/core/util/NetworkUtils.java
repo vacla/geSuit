@@ -214,6 +214,8 @@ public class NetworkUtils {
             return true;
         } else if (Map.class.isAssignableFrom(type)) {
             return true;
+        } else if (ByteStorable.class.isAssignableFrom(type)) {
+            return true;
         }
         
         return false;

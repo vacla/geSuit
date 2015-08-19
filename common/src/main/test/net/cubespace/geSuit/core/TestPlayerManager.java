@@ -3,6 +3,8 @@ package net.cubespace.geSuit.core;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -83,5 +85,44 @@ public class TestPlayerManager {
         
         // Sherlock's nickname more significantly matches the input
         assertEquals("sherlock", playerManager.getPlayer("al", true).getName());
+    }
+    
+    @Test
+    public void testGetPlayers() {
+        PlayerManager playerManager = new PlayerManager(null, null, null, null) {};
+        playerManager.addPlayer(createPlayer(UUID.randomUUID(), "alfred", "nickname"));
+        GlobalPlayer shell = createPlayer(UUID.randomUUID(), "shell", "Shell");
+        playerManager.addPlayer(shell);
+        GlobalPlayer sherl = createPlayer(UUID.randomUUID(), "sherl", "alf");
+        playerManager.addPlayer(sherl);
+        playerManager.addPlayer(createPlayer(UUID.randomUUID(), "fred", null));
+        
+        List<GlobalPlayer> players = playerManager.getPlayers("she", true);
+        
+        assertEquals(2, players.size());
+        assertTrue(players.contains(shell));
+        assertTrue(players.contains(sherl));
+    }
+    
+    @Test
+    public void testGetAllPlayers() {
+        PlayerManager playerManager = new PlayerManager(null, null, null, null) {};
+        GlobalPlayer alfred = createPlayer(UUID.randomUUID(), "alfred", "nickname");
+        GlobalPlayer shell = createPlayer(UUID.randomUUID(), "shell", "Shell");
+        GlobalPlayer sherlock = createPlayer(UUID.randomUUID(), "sherlock", "alf");
+        GlobalPlayer fred = createPlayer(UUID.randomUUID(), "fred", null);
+        
+        playerManager.addPlayer(alfred);
+        playerManager.addPlayer(shell);
+        playerManager.addPlayer(sherlock);
+        playerManager.addPlayer(fred);
+        
+        Collection<GlobalPlayer> players = playerManager.getPlayers();
+        
+        assertEquals(4, players.size());
+        assertTrue(players.contains(alfred));
+        assertTrue(players.contains(shell));
+        assertTrue(players.contains(sherlock));
+        assertTrue(players.contains(fred));
     }
 }

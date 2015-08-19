@@ -44,7 +44,7 @@ public class FireBanEventMessage extends BaseMessage {
     @Override
     public void write(DataOutput out) throws IOException {
         out.writeBoolean(auto);
-        out.writeBoolean(ban.isUnban());
+        out.writeBoolean(isUnban);
         if (ban.getWho() instanceof GlobalPlayer) {
             out.writeByte(0);
             NetworkUtils.writeUUID(out, ((GlobalPlayer)ban.getWho()).getUniqueId());
@@ -79,7 +79,7 @@ public class FireBanEventMessage extends BaseMessage {
     @Override
     public void read(DataInput in) throws IOException {
         auto = in.readBoolean();
-        boolean isUnban = in.readBoolean();
+        isUnban = in.readBoolean();
         switch (in.readByte()) {
         case 0: // player
             ban = new BanInfo<GlobalPlayer>(Global.getOfflinePlayer(NetworkUtils.readUUID(in)));
@@ -91,7 +91,6 @@ public class FireBanEventMessage extends BaseMessage {
             throw new IOException("Unknown ban who type");
         }
         
-        ban.setIsUnban(isUnban);
         ban.setDatabaseKey(in.readInt());
         ban.setDate(in.readLong());
         ban.setUntil(in.readLong());
