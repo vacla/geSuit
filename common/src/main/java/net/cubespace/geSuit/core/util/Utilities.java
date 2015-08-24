@@ -142,4 +142,18 @@ public class Utilities {
         
         return names;
     }
+    
+    /**
+     * Selects the first value that isnt null. If both values are null, null is returned
+     * @param a Value a
+     * @param b Value b
+     * @return Either a or b or null
+     */
+    public static <T> T selectFirst(T a, T b) {
+        if (a != null) {
+            return a;
+        } else {
+            return b;
+        }
+    }
 }

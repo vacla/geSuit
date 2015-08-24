@@ -12,8 +12,7 @@ import net.cubespace.geSuit.core.attachments.Attachment;
 import net.cubespace.geSuit.core.attachments.AttachmentContainer;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
-import net.cubespace.geSuit.core.storage.StorageSection;
-
+import net.cubespace.geSuit.core.storage.StorageInterface;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
@@ -147,7 +146,7 @@ public class TestAttachmentContainer {
     @Test
     public void testLocalAttachmentUpdate() {
         Channel<BaseMessage> channel = mock(Channel.class);
-        StorageSection storage = mock(StorageSection.class);
+        StorageInterface storage = mock(StorageInterface.class);
         
         AttachmentContainer container = new AttachmentContainer(null, channel, storage);
         
@@ -180,7 +179,7 @@ public class TestAttachmentContainer {
     @Test
     public void testSessionAttachmentUpdate() {
         Channel<BaseMessage> channel = mock(Channel.class);
-        StorageSection storage = mock(StorageSection.class);
+        StorageInterface storage = mock(StorageInterface.class);
         UUID testUUID = UUID.randomUUID();
         
         AttachmentContainer container = new AttachmentContainer(testUUID, channel, storage);
@@ -216,7 +215,7 @@ public class TestAttachmentContainer {
     @Test
     public void testPersistentAttachmentUpdate() {
         Channel<BaseMessage> channel = mock(Channel.class);
-        StorageSection storage = mock(StorageSection.class);
+        StorageInterface storage = mock(StorageInterface.class);
         
         AttachmentContainer container = new AttachmentContainer(null, channel, storage);
         
@@ -254,7 +253,7 @@ public class TestAttachmentContainer {
     @Test
     public void testPersistentAttachmentUpdateAfterRemove() {
         Channel<BaseMessage> channel = mock(Channel.class);
-        StorageSection storage = mock(StorageSection.class);
+        StorageInterface storage = mock(StorageInterface.class);
         
         AttachmentContainer container = new AttachmentContainer(null, channel, storage);
         
@@ -290,7 +289,7 @@ public class TestAttachmentContainer {
 
     @Test
     public void testLoad() {
-        StorageSection storage = mock(StorageSection.class);
+        StorageInterface storage = mock(StorageInterface.class);
         AttachmentContainer container = new AttachmentContainer(null, null, storage);
         
         Set<String> attachmentNames = Sets.newHashSet(TestPersistAttachment.class.getName());

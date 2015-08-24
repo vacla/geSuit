@@ -21,6 +21,7 @@ import net.cubespace.geSuit.core.events.GlobalReloadEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.UpdateSpawnMessage;
 import net.cubespace.geSuit.core.objects.Location;
+import net.cubespace.geSuit.core.storage.StorageInterface;
 import net.cubespace.geSuit.core.storage.StorageSection;
 import net.cubespace.geSuit.teleports.TeleportsModule;
 import net.cubespace.geSuit.teleports.misc.LocationUtil;
@@ -50,7 +51,7 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
             return;
         }
         
-        StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns");
+        StorageInterface spawns = Global.getStorageProvider().create("gesuit.spawns");
         spawnGlobal = spawns.getSimpleStorable("#global", Location.class);
         spawnNewPlayer = spawns.getSimpleStorable("#new-player", Location.class);
         
@@ -79,7 +80,7 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
         
         Location spawnLoc = LocationUtil.fromBukkit(location, Global.getServer().getName());
         
-        StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns");
+        StorageInterface spawns = Global.getStorageProvider().create("gesuit.spawns");
         switch (type) {
         case Global:
             spawnGlobal = spawnLoc;
@@ -168,7 +169,7 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
             return;
         }
         
-        StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns");
+        StorageInterface spawns = Global.getStorageProvider().create("gesuit.spawns");
         switch (type) {
         case Global:
             spawnGlobal = null;

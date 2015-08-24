@@ -11,7 +11,7 @@ import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.commands.CommandManager;
 import net.cubespace.geSuit.core.messages.BaseMessage;
-import net.cubespace.geSuit.core.storage.StorageSection;
+import net.cubespace.geSuit.core.storage.StorageInterface;
 import net.cubespace.geSuit.modules.BaseModule;
 import net.cubespace.geSuit.portals.commands.PortalCommands;
 
@@ -30,7 +30,7 @@ public class PortalsModule extends BaseModule {
         Channel<BaseMessage> channel = Global.getChannelManager().createChannel("portals", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
         
-        StorageSection section = Global.getStorageProvider().create("geSuit.portals");
+        StorageInterface section = Global.getStorageProvider().create("geSuit.portals");
         
         manager = new PortalManager(channel, section);
         worldEdit = JavaPlugin.getPlugin(WorldEditPlugin.class);

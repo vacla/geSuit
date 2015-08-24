@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.core.storage;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -118,7 +119,23 @@ public class DataConversion {
      * @return True if one is available
      */
     public static boolean isConvertable(Class<?> type) {
-        return registeredConverters.containsKey(type);
+        if (registeredConverters.containsKey(type)) {
+            return true;
+        }
+        
+        if (SimpleStorable.class.isAssignableFrom(type)) {
+            return true;
+        }
+        
+        if (Enum.class.isAssignableFrom(type)) {
+            return true;
+        }
+        
+        if (type.isPrimitive()) {
+            return true;
+        }
+        
+        return false;
     }
     
     /**
@@ -202,7 +219,11 @@ public class DataConversion {
      * @return A converted string list
      * @throws IllegalArgumentException Thrown if no converter is available for the list type
      */
-    public static List<String> reverseConvertList(List<Object> source) {
+    public static List<String> reverseConvertList(List<?> source) {
+        if (source.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
         List<String> target = Lists.newArrayListWithCapacity(source.size());
         
         Class<?> type = Utilities.getComponentType(source);
@@ -247,7 +268,11 @@ public class DataConversion {
      * @return A converted string set
      * @throws IllegalArgumentException Thrown if no converter is available for the set type
      */
-    public static <T> Set<String> reverseConvertSet(Set<Object> source) {
+    public static <T> Set<String> reverseConvertSet(Set<?> source) {
+        if (source.isEmpty()) {
+            return Collections.emptySet();
+        }
+        
         Set<String> target = Sets.newHashSetWithExpectedSize(source.size());
         
         Class<?> type = Utilities.getComponentType(source);

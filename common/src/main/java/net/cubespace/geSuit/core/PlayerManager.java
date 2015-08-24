@@ -21,8 +21,8 @@ import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Action;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Item;
 import net.cubespace.geSuit.core.storage.RedisConnection;
+import net.cubespace.geSuit.core.storage.StorageInterface;
 import net.cubespace.geSuit.core.storage.StorageProvider;
-import net.cubespace.geSuit.core.storage.StorageSection;
 import net.cubespace.geSuit.core.storage.RedisConnection.JedisRunner;
 import net.cubespace.geSuit.core.util.PlayerCache;
 import net.cubespace.geSuit.core.util.Utilities;
@@ -237,7 +237,7 @@ public abstract class PlayerManager {
         playersByNickname.clear();
     }
     
-    private StorageSection getStorageSection(UUID playerId) {
+    private StorageInterface getStorageSection(UUID playerId) {
         return storageProvider.create("geSuit.players." + Utilities.toString(playerId));
     }
     

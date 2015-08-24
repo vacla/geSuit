@@ -26,26 +26,9 @@ public interface StorageSection {
      */
     public StorageSection getParent();
     /**
-     * @return Returns the root section of all sections
+     * @return Returns the root interface of all sections
      */
-    public StorageSection getRoot();
-    
-    /**
-     * Writes all changes to the backend. <b>This method is blocking</b>
-     * @throws StorageException Thrown if an error occurs writing to the backend.
-     */
-    public void update() throws StorageException;
-    
-    /**
-     * Performs an atomic write to the backend. <b>This method is blocking</b>
-     * @throws StorageException Thrown if an error occurs writing to the backend.
-     */
-    public void updateAtomic() throws StorageException;
-    
-    /**
-     * Resets all changes.
-     */
-    public void reset();
+    public StorageInterface getRoot();
     
     /**
      * Checks if the specified key is defined. <b>This method is blocking</b>
@@ -395,62 +378,15 @@ public interface StorageSection {
      */
     public List<String> getListString(String key) throws StorageException;
     /**
-     * Gets an Integer list at {@code key}
+     * Gets a typed list at {@code key}
      * <b>This method may need to contact the backend and is blocking</b>
      * @param key The key to get
+     * @param listType The element type of list to get.
      * @return The list, or null if it didnt exist or was the wrong type
      * @throws StorageException Thrown if an error occurs reading from the backend.
+     * @throws IllegalArgumentException Thrown if {@code listType} cannot be used
      */
-    public List<Integer> getListInt(String key) throws StorageException;
-    /**
-     * Gets a Long list at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The list, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     */
-    public List<Long> getListLong(String key) throws StorageException;
-    /**
-     * Gets a Float list at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The list, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     */
-    public List<Float> getListFloat(String key) throws StorageException;
-    /**
-     * Gets a Double list at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The list, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     */
-    public List<Double> getListDouble(String key) throws StorageException;
-    /**
-     * Gets a Boolean list at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The list, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     */
-    public List<Boolean> getListBoolean(String key) throws StorageException;
-    /**
-     * Gets a UUID list at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The list, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     */
-    public List<UUID> getListUUID(String key) throws StorageException;
-    /**
-     * Gets a list containing {@code type} SimpleStorables at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The list, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     * @throws IllegalArgumentException Thrown if the type cannot be instantiated (no default constructor)
-     */
-    public <T extends SimpleStorable> List<T> getListSimpleStorable(String key, Class<T> type) throws StorageException;
+    public <T> List<T> getList(String key, Class<T> listType) throws StorageException, IllegalArgumentException;
     /**
      * Checks if the key points to a List of some kind
      * <b>This method may need to contact the backend and is blocking</b> 
@@ -459,6 +395,14 @@ public interface StorageSection {
      * @throws StorageException Thrown if an error occurs reading from the backend.
      */
     public boolean isList(String key) throws StorageException;
+    /**
+     * Appends a value onto the list stored at key
+     * @param key The key of the list
+     * @param value The value to add
+     * @throws IllegalArgumentException Thrown if the value cannot be converted to a string,
+     * or {@code key} refers to something that isnt a list
+     */
+    public void appendList(String key, Object value) throws IllegalArgumentException;
     
     /**
      * Sets the key as a Set. The list is converted through {@link DataConversion#reverseConvertSet(Set)} to a string set
@@ -475,62 +419,15 @@ public interface StorageSection {
      */
     public Set<String> getSetString(String key) throws StorageException;
     /**
-     * Gets an Integer set at {@code key}
+     * Gets a typed set at {@code key}
      * <b>This method may need to contact the backend and is blocking</b>
      * @param key The key to get
+     * @param setType The element type of the set
      * @return The set, or null if it didnt exist or was the wrong type
      * @throws StorageException Thrown if an error occurs reading from the backend.
+     * @throws IllegalArgumentException Thrown if {@code setType} cannot be used
      */
-    public Set<Integer> getSetInt(String key) throws StorageException;
-    /**
-     * Gets a Long set at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The set, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     */
-    public Set<Long> getSetLong(String key) throws StorageException;
-    /**
-     * Gets a Float set at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The set, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     */
-    public Set<Float> getSetFloat(String key) throws StorageException;
-    /**
-     * Gets a Double set at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The set, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     */
-    public Set<Double> getSetDouble(String key) throws StorageException;
-    /**
-     * Gets a Boolean set at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The set, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     */
-    public Set<Boolean> getSetBoolean(String key) throws StorageException;
-    /**
-     * Gets a UUID set at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The set, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     */
-    public Set<UUID> getSetUUID(String key) throws StorageException;
-    /**
-     * Gets a set containing {@code type} SimpleStorables at {@code key}
-     * <b>This method may need to contact the backend and is blocking</b>
-     * @param key The key to get
-     * @return The set, or null if it didnt exist or was the wrong type
-     * @throws StorageException Thrown if an error occurs reading from the backend.
-     * @throws IllegalArgumentException Thrown if the type cannot be instantiated (no default constructor)
-     */
-    public <T extends SimpleStorable> Set<T> getSetSimpleStorable(String key, Class<T> type) throws StorageException;
+    public <T> Set<T> getSet(String key, Class<T> setType) throws StorageException, IllegalArgumentException;
     /**
      * Checks if the key points to a Set of some kind
      * <b>This method may need to contact the backend and is blocking</b> 
@@ -539,4 +436,12 @@ public interface StorageSection {
      * @throws StorageException Thrown if an error occurs reading from the backend.
      */
     public boolean isSet(String key) throws StorageException;
+    /**
+     * Appends a value onto the set stored at key
+     * @param key The key of the set
+     * @param value The value to add
+     * @throws IllegalArgumentException Thrown if the value cannot be converted to a string,
+     * or {@code key} refers to something that isnt a set
+     */
+    public void appendSet(String key, Object value) throws IllegalArgumentException;
 }

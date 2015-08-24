@@ -15,8 +15,8 @@ public class StorageProvider {
      * This StorageSection is not shared.
      * @return A read-write StorageSection
      */
-    public StorageSection create() {
-        return new RedisSection(connection);
+    public StorageInterface create() {
+        return new RedisStorageInterface(new CachedRedisProvider(connection), "");
     }
     
     /**
@@ -25,7 +25,7 @@ public class StorageProvider {
      * @param path The root path
      * @return A read-write StorageSection
      */
-    public StorageSection create(String path) {
-        return new RedisSection(connection, path);
+    public StorageInterface create(String path) {
+        return new RedisStorageInterface(new CachedRedisProvider(connection), path);
     }
 }

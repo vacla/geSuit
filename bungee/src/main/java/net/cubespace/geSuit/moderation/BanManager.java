@@ -26,6 +26,7 @@ import net.cubespace.geSuit.core.objects.DateDiff;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.core.objects.Result.Type;
 import net.cubespace.geSuit.core.storage.StorageException;
+import net.cubespace.geSuit.core.storage.StorageInterface;
 import net.cubespace.geSuit.core.storage.StorageSection;
 import net.cubespace.geSuit.database.repositories.BanHistory;
 import net.cubespace.geSuit.general.BroadcastManager;
@@ -555,7 +556,7 @@ public class BanManager implements BanActions, ConfigReloadListener {
     public void setBan(InetAddress ip, BanInfo<InetAddress> ban) {
         Preconditions.checkArgument(ban == null || ban.getWho().equals(ip));
         
-        StorageSection storage = Global.getStorageProvider().create("geSuit.ipbans");
+        StorageInterface storage = Global.getStorageProvider().create("geSuit.ipbans");
         String name = ip.getHostAddress();
         
         if (ban == null) {

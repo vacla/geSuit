@@ -35,7 +35,7 @@ import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Portal;
 import net.cubespace.geSuit.core.objects.Warp;
 import net.cubespace.geSuit.core.objects.Portal.FillType;
-import net.cubespace.geSuit.core.storage.StorageSection;
+import net.cubespace.geSuit.core.storage.StorageInterface;
 import net.cubespace.geSuit.teleports.TeleportsModule;
 import net.cubespace.geSuit.teleports.WarpsModule;
 
@@ -45,9 +45,9 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
     private ListMultimap<World, Portal> worldPortals;
     
     private Channel<BaseMessage> channel;
-    private StorageSection portalStorage;
+    private StorageInterface portalStorage;
     
-    public PortalManager(Channel<BaseMessage> channel, StorageSection portalStorage) {
+    public PortalManager(Channel<BaseMessage> channel, StorageInterface portalStorage) {
         this.channel = channel;
         this.portalStorage = portalStorage;
         
@@ -243,7 +243,7 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
         }
         
         // Sync it
-        StorageSection root = Global.getStorageProvider().create("geSuit.portals");
+        StorageInterface root = Global.getStorageProvider().create("geSuit.portals");
         
         root.set("#names", portals.keySet());
         root.set(portal.getName().toLowerCase(), portal);

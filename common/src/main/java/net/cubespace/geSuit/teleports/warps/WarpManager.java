@@ -17,6 +17,7 @@ import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.UpdateWarpMessage;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Warp;
+import net.cubespace.geSuit.core.storage.StorageInterface;
 import net.cubespace.geSuit.core.storage.StorageSection;
 
 public class WarpManager implements ChannelDataReceiver<BaseMessage> {
@@ -72,7 +73,7 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
             return;
         }
         
-        StorageSection root = Global.getStorageProvider().create("geSuit.warps");
+        StorageInterface root = Global.getStorageProvider().create("geSuit.warps");
         // Save global
         if (globalChanged) {
             root.set("#global", toRedis(globalWarps));

@@ -120,55 +120,6 @@ public class RedisConnection {
         }.run();
     }
 
-    public byte[] getValue(final byte[] name) {
-        JedisRunner<byte[]> runner = new JedisRunner<byte[]>() {
-            @Override
-            public byte[] execute(Jedis jedis) {
-                return jedis.get(name);
-            }
-        };
-
-        if (runner.run())
-            return runner.getReturnedValue();
-        runner.getLastError().printStackTrace();
-        return null;
-    }
-
-    public Set<byte[]> getKeys(final byte[] pattern) {
-        JedisRunner<Set<byte[]>> runner = new JedisRunner<Set<byte[]>>() {
-            @Override
-            public Set<byte[]> execute(Jedis jedis) {
-                return jedis.keys(pattern);
-            }
-        };
-
-        if (runner.run())
-            return runner.getReturnedValue();
-
-        runner.getLastError().printStackTrace();
-        return Collections.emptySet();
-    }
-
-    public void setValue(final byte[] name, final byte[] value) {
-        new JedisRunner<Void>() {
-            @Override
-            public Void execute(Jedis jedis) {
-                jedis.set(name, value);
-                return null;
-            }
-        }.run();
-    }
-
-    public void removeValue(final byte[] name) {
-        new JedisRunner<Void>() {
-            @Override
-            public Void execute(Jedis jedis) {
-                jedis.del(name);
-                return null;
-            }
-        }.run();
-    }
-
     private byte[] mRemoveScriptSHA1 = null;
 
     public void removePattern(final byte[] pattern) {

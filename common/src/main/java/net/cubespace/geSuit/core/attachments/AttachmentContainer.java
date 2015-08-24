@@ -14,7 +14,7 @@ import net.cubespace.geSuit.core.attachments.Attachment.AttachmentType;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
-import net.cubespace.geSuit.core.storage.StorageSection;
+import net.cubespace.geSuit.core.storage.StorageInterface;
 
 public class AttachmentContainer {
     // The full set of attachment class names including attachments that are
@@ -27,9 +27,9 @@ public class AttachmentContainer {
     
     private UUID owner;
     private Channel<BaseMessage> channel;
-    private StorageSection storage;
+    private StorageInterface storage;
     
-    public AttachmentContainer(UUID owner, Channel<BaseMessage> channel, StorageSection storage) {
+    public AttachmentContainer(UUID owner, Channel<BaseMessage> channel, StorageInterface storage) {
         this.owner = owner;
         this.channel = channel;
         this.storage = storage;
