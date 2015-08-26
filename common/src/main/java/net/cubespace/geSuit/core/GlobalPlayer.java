@@ -2,16 +2,13 @@ package net.cubespace.geSuit.core;
 
 import java.net.InetAddress;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Transaction;
 import net.cubespace.geSuit.core.attachments.Attachment;
 import net.cubespace.geSuit.core.attachments.AttachmentContainer;
 import net.cubespace.geSuit.core.objects.BanInfo;
-import net.cubespace.geSuit.core.storage.RedisInterface;
+import net.cubespace.geSuit.core.storage.StorageInterface;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.remote.moderation.BanActions;
 
@@ -47,25 +44,27 @@ public class GlobalPlayer {
     private boolean newPlayer;
     
     private AttachmentContainer attachments;
+    private StorageInterface storage;
     
     private boolean isDirty;
     private boolean isLoaded;
     private boolean isReal;
     private PlayerManager manager;
     
-    GlobalPlayer(UUID id, String name, String nickname, PlayerManager manager, AttachmentContainer attachments) {
-        this(id, manager, attachments);
+    GlobalPlayer(UUID id, String name, String nickname, PlayerManager manager, StorageInterface storage) {
+        this(id, manager, storage);
         
         this.name = name;
         this.nickname = nickname;
     }
     
-    GlobalPlayer(UUID id, PlayerManager manager, AttachmentContainer attachments) {
+    GlobalPlayer(UUID id, PlayerManager manager, StorageInterface storage) {
         this.id = id;
         this.manager = manager;
-        this.attachments = attachments;
+        this.storage = storage;
         
         isReal = true;
+        attachments = new AttachmentContainer(id, manager.getUpdateChannel(), storage);
     }
     
     GlobalPlayer(String name) {
@@ -355,13 +354,7 @@ public class GlobalPlayer {
         isDirty = false;
         isLoaded = true;
         
-        manager.getRedis().new JedisRunner<Void>() {
-            @Override
-            public Void execute(Jedis jedis) throws Exception {
-                load0(new RedisInterface(jedis));
-                return null;
-            }
-        }.runAndThrow();
+        load0();
     }
     
     /**
@@ -422,24 +415,18 @@ public class GlobalPlayer {
         
         isDirty = false;
         
-        manager.getRedis().new JedisRunner<Void>() {
-            @Override
-            public Void execute(Jedis jedis) throws Exception {
-                save0(jedis);
-                return null;
-            }
-        }.runAndThrow();
+        save0();
         
         manager.invalidate(this);
     }
     
-    private void load0(RedisInterface redis) {
+    private void load0() {
         // Player settings
-        if (!redis.getJedis().exists(String.format("geSuit.players.%s.info", Utilities.toString(id)))) {
+        if (!storage.contains("info")) {
             return;
         }
         
-        Map<String, String> values = redis.getJedis().hgetAll(String.format("geSuit.players.%s.info", Utilities.toString(id)));
+        Map<String, String> values = storage.getMap("info");
         name = values.get("name");
         nickname = values.get("nickname");
         if (values.containsKey("first-join")) {
@@ -457,16 +444,14 @@ public class GlobalPlayer {
         
         // Ban info
         if (isBanned) {
-            banInfo = redis.load(String.format("geSuit.players.%s.baninfo", Utilities.toString(id)), new BanInfo<GlobalPlayer>(this));
+            banInfo = storage.getStorable("baninfo", new BanInfo<GlobalPlayer>(this));
         }
         
         // Attachments
         attachments.load();
     }
     
-    private void save0(Jedis jedis) {
-        Transaction transaction = jedis.multi();
-        
+    private void save0() {
         // Player settings
         Map<String, String> values = Maps.newHashMap();
         values.put("name", name);
@@ -486,45 +471,40 @@ public class GlobalPlayer {
         
         values.put("ip", address.getHostAddress());
         
-        transaction.hmset(String.format("geSuit.players.%s.info", Utilities.toString(id)), values);
-        transaction.sadd("geSuit.players.all", Utilities.toString(id));
+        storage.set("info", values);
         
         // Ban info
         if (isBanned) {
-            values.clear();
-            banInfo.save(values);
-            transaction.hmset(String.format("geSuit.players.%s.baninfo", Utilities.toString(id)), values);
+            storage.set("baninfo", banInfo);
+        } else {
+            storage.remove("baninfo");
         }
         
         // Attachments
         // TODO: We need to make it so attachments do not have to be loaded and saved with everything else
         attachments.update();
         
-        transaction.exec();
+        manager.onPlayerSave(this);
+        
+        storage.updateAtomic();
     }
     
     void loadLite() {
         Preconditions.checkState(isReal, "This player is not real, you cannot save or load it");
         
-        manager.getRedis().new JedisRunner<Void>() {
-            @Override
-            public Void execute(Jedis jedis) throws Exception {
-                loadLite0(jedis);
-                return null;
-            }
-        }.runAndThrow();
+        loadLite0();
     }
     
-    private void loadLite0(Jedis redis) {
+    private void loadLite0() {
         // Player settings
-        if (!redis.exists(String.format("geSuit.players.%s.info", Utilities.toString(id)))) {
+        if (!storage.contains("info")) {
             return;
         }
         
-        List<String> values = redis.hmget(String.format("geSuit.players.%s.info", Utilities.toString(id)), "name", "nickname");
+        Map<String, String> values = storage.getMapPartial("info", "name", "nickname");
         
-        name = values.get(0);
-        nickname = values.get(1);
+        name = values.get("name");
+        nickname = values.get("nickname");
     }
     
     boolean isReal() {

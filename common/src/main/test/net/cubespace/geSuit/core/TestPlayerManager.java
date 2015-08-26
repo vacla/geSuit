@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import net.cubespace.geSuit.core.storage.StorageProvider;
+
 import org.junit.Test;
 
 public class TestPlayerManager {
@@ -26,7 +28,7 @@ public class TestPlayerManager {
     }
     @Test
     public void testAddPlayerNoNickname() {
-        PlayerManager playerManager = new PlayerManager(null, null, null, null) {};
+        PlayerManager playerManager = new PlayerManager(null, null, mock(StorageProvider.class), null) {};
         
         UUID playerId = UUID.randomUUID();
         GlobalPlayer player = createPlayer(playerId, "name", null);
@@ -41,7 +43,7 @@ public class TestPlayerManager {
     
     @Test
     public void testAddPlayerNickname() {
-        PlayerManager playerManager = new PlayerManager(null, null, null, null) {};
+        PlayerManager playerManager = new PlayerManager(null, null, mock(StorageProvider.class), null) {};
         
         UUID playerId = UUID.randomUUID();
         GlobalPlayer player = createPlayer(playerId, "name", "nickname");
@@ -57,7 +59,7 @@ public class TestPlayerManager {
     
     @Test
     public void testGetPlayerPartial() {
-        PlayerManager playerManager = new PlayerManager(null, null, null, null) {};
+        PlayerManager playerManager = new PlayerManager(null, null, mock(StorageProvider.class), null) {};
         playerManager.addPlayer(createPlayer(UUID.randomUUID(), "alfred", null));
         playerManager.addPlayer(createPlayer(UUID.randomUUID(), "shell", null));
         playerManager.addPlayer(createPlayer(UUID.randomUUID(), "sherlock", null));
@@ -74,7 +76,7 @@ public class TestPlayerManager {
     
     @Test
     public void testGetPlayerNickname() {
-        PlayerManager playerManager = new PlayerManager(null, null, null, null) {};
+        PlayerManager playerManager = new PlayerManager(null, null, mock(StorageProvider.class), null) {};
         playerManager.addPlayer(createPlayer(UUID.randomUUID(), "alfred", "nickname"));
         playerManager.addPlayer(createPlayer(UUID.randomUUID(), "shell", "Shell"));
         playerManager.addPlayer(createPlayer(UUID.randomUUID(), "sherlock", "alf"));
@@ -89,7 +91,7 @@ public class TestPlayerManager {
     
     @Test
     public void testGetPlayers() {
-        PlayerManager playerManager = new PlayerManager(null, null, null, null) {};
+        PlayerManager playerManager = new PlayerManager(null, null, mock(StorageProvider.class), null) {};
         playerManager.addPlayer(createPlayer(UUID.randomUUID(), "alfred", "nickname"));
         GlobalPlayer shell = createPlayer(UUID.randomUUID(), "shell", "Shell");
         playerManager.addPlayer(shell);
@@ -106,7 +108,7 @@ public class TestPlayerManager {
     
     @Test
     public void testGetAllPlayers() {
-        PlayerManager playerManager = new PlayerManager(null, null, null, null) {};
+        PlayerManager playerManager = new PlayerManager(null, null, mock(StorageProvider.class), null) {};
         GlobalPlayer alfred = createPlayer(UUID.randomUUID(), "alfred", "nickname");
         GlobalPlayer shell = createPlayer(UUID.randomUUID(), "shell", "Shell");
         GlobalPlayer sherlock = createPlayer(UUID.randomUUID(), "sherlock", "alf");

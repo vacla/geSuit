@@ -12,7 +12,6 @@ import redis.clients.jedis.Jedis;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import net.cubespace.geSuit.core.attachments.AttachmentContainer;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
@@ -39,6 +38,7 @@ public abstract class PlayerManager {
     private RedisConnection redis;
     private Platform platform;
     private StorageProvider storageProvider;
+    private StorageInterface allPlayerStorage;
     
     public PlayerManager(Channel<BaseMessage> channel, RedisConnection redis, StorageProvider storageProvider, Platform platform) {
         playersById = Maps.newHashMap();
@@ -51,10 +51,15 @@ public abstract class PlayerManager {
         this.redis = redis;
         this.storageProvider = storageProvider;
         this.platform = platform;
+        allPlayerStorage = storageProvider.create("geSuit.players");
     }
     
     public RedisConnection getRedis() {
         return redis;
+    }
+    
+    public Channel<BaseMessage> getUpdateChannel() {
+        return channel;
     }
     
     public void initRedis() {
@@ -244,16 +249,14 @@ public abstract class PlayerManager {
     protected GlobalPlayer loadPlayer(UUID id, String name, String nickname) {
         GlobalPlayer player = offlineCache.get(id);
         if (player == null) {
-            AttachmentContainer attachments = new AttachmentContainer(id, channel, getStorageSection(id));
-            player = new GlobalPlayer(id, name, nickname, this, attachments);
+            player = new GlobalPlayer(id, name, nickname, this, getStorageSection(id));
         }
         
         return player;
     }
     
     private GlobalPlayer loadOfflinePlayer(UUID id) {
-        AttachmentContainer attachments = new AttachmentContainer(id, channel, getStorageSection(id));
-        GlobalPlayer player = new GlobalPlayer(id, this, attachments);
+        GlobalPlayer player = new GlobalPlayer(id, this, getStorageSection(id));
         player.loadLite();
         
         offlineCache.add(player);
@@ -340,6 +343,11 @@ public abstract class PlayerManager {
     
     public void invalidate(GlobalPlayer player) {
         channel.broadcast(new PlayerUpdateMessage(Action.Invalidate, new Item(player.getUniqueId(), null, null)));
+    }
+    
+    void onPlayerSave(GlobalPlayer player) {
+        allPlayerStorage.appendSet("all", player.getUniqueId());
+        allPlayerStorage.update();
     }
     
     //=================================================
