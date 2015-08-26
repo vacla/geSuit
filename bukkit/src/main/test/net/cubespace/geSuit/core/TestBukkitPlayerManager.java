@@ -11,6 +11,7 @@ import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Action;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Item;
+import net.cubespace.geSuit.core.storage.StorageProvider;
 
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ public class TestBukkitPlayerManager {
     public void testAddPlayers() {
         Platform platform = mock(Platform.class);
         
-        BukkitPlayerManager manager = spy(new BukkitPlayerManager(null, null, null, platform));
+        BukkitPlayerManager manager = spy(new BukkitPlayerManager(null, null, mock(StorageProvider.class), platform));
         
         UUID playerId = UUID.randomUUID();
         
@@ -50,7 +51,7 @@ public class TestBukkitPlayerManager {
     public void testResetPlayers() {
         Platform platform = mock(Platform.class);
         
-        BukkitPlayerManager manager = spy(new BukkitPlayerManager(null, null, null, platform));
+        BukkitPlayerManager manager = spy(new BukkitPlayerManager(null, null, mock(StorageProvider.class), platform));
         
         UUID player1Id = UUID.randomUUID();
         GlobalPlayer player1 = mock(GlobalPlayer.class);
@@ -90,7 +91,7 @@ public class TestBukkitPlayerManager {
         Platform platform = mock(Platform.class);
         Channel<BaseMessage> channel = mock(Channel.class);
         
-        BukkitPlayerManager manager = spy(new BukkitPlayerManager(channel, null, null, platform));
+        BukkitPlayerManager manager = spy(new BukkitPlayerManager(channel, null, mock(StorageProvider.class), platform));
         
         UUID playerId = UUID.randomUUID();
         

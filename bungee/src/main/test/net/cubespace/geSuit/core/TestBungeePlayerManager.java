@@ -14,6 +14,7 @@ import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerJoinEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
+import net.cubespace.geSuit.core.storage.StorageProvider;
 import net.md_5.bungee.api.connection.PendingConnection;
 
 import org.junit.Test;
@@ -23,7 +24,7 @@ import com.google.common.net.InetAddresses;
 public class TestBungeePlayerManager {
     @Test
     public void testPreLoginNewPlayer() {
-        BungeePlayerManager manager = spy(new BungeePlayerManager(null, null, null, null));
+        BungeePlayerManager manager = spy(new BungeePlayerManager(null, null, mock(StorageProvider.class), null));
         
         // Setup the player
         GlobalPlayer player = mock(GlobalPlayer.class);
@@ -56,7 +57,7 @@ public class TestBungeePlayerManager {
     
     @Test
     public void testPreLoginExistingPlayer() {
-        BungeePlayerManager manager = spy(new BungeePlayerManager(null, null, null, null));
+        BungeePlayerManager manager = spy(new BungeePlayerManager(null, null, mock(StorageProvider.class), null));
         
         // Setup the player
         GlobalPlayer player = mock(GlobalPlayer.class);
@@ -89,7 +90,7 @@ public class TestBungeePlayerManager {
     
     @Test
     public void testPreLoginNameChange() {
-        BungeePlayerManager manager = spy(new BungeePlayerManager(null, null, null, null));
+        BungeePlayerManager manager = spy(new BungeePlayerManager(null, null, mock(StorageProvider.class), null));
         
         // Setup the player
         GlobalPlayer player = mock(GlobalPlayer.class);
@@ -122,7 +123,7 @@ public class TestBungeePlayerManager {
     
     @Test
     public void testPreLoginAddressChange() {
-        BungeePlayerManager manager = spy(new BungeePlayerManager(null, null, null, null));
+        BungeePlayerManager manager = spy(new BungeePlayerManager(null, null, mock(StorageProvider.class), null));
         
         // Setup the player
         GlobalPlayer player = mock(GlobalPlayer.class);
@@ -155,7 +156,7 @@ public class TestBungeePlayerManager {
     
     @Test
     public void testEndPreLogin() {
-        BungeePlayerManager manager = new BungeePlayerManager(null, null, null, null);
+        BungeePlayerManager manager = new BungeePlayerManager(null, null, mock(StorageProvider.class), null);
         GlobalPlayer player = mock(GlobalPlayer.class);
         
         UUID id = UUID.randomUUID();
@@ -174,7 +175,7 @@ public class TestBungeePlayerManager {
         Platform platform = mock(Platform.class);
         Channel<BaseMessage> channel = mock(Channel.class);
         
-        BungeePlayerManager manager = new BungeePlayerManager(channel, null, null, platform);
+        BungeePlayerManager manager = new BungeePlayerManager(channel, null, mock(StorageProvider.class), platform);
         GlobalPlayer player = mock(GlobalPlayer.class);
         
         UUID id = UUID.randomUUID();
@@ -199,7 +200,7 @@ public class TestBungeePlayerManager {
         Channel<BaseMessage> channel = mock(Channel.class);
         Platform platform = mock(Platform.class);
         
-        BungeePlayerManager manager = new BungeePlayerManager(channel, null, null, platform);
+        BungeePlayerManager manager = new BungeePlayerManager(channel, null, mock(StorageProvider.class), platform);
         GlobalPlayer player = mock(GlobalPlayer.class);
         
         UUID id = UUID.randomUUID();
@@ -220,7 +221,7 @@ public class TestBungeePlayerManager {
     public void testRemovePreloadPlayer() {
         Channel<BaseMessage> channel = mock(Channel.class);
         
-        BungeePlayerManager manager = new BungeePlayerManager(channel, null, null, null);
+        BungeePlayerManager manager = new BungeePlayerManager(channel, null, mock(StorageProvider.class), null);
         GlobalPlayer player = mock(GlobalPlayer.class);
         
         UUID id = UUID.randomUUID();
