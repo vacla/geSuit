@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisException;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -22,7 +23,6 @@ import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Item;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.core.storage.StorageInterface;
 import net.cubespace.geSuit.core.storage.StorageProvider;
-import net.cubespace.geSuit.core.storage.RedisConnection.JedisRunner;
 import net.cubespace.geSuit.core.util.PlayerCache;
 import net.cubespace.geSuit.core.util.Utilities;
 
@@ -197,6 +197,11 @@ public abstract class PlayerManager {
                 GlobalPlayer player = getPlayer(item.id);
                 if (player != null) {
                     updateNickname(player, item.nickname);
+                } else {
+                    player = offlineCache.get(item.id);
+                    if (player != null) {
+                        updateNickname(player, item.nickname);
+                    }
                 }
             }
             break;
@@ -330,18 +335,21 @@ public abstract class PlayerManager {
         String previous = player.getNickname();
         player.setNickname0(newName);
 
-        if (previous != null) {
-            playersByNickname.remove(player.getNickname().toLowerCase());
-        }
-        if (player.hasNickname()) {
-            playersByNickname.put(player.getNickname().toLowerCase(), player);
+        // Online users only
+        if (playersById.containsKey(player.getUniqueId())) {
+            if (previous != null) {
+                playersByNickname.remove(previous.toLowerCase());
+            }
+            if (player.hasNickname()) {
+                playersByNickname.put(player.getNickname().toLowerCase(), player);
+            }
+            platform.callEvent(new GlobalPlayerNicknameEvent(player, previous));
         }
         
         offlineCache.onUpdateNickname(player, previous);
-        platform.callEvent(new GlobalPlayerNicknameEvent(player, previous));
     }
     
-    public void invalidate(GlobalPlayer player) {
+    void invalidateOthers(GlobalPlayer player) {
         channel.broadcast(new PlayerUpdateMessage(Action.Invalidate, new Item(player.getUniqueId(), null, null)));
     }
     
@@ -355,13 +363,16 @@ public abstract class PlayerManager {
     //=================================================
     
     private void loadScripts() {
-        redis.new JedisRunner<Void>() {
-            @Override
-            public Void execute(Jedis jedis) throws Exception {
-                scriptSHAGetPlayerByName = jedis.scriptLoad(scriptGetPlayerByName());
-                return null;
-            }
-        }.runAndThrow();
+        Jedis jedis = null;
+        try {
+            jedis = redis.getJedis();
+            scriptSHAGetPlayerByName = jedis.scriptLoad(scriptGetPlayerByName());
+        } catch (JedisException e) {
+            redis.returnJedis(jedis, e);
+            throw new RuntimeException(e);
+        } finally {
+            redis.returnJedis(jedis);
+        }
     }
     private String scriptSHAGetPlayerByName;
     private String scriptGetPlayerByName() {
@@ -387,22 +398,20 @@ public abstract class PlayerManager {
     }
     
     private UUID executeGetPlayerByName(final String name, final boolean useNicknames) {
-        JedisRunner<String> runner = redis.new JedisRunner<String>() {
-            @Override
-            public String execute(Jedis jedis) throws Exception {
-                return (String)jedis.evalsha(scriptSHAGetPlayerByName, 0, name.toLowerCase(), String.valueOf(useNicknames));
-            }
-        };
-        
-        if (runner.runAndThrow()) {
-            String result = runner.getReturnedValue();
-            if (result == null) {
+        Jedis jedis = null;
+        try {
+            jedis = redis.getJedis();
+            String rawId = (String)jedis.evalsha(scriptSHAGetPlayerByName, 0, name.toLowerCase(), String.valueOf(useNicknames));
+            if (rawId == null) {
                 return null;
             } else {
-                return Utilities.makeUUID(result);
+                return Utilities.makeUUID(rawId);
             }
-        } else {
-            throw new RuntimeException("Error running getPlayerByName redis script", runner.getLastError());
+        } catch (JedisException e) {
+            redis.returnJedis(jedis, e);
+            throw new RuntimeException("Error running getPlayerByName redis script", e);
+        } finally {
+            redis.returnJedis(jedis);
         }
     }
 }

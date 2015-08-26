@@ -161,7 +161,7 @@ public class RedisConnection {
         }
     }
 
-    public abstract class JedisRunner<ReturnValue> {
+    private abstract class JedisRunner<ReturnValue> {
         private Throwable mLastError;
         private ReturnValue mValue;
 

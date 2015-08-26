@@ -417,7 +417,7 @@ public class GlobalPlayer {
         
         save0();
         
-        manager.invalidate(this);
+        manager.invalidateOthers(this);
     }
     
     private void load0() {
