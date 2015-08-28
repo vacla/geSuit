@@ -16,6 +16,7 @@ public class UnbanCommand implements CommandExecutor {
 			BansManager.unbanPlayer(sender.getName(), args[0]);
 			return true;
 		}
+		sender.sendMessage("Usage: /unban (playername)");
 			return false;
 	}
 

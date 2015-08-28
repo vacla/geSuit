@@ -1,12 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.cubespace.geSuitBans.utils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -23,12 +16,12 @@ public class TimeParser
     private static final int WEEK = DAY * 7;
 
     /**
-     * Parse a string input into milliseconds, using w(eeks), d(ays), h(ours), m(inutes) and s(econds) For example: 4d8m2s -> 4 days, 8 minutes and 2 seconds
+     * Parse a string input into seconds, using w(eeks), d(ays), h(ours), m(inutes) and s(econds) For example: 4d8m2s -> 4 days, 8 minutes and 2 seconds
      *
      * @param string String to convert to Seconds
      * @return Seconds
      */
-    public static int parseString(String string)
+    public static int parseStringToSecs(String string)
     {
         Matcher m = TIME_PATTERN.matcher(string);
         int total = 0;
@@ -58,4 +51,8 @@ public class TimeParser
         return total;
     }
 
+    public static long parseStringtoMillisec(String string) {
+        int total = parseStringToSecs(string);
+        return total * 1000;
+    }
 }

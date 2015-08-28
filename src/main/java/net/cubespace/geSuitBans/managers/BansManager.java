@@ -75,7 +75,7 @@ public class BansManager {
             out.writeUTF( "TempBanPlayer" );
             out.writeUTF( sender );
             out.writeUTF( player );
-            out.writeInt( seconds );
+            out.writeInt(seconds);
             out.writeUTF( reason );
         } catch ( IOException e ) {
             e.printStackTrace();
@@ -89,8 +89,8 @@ public class BansManager {
      */
     @Deprecated
     public static void tempBanPlayer( String sender, String player, String timing, String reason ) {
-        int seconds = TimeParser.parseString(timing);
-        tempBanPlayer( sender, player, seconds, reason );
+        int seconds = TimeParser.parseStringToSecs(timing);
+        tempBanPlayer(sender, player, seconds, reason);
     }
 
 
@@ -104,7 +104,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        new PluginMessageTask(b).runTaskAsynchronously(geSuitBans.instance);
 
     }
 
@@ -135,7 +135,7 @@ public class BansManager {
 
     }
 
-    public static void unipBanPlayer( String sender, String player, String msg ) {
+    public static void unipBanPlayer(String sender, String player) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -246,12 +246,52 @@ public class BansManager {
         try {
             out.writeUTF( "DisplayNameHistory" );
             out.writeUTF( sender );
-            out.writeUTF( nameOrId );
+            out.writeUTF(nameOrId);
         } catch ( IOException e ) {
             e.printStackTrace();
         }
         new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
     }
+
+    public static void lockDown(String sender, long expiryTime, String msg) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("LockDown");
+            out.writeUTF(sender);
+            out.writeLong(expiryTime);
+            out.writeUTF(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask(b).runTaskAsynchronously(geSuitBans.instance);
+    }
+
+    public static void endLockDown(String sender) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("EndLockDown");
+            out.writeUTF(sender);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask(b).runTaskAsynchronously(geSuitBans.instance);
+    }
+
+    public static void lockDownStatus(String sender) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("LockDownStatus");
+            out.writeUTF(sender);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask(b).runTaskAsynchronously(geSuitBans.instance);
+    }
+
+
 
     public static void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();

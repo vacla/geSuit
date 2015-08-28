@@ -31,6 +31,7 @@ public class geSuitBans extends JavaPlugin {
         getCommand( "ontime" ).setExecutor( new OnTimeCommand() );
         getCommand( "lastlogins" ).setExecutor( new LastLoginsCommand());
         getCommand("namehistory").setExecutor( new NameHistoryCommand() );
+        getCommand("lockdown").setExecutor(new LockDownCommand());
     }
 
     private void registerChannels() {

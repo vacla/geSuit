@@ -78,6 +78,11 @@ commands:
         usage: |
                /<command>
                /<command> (message)
+    lockdown:
+        description: locks the server so no new players can join
+        permission: gesuit.ban.command.lockdown
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> end|status|<time> <msg>
     reloadbans:
         description: Reloads the bans config
         aliases: [bansreload, reloadban, banreload]
@@ -127,6 +132,7 @@ permissions:
             gesuit.bans.command.ipban: true
             gesuit.bans.command.reload: true
             gesuit.bans.mod: true
+            gesuit.bans.command.lockdown: true
     gesuit.bans.mod:
         description: Gives access to all bans mod commands
         children:
