@@ -21,7 +21,7 @@ public class TimeParser
     private static final int WEEK = DAY * 7;
 
     /**
-     * Parse a string input into milliseconds, using w(eeks), d(ays), h(ours), m(inutes) and s(econds) For example: 4d8m2s -> 4 days, 8 minutes and 2 seconds
+     * Parse a string input into seconds, using w(eeks), d(ays), h(ours), m(inutes) and s(econds) For example: 4d8m2s -> 4 days, 8 minutes and 2 seconds
      *
      * @param string String to convert to Seconds
      * @return Seconds
@@ -51,6 +51,11 @@ public class TimeParser
             }
         }
         return total;
+    }
+
+    public static long parseStringtoMillisecs(String string) {
+        int total = parseString(string);
+        return total * 1000;
     }
 
 }

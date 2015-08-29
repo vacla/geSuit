@@ -1,9 +1,10 @@
 package net.cubespace.geSuit.configs;
 
-import java.io.File;
 import net.cubespace.Yamler.Config.Config;
 import net.cubespace.Yamler.Config.ConfigMode;
 import net.cubespace.geSuit.geSuit;
+
+import java.io.File;
 
 public class Messages extends Config {
     public Messages() {
@@ -144,4 +145,8 @@ public class Messages extends Config {
     //LastLogin messages
     public String BUNGEE_COMMAND_LASTLOGINS_USAGE = "&c" + "Usage: !lastlogins <player> <num>";
     public String LASTLOGINS_FORMAT = "&6 Date:&f{date} &6Ontime:&f{ontime}";
+
+    //Lockdown messages
+    public String LOCKDOWN_MESSAGE = "&c" + "Server is in maintenance. {message}  ";
+    public String LOCKDOWN_USAGE = "&c" + "Usage: !lockdown <end|time> <msg>  time formate like 1h5m10s) Do not use a msg with end";
 }

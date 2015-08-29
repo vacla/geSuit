@@ -3,6 +3,7 @@ package net.cubespace.geSuit.listeners;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.BansManager;
+import net.cubespace.geSuit.managers.LockDownManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -91,6 +92,14 @@ public class BansMessageListener implements Listener {
             case "DisplayNameHistory":
                 BansManager.displayNameHistory(in.readUTF(), in.readUTF());
                 break;
+            case "LockDown":
+                LockDownManager.startLockDown(in.readUTF(), in.readLong(), in.readUTF());
+                break;
+            case "EndLockDown":
+                LockDownManager.endLockDown(in.readUTF());
+                break;
+            case "LockDownStatus":
+                LockDownManager.checkExpiry(in.readUTF());
             default:
                 return;
 
