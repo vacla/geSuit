@@ -14,11 +14,12 @@ import com.google.common.base.Strings;
 import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.config.ConfigReloadListener;
 import net.cubespace.geSuit.config.ModerationConfig;
-import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.Platform;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.events.moderation.GlobalBanEvent;
 import net.cubespace.geSuit.core.events.moderation.GlobalUnbanEvent;
+import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.FireBanEventMessage;
 import net.cubespace.geSuit.core.objects.BanInfo;
@@ -27,7 +28,7 @@ import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.core.objects.Result.Type;
 import net.cubespace.geSuit.core.storage.StorageException;
 import net.cubespace.geSuit.core.storage.StorageInterface;
-import net.cubespace.geSuit.core.storage.StorageSection;
+import net.cubespace.geSuit.core.storage.StorageProvider;
 import net.cubespace.geSuit.database.repositories.BanHistory;
 import net.cubespace.geSuit.general.BroadcastManager;
 import net.cubespace.geSuit.remote.moderation.BanActions;
@@ -38,18 +39,27 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BanManager implements BanActions, ConfigReloadListener {
-    private BanHistory banRepo;
-    private BroadcastManager broadcasts;
-    private Logger logger;
-    private Channel<BaseMessage> channel;
+    private final BanHistory banRepo;
+    private final BroadcastManager broadcasts;
+    private final Logger logger;
+    private final Channel<BaseMessage> channel;
+    private final Messages messages;
+    private final Platform platform;
+    private final ProxyServer proxy;
+    private final StorageInterface ipBans;
     
     private ModerationConfig config;
     
-    public BanManager(BanHistory banRepo, BroadcastManager broadcasts, Channel<BaseMessage> channel, Logger logger) {
+    public BanManager(BanHistory banRepo, BroadcastManager broadcasts, Channel<BaseMessage> channel, Messages messages, StorageProvider provider, ProxyServer proxy, Platform platform) {
         this.banRepo = banRepo;
         this.broadcasts = broadcasts;
-        this.logger = logger;
+        this.logger = platform.getLogger();
         this.channel = channel;
+        this.messages = messages;
+        this.proxy = proxy;
+        this.platform = platform;
+        
+        ipBans = provider.create("geSuit.ipbans");
     }
     
     public void loadConfig(ModerationConfig config) {
@@ -136,18 +146,17 @@ public class BanManager implements BanActions, ConfigReloadListener {
     @Override
     public Result ipunban(GlobalPlayer player, String reason, String by, UUID byId) {
         try {
-            BanInfo<GlobalPlayer> playerBan = player.getBanInfo();
+            BanInfo<GlobalPlayer> playerBan = getBan(player);
             BanInfo<InetAddress> ipBan = getBan(player.getAddress());
             
             if (playerBan == null && ipBan == null) {
-                return new Result(Type.Fail, Global.getMessages().get("ban.not-banned"));
+                return new Result(Type.Fail, messages.get("ban.not-banned"));
             }
             
             // Record the unban
             if (playerBan != null) {
                 banRepo.recordUnban(playerBan, reason, by, byId);
-                player.removeBan();
-                player.save();
+                setBan(player, null);
             }
             
             if (ipBan != null) {
@@ -157,15 +166,15 @@ public class BanManager implements BanActions, ConfigReloadListener {
             
             // Fire Event
             if (playerBan != null) {
-                Global.getPlatform().callEvent(new GlobalUnbanEvent(playerBan, player.getAddress()));
+                platform.callEvent(new GlobalUnbanEvent(playerBan, player.getAddress()));
                 channel.broadcast(FireBanEventMessage.createFromIPUnban(playerBan, player.getAddress()));
             } else {
-                Global.getPlatform().callEvent(new GlobalUnbanEvent(ipBan));
+                platform.callEvent(new GlobalUnbanEvent(ipBan));
                 channel.broadcast(FireBanEventMessage.createFromUnban(ipBan));
             }
             
             // Finally broadcast message
-            String message = Global.getMessages().get("unban.broadcast", "player", player.getDisplayName(), "sender", by);
+            String message = messages.get("unban.broadcast", "player", player.getDisplayName(), "sender", by);
             if (config.BroadcastUnbans) {
                 broadcasts.broadcastGlobal(message);
                 return new Result(Type.Success, (byId == null ? message : null));
@@ -180,22 +189,10 @@ public class BanManager implements BanActions, ConfigReloadListener {
     
     private <T> Result ban0(T who, String reason, String by, UUID byId, long until, boolean isAuto) {
         try {
-            BanInfo<T> current;
-            if (who instanceof GlobalPlayer) {
-                current = (BanInfo<T>)((GlobalPlayer)who).getBanInfo();
-            } else if (who instanceof InetAddress) {
-                current = (BanInfo<T>)getBan((InetAddress)who);
-            } else {
-                throw new AssertionError("Unknown ban target " + who.getClass());
-            }
+            BanInfo<T> current = getBan(who);
             
-            if (current != null) {
-                if (!current.isTemporary()) {
-                    return new Result(Type.Fail, Global.getMessages().get("ban.already-banned"));
-                } else if (System.currentTimeMillis() > current.getUntil()) {
-                    // Not active anymore
-                    current = null;
-                }
+            if (current != null && !current.isTemporary()) {
+                return new Result(Type.Fail, messages.get("ban.already-banned"));
             }
             
             if (Strings.isNullOrEmpty(reason)) {
@@ -216,16 +213,10 @@ public class BanManager implements BanActions, ConfigReloadListener {
             banRepo.recordBan(ban);
             
             // Store in redis
-            if (ban.getWho() instanceof GlobalPlayer) {
-                GlobalPlayer player = (GlobalPlayer)ban.getWho();
-                player.setBan((BanInfo<GlobalPlayer>)ban);
-                player.save();
-            } else if (ban.getWho() instanceof InetAddress) {
-                setBan((InetAddress)ban.getWho(), (BanInfo<InetAddress>)ban);
-            }
+            setBan(who, (BanInfo<T>)ban);
             
             // Fire event
-            Global.getPlatform().callEvent(new GlobalBanEvent(ban, isAuto));
+            platform.callEvent(new GlobalBanEvent(ban, isAuto));
             channel.broadcast(FireBanEventMessage.createFromBan(ban, isAuto));
             
             // Kick if online
@@ -247,32 +238,22 @@ public class BanManager implements BanActions, ConfigReloadListener {
     
     private Result ipban0(GlobalPlayer player, String reason, String by, UUID byId, long until, boolean isAuto) {
         try {
-            BanInfo<GlobalPlayer> playerCurrent = player.getBanInfo();
+            BanInfo<GlobalPlayer> playerCurrent = getBan(player);
             BanInfo<InetAddress> ipCurrent = getBan(player.getAddress());
             
             boolean playerBanned = false;
             boolean ipBanned = false;
             
-            if (playerCurrent != null) {
-                if (!playerCurrent.isTemporary()) {
-                    playerBanned = true;
-                } else if (System.currentTimeMillis() > playerCurrent.getUntil()) {
-                    // Not active anymore
-                    playerCurrent = null;
-                }
+            if (playerCurrent != null && !playerCurrent.isTemporary()) {
+                playerBanned = true;
             }
             
-            if (ipCurrent != null) {
-                if (!ipCurrent.isTemporary()) {
-                    ipBanned = true;
-                } else if (System.currentTimeMillis() > ipCurrent.getUntil()) {
-                    // Not active anymore
-                    ipCurrent = null;
-                }
+            if (ipCurrent != null && !ipCurrent.isTemporary()) {
+                ipBanned = true;
             }
             
             if (ipBanned && playerBanned) {
-                return new Result(Type.Fail, Global.getMessages().get("ban.already-banned"));
+                return new Result(Type.Fail, messages.get("ban.already-banned"));
             }
             
             if (Strings.isNullOrEmpty(reason)) {
@@ -298,8 +279,7 @@ public class BanManager implements BanActions, ConfigReloadListener {
             
             if (!playerBanned) {
                 banRepo.recordBan(playerCurrent);
-                player.setBan(playerCurrent);
-                player.save();
+                setBan(player, playerCurrent);
             }
             
             ipCurrent = new BanInfo<InetAddress>(player.getAddress());
@@ -314,7 +294,7 @@ public class BanManager implements BanActions, ConfigReloadListener {
             }
             
             // Fire event
-            Global.getPlatform().callEvent(new GlobalBanEvent(playerCurrent, player.getAddress(), isAuto));
+            platform.callEvent(new GlobalBanEvent(playerCurrent, player.getAddress(), isAuto));
             channel.broadcast(FireBanEventMessage.createFromIPBan(playerCurrent, player.getAddress(), isAuto));
             
             // Kick if online
@@ -336,35 +316,23 @@ public class BanManager implements BanActions, ConfigReloadListener {
     
     private <T> Result unban0(T who, String reason, String by, UUID byId) {
         try {
-            BanInfo<T> ban;
-            if (who instanceof GlobalPlayer) {
-                ban = (BanInfo<T>) ((GlobalPlayer)who).getBanInfo();
-            } else if (who instanceof InetAddress) {
-                ban = (BanInfo<T>) getBan((InetAddress)who);
-            } else {
-                throw new AssertionError("Unknown ban target type");
-            }
+            BanInfo<T> ban = getBan(who);
             
             if (ban == null) {
-                return new Result(Type.Fail, Global.getMessages().get("ban.not-banned"));
+                return new Result(Type.Fail, messages.get("ban.not-banned"));
             }
             
             // Record the unban
             banRepo.recordUnban(ban, reason, by, byId);
             
-            if (who instanceof GlobalPlayer) {
-                ((GlobalPlayer)who).removeBan();
-                ((GlobalPlayer)who).save();
-            } else if (who instanceof InetAddress) {
-                setBan((InetAddress)who, null);
-            }
+            setBan(who, null);
             
             // Fire Event
-            Global.getPlatform().callEvent(new GlobalUnbanEvent(ban));
+            platform.callEvent(new GlobalUnbanEvent(ban));
             channel.broadcast(FireBanEventMessage.createFromUnban(ban));
             
             // Finally broadcast message
-            String message = Global.getMessages().get(
+            String message = messages.get(
                     "unban.broadcast", 
                     "player", (who instanceof GlobalPlayer ? ((GlobalPlayer)who).getDisplayName() : ((InetAddress)who).getHostAddress()),
                     "sender", by);
@@ -390,7 +358,7 @@ public class BanManager implements BanActions, ConfigReloadListener {
             String time = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG).format(ban.getUntil());
             
             if (ban.getWho() instanceof GlobalPlayer) {
-                return Global.getMessages().get(
+                return messages.get(
                         "tempban.display.personal",
                         "player", ((GlobalPlayer)ban.getWho()).getDisplayName(),
                         "time", time,
@@ -400,7 +368,7 @@ public class BanManager implements BanActions, ConfigReloadListener {
                         "sender", ban.getBannedBy()
                         );
             } else {
-                return Global.getMessages().get(
+                return messages.get(
                         "iptempban.display.personal",
                         "player", ((InetAddress)ban.getWho()).getHostAddress(), // TODO: Display a player name if possible
                         "time", time,
@@ -412,14 +380,14 @@ public class BanManager implements BanActions, ConfigReloadListener {
             }
         } else {
             if (ban.getWho() instanceof GlobalPlayer) {
-                return Global.getMessages().get(
+                return messages.get(
                         "ban.display.personal",
                         "player", ((GlobalPlayer)ban.getWho()).getDisplayName(),
                         "message", ban.getReason(),
                         "sender", ban.getBannedBy()
                         );
             } else {
-                return Global.getMessages().get(
+                return messages.get(
                         "ipban.display.personal",
                         "player", ((InetAddress)ban.getWho()).getHostAddress(), // TODO: Display a player name if possible
                         "message", ban.getReason(),
@@ -446,7 +414,7 @@ public class BanManager implements BanActions, ConfigReloadListener {
             }
             
          // TODO: Display a player name if possible
-            return Global.getMessages().get(
+            return messages.get(
                     id,
                     "player", (ban.getWho() instanceof GlobalPlayer ? ((GlobalPlayer)ban.getWho()).getDisplayName() : ((InetAddress)ban.getWho()).getHostAddress()),
                     "time", DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG).format(ban.getUntil()),
@@ -457,14 +425,14 @@ public class BanManager implements BanActions, ConfigReloadListener {
                     );
         } else {
             if (ban.getWho() instanceof GlobalPlayer) {
-                return Global.getMessages().get(
+                return messages.get(
                         (isAuto ? "ban.display.broadcast.auto" : "ban.display.broadcast"),
                         "player", ((GlobalPlayer)ban.getWho()).getDisplayName(),
                         "message", ban.getReason(),
                         "sender", ban.getBannedBy()
                         );
             } else {
-                return Global.getMessages().get(
+                return messages.get(
                         (isAuto ? "ipban.display.broadcast.auto" : "ipban.display.broadcast"),
                         "player", ((InetAddress)ban.getWho()).getHostAddress(), // TODO: Display a player name if possible
                         "message", ban.getReason(),
@@ -478,12 +446,12 @@ public class BanManager implements BanActions, ConfigReloadListener {
         BaseComponent[] message = TextComponent.fromLegacyText(reason);
         
         if (ban.getWho() instanceof GlobalPlayer) {
-            ProxiedPlayer player = ProxyServer.getInstance().getPlayer(((GlobalPlayer)ban.getWho()).getUniqueId());
+            ProxiedPlayer player = proxy.getPlayer(((GlobalPlayer)ban.getWho()).getUniqueId());
             if (player != null) {
                 player.disconnect(message);
             }
         } else if (ban.getWho() instanceof InetAddress) {
-            for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+            for (ProxiedPlayer player : proxy.getPlayers()) {
                 if (player.getAddress().getAddress().equals(ban.getWho())) {
                     player.disconnect(message);
                 }
@@ -498,22 +466,22 @@ public class BanManager implements BanActions, ConfigReloadListener {
     
     @Override
     public Result kick(GlobalPlayer player, String reason, boolean isAuto) {
-        ProxiedPlayer proxied = ProxyServer.getInstance().getPlayer(player.getUniqueId());
+        ProxiedPlayer proxied = proxy.getPlayer(player.getUniqueId());
         if (proxied == null) {
-            return new Result(Type.Fail, Global.getMessages().get("player.not-online", "player", player.getDisplayName()));
+            return new Result(Type.Fail, messages.get("player.not-online", "player", player.getDisplayName()));
         }
         
         if (Strings.isNullOrEmpty(reason)) {
             reason = config.DefaultKickReason;
         }
 
-        proxied.disconnect(TextComponent.fromLegacyText(Global.getMessages().get("kick.display.personal", "message", reason)));
+        proxied.disconnect(TextComponent.fromLegacyText(messages.get("kick.display.personal", "message", reason)));
         
         if (config.BroadcastKicks) {
             if (isAuto) {
-                broadcasts.broadcastGlobal(Global.getMessages().get("kick.display.broadcast.auto", "player", player.getDisplayName(), "message", reason));
+                broadcasts.broadcastGlobal(messages.get("kick.display.broadcast.auto", "player", player.getDisplayName(), "message", reason));
             } else {
-                broadcasts.broadcastGlobal(Global.getMessages().get("kick.display.broadcast", "player", player.getDisplayName(), "message", reason));
+                broadcasts.broadcastGlobal(messages.get("kick.display.broadcast", "player", player.getDisplayName(), "message", reason));
             }
         }
         
@@ -526,10 +494,10 @@ public class BanManager implements BanActions, ConfigReloadListener {
             reason = config.DefaultKickReason;
         }
 
-        reason = Global.getMessages().get("kick.display.personal", "message", reason);
+        reason = messages.get("kick.display.personal", "message", reason);
 
         BaseComponent[] message = TextComponent.fromLegacyText(reason);
-        for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
+        for (ProxiedPlayer p : proxy.getPlayers()) {
             if (!p.hasPermission("gesuit.bypass.kickall")) {
                 p.disconnect(message);
             }
@@ -539,38 +507,36 @@ public class BanManager implements BanActions, ConfigReloadListener {
     }
     
     @Override
-    public BanInfo<InetAddress> getBan(InetAddress ip) {
-        StorageSection storage = Global.getStorageProvider().create("geSuit.ipbans");
+    public BanInfo<InetAddress> getIPBan(InetAddress ip) {
         String name = ip.getHostAddress();
-        if (!storage.contains(name)) {
+        if (!ipBans.contains(name)) {
             return null;
         }
         
         BanInfo<InetAddress> ban = new BanInfo<InetAddress>(ip);
-        storage.getStorable(name, ban);
+        ban = ipBans.getStorable(name, ban);
         
         return ban;
     }
     
     @Override
-    public void setBan(InetAddress ip, BanInfo<InetAddress> ban) {
+    public void setIPBan(InetAddress ip, BanInfo<InetAddress> ban) {
         Preconditions.checkArgument(ban == null || ban.getWho().equals(ip));
         
-        StorageInterface storage = Global.getStorageProvider().create("geSuit.ipbans");
         String name = ip.getHostAddress();
         
         if (ban == null) {
-            storage.remove(name);
+            ipBans.remove(name);
         } else {
-            storage.set(name, ban);
+            ipBans.set(name, ban);
         }
         
-        storage.update();
+        ipBans.update();
     }
     
     @Override
-    public boolean isBanned(InetAddress ip) {
-        return getBan(ip) != null;
+    public boolean isIPBanned(InetAddress ip) {
+        return getIPBan(ip) != null;
     }
     
     @Override
@@ -594,34 +560,62 @@ public class BanManager implements BanActions, ConfigReloadListener {
     }
     
     public BanInfo<?> getAnyBan(GlobalPlayer player) {
-        if (player.isBanned()) {
-            if (player.getBanInfo().isTemporary()) {
-                // Has ban expired?
-                if (System.currentTimeMillis() >= player.getBanInfo().getUntil()) {
-                    player.removeBan();
-                } else {
-                    return player.getBanInfo();
-                }
-            } else {
-                return player.getBanInfo();
-            }
+        BanInfo<GlobalPlayer> playerBan = getBan(player);
+        if (playerBan != null) {
+            return playerBan;
         }
         
         // Check IP ban state
         BanInfo<InetAddress> ipBan = getBan(player.getAddress());
         if (ipBan != null) {
-            if (ipBan.isTemporary()) {
-                // Has ban expired?
-                if (System.currentTimeMillis() >= ipBan.getUntil()) {
-                    setBan(player.getAddress(), null);
-                } else {
-                    return ipBan;
-                }
-            } else {
-                return ipBan;
-            }
+            return ipBan;
         }
         
         return null;
+    }
+    
+    /**
+     * Retrieves the currently active ban on the target.
+     * This will clear any expired bans in the process
+     * @param who The target to get the ban of
+     * @return The ban or null
+     */
+    public <T> BanInfo<T> getBan(T who) {
+        BanInfo<T> ban;
+        if (who instanceof GlobalPlayer) {
+            ban = (BanInfo<T>)((GlobalPlayer)who).getBanInfo();
+        } else if (who instanceof InetAddress) {
+            ban = (BanInfo<T>)getIPBan((InetAddress)who);
+        } else {
+            throw new AssertionError("Invalid ban target type");
+        }
+        
+        if (ban != null && ban.isTemporary()) {
+            // Has ban expired?
+            if (System.currentTimeMillis() >= ban.getUntil()) {
+                setBan(who, null);
+                return null;
+            } else {
+                return ban;
+            }
+        } else {
+            return ban;
+        }
+    }
+    
+    /**
+     * Sets the currently active ban for a target
+     * @param who The target of the ban
+     * @param ban The ban or null to clear it
+     */
+    public <T> void setBan(T who, BanInfo<T> ban) {
+        if (who instanceof GlobalPlayer) {
+            ((GlobalPlayer)who).setBan((BanInfo<GlobalPlayer>)ban);
+            ((GlobalPlayer)who).saveIfModified();
+        } else if (who instanceof InetAddress) {
+            setIPBan((InetAddress)who, (BanInfo<InetAddress>)ban);
+        } else {
+            throw new AssertionError("Invalid ban target type");
+        }
     }
 }

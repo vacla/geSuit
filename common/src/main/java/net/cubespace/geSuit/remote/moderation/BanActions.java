@@ -39,7 +39,7 @@ public interface BanActions {
     public List<BanInfo<GlobalPlayer>> getHistory(GlobalPlayer player) throws StorageException;
     public List<BanInfo<InetAddress>> getHistory(InetAddress ip) throws StorageException;
     
-    public BanInfo<InetAddress> getBan(InetAddress address) throws StorageException;
-    public void setBan(InetAddress ip, BanInfo<InetAddress> ban) throws StorageException;
-    public boolean isBanned(InetAddress address) throws StorageException;
+    public BanInfo<InetAddress> getIPBan(InetAddress address) throws StorageException;
+    public void setIPBan(InetAddress ip, BanInfo<InetAddress> ban) throws StorageException;
+    public boolean isIPBanned(InetAddress address) throws StorageException;
 }

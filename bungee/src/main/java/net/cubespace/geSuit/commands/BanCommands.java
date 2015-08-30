@@ -257,7 +257,7 @@ public class BanCommands {
             throw new IllegalArgumentException("Cannot unban unknown player " + playerName);
         }
         
-        BanInfo<InetAddress> ipBan = (player.getAddress() != null ? actions.getBan(player.getAddress()) : null);
+        BanInfo<InetAddress> ipBan = (player.getAddress() != null ? actions.getIPBan(player.getAddress()) : null);
         BanInfo<GlobalPlayer> playerBan = player.getBanInfo();
         
         if (ipBan == null && playerBan == null) {

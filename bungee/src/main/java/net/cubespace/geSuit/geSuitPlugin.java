@@ -264,7 +264,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         broadcastManager = new BroadcastManager(this, getProxy(), getLogger());
         
         // Create each remote
-        bans = new BanManager(databaseManager.getBanHistory(), broadcastManager, moderationChannel, getLogger());
+        bans = new BanManager(databaseManager.getBanHistory(), broadcastManager, moderationChannel, Global.getMessages(), Global.getStorageProvider(), getProxy(), Global.getPlatform());
         mutes = new MuteManager(broadcastManager, Global.getMessages(), getProxy(), playerManager);
         warnings = new WarningsManager(databaseManager.getWarnHistory(), bans, mutes, broadcastManager, moderationChannel, getLogger());
         tracking = new TrackingManager(databaseManager.getTracking(), databaseManager.getOntime(), getLogger());

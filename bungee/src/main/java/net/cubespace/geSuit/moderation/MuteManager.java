@@ -17,7 +17,6 @@ import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.config.ConfigReloadListener;
 import net.cubespace.geSuit.config.ModerationConfig;
 import net.cubespace.geSuit.config.ModerationConfig.MuteSettings;
-import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.PlayerManager;
 import net.cubespace.geSuit.core.lang.Messages;
@@ -389,11 +388,15 @@ public class MuteManager implements MuteActions, ConfigReloadListener {
         proxy.getScheduler().schedule(plugin, new Runnable() {
             @Override
             public void run() {
-                expirePlayerMutes();
-                expireIPMutes();
-                expireGlobalMute();
+                expireAnyMutes();
             }
         }, 1, 1, TimeUnit.SECONDS);
+    }
+    
+    public void expireAnyMutes() {
+        expirePlayerMutes();
+        expireIPMutes();
+        expireGlobalMute();
     }
     
     private void expirePlayerMutes() {
@@ -491,17 +494,17 @@ public class MuteManager implements MuteActions, ConfigReloadListener {
             if (player.hasPermission(globalExceptPermission)) {
                 return true;
             }
-            player.sendMessage(Global.getMessages().get("mute.command.global"));
+            player.sendMessage(messages.get("mute.command.global"));
             return false;
         }
         
         if (isMuted(playerManager.getPlayer(player.getUniqueId()))) {
-            player.sendMessage(Global.getMessages().get("mute.command.single"));
+            player.sendMessage(messages.get("mute.command.single"));
             return false;
         }
         
         if (isMuted(player.getAddress().getAddress())) {
-            player.sendMessage(Global.getMessages().get("mute.command.group"));
+            player.sendMessage(messages.get("mute.command.group"));
             return false;
         }
         
@@ -514,17 +517,17 @@ public class MuteManager implements MuteActions, ConfigReloadListener {
                 return true;
             }
             
-            player.sendMessage(Global.getMessages().get("mute.talk.global"));
+            player.sendMessage(messages.get("mute.talk.global"));
             return false;
         }
         
         if (isMuted(playerManager.getPlayer(player.getUniqueId()))) {
-            player.sendMessage(Global.getMessages().get("mute.talk.single"));
+            player.sendMessage(messages.get("mute.talk.single"));
             return false;
         }
         
         if (isMuted(player.getAddress().getAddress())) {
-            player.sendMessage(Global.getMessages().get("mute.talk.group"));
+            player.sendMessage(messages.get("mute.talk.group"));
             return false;
         }
         

@@ -176,16 +176,15 @@ public class GlobalPlayer {
     /**
      * Sets the active ban on this user. <br>
      * <b>WARNING: This does not record ban history when done, please use the methods in {@link BanActions}</b>
-     * @param ban The ban to use. Cannot be null
+     * @param ban The ban to use. Null can remove
      */
     public void setBan(BanInfo<GlobalPlayer> ban) {
-        Preconditions.checkNotNull(ban);
-        Preconditions.checkArgument(ban.getWho() == this);
+        Preconditions.checkArgument(ban == null || ban.getWho() == this);
         
         loadIfNeeded();
         
         banInfo = ban;
-        isBanned = true;
+        isBanned = (ban != null);
         isDirty = true;
     }
     
@@ -194,11 +193,7 @@ public class GlobalPlayer {
      * <b>WARNING: This does not record ban history when done, please use the methods in {@link BanActions}</b>
      */
     public void removeBan() {
-        loadIfNeeded();
-        
-        banInfo = null;
-        isBanned = false;
-        isDirty = true;
+        setBan(null);
     }
     
     /**
