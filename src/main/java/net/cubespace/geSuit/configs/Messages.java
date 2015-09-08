@@ -115,6 +115,7 @@ public class Messages extends Config {
     public String NO_HOMES_ALLOWED_SERVER = "&c" + "You are not allowed to set any more homes on this server.";
     public String NO_HOMES_ALLOWED_GLOBAL = "&c" + "You are not allowed to set any more homes globally.";
     public String NO_HOMES = "&c" + "You do not have any homes set.";
+    public String HOME_EXISTS_OTHER_SERVER = "&c" + "Home already exists on another server. Please delete it first.";
     public String SHOWING_YOUR_HOMES = "&eListing your homes:";
     public String SHOWING_OTHER_HOMES = "&eListing homes of {player}:";
     public String HOMES_PREFIX_THIS_SERVER = "&a{server}: &9";
