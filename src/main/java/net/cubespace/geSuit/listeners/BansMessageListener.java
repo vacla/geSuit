@@ -76,7 +76,7 @@ public class BansMessageListener implements Listener {
             return;
         }
         if (task.equals("DisplayPlayerWarnHistory")) {
-            BansManager.displayPlayerWarnHistory(in.readUTF(), in.readUTF());
+            BansManager.displayPlayerWarnHistory(in.readUTF(), in.readUTF(), in.readUTF());
             return;
         }
         if (task.equals("DisplayWhereHistory")) {

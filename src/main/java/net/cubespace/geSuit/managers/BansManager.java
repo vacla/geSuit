@@ -410,7 +410,7 @@ public class BansManager {
         callEvent(new WarnPlayerEvent(t.name, t.uuid, warnedBy, reason, actionType, actionExtra, warncount));
     }
 
-    public static void displayPlayerWarnHistory(final String sentBy, final String player) {
+    public static void displayPlayerWarnHistory(final String sentBy, final String player, final String showStaffNames) {
         ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
             @Override
             public void run() {
@@ -439,7 +439,9 @@ public class BansManager {
                     return;
                 }
                 PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + player + "'s Warning History" + ChatColor.DARK_AQUA + " --------");
-                
+
+                boolean showNames = Boolean.parseBoolean(showStaffNames);
+
                 int count = 0;
                 for (Ban b : warns) {
                     SimpleDateFormat sdf = new SimpleDateFormat();
@@ -447,18 +449,27 @@ public class BansManager {
         
                     Date now = new Date(); 
                     int age = (int) ((now.getTime() - b.getBannedOn().getTime()) / 1000 / 86400);
+                    
+                    String warnedBy = " ";
+
                 	if (age >= ConfigManager.bans.WarningExpiryDays) {
+                		if (showNames)
+	                		warnedBy = ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + b.getBannedBy() + ChatColor.DARK_GRAY + ") ";
+	                    	
         	            PlayerManager.sendMessageToTarget(sender,
         	            		ChatColor.GRAY + "- " +
         	            		ChatColor.DARK_GRAY + sdf.format(b.getBannedOn()) +
-        	            		ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + b.getBannedBy() + ChatColor.DARK_GRAY + ") " +
+        	            		warnedBy +
         	            		ChatColor.DARK_GRAY + b.getReason());
                 	} else {
                 		count++;
+                		if (showNames)
+		                        warnedBy = ChatColor.YELLOW + " (" + ChatColor.GRAY + b.getBannedBy() + ChatColor.YELLOW + ") ";
+		                        
         	            PlayerManager.sendMessageToTarget(sender,
         	            		ChatColor.YELLOW + String.valueOf(count) + ": " +
         	            		ChatColor.GREEN + sdf.format(b.getBannedOn()) +
-        	            		ChatColor.YELLOW + " (" + ChatColor.GRAY + b.getBannedBy() + ChatColor.YELLOW + ") " +
+        	            		warnedBy +
         	            		ChatColor.AQUA + b.getReason());
                 	}
                 }
