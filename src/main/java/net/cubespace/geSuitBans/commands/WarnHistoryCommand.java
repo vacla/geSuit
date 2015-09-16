@@ -26,12 +26,11 @@ public class WarnHistoryCommand implements CommandExecutor
         
         boolean showStaffNames = false;
 
-		if (sender.hasPermission("gesuit.warnhistory.shownames") || sender.hasPermission("gesuit.bans.command.warn"))
+		if (sender.hasPermission("gesuit.bans.command.warn"))
 		{
 			showStaffNames = true;
 		}
-		
-		if (!sender.hasPermission("gesuit.bans.command.warn"))
+		else
 		{
 			if (!sender.getName().equals(playerName))
 			{

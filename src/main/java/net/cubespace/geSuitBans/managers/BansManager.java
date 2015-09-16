@@ -182,7 +182,7 @@ public class BansManager {
             out.writeUTF( "DisplayPlayerWarnHistory" );
             out.writeUTF( sender );
             out.writeUTF( player );
-            out.writeUTF( String.valueOf(showStaffNames) );
+            out.writeBoolean( showStaffNames );
         } catch ( IOException e ) {
             e.printStackTrace();
         }
