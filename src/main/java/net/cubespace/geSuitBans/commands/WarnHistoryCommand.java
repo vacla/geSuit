@@ -6,34 +6,24 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class WarnHistoryCommand implements CommandExecutor
-{
+public class WarnHistoryCommand implements CommandExecutor {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command,
-            String label, String[] args)
-    {
-
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		String playerName;
 
         if (args.length == 0) {
             playerName = sender.getName();
-        }
-        else
-        {
+        } else {
         	playerName = args[0];
         }
         
         boolean showStaffNames = false;
 
-		if (sender.hasPermission("gesuit.bans.command.warn"))
-		{
+		if (sender.hasPermission("gesuit.bans.command.warn")) {
 			showStaffNames = true;
-		}
-		else
-		{
-			if (!sender.getName().equals(playerName))
-			{
+		} else {
+			if (!sender.getName().equals(playerName)) {
 				sender.sendMessage(ChatColor.RED + "You can only view your own warnings.");
             	return true;
 			}
@@ -41,7 +31,5 @@ public class WarnHistoryCommand implements CommandExecutor
 
         BansManager.displayPlayerWarnHistory(sender.getName(), playerName, showStaffNames);
         return true;
-        
     }
-
 }
