@@ -1,25 +1,24 @@
 package net.cubespace.geSuit;
 
 import au.com.addstar.bc.BungeeChat;
-
 import com.google.common.net.InetAddresses;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.profile.Profile;
 import net.cubespace.geSuit.tasks.DatabaseUpdateRowUUID;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class Utilities {
     public static boolean isIPAddress(String ip){
@@ -47,7 +46,7 @@ public class Utilities {
     public static String getUUID(String name) {
         try {
             UUID id = Profile.getOnlineUUIDs(Collections.singletonList(name)).get(name);
-            return id == null ? null : id.toString().replaceAll("-", "");
+            return id == null ? null : Utilities.getStringFromUUID(id);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -180,7 +179,11 @@ public class Utilities {
 
         return builder.toString().trim();
     }
-    
+
+    public static String createTimeStampString(long timeStamp) {
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG).format(timeStamp);
+    }
+
     public static boolean doBungeeChatMirror(String channel, String msg) {
 		LoggingManager.log(ChatColor.translateAlternateColorCodes('&', msg));
 
@@ -212,4 +215,9 @@ public class Utilities {
             return UUID.fromString(uuid);
         }
     }
+
+    public static String getStringFromUUID(UUID uuid) {
+        return uuid.toString().replaceAll("-", "");
+    }
+
 }

@@ -1,26 +1,14 @@
 package net.cubespace.geSuit.managers;
 
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.collect.Iterables;
-
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.Utilities;
-import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.events.BanPlayerEvent;
 import net.cubespace.geSuit.events.UnbanPlayerEvent;
 import net.cubespace.geSuit.events.WarnPlayerEvent;
 import net.cubespace.geSuit.events.WarnPlayerEvent.ActionType;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.Ban;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.TimeRecord;
@@ -31,6 +19,17 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Event;
+
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class BansManager {
 
@@ -632,7 +631,7 @@ public class BansManager {
         });
     }
 
-    public static void displayOnTimeTop(final String sentBy, final String page) {
+    public static void displayOnTimeTop(final String sentBy, final int page) {
         final GSPlayer s = PlayerManager.getPlayer(sentBy);
         final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
@@ -640,18 +639,11 @@ public class BansManager {
             @Override
             public void run() {
                 int pagenum;
-                try {
-                    pagenum = Integer.parseInt(page);
+                    pagenum = page;
                     if (pagenum > 20) {
                         PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Sorry, maximum page number is 20.");
                         return;
                     }
-                }
-                catch (NumberFormatException e) {
-                    PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "You specified an invalid page number.");
-                    return;
-                }
-
                 // Get time records and set online time (if player is online)
                 Map<String, Long> results = DatabaseManager.ontime.getOnTimeTop(pagenum);
                 PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + "OnTime Top Statistics" + ChatColor.DARK_AQUA + " (page " + page + ") --------");
@@ -667,6 +659,30 @@ public class BansManager {
             }
         });
     }
+    public static void displayLastLogins(final String sentBy, final String player, final int num){
+        final GSPlayer s = PlayerManager.getPlayer(sentBy);
+        final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+            @Override
+            public void run() {
+                BanTarget bt = getBanTarget(player);
+                if ((bt == null) || (bt.gsp == null)) {
+                    PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
+                    return;
+                }
+                Map<Timestamp, Long> results = DatabaseManager.ontime.getLastLogins(bt.uuid,num);
+                PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + bt.dispname + "'s Last Login History" + ChatColor.DARK_AQUA + " --------");
+                for(Map.Entry<Timestamp, Long> pair : results.entrySet() ){
+                    String line = ConfigManager.messages.LASTLOGINS_FORMAT
+                            .replace("{date}",DateFormat.getDateInstance(DateFormat.MEDIUM).format(pair.getKey()))
+                            .replace("{ontime}",Utilities.buildTimeDiffString(pair.getValue()*1000,2));
+                    PlayerManager.sendMessageToTarget(sender, line);
+                }
+            }
+            });
+    }
+
     
     public static void displayNameHistory(final String sentBy, final String nameOrId) {
         ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {

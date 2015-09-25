@@ -1,33 +1,13 @@
 package net.cubespace.geSuit;
 
-import net.cubespace.geSuit.commands.BanCommand;
-import net.cubespace.geSuit.commands.DebugCommand;
-import net.cubespace.geSuit.commands.MOTDCommand;
-import net.cubespace.geSuit.commands.NamesCommand;
-import net.cubespace.geSuit.commands.OnTimeCommand;
-import net.cubespace.geSuit.commands.ReloadCommand;
-import net.cubespace.geSuit.commands.SeenCommand;
-import net.cubespace.geSuit.commands.TempBanCommand;
-import net.cubespace.geSuit.commands.UnbanCommand;
-import net.cubespace.geSuit.commands.WarnCommand;
-import net.cubespace.geSuit.commands.WarnHistoryCommand;
-import net.cubespace.geSuit.commands.WhereCommand;
+import net.cubespace.geSuit.commands.*;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
-import net.cubespace.geSuit.listeners.APIMessageListener;
-import net.cubespace.geSuit.listeners.BansMessageListener;
-import net.cubespace.geSuit.listeners.BungeeChatListener;
-import net.cubespace.geSuit.listeners.HomesMessageListener;
-import net.cubespace.geSuit.listeners.PlayerListener;
-import net.cubespace.geSuit.listeners.PortalsMessageListener;
-import net.cubespace.geSuit.listeners.SpawnListener;
-import net.cubespace.geSuit.listeners.SpawnMessageListener;
-import net.cubespace.geSuit.listeners.TeleportsListener;
-import net.cubespace.geSuit.listeners.TeleportsMessageListener;
-import net.cubespace.geSuit.listeners.WarpsMessageListener;
+import net.cubespace.geSuit.listeners.*;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.managers.GeoIPManager;
+import net.cubespace.geSuit.managers.LockDownManager;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -58,6 +38,7 @@ public class geSuit extends Plugin
         registerListeners();
         registerCommands();
         GeoIPManager.initialize();
+        LockDownManager.initialize();
     }
 
     private void registerCommands()
@@ -78,8 +59,10 @@ public class geSuit extends Plugin
         proxy.getPluginManager().registerCommand(this, new DebugCommand());
         proxy.getPluginManager().registerCommand(this, new WarnHistoryCommand());
         proxy.getPluginManager().registerCommand(this, new NamesCommand());
+        proxy.getPluginManager().registerCommand(this, new LockdownCommand());
         if (ConfigManager.bans.TrackOnTime) {
         	proxy.getPluginManager().registerCommand(this, new OnTimeCommand());
+            proxy.getPluginManager().registerCommand(this, new LastLoginsCommand());
         }
     }
 
@@ -120,10 +103,10 @@ public class geSuit extends Plugin
 	public void setDebugEnabled(boolean debugEnabled) {
 		DebugEnabled = debugEnabled;
 	}
-	
-	public void DebugMsg(String msg) {
-		if (isDebugEnabled()) {
-			geSuit.instance.getLogger().info("DEBUG: " + msg);
+
+    public void DebugMsg(String msg) {
+        if (isDebugEnabled()) {
+            geSuit.instance.getLogger().info("DEBUG: " + msg);
 		}
 	}
 }
