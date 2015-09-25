@@ -33,7 +33,7 @@ commands:
         usage: /<command> (player)
     warnhistory:
         description: Gets the warning history of a player
-        aliases: [dst]
+        aliases: [dst, warnings]
         permission: gesuit.bans.command.warnhistory
         permission-message: §cYou do not have permission for this command
         usage: /<command> (player)

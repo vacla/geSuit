@@ -175,13 +175,14 @@ public class BansManager {
         new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
     }
 
-    public static void displayPlayerWarnHistory( String sender, String player ) {
+    public static void displayPlayerWarnHistory( String sender, String player, boolean showStaffNames ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "DisplayPlayerWarnHistory" );
             out.writeUTF( sender );
             out.writeUTF( player );
+            out.writeBoolean( showStaffNames );
         } catch ( IOException e ) {
             e.printStackTrace();
         }
