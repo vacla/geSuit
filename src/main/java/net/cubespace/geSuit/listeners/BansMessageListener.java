@@ -69,7 +69,7 @@ public class BansMessageListener implements Listener {
                 BansManager.displayPlayerBanHistory(in.readUTF(), in.readUTF());
                 break;
             case "DisplayPlayerWarnHistory":
-                BansManager.displayPlayerWarnHistory(in.readUTF(), in.readUTF());
+            	BansManager.displayPlayerWarnHistory(in.readUTF(), in.readUTF(), in.readBoolean());
                 break;
             case "DisplayWhereHistory":
                 BansManager.displayWhereHistory(in.readUTF(), in.readUTF(), in.readUTF());
@@ -102,7 +102,6 @@ public class BansMessageListener implements Listener {
                 LockDownManager.checkExpiry(in.readUTF());
             default:
                 return;
-
         }
         return;
     }
