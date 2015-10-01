@@ -1,7 +1,6 @@
 package net.cubespace.geSuit.core.storage;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Set;
 
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
