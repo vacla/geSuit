@@ -55,6 +55,8 @@ public class AttachmentContainer {
         if (attachment.getType() == AttachmentType.Persistent) {
             attachmentSet.add(type.getName());
             requiresSave = true;
+        } else if (attachment.getType() == AttachmentType.Session) {
+            attachment.setDirty();
         }
         
         return attachment;
@@ -175,41 +177,63 @@ public class AttachmentContainer {
         hasLoaded = true;
     }
     
-    private void loadAttachment(String className) {
+    private Class<? extends Attachment> getAttachmentClass(String className) {
         try {
             // Resolve attachment class
             Class<?> clazz = Class.forName(className);
             if (!Attachment.class.isAssignableFrom(clazz)) {
-                return;
+                return null;
             }
             
-            Class<? extends Attachment> attachmentClass = clazz.asSubclass(Attachment.class);
+            return clazz.asSubclass(Attachment.class);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+    
+    private Attachment getAttachment(String className) {
+        try {
+            // Resolve attachment class
+            Class<? extends Attachment> attachmentClass = getAttachmentClass(className);
+            
+            if (attachmentClass == null) {
+                return null;
+            }
             
             // Get or create the attachment instance
-            Attachment attachment;
             if (attachments.containsKey(attachmentClass)) {
-                attachment = attachments.get(attachmentClass);
+                return attachments.get(attachmentClass);
             } else {
-                attachment = attachmentClass.newInstance();
+                return attachmentClass.newInstance();
             }
-            
-            // Make sure we arent using this for any attachment that isnt a persistent type attachment
-            if (attachment.getType() != AttachmentType.Persistent) {
-                return;
-            }
-            
-            // Load it
-            attachment = storage.getStorable(clazz.getSimpleName().toLowerCase(), attachment);
-            attachment.clearDirty();
-            
-            attachments.put(attachmentClass, attachment);
-        } catch (ClassNotFoundException e) {
-            // Ignore
         } catch (IllegalAccessException e) {
             // Ignore
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
+        
+        return null;
+    }
+    
+    private void loadAttachment(String className) {
+        Attachment attachment = getAttachment(className);
+        if (attachment == null) {
+            return;
+        }
+        
+        // Make sure we arent using this for any attachment that isnt a persistent type attachment
+        if (attachment.getType() != AttachmentType.Persistent) {
+            return;
+        }
+        
+        // Load it
+        Attachment loaded = storage.getStorable(attachment.getClass().getSimpleName().toLowerCase(), attachment);
+        if (loaded != null) {
+            attachment = loaded;
+        }
+        attachment.clearDirty();
+        
+        attachments.put(attachment.getClass(), attachment);
     }
     
     /**
@@ -217,45 +241,26 @@ public class AttachmentContainer {
      * @param message The packet received
      */
     public void onAttachmentUpdate(SyncAttachmentMessage message) {
-        try {
-            // Check the owner
-            if (!owner.equals(message.owner)) {
-                return;
-            }
-            
-            // Resolve attachment class
-            Class<?> clazz = Class.forName(message.className);
-            if (!Attachment.class.isAssignableFrom(clazz)) {
-                return;
-            }
-            
-            Class<? extends Attachment> attachmentClass = clazz.asSubclass(Attachment.class);
-            
-            // Get or create the attachment instance
-            Attachment attachment;
-            if (attachments.containsKey(attachmentClass)) {
-                attachment = attachments.get(attachmentClass);
-            } else {
-                attachment = attachmentClass.newInstance();
-            }
-            
-            // Make sure we arent using this for any attachment that isnt a session type attachment
-            if (attachment.getType() != AttachmentType.Session) {
-                return;
-            }
-            
-            // Load it
-            attachment.load(message.values);
-            attachment.clearDirty();
-            
-            attachments.put(attachmentClass, attachment);
-        } catch (ClassNotFoundException e) {
-            // Ignore
-        } catch (IllegalAccessException e) {
-            // Ignore
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+        // Check the owner
+        if (!owner.equals(message.owner)) {
+            return;
         }
+        
+        Attachment attachment = getAttachment(message.className);
+        if (attachment == null) {
+            return;
+        }
+        
+        // Make sure we arent using this for any attachment that isnt a session type attachment
+        if (attachment.getType() != AttachmentType.Session) {
+            return;
+        }
+        
+        // Load it
+        attachment.load(message.values);
+        attachment.clearDirty();
+        
+        attachments.put(attachment.getClass(), attachment);
     }
     
     public void invalidate() {

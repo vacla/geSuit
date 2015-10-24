@@ -396,6 +396,8 @@ public class GlobalPlayer {
         if (isDirty) {
             save();
         }
+        
+        attachments.update();
     }
     
     /**
