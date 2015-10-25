@@ -68,6 +68,7 @@ public class HomesManager {
         try {
             out.writeUTF( "GetHomesList" );
             out.writeUTF( sender.getName() );
+            out.writeInt( getGlobalHomesLimit( sender ) );
         } catch ( IOException e ) {
             e.printStackTrace();
         }
