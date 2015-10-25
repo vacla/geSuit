@@ -38,11 +38,11 @@ public class HomesManager {
         } else {
             Home home1 = getHome(player, home);
             if (home1.loc.getServer().getName().equals(loc.getServer().getName())) {
-	            home1.setLoc(loc);
-	            DatabaseManager.homes.updateHome(home1);
-	            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_UPDATED.replace("{home}", home));
+                home1.setLoc(loc);
+                DatabaseManager.homes.updateHome(home1);
+                PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_UPDATED.replace("{home}", home));
             } else {
-	            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_EXISTS_OTHER_SERVER.replace("{home}", home));
+                PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_EXISTS_OTHER_SERVER.replace("{home}", home));
             }
         }
     }
@@ -67,83 +67,112 @@ public class HomesManager {
         }
     }
 
-    public static void listPlayersHomes(GSPlayer player) {
+    public static void listPlayersHomes(GSPlayer player, int maxhomes) {
         if (player.getHomes().isEmpty()) {
             PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_HOMES);
             return;
         }
 
         PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SHOWING_YOUR_HOMES.replace("{player}", player.getName()));
+        int currcount = 0;
         for (String server : player.getHomes().keySet()) {
-        	// Skip if the home list for this server is empty (shouldn't happen)
-        	if (player.getHomes().get(server).isEmpty()) {
-            	continue;
+            // Skip if the home list for this server is empty (shouldn't happen)
+            if (player.getHomes().get(server).isEmpty()) {
+                continue;
             }
 
             String homes;
             if (server.equals(player.getServer())) {
                 homes = ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server);
             } else {
-            	homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
+                homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
             }
 
             for (Home h : player.getHomes().get(server)) {
                 homes += h.name + ", ";
+                currcount++;
+            }
+
+            // V: Was handled earlier, but in case getHomes().isEmpty() didn't work - which it didn't when I tested..
+            if (currcount == 0) {
+                PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_HOMES);
+                return;
             }
 
             PlayerManager.sendMessageToTarget(player, homes.substring(0, homes.length() - 2));
+
         }
 
+        // V: Added showing global current/max homes to player
+        String showmax = ConfigManager.messages.MAXIMUM_HOMES;
+        showmax += " " + (currcount) + " of " + (maxhomes) + " ";
+        showmax += ConfigManager.messages.MAXIMUM_HOMES2;
+        PlayerManager.sendMessageToTarget(player, showmax);
     }
-    
+
     public static void listOtherPlayersHomes(GSPlayer sender, String playername) {
-    	GSPlayer player = DatabaseManager.players.loadPlayer(playername);
-    	
-    	if (player == null) {
+        GSPlayer player = DatabaseManager.players.loadPlayer(playername);
+
+        if (player == null) {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST.replace("{player}", playername));
             return;
         }
-    	
-    	loadPlayersHomes(player);
-    	
+
+        loadPlayersHomes(player);
+
         if (player.getHomes().isEmpty()) {
-            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_HOMES);
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_OTHER_HOMES.replace("{player}", player.getName()));
             return;
         }
 
+        int currcount = 0;
         PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.SHOWING_OTHER_HOMES.replace("{player}", player.getName()));
         for (String server : player.getHomes().keySet()) {
-        	// Skip if the home list for this server is empty (shouldn't happen)
-        	if (player.getHomes().get(server).isEmpty()) {
-            	continue;
+            // Skip if the home list for this server is empty (shouldn't happen)
+            if (player.getHomes().get(server).isEmpty()) {
+                continue;
             }
 
             String homes;
             if (server.equals(sender.getServer())) {
                 homes = ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server);
             } else {
-            	homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
+                homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
             }
 
             for (Home h : player.getHomes().get(server)) {
                 homes += h.name + ", ";
+                currcount++;
+            }
+
+            // V: Was handled earlier, but in case getHomes().isEmpty() didn't work - which it didn't when I tested..
+            if (currcount == 0) {
+                PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_OTHER_HOMES.replace("{player}", player.getName()));
+                return;
             }
 
             PlayerManager.sendMessageToTarget(sender, homes.substring(0, homes.length() - 2));
         }
+
+        // V: Added showing global current/max homes to player
+        int maxhomes = 5; /* obviously needs to check perms here and work out maxhomes */
+        String showmax = ConfigManager.messages.MAXIMUM_HOMES_OTHER.replace("{player}", player.getName());
+        showmax += " " + (currcount) + " of " + (maxhomes) + " ";
+        showmax += ConfigManager.messages.MAXIMUM_HOMES2 + " (WIP)";
+        PlayerManager.sendMessageToTarget(sender, showmax);
 
     }
 
     public static void loadPlayersHomes(GSPlayer player) {
         List<Home> homes = DatabaseManager.homes.getHomesForPlayer(player);
 
-        for(Home home : homes) {
-        	if (home.loc.getServer() == null) {
-        		geSuit.instance.getLogger().warning("Invalid server for home \"" + home.name + "\" of player " + player.getName() + "!");
-        		continue;
-        	}
+        for (Home home : homes) {
+            if (home.loc.getServer() == null) {
+                geSuit.instance.getLogger().warning("Invalid server for home \"" + home.name + "\" of player " + player.getName() + "!");
+                continue;
+            }
 
-        	if (player.getHomes().get(home.loc.getServer().getName()) == null) {
+            if (player.getHomes().get(home.loc.getServer().getName()) == null) {
                 ArrayList<Home> list = new ArrayList<>();
                 list.add(home);
                 player.getHomes().put(home.loc.getServer().getName(), list);
@@ -187,16 +216,16 @@ public class HomesManager {
 
         PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SENT_HOME.replace("{home}", home));
     }
-    
+
     public static void sendPlayerToOtherHome(GSPlayer sender, String playername, String home) {
-    	GSPlayer player = DatabaseManager.players.loadPlayer(playername);
-    	
-    	if (player == null) {
+        GSPlayer player = DatabaseManager.players.loadPlayer(playername);
+
+        if (player == null) {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
             return;
         }
-    	
-    	loadPlayersHomes(player);
+
+        loadPlayersHomes(player);
         Home h = getHome(player, home);
         if (h == null) {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.HOME_DOES_NOT_EXIST.replace("{home}", home));
@@ -228,5 +257,5 @@ public class HomesManager {
 
         PlayerManager.sendMessageToTarget(p, ConfigManager.messages.HOME_DELETED.replace("{home}", home));
     }
-}
 
+}

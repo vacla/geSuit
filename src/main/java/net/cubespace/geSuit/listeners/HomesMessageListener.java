@@ -69,7 +69,7 @@ public class HomesMessageListener implements Listener {
 
             HomesManager.createNewHome(gsPlayer, in.readInt(), in.readInt(), in.readUTF(), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
         } else if ( task.equals( "GetHomesList" ) ) {
-            HomesManager.listPlayersHomes( PlayerManager.getPlayer(in.readUTF(), true) );
+            HomesManager.listPlayersHomes( PlayerManager.getPlayer(in.readUTF(), true), in.readInt() );
         } else if ( task.equals( "GetOtherHomesList" ) ) {
             HomesManager.listOtherPlayersHomes( PlayerManager.getPlayer(in.readUTF(), true), in.readUTF() );
         } else if ( task.equals( "SendVersion" ) ) {
