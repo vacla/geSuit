@@ -1,13 +1,19 @@
 package net.cubespace.geSuit.database;
 
+import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
+import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Track;
+import net.cubespace.geSuit.profile.Profile;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -24,6 +30,24 @@ public class Tracking implements IRepository {
             insertPlayer.setString(2, uuid);
             insertPlayer.setString(3, ip);
 
+            insertPlayer.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connectionHandler.release();
+        }
+    }
+
+    public void insertHistoricTracking(String player, String uuid, String ip, Date changedDate){
+
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+        try {
+            PreparedStatement insertPlayer = connectionHandler.getPreparedStatement("insertHistoricTracking");
+            String historicPlayerName = player; // ? do we need to differentiate these as historic ie before they joined this server.
+            insertPlayer.setString(1, historicPlayerName);
+            insertPlayer.setString(2, uuid);
+            insertPlayer.setString(3, ip);
+            insertPlayer.setDate(4, changedDate);
             insertPlayer.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,7 +102,21 @@ public class Tracking implements IRepository {
 
         return tracking;
     }
-    
+
+    public void insertNameHistory(GSPlayer player) {
+        UUID id = Utilities.makeUUID(player.getUuid());
+        String ip = player.getIp();
+        Timestamp firstOnline = player.getFirstOnline();
+        Map<String, Timestamp> input = Profile.getMojangNameHistory(id);
+        for (Map.Entry<String, Timestamp> e : input.entrySet()) {
+            String oldName = e.getKey();
+            Timestamp time = e.getValue();
+            if (time.before(firstOnline)) { //do we even need this check I think the duplication rule should handle it
+                Date changedAt = new Date(time.getTime());
+                insertHistoricTracking(oldName, player.getUuid(), ip, changedAt);
+            }
+        }
+    }
     public List<Track> getNameHistory(UUID id) {
         List<Track> tracking = new ArrayList<>();
 
@@ -161,6 +199,7 @@ public class Tracking implements IRepository {
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
+        connection.addPreparedStatement("insertHistoricTracking", "INSERT INTO "+ ConfigManager.main.Table_Tracking +" (player,uuid,ip,firstseen,lastseen) VALUES (?, ?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen=NOW()");
         connection.addPreparedStatement("insertTracking", "INSERT INTO "+ ConfigManager.main.Table_Tracking +" (player,uuid,ip,firstseen,lastseen) VALUES (?, ?, ?, NOW(), NOW()) ON DUPLICATE KEY UPDATE lastseen=NOW()");
         connection.addPreparedStatement("getPlayerTracking", "SELECT t2.ip, t2.player, t2.uuid, t2.firstseen, t2.lastseen, b.type, b.banned_playername, b.banned_uuid, b.banned_ip FROM "+ ConfigManager.main.Table_Tracking +" AS t1 JOIN "+ ConfigManager.main.Table_Tracking +" AS t2 ON t1.ip=t2.ip LEFT JOIN " + ConfigManager.main.Table_Bans + " AS b ON (t2.ip=b.banned_ip OR t2.player=b.banned_playername OR t2.uuid=b.banned_uuid) AND b.type != 'warn' AND b.active=1 WHERE t1.player=? GROUP BY t2.player,t2.uuid,t2.ip ORDER BY t2.lastseen;");
         connection.addPreparedStatement("getUUIDTracking", "SELECT t2.ip, t2.player, t2.uuid, t2.firstseen, t2.lastseen, b.type, b.banned_playername, b.banned_uuid, b.banned_ip FROM "+ ConfigManager.main.Table_Tracking +" AS t1 JOIN "+ ConfigManager.main.Table_Tracking +" AS t2 ON t1.ip=t2.ip LEFT JOIN " + ConfigManager.main.Table_Bans + " AS b ON (t2.ip=b.banned_ip OR t2.player=b.banned_playername OR t2.uuid=b.banned_uuid) AND b.type != 'warn' AND b.active=1 WHERE t1.uuid=? GROUP BY t2.player,t2.uuid,t2.ip ORDER BY t2.lastseen;");

@@ -1,6 +1,8 @@
 package net.cubespace.geSuit.profile;
 
 import com.google.gson.Gson;
+import net.cubespace.geSuit.Utilities;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,16 +13,17 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.sql.Timestamp;
+import java.util.*;
 
 public class Profile {
     private static final URL PROFILE_URL;
+    private static final String NAMEHISTORY_URL = "https://api.mojang.com/user/profiles/";
+
     static {
         try {
             PROFILE_URL = new URL("https://api.mojang.com/profiles/minecraft");
+
         } catch (MalformedURLException ex) {
             throw new IllegalStateException();
         }
@@ -83,5 +86,54 @@ public class Profile {
             }
         }
         return result;
+    }
+
+    public static Map<String, Timestamp> getMojangNameHistory(UUID playerUUID) {
+        Map<String, Timestamp> result = new HashMap<>();
+        String uid = Utilities.getStringFromUUID(playerUUID);
+        String urlString = NAMEHISTORY_URL + uid + "/names";
+        try {
+            URL finalURL = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) finalURL.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json; encoding=UTF-8");
+            connection.setUseCaches(false);
+            connection.setDoInput(true);
+            connection.setDoOutput(false);
+            Reader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), UTF8));
+            NameHistory[] names = gson.get().fromJson(in, NameHistory[].class);
+            for (NameHistory name : names) {
+                if (name.getName() != null) {
+                    result.put(name.getName(), name.getChangedToAt());
+                }
+            }
+        } catch (MalformedURLException ex) {
+            throw new IllegalStateException();
+        } catch (IOException ex) {
+            throw new IllegalStateException();
+        }
+
+        return result;
+    }
+
+    private class NameHistory {
+        private String name = null;
+        private Timestamp changedToAt = new Timestamp(0);
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Timestamp getChangedToAt() {
+            return changedToAt;
+        }
+
+        public void setChangedToAt(String changedToAt) {
+            this.changedToAt = Timestamp.valueOf(changedToAt);
+        }
     }
 }
