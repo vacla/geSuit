@@ -90,6 +90,7 @@ public class Messages extends Config {
     public String BUNGEE_COMMAND_KICKHISTORY_USAGE = "&c" + "Usage: !kickhistory <player>";
     public String BUNGEE_COMMAND_KICKHISTORY_DISABLED = "&c" + "Kick History is not recoreded on this server group.";
     public String BUNGEE_COMMAND_NAMES_USAGE = "&c" + "Usage: !names <player|uuid>";
+    public String BUNGEE_COMMAND_NAMEHISTORYUPDATE_USAGE = "&c" + "Usage: !UpdateNameHistory <player|uuid>";
     public String UNKNOWN_PLAYER_STILL_BANNING = "&c" + "WARNING: Player is unknown, continuing anyway.";
     public String UNKNOWN_PLAYER_NOT_WARNING = "&c" + "ERROR: Player is unknown, refusing to give warning.";
     public String KICK_PLAYER_MESSAGE = "&c" + "You have been kicked. Reason: {message}";

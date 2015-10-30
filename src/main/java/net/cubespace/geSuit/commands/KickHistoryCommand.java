@@ -20,7 +20,7 @@ public class KickHistoryCommand extends Command {
         if (sender instanceof ProxiedPlayer) {
             return;
         }
-        if (ConfigManager.bans.RecordKicks) {
+        if (!ConfigManager.bans.RecordKicks) {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BUNGEE_COMMAND_KICKHISTORY_DISABLED);
             return;
         }

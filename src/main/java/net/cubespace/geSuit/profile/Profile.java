@@ -14,7 +14,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class Profile {
     private static final URL PROFILE_URL;
@@ -88,8 +91,8 @@ public class Profile {
         return result;
     }
 
-    public static Map<String, Timestamp> getMojangNameHistory(UUID playerUUID) {
-        Map<String, Timestamp> result = new HashMap<>();
+    public static Map<Timestamp, String> getMojangNameHistory(UUID playerUUID) {
+        Map<Timestamp, String> result = new HashMap<>();
         String uid = Utilities.getStringFromUUID(playerUUID);
         String urlString = NAMEHISTORY_URL + uid + "/names";
         try {
@@ -100,11 +103,17 @@ public class Profile {
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(false);
-            Reader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), UTF8));
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), UTF8));
             NameHistory[] names = gson.get().fromJson(in, NameHistory[].class);
             for (NameHistory name : names) {
                 if (name.getName() != null) {
-                    result.put(name.getName(), name.getChangedToAt());
+                    String oldname = name.getName();
+                    Timestamp changeTime = new Timestamp(0);
+                    String changedAt = name.getChangedToAt();
+                    if (changedAt != null) {
+                        changeTime = new Timestamp(Long.parseLong(changedAt));
+                    }
+                    result.put(changeTime, oldname);
                 }
             }
         } catch (MalformedURLException ex) {
@@ -112,13 +121,12 @@ public class Profile {
         } catch (IOException ex) {
             throw new IllegalStateException();
         }
-
         return result;
     }
 
     private class NameHistory {
         private String name = null;
-        private Timestamp changedToAt = new Timestamp(0);
+        private String changedToAt = "0";
 
         public String getName() {
             return name;
@@ -128,12 +136,14 @@ public class Profile {
             this.name = name;
         }
 
-        public Timestamp getChangedToAt() {
+        public String getChangedToAt() {
+            if (changedToAt == null)
+                setChangedToAt("0");
             return changedToAt;
         }
 
         public void setChangedToAt(String changedToAt) {
-            this.changedToAt = Timestamp.valueOf(changedToAt);
+            this.changedToAt = changedToAt;
         }
     }
 }
