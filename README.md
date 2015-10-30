@@ -7,7 +7,7 @@ Clone this repo, cd into it and run
 
     mvn package
 
-The jar file will be inside the target/ folder
+The jar file will be inside the _target/_ folder
 
 ##Installing:
 Builds for this plugin may be found [here](http://jenkins.addstar.com.au/job/geSuit), or you can [compile it yourself](#building)
