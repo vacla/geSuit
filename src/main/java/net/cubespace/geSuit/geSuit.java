@@ -58,8 +58,10 @@ public class geSuit extends Plugin
         proxy.getPluginManager().registerCommand(this, new ReloadCommand());
         proxy.getPluginManager().registerCommand(this, new DebugCommand());
         proxy.getPluginManager().registerCommand(this, new WarnHistoryCommand());
+        proxy.getPluginManager().registerCommand(this, new KickHistoryCommand());
         proxy.getPluginManager().registerCommand(this, new NamesCommand());
         proxy.getPluginManager().registerCommand(this, new LockdownCommand());
+        proxy.getPluginManager().registerCommand(this, new ForceNameHistoryCommand());
         if (ConfigManager.bans.TrackOnTime) {
         	proxy.getPluginManager().registerCommand(this, new OnTimeCommand());
             proxy.getPluginManager().registerCommand(this, new LastLoginsCommand());

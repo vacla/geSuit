@@ -135,7 +135,7 @@ public class PlayerManager {
             // Do new player stuff
             if (gsPlayer.isFirstJoin()) {
                 DatabaseManager.players.insertPlayer(gsPlayer, player.getAddress().getHostString());
-
+                DatabaseManager.tracking.insertNameHistory(gsPlayer);
                 LoggingManager.log(ConfigManager.messages.PLAYER_CREATE.replace("{player}", player.getName()).replace("{uuid}", player.getUniqueId().toString()));
 
                 if (ConfigManager.main.NewPlayerBroadcast) {
@@ -403,5 +403,22 @@ public class PlayerManager {
     public static void updateTracking(GSPlayer player) {
     	DatabaseManager.tracking.insertTracking(player.getName(), player.getUuid(), player.getIp());
     }
+
+    public static String retrieveOldNames(CommandSender sender, String playername) {
+
+        GSPlayer p = getPlayer(playername);
+        boolean online = (p != null && p.getProxiedPlayer() != null);
+        if (p == null) {
+            // Player is offline, load data
+            p = DatabaseManager.players.loadPlayer(playername);
+        }
+
+        if (p == null) { // Unknown player
+            return ConfigManager.messages.PLAYER_DOES_NOT_EXIST;
+        }
+        DatabaseManager.tracking.insertNameHistory(p);
+        return "Name History for " + p.getName() + " updated";
+    }
+
 
 }

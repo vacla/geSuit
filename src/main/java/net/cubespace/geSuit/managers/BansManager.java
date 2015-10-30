@@ -250,7 +250,10 @@ public class BansManager {
         }
 
         disconnectPlayer(t.gsp.getProxiedPlayer(), Utilities.colorize(ConfigManager.messages.KICK_PLAYER_MESSAGE.replace("{message}", reason).replace("{sender}", sender.getName())));
-        	
+        if (ConfigManager.bans.RecordKicks) {
+            DatabaseManager.bans.kickPlayer(t.name, t.uuid, kickedBy, reason);
+        }
+
         if (ConfigManager.bans.BroadcastKicks) {
             if (auto) {
             	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.KICK_PLAYER_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName())), t.name);
@@ -469,6 +472,71 @@ public class BansManager {
         	            		warnedBy +
         	            		ChatColor.AQUA + b.getReason());
                 	}
+                }
+            }
+        });
+    }
+
+    public static void displayPlayerKickHistory(final String sentBy, final String player, final boolean showStaffNames) {
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+            @Override
+            public void run() {
+                GSPlayer s = PlayerManager.getPlayer(sentBy);
+
+                CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+                // Resolve the target player
+                GSPlayer target = PlayerManager.getPlayer(player);
+                String targetId;
+                if (target == null) {
+                    Map<String, UUID> ids = DatabaseManager.players.resolvePlayerNamesHistoric(Arrays.asList(player));
+                    UUID id = Iterables.getFirst(ids.values(), null);
+                    if (id == null) {
+                        PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_KICKED.replace("{player}", player)));
+                        return;
+                    }
+                    targetId = id.toString().replace("-", "");
+                } else {
+                    targetId = target.getUuid();
+                }
+
+                List<Ban> warns = DatabaseManager.bans.getKickHistory(player, targetId);
+                if (warns == null || warns.isEmpty()) {
+                    PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_KICKED.replace("{player}", player)));
+                    return;
+                }
+                PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + player + "'s Kick History" + ChatColor.DARK_AQUA + " --------");
+
+                int count = 0;
+                for (Ban b : warns) {
+                    SimpleDateFormat sdf = new SimpleDateFormat();
+                    sdf.applyPattern("dd MMM yyyy HH:mm");
+
+                    Date now = new Date();
+                    int age = (int) ((now.getTime() - b.getBannedOn().getTime()) / 1000 / 86400);
+
+                    String warnedBy = " ";
+
+                    if (age >= ConfigManager.bans.KickExpiryDays) {
+                        if (showStaffNames)
+                            warnedBy = ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + b.getBannedBy() + ChatColor.DARK_GRAY + ") ";
+
+                        PlayerManager.sendMessageToTarget(sender,
+                                ChatColor.GRAY + "- " +
+                                        ChatColor.DARK_GRAY + sdf.format(b.getBannedOn()) +
+                                        warnedBy +
+                                        ChatColor.DARK_GRAY + b.getReason());
+                    } else {
+                        count++;
+                        if (showStaffNames)
+                            warnedBy = ChatColor.YELLOW + " (" + ChatColor.GRAY + b.getBannedBy() + ChatColor.YELLOW + ") ";
+
+                        PlayerManager.sendMessageToTarget(sender,
+                                ChatColor.YELLOW + String.valueOf(count) + ": " +
+                                        ChatColor.GREEN + sdf.format(b.getBannedOn()) +
+                                        warnedBy +
+                                        ChatColor.AQUA + b.getReason());
+                    }
                 }
             }
         });

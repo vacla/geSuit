@@ -20,9 +20,12 @@ public class BansConfig extends Config {
     public Boolean ShowAltAccounts = true;
     public Boolean ShowBannedAltAccounts = true;
     public Boolean TrackOnTime = true;
+    public Boolean RecordKicks = false;
     public int NameChangeNotifyTime = 20;
 
     public int WarningExpiryDays = 180;
+
+    public int KickExpiryDays = 10;
 
     public HashMap<Integer, String> Actions = new HashMap<Integer, String>();
     

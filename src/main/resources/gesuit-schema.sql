@@ -154,6 +154,19 @@ CREATE TABLE `warps` (
   PRIMARY KEY (`warpname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+--
+-- Table structure for table `ontime`
+--
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ontime` (
+  `uuid` varchar(32) NOT NULL,
+  `timeslot` datetime NOT NULL,
+  `time` int(10) unsigned NOT NULL,
+  UNIQUE KEY `pair` (`uuid`,`timeslot`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
