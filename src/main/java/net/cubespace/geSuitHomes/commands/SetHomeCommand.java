@@ -22,8 +22,20 @@ public class SetHomeCommand implements CommandExecutor {
 			Pattern invalidChar = Pattern.compile("[^a-zA-Z0-9_-]");
 			Matcher reMatch = invalidChar.matcher(args[0]);
 
-			if (reMatch.find()) {
-				sender.sendMessage(ChatColor.RED + "Invalid character in new home name: " + ChatColor.YELLOW + reMatch.group(0));
+			StringBuffer bufstr = new StringBuffer();
+			boolean flag = false;
+            int count = 0;
+
+			while (flag = reMatch.find()) {
+				String rep = reMatch.group();
+				reMatch.appendReplacement(bufstr, ChatColor.YELLOW + rep.replace("$","\\$") + ChatColor.RED);
+                count++;
+			}
+			reMatch.appendTail(bufstr);
+
+			if (count>0) {
+                String result = (count) + " invalid character" + (count>1?"s":"") + " in new home name: " + bufstr.toString();
+				sender.sendMessage(ChatColor.RED + result);
 				return true;
 			}
 
