@@ -290,7 +290,7 @@ public class TestPlayerManager {
         StorageProvider provider = mock(StorageProvider.class);
         PlayerManager playerManager = new PlayerManager(null, null, provider, mock(Platform.class)) {};
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class));
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player);
         
         // Do the test
@@ -311,7 +311,7 @@ public class TestPlayerManager {
         Jedis jedis = mock(Jedis.class);
         when(redis.getJedis()).thenReturn(jedis);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class));
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player);
         playerManager.removePlayer(player);
         
@@ -328,7 +328,7 @@ public class TestPlayerManager {
         StorageProvider provider = mock(StorageProvider.class);
         PlayerManager playerManager = new PlayerManager(null, null, provider, null) {};
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class));
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player);
         
         player.refresh();
@@ -355,7 +355,7 @@ public class TestPlayerManager {
         StorageInterface storage = mock(StorageInterface.class);
         when(provider.create(anyString())).thenReturn(storage);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class));
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player);
         playerManager.removePlayer(player);
         
@@ -375,10 +375,10 @@ public class TestPlayerManager {
         StorageProvider provider = mock(StorageProvider.class);
         PlayerManager playerManager = new PlayerManager(mock(Channel.class), null, provider, null) {};
         
-        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class));
+        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player1);
         
-        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "nextPlayer", null, playerManager, mock(StorageInterface.class));
+        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "nextPlayer", null, playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player2);
         
         // Do test
@@ -391,10 +391,10 @@ public class TestPlayerManager {
         StorageProvider provider = mock(StorageProvider.class);
         PlayerManager playerManager = new PlayerManager(mock(Channel.class), null, provider, null) {};
         
-        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class));
+        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player1);
         
-        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "nextPlayer", null, playerManager, mock(StorageInterface.class));
+        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "nextPlayer", null, playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player2);
         
         // Do test
@@ -407,10 +407,10 @@ public class TestPlayerManager {
         StorageProvider provider = mock(StorageProvider.class);
         PlayerManager playerManager = new PlayerManager(mock(Channel.class), null, provider, null) {};
         
-        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class));
+        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player1);
         
-        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "nextPlayer", null, playerManager, mock(StorageInterface.class));
+        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "nextPlayer", null, playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player2);
         
         // Do test
@@ -424,10 +424,10 @@ public class TestPlayerManager {
         StorageProvider provider = mock(StorageProvider.class);
         PlayerManager playerManager = new PlayerManager(channel, null, provider, mock(Platform.class)) {};
         
-        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class));
+        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player1);
         
-        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "nextPlayer", null, playerManager, mock(StorageInterface.class));
+        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "nextPlayer", null, playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player2);
         
         // Do test
@@ -444,10 +444,10 @@ public class TestPlayerManager {
         StorageProvider provider = mock(StorageProvider.class);
         PlayerManager playerManager = new PlayerManager(channel, null, provider, mock(Platform.class)) {};
         
-        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class));
+        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "testPlayer", "nick", playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player1);
         
-        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "nextPlayer", null, playerManager, mock(StorageInterface.class));
+        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "nextPlayer", null, playerManager, mock(StorageInterface.class), null);
         playerManager.addPlayer(player2);
         
         // Do test
@@ -463,7 +463,7 @@ public class TestPlayerManager {
         StorageProvider provider = mock(StorageProvider.class);
         PlayerManager playerManager = new PlayerManager(null, null, provider, null) {};
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", null, playerManager, mock(StorageInterface.class));
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", null, playerManager, mock(StorageInterface.class), mock(Platform.class));
         player.addAttachment(new TestAttachment());
         playerManager.addPlayer(player);
         
@@ -484,7 +484,7 @@ public class TestPlayerManager {
         StorageProvider provider = mock(StorageProvider.class);
         PlayerManager playerManager = new PlayerManager(null, null, provider, null) {};
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", null, playerManager, mock(StorageInterface.class));
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", null, playerManager, mock(StorageInterface.class), mock(Platform.class));
         player.addAttachment(new TestAttachment());
         playerManager.addPlayer(player);
         playerManager.removePlayer(player);

@@ -10,8 +10,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import net.cubespace.geSuit.core.Global;
+import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.Platform;
 import net.cubespace.geSuit.core.attachments.Attachment.AttachmentType;
 import net.cubespace.geSuit.core.channel.Channel;
+import net.cubespace.geSuit.core.events.player.GlobalPlayerAttachmentUpdateEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
 import net.cubespace.geSuit.core.storage.StorageSection;
@@ -25,14 +29,16 @@ public class AttachmentContainer {
     private boolean hasLoaded;
     private boolean requiresSave;
     
-    private UUID owner;
+    private GlobalPlayer owner;
     private Channel<BaseMessage> channel;
     private StorageSection storage;
+    private Platform platform;
     
-    public AttachmentContainer(UUID owner, Channel<BaseMessage> channel, StorageSection storage) {
+    public AttachmentContainer(GlobalPlayer owner, Channel<BaseMessage> channel, StorageSection storage, Platform platform) {
         this.owner = owner;
         this.channel = channel;
         this.storage = storage;
+        this.platform = platform;
         
         attachmentSet = Sets.newHashSet();
         attachments = Maps.newHashMap();
@@ -131,6 +137,10 @@ public class AttachmentContainer {
                     break;
                 }
                 
+                if (attachment.isDirty()) {
+                    platform.callEvent(new GlobalPlayerAttachmentUpdateEvent(owner, attachment));
+                }
+                
                 attachment.clearDirty();
             }
         }
@@ -150,7 +160,7 @@ public class AttachmentContainer {
         Map<String, String> values = Maps.newHashMap();
         attachment.save(values);
         
-        SyncAttachmentMessage message = new SyncAttachmentMessage(owner, attachment.getClass(), values);
+        SyncAttachmentMessage message = new SyncAttachmentMessage(owner.getUniqueId(), attachment.getClass(), values);
         
         channel.broadcast(message);
     }
@@ -242,7 +252,7 @@ public class AttachmentContainer {
      */
     public void onAttachmentUpdate(SyncAttachmentMessage message) {
         // Check the owner
-        if (!owner.equals(message.owner)) {
+        if (!owner.getUniqueId().equals(message.owner)) {
             return;
         }
         
@@ -261,6 +271,8 @@ public class AttachmentContainer {
         attachment.clearDirty();
         
         attachments.put(attachment.getClass(), attachment);
+        
+        platform.callEvent(new GlobalPlayerAttachmentUpdateEvent(owner, attachment));
     }
     
     public void invalidate() {

@@ -51,20 +51,20 @@ public class GlobalPlayer {
     private boolean isReal;
     private PlayerManager manager;
     
-    GlobalPlayer(UUID id, String name, String nickname, PlayerManager manager, StorageInterface storage) {
-        this(id, manager, storage);
+    GlobalPlayer(UUID id, String name, String nickname, PlayerManager manager, StorageInterface storage, Platform platform) {
+        this(id, manager, storage, platform);
         
         this.name = name;
         this.nickname = nickname;
     }
     
-    GlobalPlayer(UUID id, PlayerManager manager, StorageInterface storage) {
+    GlobalPlayer(UUID id, PlayerManager manager, StorageInterface storage, Platform platform) {
         this.id = id;
         this.manager = manager;
         this.storage = storage;
         
         isReal = true;
-        attachments = new AttachmentContainer(id, manager.getUpdateChannel(), storage);
+        attachments = new AttachmentContainer(this, manager.getUpdateChannel(), storage, platform);
     }
     
     GlobalPlayer(String name) {

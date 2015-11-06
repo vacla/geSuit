@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import net.cubespace.geSuit.core.GlobalPlayer;
+import net.cubespace.geSuit.core.Platform;
 import net.cubespace.geSuit.core.attachments.Attachment;
 import net.cubespace.geSuit.core.attachments.AttachmentContainer;
 import net.cubespace.geSuit.core.messages.BaseMessage;
@@ -21,7 +23,7 @@ import com.google.common.collect.Sets;
 public class TestAttachmentContainer {
     @Test
     public void testAddAttachment() {
-        AttachmentContainer container = new AttachmentContainer(null, null, null);
+        AttachmentContainer container = new AttachmentContainer(null, null, null, null);
         
         Attachment testAttachment = new Attachment() {
             @Override
@@ -53,7 +55,7 @@ public class TestAttachmentContainer {
 
     @Test
     public void testGetAttachment() {
-        AttachmentContainer container = new AttachmentContainer(null, null, null);
+        AttachmentContainer container = new AttachmentContainer(null, null, null, null);
         
         Attachment testAttachment = new Attachment() {
             @Override
@@ -84,7 +86,7 @@ public class TestAttachmentContainer {
 
     @Test
     public void testRemoveAttachment() {
-        AttachmentContainer container = new AttachmentContainer(null, null, null);
+        AttachmentContainer container = new AttachmentContainer(null, null, null, null);
         
         Attachment testAttachment = new Attachment() {
             @Override
@@ -111,7 +113,7 @@ public class TestAttachmentContainer {
 
     @Test
     public void testGetAttachments() {
-        AttachmentContainer container = new AttachmentContainer(null, null, null);
+        AttachmentContainer container = new AttachmentContainer(null, null, null, null);
         
         Attachment testAttachment = new Attachment() {
             @Override
@@ -147,8 +149,9 @@ public class TestAttachmentContainer {
     public void testLocalAttachmentUpdate() {
         Channel<BaseMessage> channel = mock(Channel.class);
         StorageInterface storage = mock(StorageInterface.class);
+        Platform platform = mock(Platform.class);
         
-        AttachmentContainer container = new AttachmentContainer(null, channel, storage);
+        AttachmentContainer container = new AttachmentContainer(null, channel, storage, platform);
         
         Attachment testAttachment = new Attachment() {
             @Override
@@ -180,9 +183,12 @@ public class TestAttachmentContainer {
     public void testSessionAttachmentUpdate() {
         Channel<BaseMessage> channel = mock(Channel.class);
         StorageInterface storage = mock(StorageInterface.class);
+        Platform platform = mock(Platform.class);
         UUID testUUID = UUID.randomUUID();
+        GlobalPlayer player = mock(GlobalPlayer.class);
+        when(player.getUniqueId()).thenReturn(testUUID);
         
-        AttachmentContainer container = new AttachmentContainer(testUUID, channel, storage);
+        AttachmentContainer container = new AttachmentContainer(player, channel, storage, platform);
         
         Attachment testAttachment = new Attachment() {
             @Override
@@ -216,8 +222,9 @@ public class TestAttachmentContainer {
     public void testPersistentAttachmentUpdate() {
         Channel<BaseMessage> channel = mock(Channel.class);
         StorageInterface storage = mock(StorageInterface.class);
+        Platform platform = mock(Platform.class);
         
-        AttachmentContainer container = new AttachmentContainer(null, channel, storage);
+        AttachmentContainer container = new AttachmentContainer(null, channel, storage, platform);
         
         Attachment testAttachment = new Attachment() {
             @Override
@@ -254,8 +261,9 @@ public class TestAttachmentContainer {
     public void testPersistentAttachmentUpdateAfterRemove() {
         Channel<BaseMessage> channel = mock(Channel.class);
         StorageInterface storage = mock(StorageInterface.class);
+        Platform platform = mock(Platform.class);
         
-        AttachmentContainer container = new AttachmentContainer(null, channel, storage);
+        AttachmentContainer container = new AttachmentContainer(null, channel, storage, platform);
         
         Attachment testAttachment = new Attachment() {
             @Override
@@ -290,7 +298,8 @@ public class TestAttachmentContainer {
     @Test
     public void testLoad() {
         StorageInterface storage = mock(StorageInterface.class);
-        AttachmentContainer container = new AttachmentContainer(null, null, storage);
+        Platform platform = mock(Platform.class);
+        AttachmentContainer container = new AttachmentContainer(null, null, storage, platform);
         
         Set<String> attachmentNames = Sets.newHashSet(TestPersistAttachment.class.getName());
         TestPersistAttachment attachment = new TestPersistAttachment();
@@ -311,9 +320,12 @@ public class TestAttachmentContainer {
 
     @Test
     public void testOnAttachmentUpdate() {
+        Platform platform = mock(Platform.class);
         UUID testUUID = UUID.randomUUID();
+        GlobalPlayer player = mock(GlobalPlayer.class);
+        when(player.getUniqueId()).thenReturn(testUUID);
         
-        AttachmentContainer container = new AttachmentContainer(testUUID, null, null);
+        AttachmentContainer container = new AttachmentContainer(player, null, null, platform);
         
         Map<String, String> values = Maps.newHashMap();
         SyncAttachmentMessage message = new SyncAttachmentMessage(testUUID, TestSessionAttachment.class, values);
@@ -330,8 +342,11 @@ public class TestAttachmentContainer {
     
     @Test
     public void testOnAttachmentUpdateInvalid() {
+        Platform platform = mock(Platform.class);
         UUID testUUID = UUID.randomUUID();
-        AttachmentContainer container = new AttachmentContainer(testUUID, null, null);
+        GlobalPlayer player = mock(GlobalPlayer.class);
+        when(player.getUniqueId()).thenReturn(testUUID);
+        AttachmentContainer container = new AttachmentContainer(player, null, null, platform);
         
         Map<String, String> values = Maps.newHashMap();
         SyncAttachmentMessage message = new SyncAttachmentMessage(testUUID, TestPersistAttachment.class, values);

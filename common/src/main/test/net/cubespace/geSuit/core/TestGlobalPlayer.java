@@ -39,7 +39,7 @@ public class TestGlobalPlayer {
         when(storage.getSetString("attachments")).thenReturn(Sets.<String>newHashSet());
         
         
-        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage);
+        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage, null);
         
         player.refresh();
         
@@ -70,7 +70,7 @@ public class TestGlobalPlayer {
         when(storage.getSetString("attachments")).thenReturn(Sets.<String>newHashSet());
         
         
-        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage);
+        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage, null);
         
         player.refresh();
         
@@ -113,7 +113,7 @@ public class TestGlobalPlayer {
         
         when(storage.getSetString("attachments")).thenReturn(Sets.<String>newHashSet());
         
-        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage);
+        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage, null);
         
         player.refresh();
         
@@ -141,7 +141,7 @@ public class TestGlobalPlayer {
         when(storage.getSetString("attachments")).thenReturn(Sets.<String>newHashSet());
         
         
-        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage);
+        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage, null);
         
         player.refresh();
         player.save();
@@ -174,7 +174,7 @@ public class TestGlobalPlayer {
         when(storage.getSetString("attachments")).thenReturn(Sets.<String>newHashSet());
         
         
-        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage);
+        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage, null);
         
         player.refresh();
         player.save();
@@ -204,7 +204,7 @@ public class TestGlobalPlayer {
         when(storage.getSetString("attachments")).thenReturn(Sets.<String>newHashSet());
         
         
-        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage);
+        GlobalPlayer player = new GlobalPlayer(id, "test", null, manager, storage, null);
         
         BanInfo<GlobalPlayer> ban = new BanInfo<GlobalPlayer>(player, 0, "test", "whoby", null, 12345L, 0L, false);
         Map<String, String> banValues = Maps.newHashMap();
@@ -241,7 +241,7 @@ public class TestGlobalPlayer {
         when(storage.contains("info")).thenReturn(true);
         when(storage.getMapPartial("info", "name", "nickname")).thenReturn(values);
         
-        GlobalPlayer player = new GlobalPlayer(id, manager, storage);
+        GlobalPlayer player = new GlobalPlayer(id, manager, storage, null);
         
         player.loadLite();
         
@@ -261,7 +261,7 @@ public class TestGlobalPlayer {
         when(storage.contains("info")).thenReturn(true);
         when(storage.getMapPartial("info", "name", "nickname")).thenReturn(values);
         
-        GlobalPlayer player = new GlobalPlayer(id, manager, storage);
+        GlobalPlayer player = new GlobalPlayer(id, manager, storage, null);
         
         player.loadLite();
         
@@ -273,8 +273,8 @@ public class TestGlobalPlayer {
     public void testDisplayName() {
         PlayerManager manager = mock(PlayerManager.class);
         
-        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "player1", null, manager, null);
-        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "player1", "player2", manager, null);
+        GlobalPlayer player1 = new GlobalPlayer(UUID.randomUUID(), "player1", null, manager, null, null);
+        GlobalPlayer player2 = new GlobalPlayer(UUID.randomUUID(), "player1", "player2", manager, null, null);
         
         assertFalse(player1.hasNickname());
         assertEquals("player1", player1.getDisplayName());
@@ -287,7 +287,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.getAddress(); // should load
         player.getAddress(); // should not
@@ -301,7 +301,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.setAddress(null); // should load
         player.setAddress(null); // should not
@@ -316,7 +316,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.getLastOnline(); // should load
         player.getLastOnline(); // should not
@@ -330,7 +330,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.setLastOnline(0); // should load
         player.setLastOnline(0); // should not
@@ -345,7 +345,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.hasTPsEnabled(); // should load
         player.hasTPsEnabled(); // should not
@@ -359,7 +359,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.setTPsEnabled(false); // should load
         player.setTPsEnabled(false); // should not
@@ -374,7 +374,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.isNewPlayer(); // should load
         player.isNewPlayer(); // should not
@@ -388,7 +388,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.setNewPlayer(false); // should load
         player.setNewPlayer(false); // should not
@@ -403,7 +403,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.getBanInfo(); // should load
         player.getBanInfo(); // should not
@@ -417,7 +417,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         BanInfo<GlobalPlayer> ban = new BanInfo<GlobalPlayer>(player);
         
         player.setBan(ban); // should load
@@ -433,7 +433,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.removeBan(); // should load
         player.removeBan(); // should not
@@ -448,7 +448,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.hasPlayedBefore(); // should load
         player.hasPlayedBefore(); // should not
@@ -462,7 +462,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.setSessionJoin(0); // should load
         player.setSessionJoin(0); // should not
@@ -476,7 +476,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         assertFalse(player.isLoaded());
         player.refresh();
@@ -490,7 +490,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.refresh();
         assertFalse(player.isDirty());
@@ -503,7 +503,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.refresh();
         reset(storage); // Clean state for the test
@@ -529,7 +529,7 @@ public class TestGlobalPlayer {
         when(storage.contains("info")).thenReturn(true);
         when(storage.getMap("info")).thenReturn(values);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.refresh();
         reset(storage); // Clean state for the test
@@ -546,7 +546,7 @@ public class TestGlobalPlayer {
         PlayerManager manager = mock(PlayerManager.class);
         StorageInterface storage = mock(StorageInterface.class);
         
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage);
+        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), manager, storage, null);
         
         player.setNickname("test");
         

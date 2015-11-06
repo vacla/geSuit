@@ -254,14 +254,14 @@ public abstract class PlayerManager {
     protected GlobalPlayer loadPlayer(UUID id, String name, String nickname) {
         GlobalPlayer player = offlineCache.get(id);
         if (player == null) {
-            player = new GlobalPlayer(id, name, nickname, this, getStorageSection(id));
+            player = new GlobalPlayer(id, name, nickname, this, getStorageSection(id), platform);
         }
         
         return player;
     }
     
     private GlobalPlayer loadOfflinePlayer(UUID id) {
-        GlobalPlayer player = new GlobalPlayer(id, this, getStorageSection(id));
+        GlobalPlayer player = new GlobalPlayer(id, this, getStorageSection(id), platform);
         player.loadLite();
         
         offlineCache.add(player);
