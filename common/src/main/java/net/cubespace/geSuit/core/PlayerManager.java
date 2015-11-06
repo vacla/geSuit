@@ -13,6 +13,8 @@ import redis.clients.jedis.exceptions.JedisException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import net.cubespace.geSuit.core.attachments.Attachment;
+import net.cubespace.geSuit.core.attachments.Attachment.AttachmentType;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerNicknameEvent;
 import net.cubespace.geSuit.core.messages.BaseMessage;
@@ -288,6 +290,18 @@ public abstract class PlayerManager {
         
         if (player.hasNickname()) {
             playersByNickname.remove(player.getNickname());
+        }
+        
+        // Remove session and local attachments
+        List<Attachment> toRemove = Lists.newArrayList();
+        for (Attachment attachment : player.getAttachmentContainer().getAttachments()) {
+            if (attachment.getType() == AttachmentType.Session || attachment.getType() == AttachmentType.Local) {
+                toRemove.add(attachment);
+            }
+        }
+        
+        for (Attachment attachment : toRemove) {
+            player.getAttachmentContainer().removeAttachment(attachment.getClass());
         }
         
         offlineCache.add(player);
