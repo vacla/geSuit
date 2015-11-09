@@ -128,7 +128,7 @@ public class WarpsManager {
 
         Location l = w.getLocation();
         p.sendMessage(ConfigManager.messages.PLAYER_WARPED.replace("{warp}", w.getName()));
-        if ((!p.equals(s)) && (s != null)) {
+        if ((!p.equals(s))) {
             s.sendMessage(ConfigManager.messages.PLAYER_WARPED_OTHER.replace("{player}", p.getName()).replace("{warp}", w.getName()));
         }
 
