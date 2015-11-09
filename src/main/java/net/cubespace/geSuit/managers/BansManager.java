@@ -9,10 +9,7 @@ import net.cubespace.geSuit.events.UnbanPlayerEvent;
 import net.cubespace.geSuit.events.WarnPlayerEvent;
 import net.cubespace.geSuit.events.WarnPlayerEvent.ActionType;
 import net.cubespace.geSuit.geSuit;
-import net.cubespace.geSuit.objects.Ban;
-import net.cubespace.geSuit.objects.GSPlayer;
-import net.cubespace.geSuit.objects.TimeRecord;
-import net.cubespace.geSuit.objects.Track;
+import net.cubespace.geSuit.objects.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -23,15 +20,12 @@ import net.md_5.bungee.api.plugin.Event;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class BansManager {
+
+    private static List<Kick> kicks = new ArrayList<>();
 
     public static void banPlayer(String bannedBy, String player, String reason) {
     	banPlayer(bannedBy, player, reason, false);
@@ -250,6 +244,10 @@ public class BansManager {
         }
 
         disconnectPlayer(t.gsp.getProxiedPlayer(), Utilities.colorize(ConfigManager.messages.KICK_PLAYER_MESSAGE.replace("{message}", reason).replace("{sender}", sender.getName())));
+        int kickLimit = ConfigManager.bans.KickLimit;
+        if (kickLimit > 0) {
+            checkKickTempBan(kickLimit, t, kickedBy, reason);
+        }
         if (ConfigManager.bans.RecordKicks) {
             DatabaseManager.bans.kickPlayer(t.name, t.uuid, kickedBy, reason);
         }
@@ -284,22 +282,25 @@ public class BansManager {
     }
 
     public static void tempBanPlayer(String bannedBy, String player, long seconds, String message, Boolean auto) {
+        BanTarget t = getBanTarget(player);
+        tempBanPlayer(bannedBy, t, seconds, message, auto);
+    }
+
+    public static void tempBanPlayer(String bannedBy, BanTarget t, long seconds, String message, Boolean auto) {
         GSPlayer s = PlayerManager.getPlayer(bannedBy);
         CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
-
-        BanTarget t = getBanTarget(player);
         if (t.gsp == null)
-        	PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
 
         Ban b = DatabaseManager.bans.getBanInfo(t.name, t.uuid, null);
         if (b != null) {
-        	if (b.getType().equals("tempban")) {
-        		// We don't want tempbans AND bans in place.. it could cause issues!
-        		DatabaseManager.bans.unbanPlayer(b.getId());
-        	} else {
+            if (b.getType().equals("tempban")) {
+                // We don't want tempbans AND bans in place.. it could cause issues!
+                DatabaseManager.bans.unbanPlayer(b.getId());
+            } else {
                 PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_ALREADY_BANNED);
-	            return;
-        	}
+                return;
+            }
         }
 
         if (message.equals("")) {
@@ -323,9 +324,9 @@ public class BansManager {
 
         if (ConfigManager.bans.BroadcastBans) {
             if (auto) {
-            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.TEMP_BAN_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName()).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff)));
+                PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.TEMP_BAN_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName()).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff)));
             } else {
-            	PlayerManager.sendBroadcast(ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff));
+                PlayerManager.sendBroadcast(ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff));
             }
         } else {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.TEMP_BAN_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName()).replace("{message}", message).replace("{time}", time).replace("{left}", timeDiff).replace("{shortleft}", shortTimeDiff));
@@ -548,9 +549,9 @@ public class BansManager {
             public void run() {
                 GSPlayer s = PlayerManager.getPlayer(sentBy);
                 final CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
-        
-                List<Track> tracking = null;
-            	if (search.contains(".")) {
+
+                List<Track> tracking;
+                if (search.contains(".")) {
             		tracking = DatabaseManager.tracking.getPlayerTracking(search, "ip");
             		if (tracking.isEmpty()) { 
                         PlayerManager.sendMessageToTarget(sender,
@@ -813,6 +814,57 @@ public class BansManager {
             }
         });
     }
+
+    private static void checkKickTempBan(int kickLimit, BanTarget t, String kickedBy, String reason) {
+
+
+        long kickBanTime = TimeUnit.MILLISECONDS.toSeconds(ConfigManager.bans.TempBanTime);
+        int kickCount = 0;
+        if (kicks.size() > 0) {
+            clearKicks();
+            if (kicks.size() > 0) {
+                for (Kick kick : kicks) { //find active kicks.
+                    if (t.gsp.getUuid().equals(kick.getUuid())) {
+                        kickCount++;
+                    }
+                }
+                kickCount++; //add 1 for the current kick
+                if (kickCount >= kickLimit) {
+                    tempBanPlayer(kickedBy, t, kickBanTime, reason, true);
+                    Iterator<Kick> iter2 = kicks.iterator();
+                    while (iter2.hasNext()) { //clear this players kicks
+                        Kick kick = iter2.next();
+                        if (kick.getUuid().equals(t.uuid)) iter2.remove();
+                    }
+                } else {
+                    kicks.add(new Kick(t.gsp.getUuid(), t.dispname, kickedBy, reason, System.currentTimeMillis()));
+                }
+            } else {
+                kicks.add(new Kick(t.gsp.getUuid(), t.dispname, kickedBy, reason, System.currentTimeMillis()));
+            }
+        } else {
+            kicks.add(new Kick(t.gsp.getUuid(), t.dispname, kickedBy, reason, System.currentTimeMillis()));
+        }
+
+    }
+
+    public static void clearKicks() {
+        long kickTimeOut = ConfigManager.bans.KicksTimeOut;
+        Iterator<Kick> iter = kicks.iterator();
+        while (iter.hasNext()) { //remove kicks that would have expired first
+            Kick kick = iter.next();
+            if (kick.getBannedOn() + kickTimeOut < System.currentTimeMillis()) {
+                iter.remove();
+            }
+        }
+
+    }
+
+
+    public static List<Kick> getKicks() {
+        return kicks;
+    }
+
 
     private static class BanTarget {
     	String name = null;
