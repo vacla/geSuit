@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class ActiveKicksCommand extends Command {
 
     public ActiveKicksCommand() {
-        super("!ActiveKicks", "gesuit.admin", null);
+        super("!ActiveKicks", "gesuit.admin", new String[0]);
     }
 
     @Override
