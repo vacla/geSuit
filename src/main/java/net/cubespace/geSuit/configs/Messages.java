@@ -88,11 +88,11 @@ public class Messages extends Config {
     public String BUNGEE_COMMAND_UNBAN_USAGE = "&c" + "Usage: !unban <player|uuid|ip>";
     public String BUNGEE_COMMAND_WARNHISTORY_USAGE = "&c" + "Usage: !warnhistory <player>";
     public String BUNGEE_COMMAND_KICKHISTORY_USAGE = "&c" + "Usage: !kickhistory <player>";
-    public String BUNGEE_COMMAND_KICKHISTORY_DISABLED = "&c" + "Kick History is not recoreded on this server group.";
+    public String BUNGEE_COMMAND_KICKHISTORY_DISABLED = "&c" + "Kick History is globally disabled";
     public String BUNGEE_COMMAND_NAMES_USAGE = "&c" + "Usage: !names <player|uuid>";
     public String BUNGEE_COMMAND_NAMEHISTORYUPDATE_USAGE = "&c" + "Usage: !UpdateNameHistory <player|uuid>";
-    public String UNKNOWN_PLAYER_STILL_BANNING = "&c" + "WARNING: Player is unknown, continuing anyway.";
-    public String UNKNOWN_PLAYER_NOT_WARNING = "&c" + "ERROR: Player is unknown, refusing to give warning.";
+    public String UNKNOWN_PLAYER_STILL_BANNING = "&c" + "WARNING: Player is unknown, continuing anyway";
+    public String UNKNOWN_PLAYER_NOT_WARNING = "&c" + "ERROR: Player is unknown, refusing to give warning";
     public String KICK_PLAYER_MESSAGE = "&c" + "You have been kicked. Reason: {message}";
     public String KICK_PLAYER_BROADCAST = "&b" + "{player} has been kicked. Reason: {message}";
     public String KICK_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto kicked.";
@@ -100,6 +100,7 @@ public class Messages extends Config {
     public String PLAYER_NOT_BANNED = "&a" + "That player is not banned";
     public String PLAYER_NEVER_BANNED = "&a" + "No ban history for {player}";
     public String PLAYER_NEVER_WARNED = "&a" + "No warning history for {player}";
+    public String PLAYER_NEVER_WARNED_OR_BANNED = "&a" + "No warning or ban history for {player}";
     public String PLAYER_NEVER_KICKED = "&a" + "No kick history for {player}";
     public String IPBAN_PLAYER = "&c" + "Your IP has been banned. Reason: {message}";
     public String IPBAN_PLAYER_BROADCAST = "&b" + "{player} has been ip banned. Reason: {message}";
@@ -158,5 +159,5 @@ public class Messages extends Config {
 
     //Lockdown messages
     public String LOCKDOWN_MESSAGE = "&c" + "Server is in maintenance. {message}  ";
-    public String LOCKDOWN_USAGE = "&c" + "Usage: !lockdown <end|time> <msg>  time formate like 1h5m10s) Do not use a msg with end";
+    public String LOCKDOWN_USAGE = "&c" + "Usage: !lockdown <end|time> <msg>  (time format like 1h5m10s); Do not use a msg with end";
 }

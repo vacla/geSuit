@@ -12,7 +12,7 @@ import net.md_5.bungee.api.plugin.Command;
  */
 public class KickHistoryCommand extends Command {
     public KickHistoryCommand() {
-        super("!kickHistory");
+        super("!kickhistory");
     }
 
     @Override

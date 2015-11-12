@@ -40,20 +40,24 @@ public class LockdownCommand extends Command {
             }
         }
         if (args.length == 1) {
-            if (args[0].equals("end")) {
+            if (args[0].equalsIgnoreCase("end")) {
                 LockDownManager.endLockDown();
                 if (LockDownManager.isLockedDown()) {
                     sender.sendMessage(TextComponent.fromLegacyText("Lockdown could not end and is persisting"));
                 }
                 return;
-            } else if (args[0].equals("status")) {
+            } else if (args[0].equalsIgnoreCase("status")) {
                 if (LockDownManager.checkExpiry()) {
                     sender.sendMessage(TextComponent.fromLegacyText("Lockdown is not active"));
                 } else {
                     sender.sendMessage(TextComponent.fromLegacyText("Lockdown is active until " + LockDownManager.getExpiryTimeString()));
                 }
                 return;
+            } else if (args[0].equalsIgnoreCase("help")) {
+				sender.sendMessage(TextComponent.fromLegacyText(ConfigManager.messages.LOCKDOWN_USAGE));
+				return;
             }
+
             try {
                 lockdowntime = System.currentTimeMillis() + TimeParser.parseStringtoMillisecs(args[0]);
                 if (lockdowntime > System.currentTimeMillis()) {
@@ -63,9 +67,7 @@ public class LockdownCommand extends Command {
                 }
             } catch (NumberFormatException e) {
                 sender.sendMessage(TextComponent.fromLegacyText("Could not format time from " + args[0]));
-
                 sender.sendMessage(TextComponent.fromLegacyText(ConfigManager.messages.LOCKDOWN_USAGE));
-
                 return;
             }
         }

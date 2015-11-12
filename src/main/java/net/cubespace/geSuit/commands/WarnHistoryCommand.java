@@ -23,8 +23,6 @@ public class WarnHistoryCommand extends Command {
             return;
         }
 
-        boolean showStaffNames = true;
-	
-        BansManager.displayPlayerWarnHistory(sender.getName(), args[0], showStaffNames);
+		BansManager.displayPlayerWarnBanHistory(sender.getName(), args[0]);
     }
 }
