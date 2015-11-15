@@ -159,5 +159,5 @@ public class Messages extends Config {
 
     //Lockdown messages
     public String LOCKDOWN_MESSAGE = "&c" + "Server is in maintenance. {message}  ";
-    public String LOCKDOWN_USAGE = "&c" + "Usage: !lockdown <end|time> <msg>  (time format like 1h5m10s); Do not use a msg with end";
+    public String LOCKDOWN_USAGE = "&c" + "Usage: !lockdown end|status|<time> <msg>  (time format like 1h5m10s)";
 }

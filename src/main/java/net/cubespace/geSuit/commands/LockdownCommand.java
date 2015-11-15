@@ -21,7 +21,7 @@ public class LockdownCommand extends Command {
 
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            sender.sendMessage(TextComponent.fromLegacyText(Utilities.colorize("&c You cannot peform that command")));
+            sender.sendMessage(TextComponent.fromLegacyText(Utilities.colorize("&c You cannot perform that command")));
             return;
         }
         if (!(sender.hasPermission("gesuit.admin") || sender.hasPermission("gesuit.lockdown"))) {
@@ -36,7 +36,7 @@ public class LockdownCommand extends Command {
                 LockDownManager.startLockDown(lockdowntime, "");
                 sender.sendMessage(TextComponent.fromLegacyText("Lockdown Expiry Time:" + lockdowntime + "System Time:" + System.currentTimeMillis()));
             } else {
-                sender.sendMessage(TextComponent.fromLegacyText("Couldnt not parse time: " + ConfigManager.lockdown.LockdownTime));
+                sender.sendMessage(TextComponent.fromLegacyText("Could not parse time: " + ConfigManager.lockdown.LockdownTime));
             }
         }
         if (args.length == 1) {
