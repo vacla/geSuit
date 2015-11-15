@@ -52,7 +52,7 @@ public class TimeParser
     }
 
     public static long parseStringtoMillisec(String string) {
-        int total = parseStringToSecs(string);
+        long total = parseStringToSecs(string);
         return total * 1000;
     }
 }
