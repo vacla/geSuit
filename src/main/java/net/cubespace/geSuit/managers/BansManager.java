@@ -951,7 +951,7 @@ public class BansManager {
                 }
                 kickCount++; //add 1 for the current kick
                 if (kickCount >= kickLimit) {
-                    tempBanPlayer(kickedBy, t, kickBanTime, reason, true);
+                    tempBanPlayer(kickedBy, t, kickBanTime, reason, false);
                     Iterator<Kick> iter2 = kicks.iterator();
                     while (iter2.hasNext()) { //clear this players kicks
                         Kick kick = iter2.next();
