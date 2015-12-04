@@ -103,15 +103,12 @@ public class RemoteInterface<T> {
         handledExceptions = HashMultimap.create();
         
         Method[] methods = interfaceType.getDeclaredMethods();
-        System.out.println("Generating method map for remote " + interfaceType.getName());
         
         // Generate the ids
         for (Method method : methods) {
             // Get the sequence index
             String code = createMethodCode(method);
             int id = code.hashCode() ^ method.getName().hashCode();
-            
-            System.out.println("- Method " + method.getName() + " code: " + code + " ID: " + id);
             
             methodMap.put(id, method);
             

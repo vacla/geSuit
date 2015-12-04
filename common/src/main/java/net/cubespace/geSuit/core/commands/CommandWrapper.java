@@ -118,7 +118,6 @@ abstract class CommandWrapper {
         CommandDefinition variant = variants.get(result.node.getVariant());
         
         final Invokable<Object, Void> method = parseTree.getVariant(result.node.getVariant());
-        System.out.println("Parse complete: " + method.toString() + " in " + method.getDeclaringClass().getName());
         
         // Ensure the caller is the right type
         if (!variant.senderType.isInstance(sender.getSender())) {
@@ -144,8 +143,6 @@ abstract class CommandWrapper {
         for (Object object : result.parameters) {
             parameters[index++] = object;
         }
-        
-        System.out.println("params: " + Arrays.toString(parameters));
         
         // Invoke the method
         if (variant.async) {
