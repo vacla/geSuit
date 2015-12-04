@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import net.cubespace.geSuit.core.attachments.Attachment;
+import net.cubespace.geSuit.core.attachments.AttachmentContainer;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
@@ -29,6 +30,8 @@ import com.google.common.collect.Maps;
 public class TestPlayerManager {
     
     private GlobalPlayer createPlayer(UUID id, String name, String nickname) {
+        AttachmentContainer container = mock(AttachmentContainer.class);
+        
         GlobalPlayer player = mock(GlobalPlayer.class);
         when(player.getUniqueId()).thenReturn(id);
         when(player.getName()).thenReturn(name);
@@ -40,6 +43,7 @@ public class TestPlayerManager {
         }
         
         when(player.isReal()).thenReturn(true);
+        when(player.getAttachmentContainer()).thenReturn(container);
         
         return player;
     }
