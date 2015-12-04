@@ -418,6 +418,7 @@ public class GlobalPlayer {
     }
     
     private void load0() {
+        storage.reset();
         // Player settings
         if (!storage.contains("info")) {
             return;
@@ -449,6 +450,8 @@ public class GlobalPlayer {
     }
     
     private void save0() {
+        storage.reset();
+        
         // Player settings
         Map<String, String> values = Maps.newHashMap();
         values.put("name", name);

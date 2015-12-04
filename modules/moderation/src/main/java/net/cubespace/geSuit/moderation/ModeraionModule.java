@@ -16,6 +16,7 @@ import net.cubespace.geSuit.core.objects.BanInfo;
 import net.cubespace.geSuit.moderation.commands.BanCommands;
 import net.cubespace.geSuit.moderation.commands.KickCommands;
 import net.cubespace.geSuit.moderation.commands.LookupCommands;
+import net.cubespace.geSuit.moderation.commands.MiscCommands;
 import net.cubespace.geSuit.moderation.commands.MuteCommands;
 import net.cubespace.geSuit.moderation.commands.WarnCommands;
 import net.cubespace.geSuit.modules.BaseModule;
@@ -73,6 +74,7 @@ public class ModeraionModule extends BaseModule implements ChannelDataReceiver<B
         manager.registerAll(new KickCommands(bans), getPlugin());
         manager.registerAll(new LookupCommands(tracking), getPlugin());
         manager.registerAll(new MuteCommands(mutes), getPlugin());
+        manager.registerAll(new MiscCommands(), getPlugin());
     }
     
     @SuppressWarnings("unchecked")

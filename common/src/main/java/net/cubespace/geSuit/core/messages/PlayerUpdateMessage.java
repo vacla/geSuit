@@ -87,7 +87,12 @@ public class PlayerUpdateMessage extends BaseMessage
 				
 				break;
 			case Name:
-				out.writeUTF(nickname);
+			    if (nickname != null) {
+			        out.writeBoolean(true);
+			        out.writeUTF(nickname);
+			    } else {
+			        out.writeBoolean(false);
+			    }
 				break;
 			default:
 				break;
@@ -108,7 +113,9 @@ public class PlayerUpdateMessage extends BaseMessage
 				}
 				break;
 			case Name:
-				nickname = in.readUTF();
+			    if (in.readBoolean()) {
+			        nickname = in.readUTF();
+			    }
 				break;
 			default:
 				break;

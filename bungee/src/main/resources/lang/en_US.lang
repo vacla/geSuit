@@ -26,6 +26,7 @@ log.player-create = "Created player &b{player}&7 ({uuid})"
 player.not-online = &cThat player is not online
 player.no-permission = &cYou do not have permission to use that command
 player.unknown = &cUnknown player
+player.required = &cThis command or syntax may only be called by a player
 
 # teleport specific messages
 teleport.all = &6All players have been teleported to {player}
@@ -141,6 +142,10 @@ warn.unknown-player = &cPlayer is unknown, refusing to give warning.
 warn.history.empty = &aNo warning history for {player}
 warn.display.personal = &bYou has received a warning. Reason: {message}
 warn.display.broadcast = &b{player} has received a warning. Reason: {message}
+
+nick.duplicate = &cYou cannot use that name as a nickname. You may not nickname to existing names
+nick.added = &a{player} has been nicknamed to {name}
+nick.removed = &a{player}s nickname has been removed
 
 # Mute related messages
 mute.start.single = &bYou have been muted

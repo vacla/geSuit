@@ -40,7 +40,11 @@ public class BukkitPlatform implements Platform, Listener {
         Player player = Bukkit.getPlayer(event.getPlayer().getUniqueId());
         
         if (player != null) {
-            player.setDisplayName(event.getCurrentName());
+            if (event.getPlayer().hasNickname()) {
+                player.setDisplayName(event.getCurrentName());
+            } else {
+                player.setDisplayName(player.getName());
+            }
         }
     }
     

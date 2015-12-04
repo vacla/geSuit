@@ -722,6 +722,7 @@ class CachedRedisProvider {
     
     private void saveMap(RedisPipeline pipe, String key, Map<?, ?> map) {
         Map<String, String> dest = convertMap(map, String.class, String.class);
+        pipe.del(key);
         pipe.hmset(key, dest);
     }
 
