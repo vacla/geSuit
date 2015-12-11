@@ -1,16 +1,18 @@
 package net.cubespace.geSuit.core.attachments;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
-
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
-import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.Platform;
 import net.cubespace.geSuit.core.attachments.Attachment.AttachmentType;
@@ -21,10 +23,14 @@ import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
 import net.cubespace.geSuit.core.storage.StorageSection;
 
 public class AttachmentContainer {
-    // The full set of attachment class names including attachments that are
-    // not loaded due to missing classes. Used for saving attachments
-    private Set<String> attachmentSet;
-    private Map<Class<? extends Attachment>, Attachment> attachments;
+    // All existing attachments for each type 
+    private final SetMultimap<AttachmentType, String> definedAttachments;
+    // All attachments regardless of type. May or may not be loaded depending on the class availability
+    private final Map<String, Optional<? extends Attachment>> attachments;
+    // Keeps track of removed attachments so they can be removed from the backend
+    private final Set<String> removed;
+    
+    private Set<String> modified;
     
     private boolean hasLoaded;
     private boolean requiresSave;
@@ -40,8 +46,9 @@ public class AttachmentContainer {
         this.storage = storage;
         this.platform = platform;
         
-        attachmentSet = Sets.newHashSet();
+        definedAttachments = HashMultimap.create();
         attachments = Maps.newHashMap();
+        removed = Sets.newHashSet();
     }
     
     // Manipulation
@@ -55,14 +62,23 @@ public class AttachmentContainer {
      */
     public <T extends Attachment> T addAttachment(T attachment) throws IllegalStateException {
         Class<? extends Attachment> type = attachment.getClass();
-        Preconditions.checkState(!attachments.containsKey(type));
+        String typeName = type.getName();
+        Preconditions.checkState(!attachments.containsKey(typeName));
         
-        attachments.put(type, attachment);
-        if (attachment.getType() == AttachmentType.Persistent) {
-            attachmentSet.add(type.getName());
+        removed.remove(typeName);
+        definedAttachments.put(attachment.getType(), typeName);
+        attachments.put(typeName, Optional.of(attachment));
+        
+        // Queue save if needed
+        switch (attachment.getType()) {
+        case Persistent:
+        case Session:
             requiresSave = true;
-        } else if (attachment.getType() == AttachmentType.Session) {
             attachment.setDirty();
+            break;
+        default:
+            // Do nothing
+            break;
         }
         
         return attachment;
@@ -78,7 +94,12 @@ public class AttachmentContainer {
      */
     @SuppressWarnings("unchecked")
     public <T extends Attachment> T getAttachment(Class<T> attachmentClass) {
-        return (T)attachments.get(attachmentClass);
+        Optional<? extends Attachment> attachment = attachments.get(attachmentClass.getName());
+        if (attachment == null || !attachment.isPresent()) {
+            return null;
+        }
+        
+        return (T)attachment.get();
     }
     
     /**
@@ -90,20 +111,89 @@ public class AttachmentContainer {
      */
     @SuppressWarnings("unchecked")
     public <T extends Attachment> T removeAttachment(Class<T> attachmentClass) {
-        attachmentSet.remove(attachmentClass.getName());
-        T attachment = (T)attachments.remove(attachmentClass);
-        if (attachment != null && attachment.getType() == AttachmentType.Persistent) {
-            requiresSave = true;
+        Optional<? extends Attachment> attachment = attachments.remove(attachmentClass.getName());
+        if (attachment == null) {
+            return null;
         }
         
-        return attachment;
+        AttachmentType type;
+        if (attachment.isPresent()) {
+            definedAttachments.remove(attachment.get().getType(), attachmentClass.getName());
+            type = attachment.get().getType();
+        } else {
+            type = null;
+            // Remove the definition, dont know what type it is
+            for (AttachmentType t : AttachmentType.values()) {
+                if (definedAttachments.remove(t, attachmentClass.getName())) {
+                    type = t;
+                }
+            }
+        }
+        
+        switch (type) {
+        case Persistent:
+        case Session:
+            requiresSave = true;
+            removed.add(attachmentClass.getName());
+            break;
+        default:
+            // Do nothing
+            break;
+        }
+        
+        return (T)attachment.orNull();
+    }
+    
+    /**
+     * Removes all attachments of a specific type
+     * @param type The type of attachment
+     */
+    public void removeAll(AttachmentType type) {
+        for (String id : definedAttachments.removeAll(type)) {
+            attachments.remove(id);
+        }
+        
+        if (type != AttachmentType.Local) {
+            requiresSave = true;
+        }
     }
     
     /**
      * @return Returns an unmodifiable collection of all attachments currently loaded. 
      */
     public Collection<Attachment> getAttachments() {
-        return Collections.unmodifiableCollection(attachments.values());
+        ImmutableSet.Builder<Attachment> builder = ImmutableSet.builder();
+        
+        for (Optional<? extends Attachment> attachment : attachments.values()) {
+            if (attachment.isPresent()) {
+                builder.add(attachment.get());
+            }
+        }
+        
+        return builder.build();
+    }
+    
+    /**
+     * Checks if this container has modified attachments in it
+     * @return True if at least one attachment is modified
+     */
+    public boolean isModified() {
+        if (requiresSave) {
+            return true;
+        }
+        
+        for (Optional<? extends Attachment> attachment : attachments.values()) {
+            if (!attachment.isPresent()) {
+                continue;
+            }
+            
+            Attachment value = attachment.get();
+            if (value.isDirty()) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     // Save load
@@ -122,47 +212,62 @@ public class AttachmentContainer {
      */
     public void update(boolean force) {
         boolean hasChanges = false;
-        for (Attachment attachment : attachments.values()) {
-            if (force || attachment.isDirty()) {
-                switch (attachment.getType()) {
-                case Persistent:
-                    saveAttachment(attachment);
-                    hasChanges = true;
-                    break;
-                case Session:
-                    syncAttachment(attachment);
-                    break;
-                default:
-                    // Do nothing
-                    break;
-                }
-                
-                if (attachment.isDirty()) {
-                    platform.callEvent(new GlobalPlayerAttachmentUpdateEvent(owner, attachment));
-                }
-                
-                attachment.clearDirty();
+        // Delete all 'removed' attachments
+        for (String id : removed) {
+            storage.remove("attachment." + id);
+        }
+        removed.clear();
+        
+        modified = Sets.newHashSet();
+        
+        // Save attachments
+        for (Optional<? extends Attachment> attachment : attachments.values()) {
+            if (!attachment.isPresent()) {
+                continue;
+            }
+            
+            Attachment value = attachment.get();
+            // Check for modification
+            if (!force && !value.isDirty()) {
+                continue;
+            }
+            
+            // Handle the update event
+            if (value.isDirty()) {
+                platform.callEvent(new GlobalPlayerAttachmentUpdateEvent(owner, value));
+            }
+            
+            value.clearDirty();
+            
+            if (value.getType() != AttachmentType.Local) {
+                storage.set("attachment." + value.getClass().getName(), value);
+                modified.add(value.getClass().getName());
+                hasChanges = true;
             }
         }
         
-        if (requiresSave || hasChanges) {
+        // Update the sets
+        if (requiresSave || hasChanges || force) {
             // Save the list of attachments
-            storage.set("attachments", attachmentSet);
+            storage.set("attachments.persist", definedAttachments.get(AttachmentType.Persistent));
+            storage.set("attachments.session", definedAttachments.get(AttachmentType.Session));
         }
     }
     
-    private void saveAttachment(Attachment attachment) {
-        String name = attachment.getClass().getSimpleName().toLowerCase();
-        storage.set(name, attachment);
-    }
-    
-    private void syncAttachment(Attachment attachment) {
-        Map<String, String> values = Maps.newHashMap();
-        attachment.save(values);
+    /**
+     * Broadcasts any modifications made in {@link #update(boolean)}.
+     * This should be called <b>after</b> the changes are written to
+     * the backend
+     */
+    public void broadcastChanges() {
+        if (modified == null || modified.isEmpty()) {
+            return;
+        }
         
-        SyncAttachmentMessage message = new SyncAttachmentMessage(owner.getUniqueId(), attachment.getClass(), values);
-        
+        SyncAttachmentMessage message = new SyncAttachmentMessage(owner.getUniqueId(), modified);
         channel.broadcast(message);
+        
+        modified = null;
     }
     
     /**
@@ -178,15 +283,56 @@ public class AttachmentContainer {
      * Loads all contained attachments
      */
     public void load() {
-        attachmentSet = Sets.newHashSet(storage.getSetString("attachments"));
+        // Update the known attachments
+        definedAttachments.removeAll(AttachmentType.Persistent);
+        definedAttachments.removeAll(AttachmentType.Session);
+        definedAttachments.putAll(AttachmentType.Persistent, storage.getSetString("attachments.persist"));
+        definedAttachments.putAll(AttachmentType.Session, storage.getSetString("attachments.session"));
         
-        for (String name : attachmentSet) {
-            loadAttachment(name);
+        // Remove unknown attachments
+        Iterator<String> it = attachments.keySet().iterator();
+        while (it.hasNext()) {
+            String id = it.next();
+            
+            if (!definedAttachments.containsValue(id)) {
+                it.remove();
+            }
+        }
+        
+        // Load the attachments from the backend
+        Iterable<String> stored = Iterables.concat(
+                definedAttachments.get(AttachmentType.Persistent),
+                definedAttachments.get(AttachmentType.Session)
+                );
+        
+        for (String id : stored) {
+            Optional<? extends Attachment> attachmentHolder = attachments.get(id);
+            Attachment attachment;
+            if (attachmentHolder == null || !attachmentHolder.isPresent()) {
+                attachment = newAttachment(id);
+            } else {
+                attachment = attachmentHolder.get();
+            }
+            
+            // Load the data
+            if (attachment != null) {
+                attachment = storage.getStorable("attachment." + id, attachment);
+            }
+            
+            attachments.put(id, Optional.fromNullable(attachment));
+            if (attachment != null) {
+                attachment.clearDirty();
+            }
         }
         
         hasLoaded = true;
     }
     
+    /**
+     * Gets the string class name as a class object
+     * @param className The input class name
+     * @return The class as Attachment subclass or null if not possible
+     */
     private Class<? extends Attachment> getAttachmentClass(String className) {
         try {
             // Resolve attachment class
@@ -201,7 +347,12 @@ public class AttachmentContainer {
         }
     }
     
-    private Attachment getAttachment(String className) {
+    /**
+     * Creates a new attachment from the input class name
+     * @param className The name of the class
+     * @return The attachment, or null if it couldnt be created
+     */
+    private Attachment newAttachment(String className) {
         try {
             // Resolve attachment class
             Class<? extends Attachment> attachmentClass = getAttachmentClass(className);
@@ -210,12 +361,7 @@ public class AttachmentContainer {
                 return null;
             }
             
-            // Get or create the attachment instance
-            if (attachments.containsKey(attachmentClass)) {
-                return attachments.get(attachmentClass);
-            } else {
-                return attachmentClass.newInstance();
-            }
+            return attachmentClass.newInstance();
         } catch (IllegalAccessException e) {
             // Ignore
         } catch (InstantiationException e) {
@@ -225,56 +371,27 @@ public class AttachmentContainer {
         return null;
     }
     
-    private void loadAttachment(String className) {
-        Attachment attachment = getAttachment(className);
-        if (attachment == null) {
-            return;
-        }
+    /**
+     * Called to refresh attachments when they change.
+     * This also fires update events as needed
+     * @param message The update packet
+     */
+    public void onAttachmentUpdate(SyncAttachmentMessage message) {
+        // Reload all attachments
+        load();
         
-        // Make sure we arent using this for any attachment that isnt a persistent type attachment
-        if (attachment.getType() != AttachmentType.Persistent) {
-            return;
+        // Now fire update events for all changed attachments if loaded locally
+        for (String id : message.updatedAttachments) {
+            Optional<? extends Attachment> attachment = attachments.get(id);
+            if (attachment != null && attachment.isPresent()) {
+                platform.callEvent(new GlobalPlayerAttachmentUpdateEvent(owner, attachment.get()));
+            }
         }
-        
-        // Load it
-        Attachment loaded = storage.getStorable(attachment.getClass().getSimpleName().toLowerCase(), attachment);
-        if (loaded != null) {
-            attachment = loaded;
-        }
-        attachment.clearDirty();
-        
-        attachments.put(attachment.getClass(), attachment);
     }
     
     /**
-     * To be called upon receiving a relevant SyncAttachmentMessage
-     * @param message The packet received
+     * Forces attachments to be reloaded next time they are requested
      */
-    public void onAttachmentUpdate(SyncAttachmentMessage message) {
-        // Check the owner
-        if (!owner.getUniqueId().equals(message.owner)) {
-            return;
-        }
-        
-        Attachment attachment = getAttachment(message.className);
-        if (attachment == null) {
-            return;
-        }
-        
-        // Make sure we arent using this for any attachment that isnt a session type attachment
-        if (attachment.getType() != AttachmentType.Session) {
-            return;
-        }
-        
-        // Load it
-        attachment.load(message.values);
-        attachment.clearDirty();
-        
-        attachments.put(attachment.getClass(), attachment);
-        
-        platform.callEvent(new GlobalPlayerAttachmentUpdateEvent(owner, attachment));
-    }
-    
     public void invalidate() {
         hasLoaded = false;
     }

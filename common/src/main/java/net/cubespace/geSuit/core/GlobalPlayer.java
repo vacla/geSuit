@@ -395,9 +395,15 @@ public class GlobalPlayer {
     public void saveIfModified() {
         if (isDirty) {
             save();
+        } else if (attachments.isModified()) {
+            // Update attachments only
+            storage.reset();
+            attachments.update();
+            storage.update();
+            
+            // Notify servers of attachment changes
+            attachments.broadcastChanges();
         }
-        
-        attachments.update();
     }
     
     /**
@@ -413,7 +419,6 @@ public class GlobalPlayer {
         isDirty = false;
         
         save0();
-        
         manager.invalidateOthers(this);
     }
     
@@ -481,12 +486,14 @@ public class GlobalPlayer {
         }
         
         // Attachments
-        // TODO: We need to make it so attachments do not have to be loaded and saved with everything else
         attachments.update();
         
+        // Save the player
+        storage.updateAtomic();
         manager.onPlayerSave(this);
         
-        storage.updateAtomic();
+        // Notify servers of attachment changes
+        attachments.broadcastChanges();
     }
     
     void loadLite() {

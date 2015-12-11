@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.PlayerManager;
+import net.cubespace.geSuit.core.attachments.Attachment.AttachmentType;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerJoinEvent;
 import net.cubespace.geSuit.core.events.player.GlobalPlayerQuitEvent;
@@ -37,6 +38,10 @@ public class BungeePlayerManager extends PlayerManager implements Listener {
         if (!player.isLoaded()) {
             player.refresh();
         }
+        
+        // Remove existing session and local attachments for a fresh start
+        player.getAttachmentContainer().removeAll(AttachmentType.Session);
+        player.getAttachmentContainer().removeAll(AttachmentType.Local);
         
         // Mark as new player if needed
         if (!player.hasPlayedBefore()) {

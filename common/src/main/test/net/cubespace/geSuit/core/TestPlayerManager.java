@@ -13,7 +13,6 @@ import net.cubespace.geSuit.core.attachments.AttachmentContainer;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage;
-import net.cubespace.geSuit.core.messages.SyncAttachmentMessage;
 import net.cubespace.geSuit.core.messages.PlayerUpdateMessage.Action;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.core.storage.StorageInterface;
@@ -461,65 +460,7 @@ public class TestPlayerManager {
         assertSame(player2, playerManager.getPlayerExact("NeXtPlAyEr", true));
         verify(channel).broadcast(any(PlayerUpdateMessage.class));
     }
-    
-    @Test
-    public void testAttachmentSync() {
-        StorageProvider provider = mock(StorageProvider.class);
-        PlayerManager playerManager = new PlayerManager(null, null, provider, null) {};
-        
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", null, playerManager, mock(StorageInterface.class), mock(Platform.class));
-        player.addAttachment(new TestAttachment());
-        playerManager.addPlayer(player);
-        
-        Map<String, String> values = Maps.newHashMap();
-        values.put("test", "value");
-        
-        // Do test
-        SyncAttachmentMessage message = new SyncAttachmentMessage(player.getUniqueId(), TestAttachment.class, values);
-        playerManager.handleSyncAttachment(message);
-        
-        TestAttachment attachment = player.getAttachment(TestAttachment.class);
-        
-        assertEquals(values, attachment.values);
-    }
-    
-    @Test
-    public void testAttachmentSyncOffline() {
-        StorageProvider provider = mock(StorageProvider.class);
-        PlayerManager playerManager = new PlayerManager(null, null, provider, null) {};
-        
-        GlobalPlayer player = new GlobalPlayer(UUID.randomUUID(), "testPlayer", null, playerManager, mock(StorageInterface.class), mock(Platform.class));
-        player.addAttachment(new TestAttachment());
-        playerManager.addPlayer(player);
-        playerManager.removePlayer(player);
-        
-        Map<String, String> values = Maps.newHashMap();
-        values.put("test", "value");
-        
-        // Do test
-        SyncAttachmentMessage message = new SyncAttachmentMessage(player.getUniqueId(), TestAttachment.class, values);
-        playerManager.handleSyncAttachment(message);
-        
-        TestAttachment attachment = player.getAttachment(TestAttachment.class);
-        
-        assertEquals(values, attachment.values);
-    }
-    
-    @Test
-    public void testAttachmentSyncInvalid() {
-        StorageProvider provider = mock(StorageProvider.class);
-        PlayerManager playerManager = new PlayerManager(null, null, provider, null) {};
-        
-        Map<String, String> values = Maps.newHashMap();
-        values.put("test", "value");
-        
-        // Do test
-        SyncAttachmentMessage message = new SyncAttachmentMessage(UUID.randomUUID(), TestAttachment.class, values);
-        playerManager.handleSyncAttachment(message);
-        
-        // It should do nothing
-    }
-    
+
     @Test
     public void testInvalidate() {
         StorageProvider provider = mock(StorageProvider.class);
