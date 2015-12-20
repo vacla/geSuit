@@ -942,9 +942,15 @@ public class BansManager {
         long kickBanTime = TimeUnit.MILLISECONDS.toSeconds(ConfigManager.bans.TempBanTime);
         int kickCount = 0;
 
-        if (reason.contains("AutoKick: Anti-AFK")) {
-            // Do not track Anti-AFK kicks
-            return;
+        List<String> reasonIgnores = ConfigManager.bans.KickReasonIgnoreList;
+        if (!reasonIgnores.isEmpty()) {
+            for (String item : reasonIgnores) {
+                if (reason.contains(item)) {
+                    // Do not consider this ban when counting kicks
+                    // For example, ignore Anti-AFK autokicks
+                    return;
+                }
+            }
         }
 
         if (kicks.size() > 0) {

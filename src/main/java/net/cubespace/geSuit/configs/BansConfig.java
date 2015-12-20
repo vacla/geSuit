@@ -5,7 +5,10 @@ import net.cubespace.geSuit.configs.SubConfig.GeoIPSettings;
 import net.cubespace.Yamler.Config.Config;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class BansConfig extends Config {
     public BansConfig() {
@@ -27,6 +30,10 @@ public class BansConfig extends Config {
     public int KickLimit = 0; // if 0 temp banning after kicks is off.
     public long KicksTimeOut = 600000; //time in ms that kicks are considered active
     public long TempBanTime = 300000; // Time in ms that a player is autobanned for
+
+    // List of strings to look for in ban reasons for the purposes of ignoring the ban when counting kicks
+    public List<String> KickReasonIgnoreList = new ArrayList<>(Arrays.asList("AutoKick: Anti-AFK"));
+
     public HashMap<Integer, String> Actions = new HashMap<>();
     
     public GeoIPSettings GeoIP = new GeoIPSettings();
