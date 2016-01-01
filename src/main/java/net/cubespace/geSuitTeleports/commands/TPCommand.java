@@ -111,15 +111,10 @@ public class TPCommand implements CommandExecutor {
         // tp Player
         if ( args.length == 1 ) {
             // Teleport yourself to another player
-            Player p2 = Bukkit.getPlayer(args[0]);
-            if (p2 == null) {
-                sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[0]);
-                return true;
-            }
-
+            // Do not validate target username since may not be on this server
             Player p = Bukkit.getPlayer(sender.getName());
             p.saveData();
-            TeleportsManager.teleportToPlayer( sender, p.getName(), p2.getName() );
+            TeleportsManager.teleportToPlayer( sender, p.getName(), args[0] );
             return true;
 
         }
@@ -127,6 +122,7 @@ public class TPCommand implements CommandExecutor {
         // tp Player1 Player2
         if ( args.length == 2 ) {
             // Send Player1 to Player2
+            // Do not validate target username since may not be on this server
 
             Player p = Bukkit.getPlayer(args[0]);
             if (p == null) {
@@ -134,14 +130,8 @@ public class TPCommand implements CommandExecutor {
                 return true;
             }
 
-            Player p2 = Bukkit.getPlayer(args[1]);
-            if (p2 == null) {
-                sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[1]);
-                return true;
-            }
-
             p.saveData();
-            TeleportsManager.teleportToPlayer( sender, p.getName(), p2.getName() );
+            TeleportsManager.teleportToPlayer( sender, p.getName(), args[1] );
             return true;
         }
 
