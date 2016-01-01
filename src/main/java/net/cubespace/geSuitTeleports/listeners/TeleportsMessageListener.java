@@ -20,10 +20,12 @@ public class TeleportsMessageListener implements PluginMessageListener {
         try {
             task = in.readUTF();
             if ( task.equals( "TeleportToPlayer" ) ) {
+                // Player1 Player2
                 TeleportsManager.teleportPlayerToPlayer( in.readUTF(), in.readUTF() );
             }
 
             if ( task.equals( "TeleportToLocation" ) ) {
+                // Player World X Y Z Yaw Pitch
                 TeleportsManager.teleportPlayerToLocation( in.readUTF(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat() );
             }
             
