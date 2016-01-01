@@ -104,12 +104,20 @@ public class TPCommand implements CommandExecutor {
             return true;
         }
 
+        // tp Player X Y Z
         // tp X Y Z World
         if ( args.length == 4) {
-            // Teleport yourself to the specified coordinates of the given world (on this server)
-            Player p = Bukkit.getPlayer(sender.getName());
-            p.saveData();
-            TeleportsManager.teleportToLocation(p.getName(), "", args[3], Double.valueOf(args[0]), Double.valueOf(args[1]), Double.valueOf(args[2]));
+            Player p2 = Bukkit.getPlayer( args[0] );
+            if ( p2 != null ) {
+                // Teleport another player to the given coordinates (of this world)
+                p2.saveData();
+                TeleportsManager.teleportToLocation( p2.getName(), "", ((Player) sender).getWorld().getName(), Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
+            } else {
+                // Teleport yourself to the specified coordinates of the given world (on this server)
+                Player p = Bukkit.getPlayer(sender.getName());
+                p.saveData();
+                TeleportsManager.teleportToLocation(p.getName(), "", args[3], Double.valueOf(args[0]), Double.valueOf(args[1]), Double.valueOf(args[2]));
+            }
             return true;
         }
 
