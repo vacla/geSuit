@@ -20,7 +20,7 @@ public class TPCommand implements CommandExecutor {
 
             /* Console Commands */
 
-            if (args.length < 2 || args.length > 4) {
+            if (args.length < 2 || args.length > 6) {
                 return false;
             }
 
@@ -38,6 +38,7 @@ public class TPCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[1]);
                     return true;
                 }
+                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + p2.getName());
                 p.saveData();
                 p.teleport( p2 );
                 return true;
@@ -49,8 +50,33 @@ public class TPCommand implements CommandExecutor {
                 if (!validCoordinates(sender, args, 1)) {
                     return true;
                 }
+                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3]);
                 p.saveData();
                 p.teleport( new Location( p.getWorld(), Double.parseDouble( args[1] ), Double.parseDouble( args[2] ), Double.parseDouble( args[3] ) ) );
+                return true;
+            }
+
+            // tp Player X Y Z World
+            if ( args.length == 5 ) {
+                // Send player to the given coordinates of the given world (on this server)
+                if (!validCoordinates(sender, args, 1)) {
+                    return true;
+                }
+                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3] + " in world " + args[4]);
+                p.saveData();
+                TeleportsManager.teleportToLocation( p.getName(), "", args[4], Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
+                return true;
+            }
+
+            // tp Player X Y Z World Server
+            if ( args.length == 6 ) {
+                // Send player to the given coordinates of the given server and world
+                if (!validCoordinates(sender, args, 1)) {
+                    return true;
+                }
+                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3] + " in world " + args[4] + " on server " + args[5]);
+                p.saveData();
+                TeleportsManager.teleportToLocation( p.getName(), args[5], args[4], Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
                 return true;
             }
 
