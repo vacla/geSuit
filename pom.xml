@@ -14,19 +14,18 @@
 
     <repositories>
       <repository>
-        <id>md5-repo</id>
-        <url>http://repo.md-5.net/content/groups/public/</url>
-        <releases><enabled>true</enabled></releases>
-        <snapshots><enabled>true</enabled></snapshots>
+        <id>spigot-repo</id>
+        <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
       </repository>
     </repositories>
 
     <dependencies>
       <dependency>
         <groupId>org.spigotmc</groupId>
-        <artifactId>spigot</artifactId>
-        <version>1.7.10-R0.1-SNAPSHOT</version>
-    	<exclusions>
+        <artifactId>spigot-api</artifactId>
+        <version>1.8.3-R0.1-SNAPSHOT</version>
+        <scope>provided</scope>
+        <exclusions>
           <exclusion>
             <groupId>org.spigotmc</groupId>
             <artifactId>sneaky-throw</artifactId>
@@ -34,6 +33,7 @@
         </exclusions>
       </dependency>
     </dependencies>
+      
     <build>
         <finalName>${project.name}</finalName>
         <resources>
