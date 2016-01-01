@@ -5,7 +5,7 @@ description: Part of the gesuit this plugin allows users to teleport to each oth
 author: geNAZt
 commands:
     tp:
-        description: Teleports a player to another player or location
+        description: Teleports a player to another player or location (use ~ for relative coordinates when not switching worlds)
         aliases: [teleport,tpo]
         permission: gesuit.teleports.command.tp
         permission-message: §cYou do not have permission for this command

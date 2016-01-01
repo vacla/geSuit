@@ -47,36 +47,55 @@ public class TPCommand implements CommandExecutor {
             // tp Player X Y Z
             if ( args.length == 4 ) {
                 // Send player to specified coordinates
-                if (!validCoordinates(sender, args, 1)) {
+                // Supports coordinates relative to the player
+                if (!validCoordinates(sender, args, 1, true)) {
                     return true;
                 }
                 sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3]);
                 p.saveData();
-                p.teleport( new Location( p.getWorld(), Double.parseDouble( args[1] ), Double.parseDouble( args[2] ), Double.parseDouble( args[3] ) ) );
+                p.teleport( new Location(
+                        p.getWorld(),
+                        getCoordinate(p.getLocation().getX(), args[1]),
+                        getCoordinate(p.getLocation().getY(), args[2]),
+                        getCoordinate(p.getLocation().getZ(), args[3]) ) );
                 return true;
             }
 
             // tp Player X Y Z World
             if ( args.length == 5 ) {
                 // Send player to the given coordinates of the given world (on this server)
-                if (!validCoordinates(sender, args, 1)) {
+                // Cannot use relative coordinates since potentially switching worlds
+                if (!validCoordinates(sender, args, 1, false)) {
                     return true;
                 }
                 sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3] + " in world " + args[4]);
                 p.saveData();
-                TeleportsManager.teleportToLocation( p.getName(), "", args[4], Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
+                TeleportsManager.teleportToLocation(
+                        p.getName(),  // Player to teleport
+                        "",           // Server
+                        args[4],      // World
+                        Double.valueOf(args[1]),
+                        Double.valueOf(args[2]),
+                        Double.valueOf(args[3]) );
                 return true;
             }
 
             // tp Player X Y Z World Server
             if ( args.length == 6 ) {
                 // Send player to the given coordinates of the given server and world
-                if (!validCoordinates(sender, args, 1)) {
+                // Cannot use relative coordinates since potentially switching worlds
+                if (!validCoordinates(sender, args, 1, false)) {
                     return true;
                 }
                 sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3] + " in world " + args[4] + " on server " + args[5]);
                 p.saveData();
-                TeleportsManager.teleportToLocation( p.getName(), args[5], args[4], Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
+                TeleportsManager.teleportToLocation(
+                        p.getName(),  // Player to teleport
+                        args[5],      // Server
+                        args[4],      // World
+                        Double.valueOf(args[1]),
+                        Double.valueOf(args[2]),
+                        Double.valueOf(args[3]) );
                 return true;
             }
 
@@ -85,7 +104,7 @@ public class TPCommand implements CommandExecutor {
 
         /* Player Commands */
 
-        if (args.length < 1 || args.length > 5) {
+        if (args.length < 1 || args.length > 6) {
             return false;
         }
 
@@ -129,34 +148,55 @@ public class TPCommand implements CommandExecutor {
         // tp X Y Z
         if ( args.length == 3 ) {
             // Teleport yourself to the specified coordinates (of this world)
-            if (!validCoordinates(sender, args, 0)) {
+            // Supports relative coordinates
+            if (!validCoordinates(sender, args, 0, true)) {
                 return true;
             }
             Player p = Bukkit.getPlayer(sender.getName());
             p.saveData();
-            TeleportsManager.teleportToLocation(p.getName(), "", p.getWorld().getName(), Double.valueOf(args[0]), Double.valueOf(args[1]), Double.valueOf(args[2]));
+            TeleportsManager.teleportToLocation(
+                    p.getName(),                 // Player to teleport
+                    "",                          // Server
+                    p.getWorld().getName(),      // World
+                    getCoordinate(p.getLocation().getX(), args[0]),
+                    getCoordinate(p.getLocation().getY(), args[1]),
+                    getCoordinate(p.getLocation().getZ(), args[2]) );
             return true;
         }
 
         // tp Player X Y Z
         // tp X Y Z World
         if ( args.length == 4) {
+            Player p = Bukkit.getPlayer(sender.getName());
             Player p2 = Bukkit.getPlayer( args[0] );
             if ( p2 != null ) {
                 // Teleport another player to the given coordinates (of this world)
-                if (!validCoordinates(sender, args, 1)) {
+                // Supports coordinates relative to the sender
+                if (!validCoordinates(sender, args, 1, true)) {
                     return true;
                 }
                 p2.saveData();
-                TeleportsManager.teleportToLocation( p2.getName(), "", ((Player) sender).getWorld().getName(), Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
+                TeleportsManager.teleportToLocation(
+                        p2.getName(),                // Player to teleport
+                        "",                          // Server
+                        p.getWorld().getName(),      // World
+                        getCoordinate(p.getLocation().getX(), args[1]),
+                        getCoordinate(p.getLocation().getY(), args[2]),
+                        getCoordinate(p.getLocation().getZ(), args[3]) );
             } else {
                 // Teleport yourself to the specified coordinates of the given world (on this server)
-                if (!validCoordinates(sender, args, 0)) {
+                // Cannot use relative coordinates since potentially switching worlds
+                if (!validCoordinates(sender, args, 0, false)) {
                     return true;
                 }
-                Player p = Bukkit.getPlayer(sender.getName());
                 p.saveData();
-                TeleportsManager.teleportToLocation(p.getName(), "", args[3], Double.valueOf(args[0]), Double.valueOf(args[1]), Double.valueOf(args[2]));
+                TeleportsManager.teleportToLocation(
+                        p.getName(),                 // Player to teleport
+                        "",                          // Server
+                        args[3],                     // World
+                        Double.valueOf(args[0]),
+                        Double.valueOf(args[1]),
+                        Double.valueOf(args[2]) );
             }
             return true;
         }
@@ -164,22 +204,36 @@ public class TPCommand implements CommandExecutor {
         // tp Player X Y Z World
         // tp Server World X Y Z
         if ( args.length == 5 ) {
+            Player p = Bukkit.getPlayer(sender.getName());
             Player p2 = Bukkit.getPlayer( args[0] );
             if ( p2 != null ) {
                 // Teleport another player to the given coordinates of the given world (on this server)
-                if (!validCoordinates(sender, args, 1)) {
+                // Cannot use relative coordinates since potentially switching worlds
+                if (!validCoordinates(sender, args, 1, false)) {
                     return true;
                 }
                 p2.saveData();
-                TeleportsManager.teleportToLocation( p2.getName(), "", args[4], Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
+                TeleportsManager.teleportToLocation(
+                        p2.getName(),                // Player to teleport
+                        "",                          // Server
+                        args[4],                     // World
+                        Double.valueOf(args[1]),
+                        Double.valueOf(args[2]),
+                        Double.valueOf(args[3]) );
             } else {
                 // Teleport yourself to the given coordinates on the given server and world
-                if (!validCoordinates(sender, args, 2)) {
+                // Cannot use relative coordinates since potentially switching server or world
+                if (!validCoordinates(sender, args, 2, false)) {
                     return true;
                 }
-                Player p = Bukkit.getPlayer(sender.getName());
                 p.saveData();
-                TeleportsManager.teleportToLocation( p.getName(), args[0], args[1], Double.valueOf( args[2] ), Double.valueOf( args[3] ), Double.valueOf( args[4] ) );
+                TeleportsManager.teleportToLocation(
+                        p.getName(),                 // Player to teleport
+                        args[0],                     // Server
+                        args[1],                     // World
+                        Double.valueOf(args[2]),
+                        Double.valueOf(args[3]),
+                        Double.valueOf(args[4]) );
             }
             return true;
         }
@@ -193,27 +247,60 @@ public class TPCommand implements CommandExecutor {
             }
 
             // Teleport another player to the given coordinates of the given server and world
-            if (!validCoordinates(sender, args, 1)) {
+            // Cannot use relative coordinates since potentially switching server or world
+            if (!validCoordinates(sender, args, 1, false)) {
                 return true;
             }
             p2.saveData();
-            TeleportsManager.teleportToLocation( p2.getName(), args[5], args[4], Double.valueOf( args[1] ), Double.valueOf( args[2] ), Double.valueOf( args[3] ) );
+            TeleportsManager.teleportToLocation(
+                    p2.getName(),                // Player to teleport
+                    args[5],                     // Server
+                    args[4],                     // World
+                    Double.valueOf(args[1]),
+                    Double.valueOf(args[2]),
+                    Double.valueOf(args[3]) );
         }
 
         return false;
     }
 
-    private boolean validCoordinates(CommandSender sender, String[] args, int startIndex) {
+    private double getCoordinate(double startingCoordinate, String coordValue) {
 
-        if (validCoordinate(sender, "X", args[startIndex]) &&
-            validCoordinate(sender, "Y", args[startIndex + 1]) &&
-            validCoordinate(sender, "Z", args[startIndex + 2])) {
+        if (coordValue.startsWith("~")) {
+            // Return a relative coordinate
+            if (coordValue.length() > 1)
+                return startingCoordinate + Double.valueOf(coordValue.substring(1));
+            else
+                return startingCoordinate;
+        }
+
+        // Return an absolute coordinate
+        return Double.valueOf(coordValue);
+    }
+
+    private boolean validCoordinates(CommandSender sender, String[] args, int startIndex, boolean allowRelative) {
+
+        if (validCoordinate(sender, allowRelative, "X", args[startIndex]) &&
+            validCoordinate(sender, allowRelative, "Y", args[startIndex + 1]) &&
+            validCoordinate(sender, allowRelative, "Z", args[startIndex + 2])) {
             return true;
         }
         return false;
     }
 
-    private boolean validCoordinate(CommandSender sender, String coordName, String coordValue) {
+    private boolean validCoordinate(CommandSender sender, boolean allowRelative, String coordName, String coordValue) {
+
+        if (coordValue.startsWith("~")) {
+            if (!allowRelative) {
+                sender.sendMessage(ChatColor.RED + "Relative coords not valid due to world or server switch");
+                return false;
+            }
+
+            if (coordValue.length() == 1)
+                return true;
+            else
+                coordValue = coordValue.substring(1);
+        }
 
         if (!NumberUtils.isNumber(coordValue)) {
             sender.sendMessage(ChatColor.RED + "Invalid " + coordName + " coordinate: " + coordValue);
