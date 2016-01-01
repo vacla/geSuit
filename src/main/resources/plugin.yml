@@ -14,6 +14,7 @@ commands:
                /<command> (player) (player)
                /<command> (x) (y) (z) [world]
                /<command> (player) (x) (y) (z) [world]
+               /<command> (player) (x) (y) (z) [world] [server]
                /<command> (server) (world) (x) (y) (z)
     tphere:
         description: Teleports a player to you
