@@ -248,7 +248,7 @@ public class TPCommand implements CommandExecutor {
         if ( args.length == 6 ) {
             Player p2 = Bukkit.getPlayer( args[0] );
             if (p2 == null) {
-                sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[1]);
+                sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[0]);
                 return true;
             }
 

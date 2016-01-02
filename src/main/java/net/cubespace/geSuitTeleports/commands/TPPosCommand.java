@@ -350,6 +350,7 @@ public class TPPosCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[0]);
                 return true;
             }
+
             // Teleport another player to the given coordinates of the given world (on this server)
             // Cannot use relative coordinates since potentially switching worlds
             if (!validCoordinates(sender, args, 1, false)) {
