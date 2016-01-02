@@ -57,7 +57,9 @@ public class TPCommand implements CommandExecutor {
                         p.getWorld(),
                         getCoordinate(p.getLocation().getX(), args[1]),
                         getCoordinate(p.getLocation().getY(), args[2]),
-                        getCoordinate(p.getLocation().getZ(), args[3]) ) );
+                        getCoordinate(p.getLocation().getZ(), args[3]),
+                        p.getLocation().getYaw(),
+                        p.getLocation().getPitch() ) );
                 return true;
             }
 
@@ -76,7 +78,9 @@ public class TPCommand implements CommandExecutor {
                         args[4],      // World
                         Double.valueOf(args[1]),
                         Double.valueOf(args[2]),
-                        Double.valueOf(args[3]) );
+                        Double.valueOf(args[3]),
+                        p.getLocation().getYaw(),
+                        p.getLocation().getPitch());
                 return true;
             }
 
@@ -95,7 +99,9 @@ public class TPCommand implements CommandExecutor {
                         args[4],      // World
                         Double.valueOf(args[1]),
                         Double.valueOf(args[2]),
-                        Double.valueOf(args[3]) );
+                        Double.valueOf(args[3]),
+                        p.getLocation().getYaw(),
+                        p.getLocation().getPitch());
                 return true;
             }
 
@@ -150,7 +156,9 @@ public class TPCommand implements CommandExecutor {
                     p.getWorld().getName(),      // World
                     getCoordinate(p.getLocation().getX(), args[0]),
                     getCoordinate(p.getLocation().getY(), args[1]),
-                    getCoordinate(p.getLocation().getZ(), args[2]) );
+                    getCoordinate(p.getLocation().getZ(), args[2]),
+                    p.getLocation().getYaw(),
+                    p.getLocation().getPitch() );
             return true;
         }
 
@@ -172,7 +180,9 @@ public class TPCommand implements CommandExecutor {
                         p.getWorld().getName(),      // World
                         getCoordinate(p.getLocation().getX(), args[1]),
                         getCoordinate(p.getLocation().getY(), args[2]),
-                        getCoordinate(p.getLocation().getZ(), args[3]) );
+                        getCoordinate(p.getLocation().getZ(), args[3]),
+                        p2.getLocation().getYaw(),
+                        p2.getLocation().getPitch() );
             } else {
                 // Teleport yourself to the specified coordinates of the given world (on this server)
                 // Cannot use relative coordinates since potentially switching worlds
@@ -186,7 +196,9 @@ public class TPCommand implements CommandExecutor {
                         args[3],                     // World
                         Double.valueOf(args[0]),
                         Double.valueOf(args[1]),
-                        Double.valueOf(args[2]) );
+                        Double.valueOf(args[2]),
+                        p.getLocation().getYaw(),
+                        p.getLocation().getPitch());
             }
             return true;
         }
@@ -209,7 +221,9 @@ public class TPCommand implements CommandExecutor {
                         args[4],                     // World
                         Double.valueOf(args[1]),
                         Double.valueOf(args[2]),
-                        Double.valueOf(args[3]) );
+                        Double.valueOf(args[3]),
+                        p2.getLocation().getYaw(),
+                        p2.getLocation().getPitch());
             } else {
                 // Teleport yourself to the given coordinates on the given server and world
                 // Cannot use relative coordinates since potentially switching server or world
@@ -223,7 +237,9 @@ public class TPCommand implements CommandExecutor {
                         args[1],                     // World
                         Double.valueOf(args[2]),
                         Double.valueOf(args[3]),
-                        Double.valueOf(args[4]) );
+                        Double.valueOf(args[4]),
+                        p.getLocation().getYaw(),
+                        p.getLocation().getPitch());
             }
             return true;
         }
@@ -248,7 +264,9 @@ public class TPCommand implements CommandExecutor {
                     args[4],                     // World
                     Double.valueOf(args[1]),
                     Double.valueOf(args[2]),
-                    Double.valueOf(args[3]) );
+                    Double.valueOf(args[3]),
+                    p2.getLocation().getYaw(),
+                    p2.getLocation().getPitch());
         }
 
         return false;
@@ -293,7 +311,10 @@ public class TPCommand implements CommandExecutor {
         }
 
         if (!NumberUtils.isNumber(coordValue)) {
-            sender.sendMessage(ChatColor.RED + "Invalid " + coordName + " coordinate: " + coordValue);
+            if (coordName.equals("X"))
+                sender.sendMessage(ChatColor.RED + "Invalid X coordinate (or unknown player): " + coordValue);
+            else
+                sender.sendMessage(ChatColor.RED + "Invalid " + coordName + " coordinate: " + coordValue);
             return false;
         }
 
