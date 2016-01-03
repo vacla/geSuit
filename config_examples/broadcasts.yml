@@ -1,0 +1,61 @@
+# You can define broadcasts to run periodically here. 'Global' can be used to
+# define broadcasts that are shown to all users online. There is an exception
+# to this described below
+# 
+# 'Servers' can be used to define broadcasts that are per server. Within Servers
+# the broadcast definitions are to be keyed by the server name. The definition
+# for each server entry uses the same format as the Global entry, allowing for
+# customization the Messages and Interval for each server
+# 
+# Broadcast Section format
+# The format for broadcasts is as follows:
+#  Interval: <time> # eg 5m
+#  RandomStart: <true|false> # When true a random message is selected to be the first displayed
+#  Isolated: <true|false> # When true, the messages defined in 'Global' will not be shown on this server.
+#  Messages: [] # The messages to be shown. Remember you can use '| ' as a prefix to use multiple lines
+# 
+# 'Named' can be used to create named messages that can be broadcasted via command or automatically.
+# The expected format is '<name>: <message>'. No extra features are present for named broadcasts
+# To use these in automated broadcasts simply use '@<name>' as the message. You WILL need to quote it
+# otherwise a parse error will occur
+# 
+# All messages support minecraft color codes using &
+# After making changes, reload with command gsreload
+
+# When true, automated broadcasts will be enabled. Manual broadcasts will always be available
+Enabled: true
+# The cooldown time for manual broadcasts with /!announce
+ManualCooldown: 30s
+# The global broadcast settings. NOTE: Isolated property will be ignored
+Global:
+  RandomStart: false
+  Messages:
+  - '@Welcome'
+  - '@Website'
+  Isolated: false
+  Interval: 5m
+Servers:
+  Hub:
+    RandomStart: false
+    Messages:
+    - '@WelcomeToHub'
+    Isolated: false
+    Interval: 4m
+  Survival:
+    RandomStart: false
+    Messages:
+    - '@WelcomeToSurvival'
+    - '@Protect'
+    Isolated: false
+    Interval: 4m
+
+Named:
+  Website: '&bCheck out our website, at &dhttp://www.thebestserver.xyz'
+  Welcome: '&6Welcome&2 to our server; enjoy your time here'
+  WelcomeToHub: '&6You are now on Hub'
+  WelcomeToSurvival: '&5You are now on Survival'
+  Protect: |-
+    We use Grief Protection
+    Learn about it at https://www.spigotmc.org/resources/griefprevention.1884/
+    Purchase a golden shovel for $2 at the survival shop
+

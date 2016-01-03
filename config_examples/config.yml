@@ -1,0 +1,79 @@
+Database:
+  Threads: 5
+  NameOntime: ontime
+  NameTracking: tracking
+  Username: geSuit
+  NameBanhistory: banhistory
+  Port: '3306'
+  Database: geSuit
+  NameWarnhistory: warnhistory
+  Host: localhost
+  Password: geSuit
+Redis:
+  password: ''
+  port: 6379
+  host: localhost
+# The language file to use. This file can either be in the jar or inside
+# the folder 'lang/' in the plugins. Lang files must end in '.lang'
+Lang: en_US
+Table:
+  # This can be used if you have multiple Proxies to seperate the Homes in it
+  Homes: homes
+  # This can be used if you have multiple Proxies to seperate the Players in it
+  Players: players
+  # This can be used if you have multiple Proxies to seperate the Warps in it
+  Warps: warps
+  # This can be used if you have multiple Proxies to seperate the Bans in it
+  Bans: bans
+  # This can be used if you have multiple Proxies to seperate the Portals in it
+  Portals: portals
+  # This can be used if you have multiple Proxies to seperate the Spawns in it
+  Spawns: spawns
+  # This can be used if you have multiple Proxies to seperate the Tracking in it
+  Tracking: tracking
+  # This can be used if you have multiple Proxies to seperate the Ontime in it
+  OnTime: ontime
+ConvertFromBungeeSuite: false
+BungeeSuiteDatabase:
+  Threads: 5
+  NameOntime: ontime
+  NameTracking: tracking
+  Username: username
+  NameBanhistory: banhistory
+  Port: '3306'
+  Database: minecraft
+  NameWarnhistory: warnhistory
+  Host: localhost
+  Password: password
+MOTD:
+  # Turn this to false if you want to use your regular /motd comand (requires restart)
+  Enabled: true
+Seen:
+  # Turn this to false if you want to use your your regular /seen comand (requires restart)
+  Enabled: false
+# 
+NewPlayerBroadcast: true
+BroadcastProxyConnectionMessages: true
+PlayerDisconnectDelay: 0
+# This should be true on offline Mode Server since they can't use UUIDs provided by Mojang
+OverwriteUUID: false
+# Enable this if you want to use BungeeChat with geSuit.
+BungeeChatIntegration: false
+# Do not alter this. It will be used automaticly.
+Inited: false
+Version:
+  Database:
+    # Stored version informations. If you alter this you can damage your Database
+    Ban: 3
+    # Stored version informations. If you alter this you can damage your Database
+    Homes: 2
+    # Stored version informations. If you alter this you can damage your Database
+    Players: 3
+    # Stored version informations. If you alter this you can damage your Database
+    Portals: 1
+    # Stored version informations. If you alter this you can damage your Database
+    Spawns: 1
+    # Stored version informations. If you alter this you can damage your Database
+    Warps: 1
+    # Stored version informations. If you alter this you can damage your Database
+    Tracking: 1

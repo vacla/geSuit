@@ -1,0 +1,30 @@
+Enabled: true
+BroadcastBans: true
+BroadcastUnbans: false
+BroadcastWarns: true
+BroadcastKicks: true
+ShowAltAccounts: true
+ShowBannedAltAccounts: true
+TrackOnTime: true
+NameChangeNotifyTime: 20
+WarningExpiryDays: 180
+DefaultBanReason: Unknown
+DefaultWarnReason: Unknown
+DefaultKickReason: Unknown
+Mutes:
+  AllowReMute: true
+  AllowPermanentMutes: true
+  BroadcastGlobal: true
+  BroadcastUnmute: false
+  BroadcastAutoUnmute: false
+  MaximumMuteDuration: 20m
+  CommandsList: []
+  CommandListIsWhitelist: true
+  BroadcastMute: true
+Actions: {}
+GeoIP:
+  DownloadIfMissing: true
+  ShowOnLogin: true
+  ShowCity: true
+  DownloadURL: http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+  CityDownloadURL: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz

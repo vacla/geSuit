@@ -1,0 +1,4 @@
+TeleportRequestExpireTime: 10
+TPAWhitelist: []
+SpawnNewPlayerAtNewspawn: false
+ForceAllPlayersToProxySpawn: false
