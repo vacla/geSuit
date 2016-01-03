@@ -49,6 +49,8 @@ public class SpawnMessageListener implements Listener {
             SpawnManager.setServerSpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean());
         } else if (task.equals("SetWorldSpawn")) {
             SpawnManager.setWorldSpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean());
+        } else if (task.equals("DelWorldSpawn")) {
+            SpawnManager.delWorldSpawn(PlayerManager.getPlayer(in.readUTF(), true), s.getInfo(), in.readUTF());
         } else if (task.equals("SetNewPlayerSpawn")) {
             SpawnManager.setNewPlayerSpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
         } else if (task.equals("SetProxySpawn")) {

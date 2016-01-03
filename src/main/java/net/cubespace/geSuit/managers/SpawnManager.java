@@ -5,8 +5,10 @@ import java.util.List;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Spawn;
+import net.cubespace.geSuit.pluginmessages.DelWorldSpawn;
 import net.cubespace.geSuit.pluginmessages.SendSpawn;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
@@ -19,6 +21,12 @@ public class SpawnManager {
     public static void loadSpawns() {
         ProxySpawn = DatabaseManager.spawns.getSpawn("ProxySpawn");
         NewPlayerSpawn = DatabaseManager.spawns.getSpawn("NewPlayerSpawn");
+    }
+
+    public static void delWorldSpawn(GSPlayer p, ServerInfo server, String world) {
+        DatabaseManager.spawns.deleteWorldSpawn(server.getName(), world);
+        PlayerManager.sendMessageToTarget(p, ConfigManager.messages.SPAWN_DELETED);
+        DelWorldSpawn.execute(server, world);
     }
 
     public static boolean doesProxySpawnExist() {
@@ -76,6 +84,7 @@ public class SpawnManager {
     }
 
     public static void setWorldSpawn(GSPlayer p, Location l, boolean exists) {
+        // Spawn name is the world name
         Spawn spawn = new Spawn(l.getWorld(), l);
 
         setSpawn(p, spawn, exists);

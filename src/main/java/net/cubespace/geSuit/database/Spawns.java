@@ -36,6 +36,22 @@ public class Spawns implements IRepository {
         return location;
     }
 
+    public void deleteWorldSpawn(String server, String world) {
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+
+        try {
+            PreparedStatement deleteSpawn = connectionHandler.getPreparedStatement("deleteWorldSpawn");
+            deleteSpawn.setString(1, server);
+            deleteSpawn.setString(2, world);
+
+            deleteSpawn.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connectionHandler.release();
+        }
+    }
+
     public List<Spawn> getSpawnsForServer(String server) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         List<Spawn> spawns = new ArrayList<>();
@@ -122,6 +138,9 @@ public class Spawns implements IRepository {
         connection.addPreparedStatement("getSpawnsForServer", "SELECT * FROM "+ ConfigManager.main.Table_Spawns +" WHERE server=? AND NOT (spawnname = 'NewPlayerSpawn' OR spawnname = 'ProxySpawn')");
         connection.addPreparedStatement("insertSpawn", "INSERT INTO "+ ConfigManager.main.Table_Spawns +" (spawnname, server, world, x, y, z, yaw, pitch) VALUES(?,?,?,?,?,?,?,?)");
         connection.addPreparedStatement("updateSpawn", "UPDATE "+ ConfigManager.main.Table_Spawns +" SET world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE spawnname = ? AND server = ?");
+        connection.addPreparedStatement("deleteWorldSpawn", "DELETE FROM " + ConfigManager.main.Table_Spawns + " WHERE server=? AND world=? AND spawnname = world");
+
+
     }
 
     @Override

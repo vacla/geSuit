@@ -79,6 +79,7 @@ public class Messages extends Config {
     public String SPAWN_DOES_NOT_EXIST = "&c" + "The spawn point has not been set yet";
     public String SPAWN_UPDATED = "&6" + "Spawn point updated";
     public String SPAWN_SET = "&6" + "Spawn point set";
+    public String SPAWN_DELETED = "&6" + "Spawn point deleted";
 
     // ban messages
     public String BUNGEE_COMMAND_BAN_USAGE = "&c" + "Usage: !ban <player|ip> <reason>";
