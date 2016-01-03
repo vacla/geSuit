@@ -377,7 +377,7 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
             return;
         }
         
-        // Try enable fly mode if theyre allowed it
+        // Try enable fly mode if they're allowed it
         if (LocationUtil.shouldFly(target)) {
             // Already flying
             if (player.isFlying()) {

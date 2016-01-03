@@ -164,8 +164,8 @@ public class TeleportCommands {
         sender.teleport(location, TeleportCause.COMMAND);
         sender.sendMessage(Global.getMessages().get("top.success"));
     }
-    
-    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <x> <y> <z> [world]")
+
+    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleport yourself to another location", usage="/<command> <x> <y> <z> [world]")
     public void tp(CommandContext<Player> context, int x, int y, int z, @Optional String worldName) {
     	if (context.isErrored()) {
     		switch (context.getErrorArg()) {
@@ -196,7 +196,7 @@ public class TeleportCommands {
         	sender.sendMessage(Global.getMessages().get("teleport.blocked.area"));
             return;
         }
-        
+
         Location target = new Location(null, worldName, x, y, z, sender.getLocation().getYaw(), sender.getLocation().getPitch());
         
         Result result = actions.teleport(player, target);
@@ -206,7 +206,7 @@ public class TeleportCommands {
         }
     }
     
-    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <server> <world> <x> <y> <z>")
+    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleport yourself to another location", usage="/<command> <server> <world> <x> <y> <z>")
     @CommandPriority(1)
     public void tp(CommandContext<Player> context, String serverName, String worldName, int x, int y, int z) {
     	if (context.isErrored()) {
@@ -239,7 +239,7 @@ public class TeleportCommands {
         }
     }
 
-    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <player>")
+    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleport yourself to another player", usage="/<command> <player>")
     public void tp(Player sender, String playerName) {
         GlobalPlayer player = Global.getPlayer(sender.getUniqueId());
         GlobalPlayer target = Global.getPlayer(playerName);
@@ -267,7 +267,7 @@ public class TeleportCommands {
         return Utilities.matchPlayerNames(input, true);
     }
     
-    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <player> <target>")
+    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player", usage="/<command> <player> <target>")
     public void tp(CommandSender sender, String playerName, String targetPlayer) {
         GlobalPlayer player = Global.getPlayer(playerName);
         GlobalPlayer target = Global.getPlayer(targetPlayer);
@@ -294,7 +294,7 @@ public class TeleportCommands {
         return Utilities.matchPlayerNames(input, true);
     }
     
-    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <player> <x> <y> <z> [world]")
+    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to a new location", usage="/<command> <player> <x> <y> <z> [world]")
     @CommandPriority(2)
     public void tp(CommandContext<CommandSender> context, String playerName, int x, int y, int z, @Optional String worldName) {
     	if (context.isErrored()) {
@@ -322,7 +322,7 @@ public class TeleportCommands {
                 return;
             }
         }
-        
+
         Location target = new Location(null, worldName, x, y, z);
         
         Result result = actions.teleport(player, target);
@@ -341,7 +341,7 @@ public class TeleportCommands {
         }
     }
     
-    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to another player or location", usage="/<command> <player> <server> <world> <x> <y> <z>")
+    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to a new location", usage="/<command> <player> <server> <world> <x> <y> <z>")
     public void tp(CommandContext<CommandSender> context, String playerName, String serverName, String worldName, int x, int y, int z) {
     	if (context.isErrored()) {
     		switch (context.getErrorArg()) {
