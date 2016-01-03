@@ -14,10 +14,13 @@ public class BroadcastsConfig extends Config {
                 "You can define broadcasts to run periodically here. 'Global' can be used to",
                 "define broadcasts that are shown to all users online. There is an exception",
                 "to this described below",
-                "'Servers' can be used to define broadcasts that are per server. Within Servers",
-                "the broadcast definitions are to be keyed by the server name.",
                 "",
-                "Broadcast Format",
+                "'Servers' can be used to define broadcasts that are per server. Within Servers",
+                "the broadcast definitions are to be keyed by the server name. The definition",
+                "for each server entry uses the same format as the Global entry, allowing for",
+                "customization of the Messages and Interval for each server",
+                "",
+                "Broadcast Section format",
                 "The format for broadcasts is as follows:",
                 " Interval: <time> # eg 5m",
                 " RandomStart: <true|false> # When true a random message is selected to be the first displayed",
@@ -29,7 +32,8 @@ public class BroadcastsConfig extends Config {
                 "To use these in automated broadcasts simply use '@<name>' as the message. You WILL need to quote it",
                 "otherwise a parse error will occur",
                 "",
-                "All messages support minecraft color codes using &"
+                "All messages support minecraft color codes using &",
+                "After making changes, reload with command gsreload"
         };
     }
     

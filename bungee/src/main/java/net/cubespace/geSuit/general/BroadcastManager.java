@@ -246,6 +246,12 @@ public class BroadcastManager implements ConfigReloadListener {
         for (ScheduledBroadcast announcement : broadcasts) {
             if (System.currentTimeMillis() >= announcement.getNextExecuteTime()) {
                 BaseComponent[] message = announcement.nextMessage();
+
+                if (message == null) {
+                    proxy.getConsole().sendMessage(ChatColor.YELLOW + "No global messages are defined; update geSuit/broadcasts.yml");
+                    return;
+                }
+
                 ServerInfo targetServer = announcement.getTargetServer();
                 
                 // Broadcast
@@ -461,9 +467,15 @@ public class BroadcastManager implements ConfigReloadListener {
         }
         
         public BaseComponent[] nextMessage() {
-            BaseComponent[] message = messages.get(nextMessage++);
-            if (nextMessage >= messages.size()) {
-                nextMessage = 0;
+
+            BaseComponent[] message;
+
+            if (messages.isEmpty()) {
+                message = null;
+            } else {
+                message = messages.get(nextMessage++);
+                if (nextMessage >= messages.size())
+                    nextMessage = 0;
             }
             
             nextExecuteTime = System.currentTimeMillis() + interval;
