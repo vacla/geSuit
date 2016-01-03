@@ -15,6 +15,10 @@ commands:
         permission: gesuit.spawns.command.setworldspawn
         aliases: [sws]
         permission-message: §cYou do not have permission for this command
+    delworldspawn:
+        description: Deletes the proxies world spawn point.
+        permission: gesuit.spawns.command.delworldspawn
+        permission-message: §cYou do not have permission for this command
     setserverspawn:
         description: Sets the servers spawn point.
         permission: gesuit.spawns.command.setserverspawn

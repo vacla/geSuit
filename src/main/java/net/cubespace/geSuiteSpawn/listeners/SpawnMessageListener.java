@@ -23,7 +23,12 @@ public class SpawnMessageListener implements PluginMessageListener, Listener {
             task = in.readUTF();
             switch ( task ) {
                 case "SendSpawn":
+                    //                     spawnName worldName X Y Z yaw pitch
                     SpawnManager.addSpawn( in.readUTF(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat() );
+                    break;
+                case "DelWorldSpawn":
+                    //                           worldName
+                    SpawnManager.delWorldSpawn( in.readUTF() );
                     break;
                 case "GetVersion":
                     String name = null;

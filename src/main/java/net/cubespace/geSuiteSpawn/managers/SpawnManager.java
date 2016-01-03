@@ -143,6 +143,22 @@ public class SpawnManager {
         }
     }
 
+    public static void delWorldSpawn( CommandSender sender ) {
+        Player p = ( Player ) sender;
+        Location l = p.getLocation();
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "DelWorldSpawn" );
+            out.writeUTF( sender.getName() );
+            out.writeUTF( l.getWorld().getName() );
+
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
+    }
+
     public static void getSpawns() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
@@ -184,6 +200,12 @@ public class SpawnManager {
 
     public static void addSpawn( String name, String world, double x, double y, double z, float yaw, float pitch ) {
         SPAWNS.put( name, new Location( Bukkit.getWorld( world ), x, y, z, yaw, pitch ) );
+
+    }
+
+    public static void delWorldSpawn( String worldName) {
+        if (SPAWNS.containsKey( worldName ))
+            SPAWNS.remove(worldName);
 
     }
 

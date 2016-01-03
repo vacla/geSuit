@@ -6,6 +6,7 @@ import net.cubespace.geSuiteSpawn.commands.SetGlobalSpawnCommand;
 import net.cubespace.geSuiteSpawn.commands.SetNewSpawnCommand;
 import net.cubespace.geSuiteSpawn.commands.SetServerSpawnCommand;
 import net.cubespace.geSuiteSpawn.commands.SetWorldSpawnCommand;
+import net.cubespace.geSuiteSpawn.commands.DelWorldSpawnCommand;
 import net.cubespace.geSuiteSpawn.commands.SpawnCommand;
 import net.cubespace.geSuiteSpawn.commands.WorldSpawnCommand;
 import net.cubespace.geSuiteSpawn.listeners.SpawnListener;
@@ -28,6 +29,7 @@ public class geSuitSpawn extends JavaPlugin {
 	private void registerCommands() {
 		getCommand("setnewspawn").setExecutor(new SetNewSpawnCommand());
 		getCommand("setworldspawn").setExecutor(new SetWorldSpawnCommand());
+		getCommand("delworldspawn").setExecutor(new DelWorldSpawnCommand());
 		getCommand("setserverspawn").setExecutor(new SetServerSpawnCommand());
 		getCommand("setglobalspawn").setExecutor(new SetGlobalSpawnCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
