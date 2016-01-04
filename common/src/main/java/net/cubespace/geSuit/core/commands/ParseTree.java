@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import net.cubespace.geSuit.core.commands.ParseTreeBuilder.Variant;
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.Invokable;
 
@@ -60,6 +61,8 @@ class ParseTree {
     }
     
     private ParseResult recurseChildren(ParseNode node, String[] arguments) throws ArgumentParseException {
+        Preconditions.checkArgument(!node.isTerminal() && !node.getChildren().isEmpty());
+        
         List<ArgumentParseException> caughtErrors = Lists.newArrayList();
         boolean interpretException = false;
         for (ParseNode child : node.getChildren()) {
@@ -76,7 +79,6 @@ class ParseTree {
                         result.options.add(child2);
                     }
                 }
-                
                 return result;
             } catch (CommandInterpretException e) {
                 interpretException = true;
@@ -87,7 +89,7 @@ class ParseTree {
                 caughtErrors.add(e);
             }
         }
-        
+
         // Use the error that went the deepest
         Collections.sort(caughtErrors);
         throw caughtErrors.get(0);

@@ -18,11 +18,9 @@ import com.google.common.reflect.TypeToken;
 
 class ParseTreeBuilder {
     private List<Variant> variants;
-    private Map<TypeToken<?>, Map<Long, ParseNode>> typeMap;
     
     public ParseTreeBuilder(List<Variant> variants) {
         this.variants = variants;
-        typeMap = Maps.newHashMap();
     }
     
     public ParseNode build() throws IllegalArgumentException {
@@ -32,7 +30,8 @@ class ParseTreeBuilder {
             markers.add(new Marker(variant, 0, 0));
         }
         
-        buildMarkers(root, markers);
+        Map<TypeToken<?>, Map<Long, ParseNode>> typeMap = Maps.newHashMap();
+        buildMarkers(root, markers, typeMap);
         
         return root;
     }
@@ -40,22 +39,23 @@ class ParseTreeBuilder {
     /*
      * Converts all the markers provided into parse nodes as needed
      */
-    private void buildMarkers(ParseNode parent, List<Marker> markers) {
+    private void buildMarkers(ParseNode parent, List<Marker> markers, Map<TypeToken<?>, Map<Long, ParseNode>> typeMap) {
         // Stores what will be next after each node
         ListMultimap<ParseNode, Marker> childMarkers = ArrayListMultimap.create();
         
         // Create this levels nodes
         for (Marker marker : markers) {
-            buildMarker(marker, parent, childMarkers);
+            buildMarker(marker, parent, childMarkers, typeMap);
         }
         
         // Recurse into deeper levels
         for (ParseNode nextNode : childMarkers.keySet()) {
-            buildMarkers(nextNode, childMarkers.get(nextNode));
+            typeMap = Maps.newHashMap();
+            buildMarkers(nextNode, childMarkers.get(nextNode), typeMap);
         }
     }
         
-    private void buildMarker(Marker marker, ParseNode parent, ListMultimap<ParseNode, Marker> childMarkers) {
+    private void buildMarker(Marker marker, ParseNode parent, ListMultimap<ParseNode, Marker> childMarkers, Map<TypeToken<?>, Map<Long, ParseNode>> typeMap) {
         List<Parameter> parameters = marker.variant.method.getParameters();
         
         if (marker.argumentIndex >= parameters.size()-1) {
@@ -67,13 +67,14 @@ class ParseTreeBuilder {
             boolean optional = current.isAnnotationPresent(Optional.class);
             boolean varargs = current.isAnnotationPresent(Varargs.class);
             
-            ParseNode node = getParseNode(marker, parent, current, varargs);
+            ParseNode node = getParseNode(marker, parent, current, varargs, typeMap);
+            assert(!parent.getChildren().isEmpty());
             
             childMarkers.put(node, new Marker(marker.variant, marker.argumentIndex+1, marker.inputIndex+1));
             
             // Optional needs to add the next node after this one as an alternate path
             if (optional) {
-                buildMarker(new Marker(marker.variant, marker.argumentIndex+1, marker.inputIndex), parent, childMarkers);
+                buildMarker(new Marker(marker.variant, marker.argumentIndex+1, marker.inputIndex), parent, childMarkers, typeMap);
             }
         }
     }
@@ -87,7 +88,7 @@ class ParseTreeBuilder {
         return ParseNode.newTransformNode(marker.variant.id, marker.argumentIndex, marker.inputIndex, converter, varargs);
     }
     
-    private ParseNode getParseNode(Marker marker, ParseNode parent, Parameter param, boolean varArgs) {
+    private ParseNode getParseNode(Marker marker, ParseNode parent, Parameter param, boolean varArgs, Map<TypeToken<?>, Map<Long, ParseNode>> typeMap) {
         Map<Long, ParseNode> nodes = typeMap.get(param.getType());
         if (nodes == null) {
             nodes = Maps.newHashMap();

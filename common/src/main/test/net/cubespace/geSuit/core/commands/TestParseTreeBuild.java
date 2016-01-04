@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Stack;
 
 import net.cubespace.geSuit.core.commands.ParseTreeBuilder.Variant;
 import net.cubespace.geSuit.core.storage.DataConversion;
@@ -22,6 +23,10 @@ public class TestParseTreeBuild {
     void command5(Object sender, int arg1, @Optional int arg2, String arg3) {}
     void command6(Object sender, @Optional String arg1, String arg2) {}
     
+    public void tp0(Object sender, String playerName, int x, int y, int z, @Optional String worldName) {}
+    public void tp2(Object sender, String playerName, String serverName, String worldName, int x, int y, int z) {}
+    
+
     private Method getMethod(String name) {
         for (Method method : TestParseTreeBuild.class.getDeclaredMethods()) {
             if (method.getName().equals(name)) {
@@ -46,7 +51,8 @@ public class TestParseTreeBuild {
 	public void testSinglePlain() {
         ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command0"));
         
-        ParseNode node = builder.build();
+        ParseNode root = builder.build();
+        ParseNode node = root;
         
         // Confirm the correct tree was generated
         assertEquals(1, node.getChildren().size());
@@ -65,13 +71,16 @@ public class TestParseTreeBuild {
         // terminator
         node = node.getChildren().get(0);
         assertTrue(node.isTerminal());
+        
+        checkAllTerminated(root, builder.getVariants());
 	}
     
     @Test
     public void testDualPlain() {
         ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command0", "command1"));
         
-        ParseNode left = builder.build();
+        ParseNode root = builder.build();
+        ParseNode left = root;
         ParseNode right = null;
         
         // Confirm the correct tree was generated
@@ -102,6 +111,8 @@ public class TestParseTreeBuild {
         // right terminator
         right = right.getChildren().get(0);
         assertTrue(right.isTerminal());
+        
+        checkAllTerminated(root, builder.getVariants());
     }
 
     @Test
@@ -125,14 +136,17 @@ public class TestParseTreeBuild {
         // alternate
         node = parent.getChildren().get(1);
         assertTrue(node.isTerminal());
+        
+        checkAllTerminated(parent, builder.getVariants());
     }
     
     @Test
     public void testVarargs() {
         ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command3"));
         
-        ParseNode node = builder.build();
-        
+        ParseNode root = builder.build();
+        ParseNode node = root;
+                
         // Confirm the correct tree was generated
         assertEquals(1, node.getChildren().size());
         // arg1
@@ -147,6 +161,8 @@ public class TestParseTreeBuild {
         // terminal
         node = node.getChildren().get(0);
         assertTrue(node.isTerminal());
+        
+        checkAllTerminated(root, builder.getVariants());
     }
     
     @Test
@@ -171,13 +187,16 @@ public class TestParseTreeBuild {
         // alternate
         node = parent.getChildren().get(1);
         assertTrue(node.isTerminal());
+        
+        checkAllTerminated(parent, builder.getVariants());
     }
     
     @Test
     public void testDualComplex() {
         ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("command0", "command2", "command3"));
         
-        ParseNode parent = builder.build();
+        ParseNode root = builder.build();
+        ParseNode parent = root;
         
         // Confirm the correct tree was generated
         ParseNode node;
@@ -209,6 +228,8 @@ public class TestParseTreeBuild {
         // arg2 command2 absent Lowest
         node = parent.getChildren().get(2);
         assertTrue(node.isTerminal());
+        
+        checkAllTerminated(root, builder.getVariants());
     }
 
     @Test
@@ -251,6 +272,8 @@ public class TestParseTreeBuild {
         assertEquals(1, node.getInputIndex());
         assertEquals(1, node.getChildren().size());
         assertTrue(node.getChildren().get(0).isTerminal());
+        
+        checkAllTerminated(parent, builder.getVariants());
     }
     
     @Test
@@ -286,5 +309,44 @@ public class TestParseTreeBuild {
         assertEquals(1, node.getChildren().size());
         next = node.getChildren().get(0);
         assertTrue(next.isTerminal());
+        
+        checkAllTerminated(parent, builder.getVariants());
+    }
+    
+    // This test checks that 2 commands sharing the same typed argument in the same index after differing arguments dont break
+    @Test
+    public void testArgCrossover() {
+        ParseTreeBuilder builder = new ParseTreeBuilder(getVariants("tp0", "tp2"));
+        
+        ParseNode parent = builder.build();
+        checkAllTerminated(parent, builder.getVariants());
+    }
+    
+    /**
+     * Checks that all branches are terminated
+     * @param root The root node
+     */
+    private void checkAllTerminated(ParseNode root, List<Variant> variants) {
+        Stack<ParseNode> nodes = new Stack<>();
+        nodes.addAll(root.getChildren());
+        
+        while (!nodes.isEmpty()) {
+            ParseNode node = nodes.pop();
+            
+            if (node.isTerminal()) {
+                continue; // OK
+            } else if (node.getChildren().isEmpty()) {
+                Variant var = variants.get(node.getVariant());
+                StringBuilder error = new StringBuilder();
+                error.append("Path for variant not terminated:\n");
+                error.append(var.method.toString());
+                error.append('\n');
+                error.append(node.getDebugName());
+                
+                fail(error.toString());
+            } else {
+                nodes.addAll(node.getChildren());
+            }
+        }
     }
 }
