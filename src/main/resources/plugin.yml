@@ -122,4 +122,7 @@ permissions:
         description: Does not send a teleport message to the player you teleported to
     gesuit.teleports.tp.bypass:
         description: Ability to bypass the tptoggle using /tp and this permission
+    gesuit.teleports.bypass.delay:
+        description: Ability to bypass the delay before the actual teleport
+        
         
