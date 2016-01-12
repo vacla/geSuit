@@ -1,5 +1,6 @@
 package net.cubespace.geSuitTeleports.commands;
 
+import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.utils.LocationUtil;
 
 import org.bukkit.ChatColor;
@@ -23,7 +24,7 @@ public class TopCommand implements CommandExecutor {
         Location current = player.getLocation();
         Location location = new Location(current.getWorld(), current.getX(), current.getWorld().getMaxHeight(), current.getZ(), current.getYaw(), current.getPitch());
         player.teleport(LocationUtil.getSafeDestination(location), TeleportCause.COMMAND);
-        player.sendMessage(ChatColor.GOLD + "Teleporting to top.");
+        player.sendMessage(geSuitTeleports.tptop);
         return true;
     }
     

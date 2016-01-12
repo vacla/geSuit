@@ -1,6 +1,7 @@
 package net.cubespace.geSuitTeleports.commands;
 
 
+import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
@@ -26,7 +27,7 @@ public class TPCommand implements CommandExecutor {
 
             Player p = Bukkit.getPlayer(args[0]);
             if (p == null) {
-                sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[0]);
+                sender.sendMessage(geSuitTeleports.invalid_offline  + args[0]);
                 return true;
             }
 
@@ -35,7 +36,7 @@ public class TPCommand implements CommandExecutor {
                 // Send Player1 to Player2
                 Player p2 = Bukkit.getPlayer(args[1]);
                 if (p2 == null) {
-                    sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[1]);
+                    sender.sendMessage(geSuitTeleports.invalid_offline + args[1]);
                     return true;
                 }
                 sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + p2.getName());
@@ -132,7 +133,7 @@ public class TPCommand implements CommandExecutor {
 
             Player p = Bukkit.getPlayer(args[0]);
             if (p == null) {
-                sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[0]);
+                sender.sendMessage(geSuitTeleports.invalid_offline + args[0]);
                 return true;
             }
 
@@ -248,7 +249,7 @@ public class TPCommand implements CommandExecutor {
         if ( args.length == 6 ) {
             Player p2 = Bukkit.getPlayer( args[0] );
             if (p2 == null) {
-                sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[0]);
+                sender.sendMessage(geSuitTeleports.invalid_offline + args[0]);
                 return true;
             }
 
@@ -300,7 +301,7 @@ public class TPCommand implements CommandExecutor {
 
         if (coordValue.startsWith("~")) {
             if (!allowRelative) {
-                sender.sendMessage(ChatColor.RED + "Relative coords not valid due to world or server switch");
+                sender.sendMessage(geSuitTeleports.relative_coords_not_valid);
                 return false;
             }
 
@@ -312,9 +313,9 @@ public class TPCommand implements CommandExecutor {
 
         if (!NumberUtils.isNumber(coordValue)) {
             if (coordName.equals("X"))
-                sender.sendMessage(ChatColor.RED + "Invalid X coordinate (or unknown player): " + coordValue);
+                sender.sendMessage(geSuitTeleports.invalid_x_coordinate_or_player + coordValue);
             else
-                sender.sendMessage(ChatColor.RED + "Invalid " + coordName + " coordinate: " + coordValue);
+                sender.sendMessage(geSuitTeleports.invalid + coordName + geSuitTeleports.coordinate + coordValue);
             return false;
         }
 
