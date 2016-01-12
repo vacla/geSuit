@@ -69,22 +69,26 @@ public class LockDownManager {
         if (LockDownManager.isLockedDown()) {
             if (target != null) {
                 PlayerManager.sendMessageToTarget(target, ChatColor.RED + "Server is locked down until: " + LockDownManager.getExpiryTimeString());
+                if (!optionalMessage.isEmpty()) {
+                    PlayerManager.sendMessageToTarget(target, ChatColor.RED + "Msg shown to unknown (blocked) players: " + optionalMessage);
+                }
 
-                LoggingManager.log("Lock down start by " + target.getName() + "  ON. Expiry in " + Utilities.buildShortTimeDiffString(expiryTime - System.currentTimeMillis(), 2) + " Msg: "
-                        + optionalMessage);
+                LoggingManager.log("Lockdown start by " + target.getName() + "  ON." +
+                        " Expiry in " + Utilities.buildShortTimeDiffString(expiryTime - System.currentTimeMillis(), 2) +
+                        " Msg shown to unknown (blocked) players: " + optionalMessage);
             }
         } else {
 
             if (target != null) {
-                PlayerManager.sendMessageToTarget(target, ChatColor.RED + "Lock down failed to start");
+                PlayerManager.sendMessageToTarget(target, ChatColor.RED + "Lockdown failed to start");
             }
         }
 
     }
 
     /**
-     * Checks the expiry time of a lock down and sets the LockDownManager to false if expired.  returns true if lock down
-     * has expired.  False if the lock down would persist.
+     * Checks the expiry time of a lockdown and sets the LockDownManager to false if expired.
+     * Returns true if lockdown has expired.  False if the lockdown would persist.
      *
      * @return boolean
      */
@@ -98,7 +102,7 @@ public class LockDownManager {
                 setExpiryTime(0);
                 setLockedDown(false);
                 setOptionalMessage(null);
-                LoggingManager.log("Lock down has expired automatically, time and message cleared.");
+                LoggingManager.log("Lockdown has expired automatically, time and message cleared.");
                 CommandSender target = getSender(sender);
                 if (target != null) {
                     PlayerManager.sendMessageToTarget(target, ChatColor.RED + "Server is not Locked down");
@@ -128,14 +132,14 @@ public class LockDownManager {
         setOptionalMessage(null);
         CommandSender target = getSender(sender);
         if (!LockDownManager.isLockedDown()) {
-            LoggingManager.log("Lock down has been ended. Time and message cleared.");
+            LoggingManager.log("Lockdown has been ended. Time and message cleared.");
             if (target != null) {
                 PlayerManager.sendMessageToTarget(target, ChatColor.RED + "Lockdown has been ended");
             }
         } else {
-            LoggingManager.log("Lock down did not end. Critical Error contact Admins");
+            LoggingManager.log("Lockdown did not end. Critical Error contact Admins");
             if (target != null) {
-                PlayerManager.sendMessageToTarget(target, ChatColor.RED + "Lock down did not end. Critical Error contact Admins");
+                PlayerManager.sendMessageToTarget(target, ChatColor.RED + "Lockdown did not end. Critical Error contact Admins");
             }
         }
     }

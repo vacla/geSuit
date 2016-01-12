@@ -44,18 +44,18 @@ public class PlayerManager {
             public void run() {
 
                 Boolean playerExists = playerExists(connection.getUniqueId());
-                //lock down check
+                //lockdown check
                 if (!playerExists) {//check player is new first
                     if (!LockDownManager.checkExpiry()) {//returns true if expired and false if persisting
 
-                            event.setCancelled(true);
-                            String timeRemaining = Utilities.buildShortTimeDiffString(System.currentTimeMillis() - LockDownManager.getExpiryTime(), 2);
+                        event.setCancelled(true);
+                        String timeRemaining = Utilities.buildShortTimeDiffString(LockDownManager.getExpiryTime() - System.currentTimeMillis(), 2);
                         event.setCancelReason(Utilities.colorize(ConfigManager.messages.LOCKDOWN_MESSAGE.replace("{message}", LockDownManager.getOptionalMessage())));
-                        LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to server lock down! Remaining:" + timeRemaining + "Until: " + LockDownManager.getExpiryTimeString() + "(" + connection.getAddress().toString() + ")");
-                            event.completeIntent(geSuit.instance);
-                            return;
+                        LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to server lockdown! Remaining: " + timeRemaining + ", Until: " + LockDownManager.getExpiryTimeString() + " (" + connection.getAddress().toString() + ")");
+                        event.completeIntent(geSuit.instance);
+                        return;
 
-                        }
+                    }
                 }
                 // Do ban check
                 if (DatabaseManager.bans.isPlayerBanned(connection.getName(), Utilities.getStringFromUUID(connection.getUniqueId()), connection.getAddress().getHostString())) {
@@ -72,7 +72,7 @@ public class PlayerManager {
                                 long timeDiff = then.getTime() - now.getTime();
                                 
                                 event.setCancelReason(Utilities.colorize(ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{time}", sdf.format(then)).replace("{left}", Utilities.buildTimeDiffString(timeDiff, 2)).replace("{shortleft}", Utilities.buildShortTimeDiffString(timeDiff, 10)).replace("{message}", b.getReason())));
-                                LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to being banned!" + "(" + connection.getAddress().toString() + ")");
+                                LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to being temp banned!" + " (" + connection.getAddress().toString() + ")");
                             } else {
                                 banned = false;
                             }
@@ -80,7 +80,7 @@ public class PlayerManager {
                             event.setCancelled(true);
     
                             event.setCancelReason(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{message}", b.getReason())));
-                            LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to being banned!" + "(" + connection.getAddress().toString() + ")");
+                            LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to being banned!" + " (" + connection.getAddress().toString() + ")");
                         }
                         
                         if (banned) {
