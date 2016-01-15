@@ -27,7 +27,7 @@ public class TeleportsListener implements Listener {
 			Player t = TeleportsManager.pendingTeleports.get(e.getPlayer().getName());
 			TeleportsManager.pendingTeleports.remove(e.getPlayer().getName());
 			if ((t == null) || (!t.isOnline())) {
-				e.getPlayer().sendMessage("Player is no longer online");
+				e.getPlayer().sendMessage(geSuitTeleports.no_longer_online);
 				return;
 			}
 			TeleportsManager.ignoreTeleport.add(e.getPlayer());

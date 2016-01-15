@@ -1,6 +1,7 @@
 package net.cubespace.geSuitTeleports;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.cubespace.geSuitTeleports.commands.BackCommand;
@@ -19,10 +20,34 @@ import net.cubespace.geSuitTeleports.listeners.TeleportsMessageListener;
 
 public class geSuitTeleports extends JavaPlugin {
     public static geSuitTeleports instance;
+    public static String teleportinitiated;
+    public static String teleporting;
+    public static String aborted;
+    public static String unsafe_location;
+    public static String tptop;
+    public static String invalid_offline;
+    public static String relative_coords_not_valid;
+    public static String invalid_x_coordinate_or_player;
+    public static String invalid;
+    public static String coordinate;
+    public static String no_longer_online;
 
     @Override
     public void onEnable() {
         instance = this;
+        this.saveDefaultConfig();
+        getConfig().options().copyDefaults(true);
+		saveConfig();
+        teleportinitiated = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.teleport_initiated"));
+        teleporting = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.teleporting"));
+        aborted = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.aborted"));
+        unsafe_location = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.unsafe_location"));
+        tptop = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.tptop"));
+        invalid_offline = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_or_offline_player"));
+        relative_coords_not_valid = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_or_offline_player"));
+        invalid = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid"));
+        coordinate = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.coordinate"));
+        no_longer_online = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.no_longer_online"));
         registerListeners();
         registerChannels();
         registerCommands();
@@ -57,5 +82,5 @@ public class geSuitTeleports extends JavaPlugin {
     public static geSuitTeleports getInstance() {
         return instance;
     }
-
+    
 }

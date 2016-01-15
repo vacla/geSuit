@@ -1,6 +1,7 @@
 package net.cubespace.geSuitTeleports.commands;
 
 
+import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
@@ -26,7 +27,7 @@ public class TPPosCommand implements CommandExecutor {
 
             Player p = Bukkit.getPlayer(args[0]);
             if (p == null) {
-                sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[0]);
+                sender.sendMessage(geSuitTeleports.invalid_offline + args[0]);
                 return true;
             }
 
@@ -347,7 +348,7 @@ public class TPPosCommand implements CommandExecutor {
         // tppos Player X Y Z Yaw Pitch World Server
         if (args.length == 8) {
             if (p2 == null) {
-                sender.sendMessage(ChatColor.RED + "Invalid username or player is offline: " + args[0]);
+                sender.sendMessage(geSuitTeleports.invalid_offline + args[0]);
                 return true;
             }
 
@@ -427,9 +428,9 @@ public class TPPosCommand implements CommandExecutor {
 
         if (!NumberUtils.isNumber(coordValue)) {
             if (coordName.equals("X"))
-                sender.sendMessage(ChatColor.RED + "Invalid X coordinate (or unknown player): " + coordValue);
+                sender.sendMessage(geSuitTeleports.invalid_x_coordinate_or_player + coordValue);
             else
-                sender.sendMessage(ChatColor.RED + "Invalid " + coordName + " coordinate: " + coordValue);
+                sender.sendMessage(geSuitTeleports.invalid + coordName + geSuitTeleports.coordinate + coordValue);
             return false;
         }
 
