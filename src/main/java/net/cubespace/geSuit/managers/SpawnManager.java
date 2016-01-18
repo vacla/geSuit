@@ -117,4 +117,20 @@ public class SpawnManager {
 
         ProxySpawn = l;
     }
+
+    public static void sendPlayerToArgSpawn(GSPlayer player, String spawn, String server) {
+        Location targetSpawn;
+        if (server.isEmpty()) {
+            targetSpawn = DatabaseManager.spawns.getSpawn(spawn);
+        } else {
+            targetSpawn = DatabaseManager.spawns.getServerSpawn(spawn, server);
+        }
+
+        if (targetSpawn == null) {
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.SPAWN_DOES_NOT_EXIST);
+            return;
+        }
+
+        TeleportToLocation.execute(player, targetSpawn);
+    }
 }
