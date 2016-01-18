@@ -26,7 +26,7 @@ public class TPCommand implements CommandExecutor {
 
             Player p = Bukkit.getPlayer(args[0]);
             if (p == null) {
-                sender.sendMessage(geSuitTeleports.invalid_offline  + args[0]);
+                sender.sendMessage(geSuitTeleports.invalid_offline + args[0]);
                 return true;
             }
 
