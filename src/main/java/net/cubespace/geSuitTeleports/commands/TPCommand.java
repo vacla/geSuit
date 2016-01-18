@@ -5,7 +5,6 @@ import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -39,7 +38,7 @@ public class TPCommand implements CommandExecutor {
                     sender.sendMessage(geSuitTeleports.invalid_offline + args[1]);
                     return true;
                 }
-                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + p2.getName());
+                sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + p2.getName());
                 p.saveData();
                 p.teleport( p2 );
                 return true;
@@ -52,7 +51,7 @@ public class TPCommand implements CommandExecutor {
                 if (!validCoordinates(sender, args, 1, true)) {
                     return true;
                 }
-                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3]);
+                sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + args[1] + " " + args[2] + " " + args[3]);
                 p.saveData();
                 p.teleport( new Location(
                         p.getWorld(),
@@ -71,7 +70,7 @@ public class TPCommand implements CommandExecutor {
                 if (!validCoordinates(sender, args, 1, false)) {
                     return true;
                 }
-                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3] + " in world " + args[4]);
+                sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + args[1] + " " + args[2] + " " + args[3] + geSuitTeleports.in_world + args[4]);
                 p.saveData();
                 TeleportsManager.teleportToLocation(
                         p.getName(),  // Player to teleport
@@ -92,7 +91,7 @@ public class TPCommand implements CommandExecutor {
                 if (!validCoordinates(sender, args, 1, false)) {
                     return true;
                 }
-                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3] + " in world " + args[4] + " on server " + args[5]);
+                sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + args[1] + " " + args[2] + " " + args[3] + geSuitTeleports.in_world + args[4] + geSuitTeleports.on_server + args[5]);
                 p.saveData();
                 TeleportsManager.teleportToLocation(
                         p.getName(),  // Player to teleport

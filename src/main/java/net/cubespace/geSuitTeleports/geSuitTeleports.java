@@ -31,6 +31,13 @@ public class geSuitTeleports extends JavaPlugin {
     public static String invalid;
     public static String coordinate;
     public static String no_longer_online;
+    public static String no_perms_for_teleporting_others;
+    public static String sending;
+    public static String to;
+    public static String in_world;
+    public static String on_server;
+    public static String invalid_yaw;
+    public static String invalid_pitch;
 
     @Override
     public void onEnable() {
@@ -48,6 +55,13 @@ public class geSuitTeleports extends JavaPlugin {
         invalid = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid"));
         coordinate = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.coordinate"));
         no_longer_online = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.no_longer_online"));
+        no_perms_for_teleporting_others = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.no_perms_for_teleporting_others"));
+        sending = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.sending"));
+        to = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.to"));
+        in_world = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.in_world"));
+        on_server = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.on_server"));
+        invalid_yaw = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_yaw"));
+        invalid_pitch = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_pitch"));
         registerListeners();
         registerChannels();
         registerCommands();
@@ -81,6 +95,5 @@ public class geSuitTeleports extends JavaPlugin {
 
     public static geSuitTeleports getInstance() {
         return instance;
-    }
-    
+    }    
 }
