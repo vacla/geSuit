@@ -17,7 +17,41 @@ public class SpawnCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 
-		final Player player = Bukkit.getPlayer(sender.getName());
+            /* Console Commands */
+            if ( !( sender instanceof Player ) ) {
+                if (args.length != 1) {
+                    return false;
+                }
+
+                Player player = Bukkit.getPlayer(args[0]);
+                if (player == null) {
+                    sender.sendMessage(ChatColor.RED + "Invalid username or player is offline.");
+                    return true;
+                }
+
+                SpawnManager.sendPlayerToSpawn(player);
+                return true;
+            }
+
+            /* Player Commands */
+            final Player player = (Player) sender;
+
+            if (args.length == 1) {
+                if (!player.hasPermission("gesuit.warps.command.warp.other")) {
+                    player.sendMessage(ChatColor.RED + "You do not have permission to do this.");
+                    return true;
+                }
+
+                Player target = Bukkit.getPlayer(args[0]);
+                if (target == null) {
+                    player.sendMessage(ChatColor.RED + "Invalid username or player is offline.");
+                    return true;
+                }
+
+                SpawnManager.sendPlayerToSpawn(target);
+                return true;
+            }
+
         if (!player.hasPermission("gesuit.warps.bypass.delay")) {
             final Location lastLocation = player.getLocation();
 
