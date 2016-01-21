@@ -57,9 +57,10 @@ public class Messages extends Config {
     // warp specific messages
     public String WARP_CREATED = "&6" + "Successfully created a warp";
     public String WARP_UPDATED = "&6" + "Successfully updated the warp";
+    public String WARP_DESCRIPTION_UPDATED = "&6" + "Successfully updated the warp description";
     public String WARP_DELETED = "&6" + "Successfully deleted the warp";
-    public String PLAYER_WARPED = "&7" + "You have been warped to {warp}";
-    public String PLAYER_WARPED_OTHER = "&7" + "{player} has been warped to {warp}";
+    public String PLAYER_WARPED = "&7" + "Sending you to {warp}";
+    public String PLAYER_WARPED_OTHER = "&7" + "{player} has been sent to {warp}";
     public String WARP_DOES_NOT_EXIST = "&c" + "That warp does not exist";
     public String WARP_NO_PERMISSION = "&c" + "You do not have permission to use that warp";
     public String WARP_SERVER = "&c" + "Warp not on the same server";

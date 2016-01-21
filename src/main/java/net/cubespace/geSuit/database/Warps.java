@@ -24,7 +24,12 @@ public class Warps implements IRepository {
             ResultSet res = getWarps.executeQuery();
             while (res.next()) {
                 Location location = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
-                warps.add(new Warp(res.getString("warpname"), location, res.getBoolean("hidden"), res.getBoolean("global")));
+                warps.add(new Warp(
+                        res.getString("warpname"),
+                        location,
+                        res.getBoolean("hidden"),
+                        res.getBoolean("global"),
+                        res.getString("description")));
             }
             res.close();
         } catch (Exception e) {
@@ -51,6 +56,7 @@ public class Warps implements IRepository {
             insertWarp.setFloat(8, warp.getLocation().getPitch());
             insertWarp.setBoolean(9, warp.isHidden());
             insertWarp.setBoolean(10, warp.isGlobal());
+            insertWarp.setString(11, warp.getDescription());
 
             insertWarp.executeUpdate();
         } catch (Exception e) {
@@ -75,6 +81,7 @@ public class Warps implements IRepository {
             updateWarp.setBoolean(8, warp.isHidden());
             updateWarp.setBoolean(9, warp.isGlobal());
             updateWarp.setString(10, warp.getName());
+            updateWarp.setString(11, warp.getDescription());
 
             updateWarp.executeUpdate();
         } catch (Exception e) {
@@ -111,14 +118,15 @@ public class Warps implements IRepository {
                 "pitch FLOAT, " +
                 "hidden TINYINT(1) DEFAULT 0," +
                 "global TINYINT(1) DEFAULT 1, " +
+                "description VARCHAR(128), " +
                 "CONSTRAINT pk_warp PRIMARY KEY (warpname)"};
     }
 
     @Override
     public void registerPreparedStatements(ConnectionHandler connection) {
         connection.addPreparedStatement("getWarps", "SELECT * FROM "+ ConfigManager.main.Table_Warps + " ORDER BY warpname");
-        connection.addPreparedStatement("insertWarp", "INSERT INTO "+ ConfigManager.main.Table_Warps +" (warpname, server, world, x, y, z, yaw, pitch, hidden, global) VALUES (?,?,?,?,?,?,?,?,?,?)");
-        connection.addPreparedStatement("updateWarp", "UPDATE "+ ConfigManager.main.Table_Warps +" SET server=?, world=?, x=?, y=?, z=?, yaw=?, pitch=?, hidden=?, global=? WHERE warpname=?");
+        connection.addPreparedStatement("insertWarp", "INSERT INTO "+ ConfigManager.main.Table_Warps +" (warpname, server, world, x, y, z, yaw, pitch, hidden, global, description) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+        connection.addPreparedStatement("updateWarp", "UPDATE "+ ConfigManager.main.Table_Warps +" SET server=?, world=?, x=?, y=?, z=?, yaw=?, pitch=?, hidden=?, global=? description=? WHERE warpname=?");
         connection.addPreparedStatement("deleteWarp", "DELETE FROM "+ ConfigManager.main.Table_Warps +" WHERE warpname=?");
     }
 

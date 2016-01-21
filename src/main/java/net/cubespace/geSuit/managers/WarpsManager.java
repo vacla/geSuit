@@ -22,24 +22,41 @@ public class WarpsManager {
         }
     }
 
-    public static void setWarp(GSPlayer sender, String name, Location loc, boolean hidden, boolean global) {
+	public static void setWarp(GSPlayer sender, String name, Location loc, boolean hidden, boolean global) {
+		setWarp(sender, name, loc, hidden, global, "");
+	}
+
+    public static void setWarp(GSPlayer sender, String name, Location loc, boolean hidden, boolean global, String description) {
         Warp w;
         if (doesWarpExist(name)) {
             w = warps.get(name.toLowerCase());
             w.setLocation(loc);
             w.setGlobal(global);
             w.setHidden(hidden);
+			w.setDescription(description);
             DatabaseManager.warps.updateWarp(w);
             sender.sendMessage(ConfigManager.messages.WARP_UPDATED.replace("{warp}", name));
         } else {
-            w = new Warp(name, loc, hidden, global);
+            w = new Warp(name, loc, hidden, global, description);
             warps.put(name.toLowerCase(), w);
             DatabaseManager.warps.insertWarp(w);
             sender.sendMessage(ConfigManager.messages.WARP_CREATED.replace("{warp}", name));
         }
     }
 
-    public static void deleteWarp(GSPlayer sender, String warp) {
+	public static void setWarpDesc(GSPlayer sender, String warpName, String description) {
+		Warp w;
+		if (doesWarpExist(warpName)) {
+			w = warps.get(warpName.toLowerCase());
+			w.setDescription(description);
+			DatabaseManager.warps.updateWarp(w);
+			sender.sendMessage(ConfigManager.messages.WARP_DESCRIPTION_UPDATED.replace("{warp}", warpName));
+		} else {
+			sender.sendMessage(ConfigManager.messages.WARP_DOES_NOT_EXIST.replace("{warp}", warpName));
+		}
+	}
+
+	public static void deleteWarp(GSPlayer sender, String warp) {
         Warp w = getWarp(warp);
         warps.remove(w.getName().toLowerCase());
         DatabaseManager.warps.deleteWarp(w.getName());
@@ -96,8 +113,12 @@ public class WarpsManager {
         }
     }
 
-
     public static void sendPlayerToWarp(String sender, String player, String warp, boolean permission, boolean bypass) {
+        sendPlayerToWarp(sender, player, warp, permission, bypass, true);
+    }
+
+    public static void sendPlayerToWarp(String sender, String player, String warp, boolean permission, boolean bypass,
+                                        boolean showPlayerWarpedMessage) {
         GSPlayer s = PlayerManager.getPlayer(sender);
         GSPlayer p = PlayerManager.getPlayer(player);
         if (p == null) {
@@ -105,7 +126,7 @@ public class WarpsManager {
             return;
         }
         if (s == null) {
-        	s = p;	// If sending from console, pretend the player executed the command
+            s = p;    // If sending from console, pretend the player executed the command
         }
 
         Warp w = warps.get(warp.toLowerCase());
@@ -115,7 +136,7 @@ public class WarpsManager {
         }
 
         if (!permission) {
-            s.sendMessage(ChatColor.translateAlternateColorCodes('&',ConfigManager.messages.WARP_NO_PERMISSION));
+            s.sendMessage(ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.WARP_NO_PERMISSION));
             return;
         }
 
@@ -127,9 +148,13 @@ public class WarpsManager {
         }
 
         Location l = w.getLocation();
-        p.sendMessage(ConfigManager.messages.PLAYER_WARPED.replace("{warp}", w.getName()));
+
+        if (showPlayerWarpedMessage) {
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_WARPED.replace("{warp}", w.getDescriptionOrName())));
+        }
+
         if ((!p.equals(s))) {
-            s.sendMessage(ConfigManager.messages.PLAYER_WARPED_OTHER.replace("{player}", p.getName()).replace("{warp}", w.getName()));
+            s.sendMessage(ChatColor.translateAlternateColorCodes('&', ConfigManager.messages.PLAYER_WARPED_OTHER.replace("{player}", p.getName()).replace("{warp}", w.getDescriptionOrName())));
         }
 
         TeleportToLocation.execute(p, l);

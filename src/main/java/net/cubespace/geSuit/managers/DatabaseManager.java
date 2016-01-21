@@ -45,9 +45,14 @@ public class DatabaseManager {
         connectionPool.addRepository(ontime);
         connectionPool.initialiseConnections(ConfigManager.main.Database);
 
+        // Add the description column to the warps table if missing
+        connectionPool.AddStringColumnIfMissing("warps", "description", 128);
+
         AnnouncementManager.loadAnnouncements();
         WarpsManager.loadWarpLocations();
         PortalManager.loadPortals();
         SpawnManager.loadSpawns();
+
     }
+
 }

@@ -72,7 +72,7 @@ public class ConnectionPool {
                         standardQuery("CREATE TABLE IF NOT EXISTS `"+ tableInformation[0] +"` (" + tableInformation[1] + ");");
                     } catch (SQLException e) {
                         e.printStackTrace();
-                        geSuit.instance.getLogger().severe("Could not create Table");
+                        geSuit.instance.getLogger().severe("Could not create Table " + tableInformation[0].substring(0, 20) + " ...");
                         throw new IllegalStateException();
                     }
                 }
@@ -125,6 +125,42 @@ public class ConnectionPool {
 
     }
 
+    /*
+     * Adds the given column to the given table if the column does not yet exist
+     * The new column will be VARCHAR(length) NULL
+     */
+    public void AddStringColumnIfMissing(String table, String column, int length) {
+
+        ConnectionHandler ch = getConnection();
+
+        Boolean columnExists = doesTableHaveColumn(ch, table, column);
+
+        if (!columnExists) {
+            addStringColumnToTable(ch, table, column, length);
+        }
+
+        ch.release();
+
+    }
+
+    private void addStringColumnToTable(ConnectionHandler ch, String table, String column, int length) {
+
+        try {
+            geSuit.instance.getLogger().info("Adding column " + column + " to table " + table);
+
+            String query = "ALTER TABLE `" + table + "` ADD `" + column + "` varchar(" + length + ") NULL";
+
+            Statement statement = ch.getConnection().createStatement();
+            statement.executeUpdate(query);
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            geSuit.instance.getLogger().severe("Could not add column " + column + " to table " + table);
+            throw new IllegalStateException();
+        }
+    }
+
     private void standardQuery(String query) throws SQLException {
         ConnectionHandler ch = getConnection();
 
@@ -141,6 +177,33 @@ public class ConnectionPool {
         ch.release();
 
         return check;
+    }
+
+    private Boolean doesTableHaveColumn(ConnectionHandler ch, String table, String column) {
+
+        try {
+
+            String query =
+                    "SELECT COUNT(*) as RowCount FROM information_schema.columns " +
+                            "WHERE TABLE_SCHEMA = database() AND " +
+                            "TABLE_NAME = '" + table + "' AND " +
+                            "COLUMN_NAME = '" + column + "';";
+
+            Statement statement = ch.getConnection().createStatement();
+            ResultSet res = statement.executeQuery(query);
+            while (res.next()) {
+                int colCount = res.getInt("RowCount");
+                if (colCount > 0)
+                    return true;
+            }
+            statement.close();
+            return false;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            geSuit.instance.getLogger().severe("Could not validate column " + column + " on table " + table);
+            throw new IllegalStateException();
+        }
     }
 
     private boolean checkTable(String table, Connection connection) {

@@ -41,21 +41,38 @@ public class WarpsMessageListener implements Listener {
         String task = in.readUTF();
 
         if (task.equals("WarpPlayer")) {
+            //                            sender,       targetPlayer  warpName,     hasPermsForWarp,  hasPermsBypass
             WarpsManager.sendPlayerToWarp(in.readUTF(), in.readUTF(), in.readUTF(), in.readBoolean(), in.readBoolean());
             return;
         }
 
         if (task.equals("GetWarpsList")) {
+            //                        sender        hasPermsServer,   hasPermsGlobal,   hasPermsHidden,   hasPermsBypass
             WarpsManager.getWarpsList(in.readUTF(), in.readBoolean(), in.readBoolean(), in.readBoolean(), in.readBoolean());
             return;
         }
 
         if (task.equals("SetWarp")) {
+            //                                           senderName,          warpName,                                                                    worldName,    X,               Y,               Z,               yaw,            pitch,           hidden,           global
             WarpsManager.setWarp(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF(), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean(), in.readBoolean());
             return;
         }
 
+        if (task.equals("SetWarpDesc")) {
+            //                                               senderName,          warpName,     description
+            WarpsManager.setWarpDesc(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF(), in.readUTF());
+            return;
+        }
+
+        if (task.equals("SilentWarpPlayer")) {
+            //                            sender,       targetPlayer  warpName,     hasPermsForWarp,  hasPermsBypass,   showPlayerWarpedMessage
+            WarpsManager.sendPlayerToWarp(in.readUTF(), in.readUTF(), in.readUTF(), in.readBoolean(), in.readBoolean(), false);
+            return;
+        }
+
+
         if (task.equals("DeleteWarp")) {
+            //                                              senderName,          warpName
             WarpsManager.deleteWarp(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF());
             return;
         }
