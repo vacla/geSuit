@@ -5,7 +5,6 @@ import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -38,7 +37,7 @@ public class TPPosCommand implements CommandExecutor {
                 if (!validCoordinates(sender, args, 1, true)) {
                     return true;
                 }
-                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3]);
+                sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + args[1] + " " + args[2] + " " + args[3]);
                 p.saveData();
                 p.teleport( new Location(
                         p.getWorld(),
@@ -57,7 +56,7 @@ public class TPPosCommand implements CommandExecutor {
                 if (!validCoordinates(sender, args, 1, false)) {
                     return true;
                 }
-                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3] + " in world " + args[4]);
+                sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + args[1] + " " + args[2] + " " + args[3] + geSuitTeleports.in_world + args[4]);
                 p.saveData();
                 p.teleport(new Location(
                         Bukkit.getWorld(args[4]),
@@ -79,7 +78,7 @@ public class TPPosCommand implements CommandExecutor {
                 if (!validYawPitch(sender, args, 4)) {
                     return true;
                 }
-                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3]);
+                sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + args[1] + " " + args[2] + " " + args[3]);
                 p.saveData();
                 p.teleport( new Location(
                         p.getWorld(),
@@ -101,7 +100,7 @@ public class TPPosCommand implements CommandExecutor {
                 if (!validYawPitch(sender, args, 4)) {
                     return true;
                 }
-                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3] + " in world " + args[6]);
+                sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + args[1] + " " + args[2] + " " + args[3] + geSuitTeleports.in_world + args[6]);
                 p.saveData();
                 p.teleport(new Location(
                         Bukkit.getWorld(args[6]),
@@ -123,7 +122,7 @@ public class TPPosCommand implements CommandExecutor {
                 if (!validYawPitch(sender, args, 4)) {
                     return true;
                 }
-                sender.sendMessage(ChatColor.GRAY + "Sending " + p.getName() + " to " + args[1] + " " + args[2] + " " + args[3] + " in world " + args[6] + " on server " + args[7]);
+                sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + args[1] + " " + args[2] + " " + args[3] + geSuitTeleports.in_world + args[6] + geSuitTeleports.on_server + args[7]);
                 p.saveData();
                 TeleportsManager.teleportToLocation(
                         p.getName(),                 // Player to teleport
@@ -171,7 +170,7 @@ public class TPPosCommand implements CommandExecutor {
         Player p2 = Bukkit.getPlayer(args[0]);
 
         if ( p2 != null && !p.hasPermission("gesuit.teleports.tp.others")) {
-            p.sendMessage(ChatColor.RED + "You do not have permission to teleport others");
+            p.sendMessage(geSuitTeleports.no_perms_for_teleporting_others);
             return true;
         }
 
@@ -400,12 +399,12 @@ public class TPPosCommand implements CommandExecutor {
 
     private boolean validYawPitch(CommandSender sender, String[] args, int startIndex) {
         if (!NumberUtils.isNumber(args[startIndex])) {
-            sender.sendMessage(ChatColor.RED + "Invalid yaw: " + args[startIndex]);
+            sender.sendMessage(geSuitTeleports.invalid_yaw + args[startIndex]);
             return false;
         }
 
         if (!NumberUtils.isNumber(args[startIndex + 1])) {
-            sender.sendMessage(ChatColor.RED + "Invalid pitch: " + args[startIndex + 1]);
+            sender.sendMessage(geSuitTeleports.invalid_pitch + args[startIndex + 1]);
             return false;
         }
 
@@ -416,7 +415,7 @@ public class TPPosCommand implements CommandExecutor {
 
         if (coordValue.startsWith("~")) {
             if (!allowRelative) {
-                sender.sendMessage(ChatColor.RED + "Relative coords not valid due to world or server switch");
+                sender.sendMessage(geSuitTeleports.relative_coords_not_valid);
                 return false;
             }
 
