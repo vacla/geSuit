@@ -209,6 +209,21 @@ public class SpawnManager {
 
     }
 
+    public static void sendPlayerToArgSpawn( CommandSender sender, String spawn, String server ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "SendToArgSpawn" );
+            out.writeUTF( sender.getName() );
+            out.writeUTF( spawn );
+            out.writeUTF( server );
+
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
+    }
+
     public static void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
