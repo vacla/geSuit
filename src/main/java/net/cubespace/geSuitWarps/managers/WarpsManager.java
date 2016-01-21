@@ -53,6 +53,38 @@ public class WarpsManager {
         new PluginMessageTask( b ).runTaskAsynchronously( geSuitWarps.instance );
     }
 
+    public static void setWarpDesc( CommandSender sender, String warpName, String description ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        Location l = ( ( Player ) sender ).getLocation();
+        try {
+            out.writeUTF( "SetWarpDesc" );
+            out.writeUTF( sender.getName() );
+            out.writeUTF( warpName );
+            out.writeUTF( description );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitWarps.instance );
+    }
+
+    public static void silentWarpPlayer( final CommandSender sender, final String senderName, final String warp ) {
+        Player p = Bukkit.getPlayer(sender.getName());
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("SilentWarpPlayer");
+            out.writeUTF(sender.getName());
+            out.writeUTF(senderName);
+            out.writeUTF(warp);
+            out.writeBoolean(sender.hasPermission("gesuit.warps.warp." + warp.toLowerCase()) || sender.hasPermission("gesuit.warps.warp.*"));
+            out.writeBoolean(sender.hasPermission("gesuit.warps.bypass"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask(b).runTaskAsynchronously(geSuitWarps.instance);
+    }
+
     public static void deleteWarp( CommandSender sender, String warp ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );

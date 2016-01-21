@@ -52,6 +52,8 @@ public class WarpCommand implements CommandExecutor {
             WarpsManager.warpPlayer(sender, args[0], args[1]);
             return true;
         }
+
+        // Show the list of warp names (filtered based on user permissions)
         Player p = (Player) sender;
         p.chat("/warps");
         return true;
