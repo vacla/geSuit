@@ -88,7 +88,7 @@ public class Messages extends Config {
     public String BUNGEE_COMMAND_WHERE_USAGE = "&c" + "Usage: !where [options] <player|uuid|ip>";
     public String BUNGEE_COMMAND_TEMPBAN_USAGE = "&c" + "Usage: !tempban <player> <time> <reason>";
     public String BUNGEE_COMMAND_UNBAN_USAGE = "&c" + "Usage: !unban <player|uuid|ip>";
-    public String BUNGEE_COMMAND_WARNHISTORY_USAGE = "&c" + "Usage: !warnhistory <player>";
+    public String BUNGEE_COMMAND_WARNHISTORY_USAGE = "&c" + "Usage: !warnhistory <player|ip>";
     public String BUNGEE_COMMAND_KICKHISTORY_USAGE = "&c" + "Usage: !kickhistory <player>";
     public String BUNGEE_COMMAND_KICKHISTORY_DISABLED = "&c" + "Kick History is globally disabled";
     public String BUNGEE_COMMAND_NAMES_USAGE = "&c" + "Usage: !names <player|uuid>";

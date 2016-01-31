@@ -23,6 +23,12 @@ public class WarnHistoryCommand extends Command {
             return;
         }
 
-		BansManager.displayPlayerWarnBanHistory(sender.getName(), args[0]);
+        if (args[0].contains(".")) {
+            // Assume an IP address
+            BansManager.displayIPWarnBanHistory(sender.getName(), args[0]);
+        } else {
+            // Assume a player name or UUID
+            BansManager.displayPlayerWarnBanHistory(sender.getName(), args[0]);
+        }
     }
 }

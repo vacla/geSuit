@@ -478,6 +478,47 @@ public class BansManager {
         });
     }
 
+    public static void displayIPWarnBanHistory(final String sentBy, final String ip) {
+
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+            @Override
+            public void run() {
+                GSPlayer s = PlayerManager.getPlayer(sentBy);
+                CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+                List<Track> tracking = DatabaseManager.tracking.getPlayerTracking(ip, "ip");
+                if (tracking.isEmpty()) {
+                    PlayerManager.sendMessageToTarget(sender,
+                            ChatColor.RED + "[Tracker] No known accounts match or contain \"" + ip + "\"");
+                    return;
+                }
+
+                // Construct a list of UUIDs and player names
+                // (we only want to lookup warnings for the player's current name)
+                HashMap<String, String> uuidNameMap = new HashMap<>();
+                for (Track t : tracking) {
+                    uuidNameMap.put(t.getUuid(), t.getPlayer());
+                }
+
+                PlayerManager.sendMessageToTarget(sender,
+                        ChatColor.GREEN + "[Tracker] IP address \"" + ip + "\" has " + uuidNameMap.size() + " accounts:");
+
+                // Copy the names into a list so that we can sort
+                List<String> sortedNames = new ArrayList();
+                for (String playerName : uuidNameMap.values()) {
+                    sortedNames.add(playerName);
+                }
+
+                // Show warnings for each player, sorting alphabetically by name
+                Collections.sort(sortedNames);
+                for (String playerName : sortedNames) {
+                    displayPlayerWarnBanHistory(sender, playerName);
+                }
+            }
+        });
+
+    }
+
     public static void displayPlayerWarnBanHistory(final String sentBy, final String player) {
         ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
             @Override
