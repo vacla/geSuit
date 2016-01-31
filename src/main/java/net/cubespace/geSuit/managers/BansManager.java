@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.database.Tracking;
 import net.cubespace.geSuit.events.BanPlayerEvent;
 import net.cubespace.geSuit.events.UnbanPlayerEvent;
 import net.cubespace.geSuit.events.WarnPlayerEvent;
@@ -726,7 +727,7 @@ public class BansManager {
                         return;
             		} else {
             			PlayerManager.sendMessageToTarget(sender,
-                    		ChatColor.GREEN + "[Tracker] IP address \"" + search + "\" associated with " + tracking.size() + " accounts:");
+                    		ChatColor.GREEN + "[Tracker] IP address \"" + search + "\" matches " + tracking.size() + " accounts/IPs:");
             		}
             	} else {
             		String type;
@@ -751,6 +752,7 @@ public class BansManager {
         	    		}
         	    		else if (matches.size() == 1) {
         		    		if (searchString.length() < 20) {
+                                // Searched for a player name
         		    		    searchString = matches.get(0);
         		    		}
         	    		} else {
@@ -772,7 +774,7 @@ public class BansManager {
                         return;
             		} else {
             			PlayerManager.sendMessageToTarget(sender,
-                    		ChatColor.GREEN + "[Tracker] Player \"" + searchString + "\" associated with " + tracking.size() + " accounts:");
+                    		ChatColor.GREEN + "[Tracker] Player \"" + searchString + "\" is associated with " + tracking.size() + " accounts/IPs:");
             			
             			if (geSuit.proxy.getPlayer(searchString) != null) {
             			    final ProxiedPlayer player = geSuit.proxy.getPlayer(searchString);
@@ -788,15 +790,41 @@ public class BansManager {
             			}
             		}
             	}
-        
+
+                // Construct a mapping betweeen UUID and the player's most recent username
+                // Also keep track of the number of names associated witih each uuid
+                HashMap<String, String> uuidNameMap = new HashMap<>();
+                HashMap<String, Integer> uuidNameCount = new HashMap<>();
+
+                for (Track t : tracking) {
+                    String currentUuid = t.getUuid();
+
+                    uuidNameMap.put(currentUuid, t.getPlayer());
+                    Integer count = uuidNameCount.get(currentUuid);
+                    if (count == null) {
+                        uuidNameCount.put(currentUuid, 1);
+                    } else {
+                        uuidNameCount.put(currentUuid, count + 1);
+                    }
+                }
+
             	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             	for (Track t : tracking) {
             	    StringBuilder builder = new StringBuilder();
             	    builder.append(ChatColor.DARK_GREEN);
             	    builder.append(" - ");
+
+                    String playerName = t.getPlayer();
+                    if (uuidNameCount.get(t.getUuid()) > 1) {
+                        String latestName = uuidNameMap.get(t.getUuid());
+                        if (!latestName.equalsIgnoreCase(playerName)) {
+                            playerName = latestName + " (" + playerName + ")";
+                        }
+                    }
+
             	    if (t.isNameBanned()) {
             	        builder.append(ChatColor.DARK_AQUA);
-            	        builder.append(t.getPlayer());
+            	        builder.append(playerName);
             	        builder.append(ChatColor.GREEN);
             	        if (t.getBanType().equals("ban")) {
             	            builder.append("[Ban]");
@@ -804,7 +832,7 @@ public class BansManager {
             	            builder.append("[Tempban]");
             	        }
             	    } else {
-            	        builder.append(t.getPlayer());
+            	        builder.append(playerName);
             	    }
             	    
             	    builder.append(' ');
@@ -815,7 +843,7 @@ public class BansManager {
             	        builder.append(ChatColor.GREEN);
             	        builder.append("[IPBan]");
             	    } else {
-            	        builder.append(ChatColor.DARK_GREEN);
+            	        builder.append(ChatColor.YELLOW);
             	        builder.append(t.getIp());
             	    }
             	    
