@@ -757,6 +757,7 @@ public class BansManager {
         		    		}
         	    		} else {
         	    			// Matched too many names, show list of names instead
+                            // (showing the 20 most recent matches)
         	                PlayerManager.sendMessageToTarget(sender,
         	                		ChatColor.RED + "[Tracker] More than one player matched \"" + searchString + "\":");
         	    	    	for (String m : matches) {
