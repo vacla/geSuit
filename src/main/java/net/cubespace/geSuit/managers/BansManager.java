@@ -511,7 +511,7 @@ public class BansManager {
                 }
 
                 // Show warnings for each player, sorting alphabetically by name
-                Collections.sort(sortedNames);
+                Collections.sort(sortedNames, String.CASE_INSENSITIVE_ORDER);
                 for (String playerName : sortedNames) {
                     displayPlayerWarnBanHistory(sender, playerName);
                 }
