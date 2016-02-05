@@ -19,7 +19,8 @@ public class SetHomeCommand implements CommandExecutor {
 		if(args.length==0){
 			HomesManager.setHome(sender, "home");
 		}else{
-			Pattern invalidChar = Pattern.compile("[^a-zA-Z0-9_-]");
+			// \u00E4\u00F6\u00FC\u00C4\u00D6\u00DC\u00df corresponds to German characters äöüßÄÖÜ
+			Pattern invalidChar = Pattern.compile("[^a-zA-Z0-9_\\u00E4\\u00F6\\u00FC\\u00C4\\u00D6\\u00DC\\u00df-]");
 			Matcher reMatch = invalidChar.matcher(args[0]);
 
 			StringBuffer bufstr = new StringBuffer();
