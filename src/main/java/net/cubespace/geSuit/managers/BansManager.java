@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.database.Tracking;
 import net.cubespace.geSuit.events.BanPlayerEvent;
 import net.cubespace.geSuit.events.UnbanPlayerEvent;
 import net.cubespace.geSuit.events.WarnPlayerEvent;
@@ -138,7 +139,12 @@ public class BansManager {
         }
 
         if (ConfigManager.bans.BroadcastBans) {
-            PlayerManager.sendBroadcast(ConfigManager.messages.IPBAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
+            // Notify players of the ban (use the regular Ban message)
+            PlayerManager.sendBroadcast(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
+            if (ConfigManager.main.BungeeChatIntegration) {
+                // Notify staff that this was an IP Ban
+                Utilities.doBungeeChatMirror("StaffNotice", ConfigManager.messages.IPBAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
+            }
         } else {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.IPBAN_PLAYER_BROADCAST.replace("{player}", player).replace("{message}", reason).replace("{sender}", bannedBy));
         }
@@ -478,6 +484,47 @@ public class BansManager {
         });
     }
 
+    public static void displayIPWarnBanHistory(final String sentBy, final String ip) {
+
+        ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
+            @Override
+            public void run() {
+                GSPlayer s = PlayerManager.getPlayer(sentBy);
+                CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+
+                List<Track> tracking = DatabaseManager.tracking.getPlayerTracking(ip, "ip");
+                if (tracking.isEmpty()) {
+                    PlayerManager.sendMessageToTarget(sender,
+                            ChatColor.RED + "[Tracker] No known accounts match or contain \"" + ip + "\"");
+                    return;
+                }
+
+                // Construct a list of UUIDs and player names
+                // (we only want to lookup warnings for the player's current name)
+                HashMap<String, String> uuidNameMap = new HashMap<>();
+                for (Track t : tracking) {
+                    uuidNameMap.put(t.getUuid(), t.getPlayer());
+                }
+
+                PlayerManager.sendMessageToTarget(sender,
+                        ChatColor.GREEN + "[Tracker] IP address \"" + ip + "\" has " + uuidNameMap.size() + " accounts:");
+
+                // Copy the names into a list so that we can sort
+                List<String> sortedNames = new ArrayList();
+                for (String playerName : uuidNameMap.values()) {
+                    sortedNames.add(playerName);
+                }
+
+                // Show warnings for each player, sorting alphabetically by name
+                Collections.sort(sortedNames, String.CASE_INSENSITIVE_ORDER);
+                for (String playerName : sortedNames) {
+                    displayPlayerWarnBanHistory(sender, playerName);
+                }
+            }
+        });
+
+    }
+
     public static void displayPlayerWarnBanHistory(final String sentBy, final String player) {
         ProxyServer.getInstance().getScheduler().runAsync(geSuit.instance, new Runnable() {
             @Override
@@ -486,117 +533,122 @@ public class BansManager {
 
                 CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
 
-                // Resolve the target player
-                GSPlayer target = PlayerManager.getPlayer(player);
-                String targetId;
-                if (target == null) {
-                    Map<String, UUID> ids = DatabaseManager.players.resolvePlayerNamesHistoric(Arrays.asList(player));
-                    UUID id = Iterables.getFirst(ids.values(), null);
-                    if (id == null) {
-                        PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED_OR_BANNED.replace("{player}", player)));
-                        return;
-                    }
-                    targetId = id.toString().replace("-", "");
-                } else {
-                    targetId = target.getUuid();
-                }
-
-				// Retrieve warnings
-                List<Ban> warns = DatabaseManager.bans.getWarnHistory(player, targetId);
-
-				// Retrieve active bans
-				BanTarget t = getBanTarget(player);
-				Ban activeBan = DatabaseManager.bans.getBanInfo(t.name);
-
-				if (activeBan == null && (warns == null || warns.isEmpty())) {
-                    PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED_OR_BANNED.replace("{player}", player)));
-                    return;
-                }
-
-				if (warns == null || warns.isEmpty())
-				{
-					PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED.replace("{player}", player)));
-				} else {
-					PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + player + "'s Warning History" + ChatColor.DARK_AQUA + " --------");
-
-					int count = 0;
-					for (Ban b : warns) {
-						SimpleDateFormat sdf = new SimpleDateFormat();
-						sdf.applyPattern("dd MMM yyyy HH:mm");
-
-						Date now = new Date();
-						int age = (int) ((now.getTime() - b.getBannedOn().getTime()) / 1000 / 86400);
-
-						String warnedBy = " ";
-
-						if (age >= ConfigManager.bans.WarningExpiryDays) {
-							warnedBy = ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + b.getBannedBy() + ChatColor.DARK_GRAY + ") ";
-
-							PlayerManager.sendMessageToTarget(sender,
-									ChatColor.GRAY + "- " +
-											ChatColor.DARK_GRAY + sdf.format(b.getBannedOn()) +
-											warnedBy +
-											ChatColor.DARK_GRAY + b.getReason());
-						} else {
-							count++;
-							warnedBy = ChatColor.YELLOW + " (" + ChatColor.GRAY + b.getBannedBy() + ChatColor.YELLOW + ") ";
-
-							PlayerManager.sendMessageToTarget(sender,
-									ChatColor.YELLOW + String.valueOf(count) + ": " +
-											ChatColor.GREEN + sdf.format(b.getBannedOn()) +
-											warnedBy +
-											ChatColor.AQUA + b.getReason());
-						}
-					}
-				}
-
-				if (activeBan != null)
-				{
-					SimpleDateFormat sdf = new SimpleDateFormat();
-					sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
-					String banType = activeBan.getType();
-
-					PlayerManager.sendMessageToTarget(sender, "");
-					PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.RED + "Ban Info" + ChatColor.DARK_AQUA + " --------");
-					PlayerManager.sendMessageToTarget(sender,
-							ChatColor.AQUA + activeBan.getPlayer() +
-							ChatColor.WHITE + " was banned on " +
-							ChatColor.AQUA + sdf.format(activeBan.getBannedOn()) +
-							ChatColor.WHITE + " by " +
-							ChatColor.AQUA + activeBan.getBannedBy());
-
-					if (activeBan.getBannedUntil() == null) {
-						String banDescription = banType;
-
-						if (banType.equalsIgnoreCase("ban"))
-							banDescription = "permanent ban";
-						else if (banType.equalsIgnoreCase("ipban"))
-							banDescription = "IP ban";
-
-						PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Type: " + ChatColor.AQUA + banDescription);
-
-					} else {
-						Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-
-						if (currentTime.after(activeBan.getBannedUntil()))
-						{
-							PlayerManager.sendMessageToTarget(sender,
-									ChatColor.RED + "Type: " +
-									ChatColor.AQUA + banType +
-									ChatColor.WHITE + ", expired " +
-									ChatColor.GREEN + sdf.format(activeBan.getBannedUntil()));
-						} else {
-							PlayerManager.sendMessageToTarget(sender,
-									ChatColor.RED + "Type: " +
-									ChatColor.AQUA + banType +
-									ChatColor.WHITE + ", until " +
-									ChatColor.GREEN + sdf.format(activeBan.getBannedUntil()));
-						}
-					}
-					PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Reason: " + ChatColor.AQUA + activeBan.getReason());
-				}
+                displayPlayerWarnBanHistory(sender, player);
             }
         });
+    }
+
+    private static void displayPlayerWarnBanHistory(CommandSender sender, final String player) {
+
+        // Resolve the target player
+        GSPlayer target = PlayerManager.getPlayer(player);
+        String targetId;
+        if (target == null) {
+            Map<String, UUID> ids = DatabaseManager.players.resolvePlayerNamesHistoric(Arrays.asList(player));
+            UUID id = Iterables.getFirst(ids.values(), null);
+            if (id == null) {
+                PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED_OR_BANNED.replace("{player}", player)));
+                return;
+            }
+            targetId = id.toString().replace("-", "");
+        } else {
+            targetId = target.getUuid();
+        }
+
+        // Retrieve warnings
+        List<Ban> warns = DatabaseManager.bans.getWarnHistory(player, targetId);
+
+        // Retrieve active bans
+        BanTarget t = getBanTarget(player);
+        Ban activeBan = DatabaseManager.bans.getBanInfo(t.name);
+
+        if (activeBan == null && (warns == null || warns.isEmpty())) {
+            PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED_OR_BANNED.replace("{player}", player)));
+            return;
+        }
+
+        if (warns == null || warns.isEmpty())
+        {
+            PlayerManager.sendMessageToTarget(sender, Utilities.colorize(ConfigManager.messages.PLAYER_NEVER_WARNED.replace("{player}", player)));
+        } else {
+            PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + player + "'s Warning History" + ChatColor.DARK_AQUA + " --------");
+
+            int count = 0;
+            for (Ban b : warns) {
+                SimpleDateFormat sdf = new SimpleDateFormat();
+                sdf.applyPattern("dd MMM yyyy HH:mm");
+
+                Date now = new Date();
+                int age = (int) ((now.getTime() - b.getBannedOn().getTime()) / 1000 / 86400);
+
+                String warnedBy = " ";
+
+                if (age >= ConfigManager.bans.WarningExpiryDays) {
+                    warnedBy = ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + b.getBannedBy() + ChatColor.DARK_GRAY + ") ";
+
+                    PlayerManager.sendMessageToTarget(sender,
+                            ChatColor.GRAY + "- " +
+                                    ChatColor.DARK_GRAY + sdf.format(b.getBannedOn()) +
+                                    warnedBy +
+                                    ChatColor.DARK_GRAY + b.getReason());
+                } else {
+                    count++;
+                    warnedBy = ChatColor.YELLOW + " (" + ChatColor.GRAY + b.getBannedBy() + ChatColor.YELLOW + ") ";
+
+                    PlayerManager.sendMessageToTarget(sender,
+                            ChatColor.YELLOW + String.valueOf(count) + ": " +
+                                    ChatColor.GREEN + sdf.format(b.getBannedOn()) +
+                                    warnedBy +
+                                    ChatColor.AQUA + b.getReason());
+                }
+            }
+        }
+
+        if (activeBan != null)
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat();
+            sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
+            String banType = activeBan.getType();
+
+            PlayerManager.sendMessageToTarget(sender, "");
+            PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.RED + "Ban Info" + ChatColor.DARK_AQUA + " --------");
+            PlayerManager.sendMessageToTarget(sender,
+                    ChatColor.AQUA + activeBan.getPlayer() +
+                            ChatColor.WHITE + " was banned on " +
+                            ChatColor.AQUA + sdf.format(activeBan.getBannedOn()) +
+                            ChatColor.WHITE + " by " +
+                            ChatColor.AQUA + activeBan.getBannedBy());
+
+            if (activeBan.getBannedUntil() == null) {
+                String banDescription = banType;
+
+                if (banType.equalsIgnoreCase("ban"))
+                    banDescription = "permanent ban";
+                else if (banType.equalsIgnoreCase("ipban"))
+                    banDescription = "IP ban";
+
+                PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Type: " + ChatColor.AQUA + banDescription);
+
+            } else {
+                Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
+                if (currentTime.after(activeBan.getBannedUntil()))
+                {
+                    PlayerManager.sendMessageToTarget(sender,
+                            ChatColor.RED + "Type: " +
+                                    ChatColor.AQUA + banType +
+                                    ChatColor.WHITE + ", expired " +
+                                    ChatColor.GREEN + sdf.format(activeBan.getBannedUntil()));
+                } else {
+                    PlayerManager.sendMessageToTarget(sender,
+                            ChatColor.RED + "Type: " +
+                                    ChatColor.AQUA + banType +
+                                    ChatColor.WHITE + ", until " +
+                                    ChatColor.GREEN + sdf.format(activeBan.getBannedUntil()));
+                }
+            }
+            PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Reason: " + ChatColor.AQUA + activeBan.getReason());
+        }
     }
 
     public static void displayPlayerKickHistory(final String sentBy, final String player, final boolean showStaffNames) {
@@ -680,7 +732,7 @@ public class BansManager {
                         return;
             		} else {
             			PlayerManager.sendMessageToTarget(sender,
-                    		ChatColor.GREEN + "[Tracker] IP address \"" + search + "\" associated with " + tracking.size() + " accounts:");
+                    		ChatColor.GREEN + "[Tracker] IP address \"" + search + "\" matches " + tracking.size() + " accounts/IPs:");
             		}
             	} else {
             		String type;
@@ -705,10 +757,12 @@ public class BansManager {
         	    		}
         	    		else if (matches.size() == 1) {
         		    		if (searchString.length() < 20) {
+                                // Searched for a player name
         		    		    searchString = matches.get(0);
         		    		}
         	    		} else {
         	    			// Matched too many names, show list of names instead
+                            // (showing the 20 most recent matches)
         	                PlayerManager.sendMessageToTarget(sender,
         	                		ChatColor.RED + "[Tracker] More than one player matched \"" + searchString + "\":");
         	    	    	for (String m : matches) {
@@ -726,7 +780,7 @@ public class BansManager {
                         return;
             		} else {
             			PlayerManager.sendMessageToTarget(sender,
-                    		ChatColor.GREEN + "[Tracker] Player \"" + searchString + "\" associated with " + tracking.size() + " accounts:");
+                    		ChatColor.GREEN + "[Tracker] Player \"" + searchString + "\" is associated with " + tracking.size() + " accounts/IPs:");
             			
             			if (geSuit.proxy.getPlayer(searchString) != null) {
             			    final ProxiedPlayer player = geSuit.proxy.getPlayer(searchString);
@@ -742,15 +796,41 @@ public class BansManager {
             			}
             		}
             	}
-        
+
+                // Construct a mapping betweeen UUID and the player's most recent username
+                // Also keep track of the number of names associated witih each uuid
+                HashMap<String, String> uuidNameMap = new HashMap<>();
+                HashMap<String, Integer> uuidNameCount = new HashMap<>();
+
+                for (Track t : tracking) {
+                    String currentUuid = t.getUuid();
+
+                    uuidNameMap.put(currentUuid, t.getPlayer());
+                    Integer count = uuidNameCount.get(currentUuid);
+                    if (count == null) {
+                        uuidNameCount.put(currentUuid, 1);
+                    } else {
+                        uuidNameCount.put(currentUuid, count + 1);
+                    }
+                }
+
             	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             	for (Track t : tracking) {
             	    StringBuilder builder = new StringBuilder();
             	    builder.append(ChatColor.DARK_GREEN);
             	    builder.append(" - ");
+
+                    String playerName = t.getPlayer();
+                    if (uuidNameCount.get(t.getUuid()) > 1) {
+                        String latestName = uuidNameMap.get(t.getUuid());
+                        if (!latestName.equalsIgnoreCase(playerName)) {
+                            playerName = latestName + " (" + playerName + ")";
+                        }
+                    }
+
             	    if (t.isNameBanned()) {
             	        builder.append(ChatColor.DARK_AQUA);
-            	        builder.append(t.getPlayer());
+            	        builder.append(playerName);
             	        builder.append(ChatColor.GREEN);
             	        if (t.getBanType().equals("ban")) {
             	            builder.append("[Ban]");
@@ -758,7 +838,7 @@ public class BansManager {
             	            builder.append("[Tempban]");
             	        }
             	    } else {
-            	        builder.append(t.getPlayer());
+            	        builder.append(playerName);
             	    }
             	    
             	    builder.append(' ');
@@ -769,7 +849,7 @@ public class BansManager {
             	        builder.append(ChatColor.GREEN);
             	        builder.append("[IPBan]");
             	    } else {
-            	        builder.append(ChatColor.DARK_GREEN);
+            	        builder.append(ChatColor.YELLOW);
             	        builder.append(t.getIp());
             	    }
             	    

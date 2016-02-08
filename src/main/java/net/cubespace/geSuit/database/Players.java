@@ -217,8 +217,8 @@ public class Players implements IRepository {
         List<String> players = new ArrayList<String>();
         try {
             PreparedStatement getPlayer = connectionHandler.getPreparedStatement("matchPlayers");
-            getPlayer.setString(1, "%" + player + "%");
-            getPlayer.setString(2, player);
+            getPlayer.setString(1, "%" + player + "%");     // Player Name
+            getPlayer.setString(2, player);                 // UUID
 
             ResultSet res = getPlayer.executeQuery();
             while (res.next()) {
@@ -412,7 +412,8 @@ public class Players implements IRepository {
         connection.addPreparedStatement("getPlayerTPS", "SELECT tps FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
         connection.addPreparedStatement("getPlayer", "SELECT * FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
         connection.addPreparedStatement("getAltPlayer", "SELECT playername, uuid FROM "+ ConfigManager.main.Table_Players +" WHERE ipaddress = ? ORDER BY lastonline DESC LIMIT 2");
-        connection.addPreparedStatement("matchPlayers", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE playername like ? OR uuid like ? ORDER BY lastonline LIMIT 20");
+        // Show the 20 most recent players whose name matches the search string
+        connection.addPreparedStatement("matchPlayers", "SELECT playername,uuid FROM (SELECT playername,uuid,lastonline FROM "+ ConfigManager.main.Table_Players +" WHERE playername like ? OR uuid like ? ORDER BY lastonline desc LIMIT 20) AS FilterQ ORDER BY lastonline");
         connection.addPreparedStatement("insertPlayer", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,firstonline,lastonline,ipaddress) VALUES (?, ?, NOW(), NOW(), ?)");
         connection.addPreparedStatement("insertPlayerConvert", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,firstonline,lastonline,ipaddress,tps) VALUES (?, ?, ?, ?, ?, ?)");
         connection.addPreparedStatement("getPlayers", "SELECT * FROM "+ ConfigManager.main.Table_Players);

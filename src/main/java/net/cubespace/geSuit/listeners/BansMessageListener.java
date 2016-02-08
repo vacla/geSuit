@@ -69,7 +69,15 @@ public class BansMessageListener implements Listener {
                 BansManager.displayPlayerBanHistory(in.readUTF(), in.readUTF());
                 break;
             case "DisplayPlayerWarnBanHistory":
-                BansManager.displayPlayerWarnBanHistory(in.readUTF(), in.readUTF());
+                String sentBy = in.readUTF();
+                String playerOrIP = in.readUTF();
+
+                if (playerOrIP.contains(".")) {
+                    BansManager.displayIPWarnBanHistory(sentBy, playerOrIP);
+                } else {
+                    BansManager.displayPlayerWarnBanHistory(sentBy, playerOrIP);
+                }
+
                 break;
             case "DisplayPlayerWarnHistory":
             	BansManager.displayPlayerWarnHistory(in.readUTF(), in.readUTF(), in.readBoolean());
