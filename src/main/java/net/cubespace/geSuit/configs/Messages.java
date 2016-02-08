@@ -132,6 +132,7 @@ public class Messages extends Config {
     //V: Added to show current/max homes set
     public String MAXIMUM_HOMES = "&eGlobally, you have";
     public String MAXIMUM_HOMES_OTHER = "&eGlobally, {player} has";
+    public String MAXIMUM_HOMES_OF = "&eof";
     public String MAXIMUM_HOMES2 = "&emaximum homes set.";
 
     public String HOME_UPDATED = "&6" + "Your home \"{home}\" has been updated";
