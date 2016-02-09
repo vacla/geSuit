@@ -105,7 +105,7 @@ public class HomesManager {
 
         // V: Added showing global current/max homes to player
         String showmax = ConfigManager.messages.MAXIMUM_HOMES;
-        showmax += " " + (currcount) + " of " + (maxhomes) + " ";
+        showmax += " " + (currcount) + " " + ConfigManager.messages.MAXIMUM_HOMES_OF + " " + (maxhomes) + " ";
         showmax += ConfigManager.messages.MAXIMUM_HOMES2;
         PlayerManager.sendMessageToTarget(player, showmax);
     }
@@ -157,10 +157,9 @@ public class HomesManager {
         // V: Added showing global current/max homes to player
         int maxhomes = 5; /* obviously needs to check perms here and work out maxhomes */
         String showmax = ConfigManager.messages.MAXIMUM_HOMES_OTHER.replace("{player}", player.getName());
-        showmax += " " + (currcount) + " of " + (maxhomes) + " ";
+        showmax += " " + (currcount) + " " + ConfigManager.messages.MAXIMUM_HOMES_OF + " " + (maxhomes) + " ";
         showmax += ConfigManager.messages.MAXIMUM_HOMES2 + " (WIP)";
         PlayerManager.sendMessageToTarget(sender, showmax);
-
     }
 
     public static void loadPlayersHomes(GSPlayer player) {
