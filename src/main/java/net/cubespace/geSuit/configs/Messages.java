@@ -134,6 +134,7 @@ public class Messages extends Config {
     public String MAXIMUM_HOMES_OTHER = "&eGlobally, {player} has";
     public String MAXIMUM_HOMES_OF = "&eof";
     public String MAXIMUM_HOMES2 = "&emaximum homes set.";
+    public String HOMES_SET = "&ehomes set";
 
     public String HOME_UPDATED = "&6" + "Your home \"{home}\" has been updated";
     public String HOME_SET = "&6" + "Your home \"{home}\" has been set";
