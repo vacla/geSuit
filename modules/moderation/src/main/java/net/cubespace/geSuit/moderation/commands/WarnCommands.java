@@ -35,10 +35,41 @@ public class WarnCommands {
             sender.sendMessage(result.getMessage());
         }
     }
-    
-    @Command(name="warnhistory", async=true, aliases={"dst"}, permission="gesuit.bans.command.warnhistory", usage="/<command> <player>")
+
+    @Command(name = "warnhistory", async = true, aliases = {"dst"}, permission = "gesuit.bans.command.warnhistory.other", usage = "/<command> <player>")
     public void warnHistory(CommandSender sender, String playerName) {
         // TODO: Somehow allow lookup by previous name
+        GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
+
+        if (player == null) {
+            throw new IllegalArgumentException(Global.getMessages().get("warn.unknown-player"));
+        }
+
+        List<WarnInfo> warnings = actions.getWarnings(player);
+
+        sender.sendMessage(ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + player.getDisplayName() + "'s Warning History" + ChatColor.DARK_AQUA + " --------");
+        if (warnings.isEmpty()) {
+            sender.sendMessage(ChatColor.RED + "That player has no warnings");
+        }
+
+        int count = 0;
+        for (WarnInfo warn : warnings) {
+            if (System.currentTimeMillis() > warn.getExpireDate()) {
+                sender.sendMessage(ChatColor.GRAY + "- " + ChatColor.DARK_GRAY + Utilities.formatDate(warn.getDate()) + " (" + warn.getBy() + ") " + warn.getReason());
+            } else {
+                ++count;
+                sender.sendMessage(ChatColor.YELLOW + String.valueOf(count) + ": " +
+                        ChatColor.GREEN + Utilities.formatDate(warn.getDate()) +
+                        ChatColor.YELLOW + " (" + ChatColor.GRAY + warn.getBy() + ChatColor.YELLOW + ") " +
+                        ChatColor.AQUA + warn.getReason());
+            }
+        }
+    }
+    
+    @Command(name="warnhistory", async=true, aliases={"dst"}, permission="gesuit.bans.command.warnhistory", usage="/<command> <player>")
+    public void warnHistory(CommandSender sender) {
+        // TODO: Somehow allow lookup by previous name
+        String playerName = sender.getName();
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
@@ -54,13 +85,18 @@ public class WarnCommands {
         
         int count = 0;
         for (WarnInfo warn : warnings) {
+            String warnby = "Unknown";
+            if (sender.hasPermission("gesuit.bans.command.warnhistory.seewarnby")) {
+                warnby = warn.getBy();
+            }
+
             if (System.currentTimeMillis() > warn.getExpireDate()) {
-                sender.sendMessage(ChatColor.GRAY + "- " + ChatColor.DARK_GRAY + Utilities.formatDate(warn.getDate()) + " (" + warn.getBy() + ") " + warn.getReason());
+                sender.sendMessage(ChatColor.GRAY + "- " + ChatColor.DARK_GRAY + Utilities.formatDate(warn.getDate()) + " (" + warnby + ") " + warn.getReason());
             } else {
                 ++count;
                 sender.sendMessage(ChatColor.YELLOW + String.valueOf(count) + ": " +
                     ChatColor.GREEN + Utilities.formatDate(warn.getDate()) +
-                    ChatColor.YELLOW + " (" + ChatColor.GRAY + warn.getBy() + ChatColor.YELLOW + ") " +
+                        ChatColor.YELLOW + " (" + ChatColor.GRAY + warnby + ChatColor.YELLOW + ") " +
                     ChatColor.AQUA + warn.getReason());
             }
         }
