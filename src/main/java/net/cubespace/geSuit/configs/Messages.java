@@ -30,38 +30,38 @@ public class Messages extends Config {
     public String PLAYER_JOIN_NAMECHANGE_PROXY = "&ePlayer {player} was previously known as {old}.";
 
     // teleport specific messages
-    public String ALL_PLAYERS_TELEPORTED = "&6" + "All players have been teleported to {player}";
-    public String TELEPORTED_TO_PLAYER = "&6" + "You have been teleported to {player}";
+    public String ALL_PLAYERS_TELEPORTED = "&6" + "All players have been teleported to &c{player}";
+    public String TELEPORTED_TO_PLAYER = "&6" + "You have been teleported to &c{player}";
     public String PLAYER_TELEPORT_PENDING = "&c" + "You already have a teleport pending";
     public String PLAYER_TELEPORT_PENDING_OTHER = "&c" + "That player already has a teleport pending";
     public String PLAYER_TELEPORT_WRONG_SERVER = "&c" + "You are not allowed to teleport to that player from here.";
-    public String PLAYER_TELEPORTED_TO_YOU = "&6" + "{player} has teleported to you";
-    public String PLAYER_TELEPORTED = "&6" + "{player} has teleported to {target}";
-    public String PLAYER_REQUESTS_TO_TELEPORT_TO_YOU = "&6" + "{player} has requested to teleport to you. Type /tpaccept to allow";
-    public String PLAYER_REQUESTS_YOU_TELEPORT_TO_THEM = "&6" + "{player} has requested you teleport to them. Type /tpaccept to allow";
+    public String PLAYER_TELEPORTED_TO_YOU = "&c" + "{player} &6has teleported to you";
+    public String PLAYER_TELEPORTED = "&c" + "{player} &6has teleported to &c{target}";
+    public String PLAYER_REQUESTS_TO_TELEPORT_TO_YOU = "&6" + "{player} has requested to teleport to you.{N}&6To teleport, type &c/tpaccept&6.{N}&6To deny this request, type &c/tpdeny&6.{N}&6This request will timeout after &c20 seconds&6.";
+    public String PLAYER_REQUESTS_YOU_TELEPORT_TO_THEM = "&6" + "{player} has requested that you teleport to them.{N}&6To teleport, type &c/tpaccept&6.{N}&6To deny this request, type &c/tpdeny&6.{N}&6This request will timeout after &c20 seconds&6.";
     public String TELEPORT_ACCEPTED = "&6" + "You accepted {player}'s teleport request";
     public String TELEPORT_REQUEST_ACCEPTED = "&6" + "{player} accepted your teleport request";
-    public String TELEPORT_DENIED = "&c" + "You denied {player}'s teleport request";
-    public String TELEPORT_REQUEST_DENIED = "&c" + "{player} denied your teleport request";
+    public String TELEPORT_DENIED = "&6" + "You denied &c{player}'s &6teleport request";
+    public String TELEPORT_REQUEST_DENIED = "&c" + "{player} &6denied your teleport request";
     public String NO_TELEPORTS = "&c" + "You do not have any pending teleports";
-    public String TELEPORT_REQUEST_SENT = "&6" + "Your request has been sent";
-    public String TPA_REQUEST_TIMED_OUT = "&c" + "Your request to teleport to {player} has timed out";
+    public String TELEPORT_REQUEST_SENT = "&6" + "Request sent to &c{player}";
+    public String TPA_REQUEST_TIMED_OUT = "&6" + "Your request to teleport to &c{player} &6has timed out";
     public String TP_REQUEST_OTHER_TIMED_OUT = "&c" + "{player}'s teleport request has timed out";
     public String TPAHERE_REQUEST_TIMED_OUT = "&c" + "Your request to have {player} teleport to you has timed out";
     public String NO_BACK_TP = "&c" + "You do not have anywhere to go back to";
     public String SENT_BACK = "&6" + "You have been sent back";
     public String TELEPORT_TOGGLE_ON = "&6" + "Teleports have been toggled on";
     public String TELEPORT_TOGGLE_OFF = "&c" + "Teleports have been toggled off";
-    public String TELEPORT_UNABLE = "&c" + "You are unable to teleport to this player";
+    public String TELEPORT_UNABLE = "&6" + "You are unable to teleport to &c{player}";
 
     // warp specific messages
-    public String WARP_CREATED = "&6" + "Successfully created a warp";
-    public String WARP_UPDATED = "&6" + "Successfully updated the warp";
+    public String WARP_CREATED = "&6" + "Successfully created warp &c{warp}";
+    public String WARP_UPDATED = "&6" + "Successfully updated warp &c{warp}";
     public String WARP_DESCRIPTION_UPDATED = "&6" + "Successfully updated the warp description";
-    public String WARP_DELETED = "&6" + "Successfully deleted the warp";
-    public String PLAYER_WARPED = "&7" + "Sending you to {warp}";
-    public String PLAYER_WARPED_OTHER = "&7" + "{player} has been sent to {warp}";
-    public String WARP_DOES_NOT_EXIST = "&c" + "That warp does not exist";
+    public String WARP_DELETED = "&6" + "Successfully deleted warp &c{warp}";
+    public String PLAYER_WARPED = "&6" + "Sending you to &c{warp}";
+    public String PLAYER_WARPED_OTHER = "&c" + "{player} &6has been sent to &c{warp}";
+    public String WARP_DOES_NOT_EXIST = "&c" + "Error: &4The warp &c{warp} &4does not exist";
     public String WARP_NO_PERMISSION = "&c" + "You do not have permission to use that warp";
     public String WARP_SERVER = "&c" + "Warp not on the same server";
 
@@ -93,26 +93,26 @@ public class Messages extends Config {
     public String BUNGEE_COMMAND_KICKHISTORY_DISABLED = "&c" + "Kick History is globally disabled";
     public String BUNGEE_COMMAND_NAMES_USAGE = "&c" + "Usage: !names <player|uuid>";
     public String BUNGEE_COMMAND_NAMEHISTORYUPDATE_USAGE = "&c" + "Usage: !UpdateNameHistory <player|uuid>";
-    public String UNKNOWN_PLAYER_STILL_BANNING = "&c" + "WARNING: Player is unknown, continuing anyway";
+    public String UNKNOWN_PLAYER_STILL_BANNING = "&c" + "Player is unknown. Banning by name and &nmaybe&r&c by UUID";
     public String UNKNOWN_PLAYER_NOT_WARNING = "&c" + "ERROR: Player is unknown, refusing to give warning";
-    public String KICK_PLAYER_MESSAGE = "&c" + "You have been kicked. Reason: {message}";
+    public String KICK_PLAYER_MESSAGE = "&c" + "You have been kicked.{N}{N}&bReason: &e{message}";
     public String KICK_PLAYER_BROADCAST = "&b" + "{player} has been kicked. Reason: {message}";
-    public String KICK_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto kicked.";
+    public String KICK_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto-kicked";
     public String PLAYER_ALREADY_BANNED = "&c" + "That player is already banned!";
     public String PLAYER_NOT_BANNED = "&a" + "That player is not banned";
-    public String PLAYER_NEVER_BANNED = "&a" + "No ban history for {player}";
-    public String PLAYER_NEVER_WARNED = "&a" + "No warning history for {player}";
-    public String PLAYER_NEVER_WARNED_OR_BANNED = "&a" + "No warning or ban history for {player}";
-    public String PLAYER_NEVER_KICKED = "&a" + "No kick history for {player}";
-    public String IPBAN_PLAYER = "&c" + "Your IP has been banned. Reason: {message}";
-    public String IPBAN_PLAYER_BROADCAST = "&b" + "{player} has been ip banned. Reason: {message}";
+    public String PLAYER_NEVER_BANNED = "&6" + "No ban history for &c{player}";
+    public String PLAYER_NEVER_WARNED = "&6" + "No warning history for &c{player}";
+    public String PLAYER_NEVER_WARNED_OR_BANNED = "&6" + "No warning or ban history for &c{player}";
+    public String PLAYER_NEVER_KICKED = "&6" + "No kick history for &c{player}";
+    public String IPBAN_PLAYER = "&4" + "Your IP has been banned.{N}{N}&cReason: &e{message}";
+    public String IPBAN_PLAYER_BROADCAST = "&c" + "{player} &bhas been ip banned. Reason: {message}";
     public String DEFAULT_BAN_REASON = "Unknown";
     public String DEFAULT_KICK_MESSAGE = "&cUnknown";
     public String DEFAULT_WARN_REASON = "Unknown";
-    public String BAN_PLAYER_MESSAGE = "&c" + "You have been banned. Reason: {message}";
+    public String BAN_PLAYER_MESSAGE = "&c" + "You have been banned.{N}{N}&cReason: &e{message}";
     public String BAN_PLAYER_BROADCAST = "&b" + "{player} has been banned. Reason: {message}";
-    public String BAN_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto banned.";
-    public String TEMP_BAN_MESSAGE = "&c" + "You have been temporarily banned ({shortleft}). Reason: {message}";
+    public String BAN_PLAYER_AUTO_BROADCAST = "&b" + "{player} has been auto-banned.";
+    public String TEMP_BAN_MESSAGE = "&c" + "You have been temporarily banned.{N}{N}&cReason: &e{message}{N}{N}&cRemaining ban time: &e{shortleft}";
     public String TEMP_BAN_BROADCAST = "&b" + "{player} has been temporarily banned ({shortleft}). Reason: {message}";
     public String TEMP_BAN_AUTO_BROADCAST = "&b" + "{player} has been auto temp-banned ({shortleft}).";
     public String PLAYER_UNBANNED = "&c" + "{player} has been unbanned!";
@@ -129,7 +129,6 @@ public class Messages extends Config {
     public String SHOWING_OTHER_HOMES = "&eListing homes of {player}:";
     public String HOMES_PREFIX_THIS_SERVER = "&a{server}: &9";
     public String HOMES_PREFIX_OTHER_SERVER = "&e{server}: &9";
-    //V: Added to show current/max homes set
     public String MAXIMUM_HOMES = "&eGlobally, you have";
     public String MAXIMUM_HOMES_OTHER = "&eGlobally, {player} has";
     public String MAXIMUM_HOMES_OF = "&eof";
@@ -142,8 +141,8 @@ public class Messages extends Config {
     public String HOME_DELETED = "&c" + "Your home \"{home}\" has been deleted";
     
     // Seen messages
-    public String PLAYER_SEEN_ONLINE = "&6Player &c{player} &6is &aonline&6 since {timediff}\n&6 {date}";
-    public String PLAYER_SEEN_OFFLINE = "&6Player &c{player} &6is &4offline&6 since {timediff}\n&6 {date}";
+    public String PLAYER_SEEN_ONLINE = "&6Player &c{player} &6is &aonline&6 since {timediff}{N}&6 {date}";
+    public String PLAYER_SEEN_OFFLINE = "&6Player &c{player} &6is &4offline&6 since {timediff}{N}&6 {date}";
     public String PLAYER_SEEN_ITEM_FORMAT = "&6 - {name}: &r{value}";
     
     // OnTime messages
@@ -162,6 +161,6 @@ public class Messages extends Config {
     public String LASTLOGINS_FORMAT = "&6 Date:&f{date} &6Ontime:&f{ontime}";
 
     //Lockdown messages
-    public String LOCKDOWN_MESSAGE = "&c" + "Server is in maintenance. {message}  ";
+    public String LOCKDOWN_MESSAGE = "&c" + "Server is in maintenance. {message}";
     public String LOCKDOWN_USAGE = "&c" + "Usage: !lockdown end|status|<time> <msg>  (time format like 1h5m10s)";
 }
