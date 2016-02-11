@@ -1,40 +1,20 @@
 package net.cubespace.geSuit;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-
 import com.google.common.base.Strings;
-
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
-import net.cubespace.geSuit.commands.AnnounceCommand;
-import net.cubespace.geSuit.commands.BanCommands;
-import net.cubespace.geSuit.commands.DebugCommand;
-import net.cubespace.geSuit.commands.KickCommands;
-import net.cubespace.geSuit.commands.LookupCommands;
-import net.cubespace.geSuit.commands.MOTDCommand;
-import net.cubespace.geSuit.commands.ReloadCommand;
-import net.cubespace.geSuit.commands.SeenCommand;
-import net.cubespace.geSuit.commands.WarnCommands;
+import net.cubespace.geSuit.commands.*;
 import net.cubespace.geSuit.config.ConfigManager;
 import net.cubespace.geSuit.config.MainConfig.Database;
 import net.cubespace.geSuit.config.MainConfig.Redis;
 import net.cubespace.geSuit.core.BungeePlayerManager;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.PlayerListener;
-import net.cubespace.geSuit.core.geCore;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
 import net.cubespace.geSuit.core.commands.BungeeCommandManager;
+import net.cubespace.geSuit.core.geCore;
 import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.remote.RemoteManager;
@@ -57,6 +37,13 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.concurrent.*;
+import java.util.logging.Level;
 
 public class geSuitPlugin extends Plugin implements ConnectionNotifier {
 
@@ -166,6 +153,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         Global.getCommandManager().registerAll(new KickCommands(bans), this);
         Global.getCommandManager().registerAll(new WarnCommands(warnings), this);
         Global.getCommandManager().registerAll(new LookupCommands(tracking), this);
+        Global.getCommandManager().registerAll(new LockDownCommands(lockdowns), this);
         
         manager.registerCommand(this, new ReloadCommand(this, configManager));
         manager.registerCommand(this, new DebugCommand());

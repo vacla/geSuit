@@ -1,21 +1,19 @@
 package net.cubespace.geSuit.teleports.homes;
 
-import java.util.Collections;
-import java.util.Set;
-
+import com.google.common.base.Preconditions;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.attachments.Homes;
 import net.cubespace.geSuit.core.objects.Location;
-
 import org.bukkit.command.CommandSender;
 
-import com.google.common.base.Preconditions;
+import java.util.Collections;
+import java.util.Set;
 
 public class HomeManager {
     public static final String defaultHome = "home";
     public static final int maxServerHomes = 100;
-    public static final int maxGlobalHomes = 300;
+    public static final int maxGlobalHomes = 100;
     
     /**
      * Sets a players home making sure to add the attachment if needed, and save.
@@ -140,15 +138,14 @@ public class HomeManager {
         if (player.hasPermission(basePermission + "*") || player.hasPermission("gesuit.homes.limits.*")) {
             return maxLimit;
         } else {
-            // TODO: Look for a better way to do this. This can't be cheap
-            for (int i = 0; i < maxLimit; i++) {
+            for (int i = maxLimit; max < i; --i) {
                 if (player.hasPermission(basePermission + i)) {
                     max = i;
                 }
             }
-
         }
         
         return max;
     }
+
 }

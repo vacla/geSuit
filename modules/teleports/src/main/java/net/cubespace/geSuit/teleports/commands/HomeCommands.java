@@ -1,10 +1,9 @@
 package net.cubespace.geSuit.teleports.commands;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import com.google.common.base.Function;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.ListMultimap;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
 import net.cubespace.geSuit.core.attachments.Homes;
@@ -17,15 +16,14 @@ import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.teleports.TeleportsModule;
 import net.cubespace.geSuit.teleports.homes.HomeManager;
 import net.cubespace.geSuit.teleports.misc.LocationUtil;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.ListMultimap;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class HomeCommands {
     private HomeManager manager;
@@ -252,8 +250,8 @@ public class HomeCommands {
             sender.sendMessage(Global.getMessages().get("home.unknown-home"));
             return;
         }
-        
-        sender.sendMessage(Global.getMessages().get("home.teleport", "home", home));
+
+        sender.sendMessage(Global.getMessages().get("home.teleport.other", "player", gTarget.getName(), "home", home));
         TeleportsModule.getTeleportManager().teleportWithDelay(gPlayer, location, TeleportCause.COMMAND);
     }
     
@@ -302,8 +300,17 @@ public class HomeCommands {
         } else {
             gTarget = Global.getPlayer(player.getUniqueId());
         }
-        
-        displayHomes(player, gTarget); 
+
+        displayHomes(player, gTarget);
+        if (playerName == null) { //only if the sender is asking for thier own homes - we cannot report on offline players.
+            String servercount = manager.getHomeCountServer(gTarget) + "/" + manager.getHomeLimitServer(player);
+            String globalCount = manager.getHomeCount(gTarget) + "/" + manager.getHomeLimitGlobal(player);
+            player.sendMessage(Global.getMessages().get("home.list.footer", "servercount", servercount, "globalcount", globalCount));
+        } else {
+            String servercount = manager.getHomeCountServer(gTarget) + "/?";
+            String globalCount = manager.getHomeCount(gTarget) + "/?";
+            player.sendMessage(Global.getMessages().get("home.list.footer.other", "player", gTarget.getName(), "servercount", servercount, "globalcount", globalCount));
+        }
     }
     
     @CommandTabCompleter(name="homes")
@@ -318,6 +325,83 @@ public class HomeCommands {
         }
         return null;
     }
+
+    @Command(name = "sendhome", async = true, permission = "gesuit.homes.commands.sendhome", description = "Sends another player to default home or a selected home", usage = "/command <player> <homename>")
+    public void sendHome(Player sender, String player, @Optional String home) {
+        GlobalPlayer gPlayer;
+        GlobalPlayer gTarget;
+        gPlayer = Utilities.getPlayerAdvanced(player);
+        if (gPlayer == null) {
+            sender.sendMessage(Global.getMessages().get("player.unknown", "player", player));
+            return;
+        }
+        if (home != null && home.contains(":")) {
+            // Player and home specification
+            String[] parts = home.split(":");
+            if (parts.length != 2) {
+                sender.sendMessage(Global.getMessages().get("sendhome.command.hint"));
+                return;
+            }
+            gTarget = Utilities.getPlayerAdvanced(parts[0]);
+            home = parts[1];
+            if (gTarget == null) {
+                sender.sendMessage(Global.getMessages().get("player.unknown", "player", parts[0]));
+                return;
+            }
+            if (home.isEmpty()) {
+                home = null;
+            }
+        } else {
+            gTarget = gPlayer;
+        }
+        if (home == null) {
+            displayHomes(sender, gTarget);
+            return;
+        }
+        Location location = manager.getHome(gTarget, home);
+        if (location == null) {
+            sender.sendMessage(Global.getMessages().get("home.unknown-home"));
+            return;
+        }
+        sender.sendMessage(Global.getMessages().get("home.teleport", "home", home));
+        TeleportsModule.getTeleportManager().teleportWithDelay(gPlayer, location, TeleportCause.COMMAND);
+    }
+
+    @CommandTabCompleter(name = "sendhome")
+    public Iterable<String> tabCompleteSendHome(Player player, int argument, String input, String playerName, String home) {
+        if (!player.hasPermission("gesuit.homes.commands.homes.other") || !player.hasPermission("gesuit.homes.commands.sendhome")) {
+            return null;
+        }
+        switch (argument) {
+            case 0: // playerName to send
+                return Utilities.matchPlayerNames(input, true);
+            case 1: //home format = targetPlayer:home OR homename
+                Iterable<String> homeNames;
+                GlobalPlayer gTarget;
+                if (input.contains(":")) {
+                    final String prefix = input.split(":")[0];
+                    gTarget = Global.getPlayer(prefix);
+                    if (gTarget == null) {
+                        return null;
+                    }
+                    homeNames = manager.getHomeNames(gTarget);
+                    // Prepend prefix onto it
+                    homeNames = Iterables.transform(homeNames, new Function<String, String>() {
+                        @Override
+                        public String apply(String input) {
+                            return prefix + ":" + input;
+                        }
+                    });
+                } else {
+                    gTarget = Global.getPlayer(playerName);
+                    homeNames = manager.getHomeNames(gTarget);
+                }
+                return homeNames;
+            default:
+                return null;
+        }
+    }
+
     
     private void displayHomes(Player sender, GlobalPlayer player) {
         Homes homes = player.getAttachment(Homes.class);
@@ -377,4 +461,5 @@ public class HomeCommands {
         
         sender.sendMessage(builder.toString());
     }
+
 }

@@ -197,6 +197,8 @@ home.limit.global = &cYour are not allowed to set anymore homes globally.
 home.no-homes = &cYou do not have any homes set.
 home.no-homes.other = &cThey do not have any homes set.
 home.list.header = &eListing your homes:
+home.list.footer = &eServer: {servercount}, Globally: {globalcount} homes set.
+home.list.footer.other = &eFor {player} -- Server: {servercount}, Globally: {globalcount} homes set.
 home.list.header.other = &eListing homes of {player}:
 home.list.prefix.this-server = &a{server}: &9
 home.list.prefix.other-server = &e{server}: &9
@@ -208,6 +210,7 @@ home.unknown-home = &cThat home does not exist
 home.delete = &cYour home "{home}" has been deleted
 home.delete.other = &cHome "{home}" has been deleted for {player}
 home.command.hint = &cWhen specifying player name, use '<player>:<home>'
+sendhome.command.hint = &cWhen sending a player home you can use '<playertoSend> <otherPlayer:otherplayerhomename>' or just '<playerToSend> <homename>'
 
 # Seen related messages
 seen.header.online = &6Player &c{player} &6is &aonline&6 since {timediff}\n&6 {date}
