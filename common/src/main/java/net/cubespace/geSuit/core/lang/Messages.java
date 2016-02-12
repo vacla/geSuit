@@ -123,7 +123,8 @@ public class Messages {
             for (int i = 0; i < values.length - 1; i += 2) {
                 message = message.replace(String.format("{%s}", values[i]), String.valueOf(values[i+1]));
             }
-            
+
+            // Colorize also replaces {N} with a newline character
             return Utilities.colorize(message);
         } else {
             return String.format("{%s}", id);

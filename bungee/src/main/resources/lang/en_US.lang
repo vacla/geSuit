@@ -20,7 +20,7 @@ connect.join.new = &eNotice to everyone: &b{player} &ahas just joined this serve
 connect.quit = {player}&e has left the server!
 
 # Log messages
-log.player-create = "Created player &b{player}&7 ({uuid})"
+log.player-create = Created player &b{player}&7 ({uuid})
 
 # Generic messages
 player.not-online = &cThat player is not online
@@ -29,17 +29,17 @@ player.unknown = &cUnknown player
 player.required = &cThis command or syntax may only be called by a player
 
 # teleport specific messages
-teleport.all = &6All players have been teleported to {player}
+teleport.all = &6All players have been teleported to &c{player}
 teleport.blocked.area = &cTeleportation is being blocked in this area
 teleport.blocked.server = &cYou are not allowed to teleport to that player from here.
-teleport.blocked.player = &cYou are unable to teleport to this player
-teleport.incoming = &6{player} has teleported to you
-teleport.outgoing = &6You have been teleported to {player}
+teleport.blocked.player = &6You are unable to teleport to &c{player}
+teleport.incoming = &c{player} &6has teleported to you
+teleport.outgoing = &6You have been teleported to &c{player}
 teleport.outgoing.loc = &6You have been teleported
-teleport.message.player = &6{player} has teleported to {target}
-teleport.toggle.on = &6Telports have been toggled on
-teleport.toggle.off = &cTelports have been toggled off
-teleport.error.server = &c Unable to teleport to unknown server {server}
+teleport.message.player = &c{player} &6has teleported to &c{target}
+teleport.toggle.on = &6Teleports have been toggled on
+teleport.toggle.off = &cTeleports have been toggled off
+teleport.error.server = &cUnable to teleport to unknown server {server}
 teleport.error.world = &cUnable to teleport to unknown world {world}
 teleport.error.location = &cInvalid coordinate {value}
 
@@ -49,17 +49,17 @@ teleport.delay.abort = &6Teleportation aborted because you moved.
 
 tpa.request.blocked = &cYou already have a teleport pending
 tpa.request.blocked.other = &cThat player already has a teleport pending
-tpa.request.receive = &6{player} has requested to teleport to you. Type /tpaccept to allow
+tpa.request.receive = &6{player} has requested to teleport to you.{N}&6To teleport, type &c/tpaccept&6.{N}&6To deny this request, type &c/tpdeny&6.{N}&6This request will timeout after &c20 seconds
 tpa.request.accept.you = &6You accepted {player}'s teleport request
 tpa.request.accept.them = &6{player} accepted your teleport request
-tpa.request.denied.you = &cYou denied {player}'s teleport request
-tpa.request.denied.them =  &c{player} denied your teleport request
+tpa.request.denied.you = &6You denied &c{player}'s &6teleport request
+tpa.request.denied.them = &c{player} &6denied your teleport request
 tpa.request.none = &cYou do not have any pending teleports
-tpa.request.sent =  &6Your request has been sent
-tpa.request.timeout = &cYour request to teleport to {player} has timed out
+tpa.request.sent = &6Request sent to &c{player}
+tpa.request.timeout = &6Your request to teleport to &c{player} &6has timed out
 tpa.request.timeout.other = &c{player}'s teleport request has timed out
 tpahere.request.timeout = &cYour request to have {player} teleport to you has timed out
-tpahere.request.receive = &6{player} has requested you teleport to them. Type /tpaccept to allow
+tpahere.request.receive = &6{player} has requested that you teleport to them.{N}&6To teleport, type &c/tpaccept&6.{N}&6To deny this request, type &c/tpdeny&6.{N}&6This request will timeout after &c20 seconds&6.
 back.not-set = &cYou do not have anywhere to go back to
 back.teleport = &6You have been sent back
 top.success = &6Teleporting to top.
@@ -68,8 +68,8 @@ top.success = &6Teleporting to top.
 warp.create = &6Successfully created a warp
 warp.update = &6Successfully updated the warp
 warp.delete = &6Successfully deleted the warp
-warp.teleport = &7You have been warped to {warp}
-warp.teleport.other = &7{player} has been warped to {warp}
+warp.teleport = &6Sending you to &c{warp}
+warp.teleport.other = &c{player} &6has been sent to &c{warp}
 warp.unknown-warp = &cThat warp does not exist
 warp.no-permission = &cYou do not have permission to use that warp
 warp.list.global = &6Global warps:
@@ -105,42 +105,42 @@ spawn.set.new = &6New Player spawn point set
 spawn.set.global = &6Global spawn point set
 spawn.set.server = &6Server spawn point set
 spawn.set.world = &6World spawn point set
-spawn.no-permission = &cYou dont have permission to go to spawn from here
+spawn.no-permission = &cYou don't have permission to go to spawn from here
 spawn.not-set = &cCannot teleport, spawn is not set
 
 # moderation related messages
 ban.unknown-player = &cCannot ban unknown player {player}
 ban.already-banned = &cThat player is already banned!
 ban.not-banned = &aThat player is not banned
-ban.history.empty = &aNo ban history for {player}
-ban.display.personal = &cYou have been banned. Reason: {message}
+ban.history.empty = &aNo ban history for &2{player}
+ban.display.personal = &cYou have been banned.{N}{N}&cReason: &e{message}
 ban.display.broadcast = &b{player} has been banned. Reason: {message}
-ban.display.broadcast.auto = &b{player} has been auto banned.
+ban.display.broadcast.auto = &b{player} has been auto-banned.
 
 ipban.not-ip = &cThat is not an IP address
-ipban.display.personal = &cYour IP has been banned. Reason: {message}
-ipban.display.broadcast = &b{player} has been ip banned. Reason: {message}
-ipban.display.broadcast.auto = &b{player} has been auto ip banned.
+ipban.display.personal = &cYour IP has been banned.{N}{N}&cReason: &e{message}
+ipban.display.broadcast = &b{player} has been IP banned. Reason: {message}
+ipban.display.broadcast.auto = &b{player} has been auto IP banned.
 
 tempban.not-date = &cInvalid date. Needs to be in the format of <time><unit>... eg. 6h, 20m, 5d6h
-tempban.display.personal = &cYou have been temporarily banned ({shortleft}). Reason: {message}
+tempban.display.personal = &cYou have been temporarily banned.{N}{N}&cReason: &e{message}{N}{N}&cRemaining ban time: &e{shortleft}
 tempban.display.broadcast = &b{player} has been temporarily banned ({shortleft}). Reason: {message}
 tempban.display.broadcast.auto = &b{player} has been auto temp-banned ({shortleft}).
 
-iptempban.display.personal = &cYour IP has been temporarily banned ({shortleft}). Reason: {message}
+iptempban.display.personal = &cYour IP has been temporarily banned.{N}{N}&cReason: &e{message}{N}{N}&cRemaining ban time: &e{shortleft}
 iptempban.display.broadcast = &b{player} has been temporarily ip banned ({shortleft}). Reason: {message}
 iptempban.display.broadcast.auto = &b{player} has been auto temp ip banned ({shortleft}).
 
-kick.display.personal = &cYou have been kicked. Reason: {message}
+kick.display.personal = &cYou have been kicked.{N}{N}&bReason: &e{message}
 kick.display.broadcast = &b{player} has been kicked. Reason: {message}
-kick.dipslay.broadcast.auto = &b{player} has been auto kicked.
+kick.dipslay.broadcast.auto = &b{player} has been auto-kicked.
 
 unban.unknown-player = &cCannot unban unknown player {player}
 unban.broadcast = &c{player} has been unbanned!
 
 warn.unknown-player = &cPlayer is unknown, refusing to give warning.
-warn.history.empty = &aNo warning history for {player}
-warn.display.personal = &bYou has received a warning. Reason: {message}
+warn.history.empty = &aNo warning history for &2{player}
+warn.display.personal = &bYou have received a warning. Reason: {message}
 warn.display.broadcast = &b{player} has received a warning. Reason: {message}
 
 nick.duplicate = &cYou cannot use that name as a nickname. You may not nickname to existing names
@@ -192,8 +192,8 @@ mute.list.permanent = Permanent
 
 # Home related messages
 home.teleport = &6You have been sent home
-home.limit.server = &cYour are not allowed to set anymore homes on this server.
-home.limit.global = &cYour are not allowed to set anymore homes globally.
+home.limit.server = &cYou are not allowed to set any more homes on this server.
+home.limit.global = &cYou are not allowed to set any more homes globally.
 home.no-homes = &cYou do not have any homes set.
 home.no-homes.other = &cThey do not have any homes set.
 home.list.header = &eListing your homes:
@@ -213,8 +213,8 @@ home.command.hint = &cWhen specifying player name, use '<player>:<home>'
 sendhome.command.hint = &cWhen sending a player home you can use '<playertoSend> <otherPlayer:otherplayerhomename>' or just '<playerToSend> <homename>'
 
 # Seen related messages
-seen.header.online = &6Player &c{player} &6is &aonline&6 since {timediff}\n&6 {date}
-seen.header.offline = &6Player &c{player} &6is &4offline&6 since {timediff}\n&6 {date}
+seen.header.online = &6Player &c{player} &6is &aonline&6 since {timediff}{N}&6 {date}
+seen.header.offline = &6Player &c{player} &6is &4offline&6 since {timediff}{N}&6 {date}
 seen.format = &6 - {name}: &r{value}
 
 # Ontime related messages
@@ -233,4 +233,4 @@ broadcast.unknown = &cUnknown broadcast {name}
 broadcast.test = &6This broadcast is sent to you only:
 broadcast.last.not-used = &6No broadcasts have been done
 broadcast.cooldown = &cUnable to do broadcast, too soon after previous broadcast  
-broadcast.last = &6Last broadcast was &c{name}\n&6 at &c{time} &7({diff} ago)\n&6 by &c{by}
+broadcast.last = &6Last broadcast was &c{name}{N}&6 at &c{time} &7({diff} ago)\n&6 by &c{by}
