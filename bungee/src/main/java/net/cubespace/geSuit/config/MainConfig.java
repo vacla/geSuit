@@ -53,7 +53,7 @@ public class MainConfig extends Config {
     @Comment("Enable this if you want to use BungeeChat with geSuit.")
     public Boolean BungeeChatIntegration = false;
 
-    @Comment("Do not alter this. It will be used automaticly.")
+    @Comment("Do not alter this. It will be used automatically.")
     public Boolean Inited = false;
 
     @Comment("Stored version informations. If you alter this you can damage your Database")

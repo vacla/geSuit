@@ -20,6 +20,7 @@ import net.cubespace.geSuit.core.storage.StorageProvider;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.FileConfigurationOptions;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
@@ -32,8 +33,11 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     
     @Override
     public void onEnable() {
-        getLogger().info("Starting geSuit");
-        
+        getLogger().info("Starting geSuitBukkit");
+
+        // Create the Config.yml file if missing
+        saveDefaultConfig();
+
         redis = createRedis();
         if (redis == null) {
             getLogger().severe("Redis failed to initialize. Please fix the problem and restart the server.");
@@ -79,13 +83,21 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     
     private RedisConnection createRedis() {
         FileConfiguration config = getConfig();
-        
+
+        String redisHost = config.getString("redis.host", "localhost");
+        int redisPort = config.getInt("redis.port", 6379);
+        String password = config.getString("redis.password", "");
+
         try {
-            RedisConnection redis = new RedisConnection(config.getString("redis.host", "localhost"), config.getInt("redis.port", 6379), config.getString("redis.password", ""), Bukkit.getPort());
+            RedisConnection redis = new RedisConnection(redisHost, redisPort, password, Bukkit.getPort());
             redis.connect();
             return redis;
         } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Unable to connect to redis:", e);
+            String msg = "Unable to connect to redis, host " + redisHost + ", port " + redisPort;
+            if (password.isEmpty())
+                getLogger().log(Level.SEVERE, msg + " (no password):", e);
+            else
+                getLogger().log(Level.SEVERE, msg + " (password length " + password.length() + "):", e);
             return null;
         }
     }

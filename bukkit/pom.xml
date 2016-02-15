@@ -51,6 +51,16 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}/</directory>
+                <includes>
+                    <include>config.yml</include>
+                </includes>
+            </resource>
+        </resources>
         <finalName>geSuitBukkit</finalName>
         <plugins>
             <plugin>

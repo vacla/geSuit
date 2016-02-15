@@ -191,7 +191,8 @@ mute.list.info.global = &cGlobal Mute &7({time})
 mute.list.permanent = Permanent
 
 # Home related messages
-home.teleport = &6You have been sent home
+home.teleport = &6Sending you to home {home}
+home.teleport.other &6Sending you to {player}'s home {home}
 home.limit.server = &cYou are not allowed to set any more homes on this server.
 home.limit.global = &cYou are not allowed to set any more homes globally.
 home.no-homes = &cYou do not have any homes set.

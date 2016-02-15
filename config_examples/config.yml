@@ -51,7 +51,7 @@ MOTD:
 Seen:
   # Turn this to false if you want to use your your regular /seen comand (requires restart)
   Enabled: false
-# 
+#
 NewPlayerBroadcast: true
 BroadcastProxyConnectionMessages: true
 PlayerDisconnectDelay: 0
@@ -59,7 +59,7 @@ PlayerDisconnectDelay: 0
 OverwriteUUID: false
 # Enable this if you want to use BungeeChat with geSuit.
 BungeeChatIntegration: false
-# Do not alter this. It will be used automaticly.
+# Do not alter this. It will be used automatically.
 Inited: false
 Version:
   Database:
