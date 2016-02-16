@@ -251,7 +251,7 @@ public class HomeCommands {
             return;
         }
 
-        sender.sendMessage(Global.getMessages().get("home.teleport.other", "player", gTarget.getName(), "home", home));
+        sender.sendMessage(Global.getMessages().get("home.teleport.other", "player", gTarget.getDisplayName(), "home", home));
         TeleportsModule.getTeleportManager().teleportWithDelay(gPlayer, location, TeleportCause.COMMAND);
     }
     
@@ -409,7 +409,7 @@ public class HomeCommands {
             if (player.getUniqueId().equals(sender.getUniqueId())) {
                 sender.sendMessage(Global.getMessages().get("home.no-homes"));
             } else {
-                sender.sendMessage(Global.getMessages().get("home.no-homes.other"));
+                sender.sendMessage(Global.getMessages().get("home.no-homes.other", "player", player.getDisplayName()));
             }
             return;
         }

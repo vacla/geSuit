@@ -25,7 +25,7 @@ log.player-create = Created player &b{player}&7 ({uuid})
 # Generic messages
 player.not-online = &cThat player is not online
 player.no-permission = &cYou do not have permission to use that command
-player.unknown = &cUnknown player
+player.unknown = &cUnknown player &b{player}
 player.required = &cThis command or syntax may only be called by a player
 
 # teleport specific messages
@@ -193,11 +193,11 @@ mute.list.permanent = Permanent
 
 # Home related messages
 home.teleport = &6Sending you to home {home}
-home.teleport.other &6Sending you to {player}'s home {home}
+home.teleport.other = &6Sending you to {player}'s home {home}
 home.limit.server = &cYou are not allowed to set any more homes on this server.
 home.limit.global = &cYou are not allowed to set any more homes globally.
 home.no-homes = &cYou do not have any homes set.
-home.no-homes.other = &cThey do not have any homes set.
+home.no-homes.other = &c{player} does not have any homes set.
 home.list.header = &eListing your homes:
 home.list.footer = &eServer: {servercount}, Globally: {globalcount} homes set.
 home.list.footer.other = &eFor {player} -- Server: {servercount}, Globally: {globalcount} homes set.

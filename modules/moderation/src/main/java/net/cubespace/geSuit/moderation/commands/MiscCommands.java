@@ -14,7 +14,7 @@ public class MiscCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException(Global.getMessages().get("player.unknown"));
+            throw new IllegalArgumentException(Global.getMessages().get("player.unknown", "player", playerName));
         }
         
         try {
