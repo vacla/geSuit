@@ -174,7 +174,25 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
         globalChanged = true;
         saveWarps();
     }
-    
+
+    /**
+     * Defines or updates the <b>global</b> warp {@code name} description to be {@code description} <br>
+     * <b>Note:</b> This method will sync this change with all servers and is blocking
+     * @param name The name of the warp
+     * @param description The description to use, cannot be null but can be an empty string
+     */
+    public void setGlobalWarpDesc(String name, String description) {
+        Preconditions.checkNotNull(description);
+
+        if (hasGlobalWarp((name))) {
+            Warp w = globalWarps.get(name);
+
+            globalWarps.put(name.toLowerCase(), new Warp(name.toLowerCase(), w.getLocation(), w.isHidden(), w.isGlobal(), description));
+            globalChanged = true;
+            saveWarps();
+        }
+    }
+
     /**
      * Creates or updates the <b>local</b> warp {@code name} setting it to {@code location}.
      * This warp will only be available on this server <br>
@@ -190,7 +208,25 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
         serverChanged = true;
         saveWarps();
     }
-    
+
+    /**
+     * Defines or updates the <b>local</b> warp {@code name} description to be {@code description} <br>
+     * <b>Note:</b> This method will sync this change with all servers and is blocking
+     * @param name The name of the warp
+     * @param description The description to use, cannot be null but can be an empty string
+     */
+    public void setLocalWarpDesc(String name, String description) {
+        Preconditions.checkNotNull(description);
+
+        if (hasLocalWarp((name))) {
+            Warp w = serverWarps.get(name);
+
+            serverWarps.put(name.toLowerCase(), new Warp(name.toLowerCase(), w.getLocation(), w.isHidden(), w.isGlobal(), description));
+            serverChanged = true;
+            saveWarps();
+        }
+    }
+
     /**
      * Removes a <b>global</b> warp with {@code name}. 
      * Will do nothing if that warp doesn't exist. <br>

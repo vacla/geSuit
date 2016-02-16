@@ -65,12 +65,13 @@ back.teleport = &6You have been sent back
 top.success = &6Teleporting to top.
 
 # warp specific messages
-warp.create = &6Successfully created a warp
-warp.update = &6Successfully updated the warp
-warp.delete = &6Successfully deleted the warp
+warp.create = &6Successfully created warp &c{warp}
+warp.update = &6Successfully updated warp &c{warp}
+warp.delete = &6Successfully deleted warp &c{warp}
+warp.update.description = &6Updated the description for warp {warp}
 warp.teleport = &6Sending you to &c{warp}
 warp.teleport.other = &c{player} &6has been sent to &c{warp}
-warp.unknown-warp = &cThat warp does not exist
+warp.unknown-warp = &4Warp &c{warp} &4does not exist
 warp.no-permission = &cYou do not have permission to use that warp
 warp.list.global = &6Global warps:
 warp.list.server = &6Server warps:

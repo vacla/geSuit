@@ -87,6 +87,12 @@ public class WarpCommands {
                 return;
             }
             player = Global.getPlayer(((Player)sender).getUniqueId());
+
+            if (player == null) {
+                sender.sendMessage(Global.getMessages().get("player.unknown", "player", sender.getName()));
+                return;
+            }
+
             warpSelf = true;
         } else {
             if (!sender.hasPermission("gesuit.warps.command.warp.other")) {
@@ -104,30 +110,32 @@ public class WarpCommands {
         
         Warp warp = manager.getWarp(warpName);
         if (warp == null) {
-            sender.sendMessage(Global.getMessages().get("warp.unknown-warp"));
+            sender.sendMessage(Global.getMessages().get("warp.unknown-warp", "warp", warpName));
             return;
         }
         
         // Check permission
         if (!sender.hasPermission("gesuit.warps.warp.*") && !sender.hasPermission("gesuit.warps.warp." + warpName.toLowerCase())) {
             if (warp.isHidden()) {
-                // Actually hide the warp if they cant use it
-                sender.sendMessage(Global.getMessages().get("warp.unknown-warp"));
+                // Actually hide the warp if they can't use it
+                sender.sendMessage(Global.getMessages().get("warp.unknown-warp", "warp", warpName));
             } else {
                 sender.sendMessage(Global.getMessages().get("warp.no-permission"));
             }
             return;
         }
-        
+
+        String warpDescription = warp.getDescriptionOrName();
+
         // Perform the warp
         if (warpSelf) {
             TeleportsModule.getTeleportManager().teleportWithDelay(player, warp.getLocation(), TeleportCause.COMMAND);
-            sender.sendMessage(Global.getMessages().get("warp.teleport", "warp", warpName));
+            sender.sendMessage(Global.getMessages().get("warp.teleport", "warp", warpDescription));
         } else {        
             TeleportsModule.getTeleportManager().teleport(player, warp.getLocation(), TeleportCause.COMMAND);
             // TODO: Enable sending messages to players
-            //player.sendMessage(Global.getMessages().get("warp.teleport", "warp", warpName));
-            sender.sendMessage(Global.getMessages().get("warp.teleport.other", "player", player.getDisplayName(), "warp", warpName));
+            //player.sendMessage(Global.getMessages().get("warp.teleport", "warp", warpDescription));
+            sender.sendMessage(Global.getMessages().get("warp.teleport.other", "player", player.getDisplayName(), "warp", warpDescription));
         }
     }
     
@@ -160,9 +168,9 @@ public class WarpCommands {
         manager.setGlobalWarp(warp, LocationUtil.fromBukkit(sender.getLocation(), Global.getServer().getName()), false);
         
         if (isUpdate) {
-            sender.sendMessage(Global.getMessages().get("warp.update"));
+            sender.sendMessage(Global.getMessages().get("warp.update", "warp", warp));
         } else {
-            sender.sendMessage(Global.getMessages().get("warp.create"));
+            sender.sendMessage(Global.getMessages().get("warp.create", "warp", warp));
         }
     }
     
@@ -172,9 +180,9 @@ public class WarpCommands {
         manager.setGlobalWarp(warp, LocationUtil.fromBukkit(sender.getLocation(), Global.getServer().getName()), hidden);
         
         if (isUpdate) {
-            sender.sendMessage(Global.getMessages().get("warp.update"));
+            sender.sendMessage(Global.getMessages().get("warp.update", "warp", warp));
         } else {
-            sender.sendMessage(Global.getMessages().get("warp.create"));
+            sender.sendMessage(Global.getMessages().get("warp.create", "warp", warp));
         }
     }
     
@@ -190,12 +198,27 @@ public class WarpCommands {
         }
         
         if (isUpdate) {
-            sender.sendMessage(Global.getMessages().get("warp.update"));
+            sender.sendMessage(Global.getMessages().get("warp.update", "warp", warp));
         } else {
-            sender.sendMessage(Global.getMessages().get("warp.create"));
+            sender.sendMessage(Global.getMessages().get("warp.create", "warp", warp));
         }
     }
-    
+
+    @Command(name="setwarpdesc", async=true, permission="gesuit.warps.command.setwarpdesc", description="Defines a user-friendly description for a warp", usage="/<command> <name> <description>")
+    public void setwarpdesc(Player sender, String name, String description) {
+        if (manager.hasLocalWarp(name)) {
+            manager.setLocalWarpDesc(name, description);
+        } else if (manager.hasGlobalWarp(name)) {
+            manager.setGlobalWarpDesc(name, description);
+        } else {
+            sender.sendMessage(Global.getMessages().get("warp.unknown-warp", "warp", name));
+            return;
+        }
+
+        sender.sendMessage(Global.getMessages().get("warp.update.description", "warp", name));
+    }
+
+
     @Command(name="delwarp", async=true, aliases={"deletewarp", "removewarp"}, permission="gesuit.warps.command.delwarp", description="Used to delete a specific warp", usage="/<command> <name>")
     public void delwarp(CommandSender sender, String name) {
         if (manager.hasLocalWarp(name)) {
@@ -203,11 +226,11 @@ public class WarpCommands {
         } else if (manager.hasGlobalWarp(name)) {
             manager.removeGlobalWarp(name);
         } else {
-            sender.sendMessage(Global.getMessages().get("warp.unknown-warp"));
+            sender.sendMessage(Global.getMessages().get("warp.unknown-warp", "warp", name));
             return;
         }
         
-        sender.sendMessage(Global.getMessages().get("warp.delete"));
+        sender.sendMessage(Global.getMessages().get("warp.delete", "warp", name));
     }
     
     @CommandTabCompleter(name="delwarp")

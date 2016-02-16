@@ -60,6 +60,7 @@ permissions:
         children:
             gesuit.warps.user: true
             gesuit.warps.command.setwarp: true
+            gesuit.warps.command.setwarpdesc: true
             gesuit.warps.command.delwarp: true
             gesuit.warps.list.hidden: true
             gesuit.warps.warp.*: true

@@ -151,6 +151,7 @@ CREATE TABLE `warps` (
   `pitch` float DEFAULT NULL,
   `hidden` tinyint(1) DEFAULT '0',
   `global` tinyint(1) DEFAULT '1',
+  `description` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`warpname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
