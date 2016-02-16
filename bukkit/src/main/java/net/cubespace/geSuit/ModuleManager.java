@@ -61,7 +61,7 @@ public class ModuleManager implements Listener {
                 moduleName = newName;
             }
         } catch (ClassNotFoundException e) {
-            plugin.getLogger().warning("Plugin attempted to register module with non-existant class");
+            plugin.getLogger().warning("Plugin attempted to register module with non-existent class");
             return false;
         } catch (ExceptionInInitializerError e) {
             // Ignore

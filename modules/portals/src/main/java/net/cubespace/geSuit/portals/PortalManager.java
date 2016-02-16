@@ -473,7 +473,7 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
                 TeleportsModule.getTeleportManager().teleport(Global.getPlayer(player.getUniqueId()), server);
             } else {
                 player.sendMessage(Global.getMessages().get("portal.unknown-dest"));
-                Global.getPlatform().getLogger().warning("Portal " + portal.getName() + " is linked to non-existant server " + portal.getDestServer());
+                Global.getPlatform().getLogger().warning("Portal " + portal.getName() + " is linked to non-existent server " + portal.getDestServer());
             }
             return;
         case Teleport:
@@ -485,7 +485,7 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
                 dest = warp.getLocation();
             } else {
                 player.sendMessage(Global.getMessages().get("portal.unknown-dest"));
-                Global.getPlatform().getLogger().warning("Portal " + portal.getName() + " is linked to non-existant warp " + portal.getDestWarp());
+                Global.getPlatform().getLogger().warning("Portal " + portal.getName() + " is linked to non-existent warp " + portal.getDestWarp());
                 return;
             }
             break;
