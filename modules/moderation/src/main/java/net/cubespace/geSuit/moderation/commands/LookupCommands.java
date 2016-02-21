@@ -3,6 +3,7 @@ package net.cubespace.geSuit.moderation.commands;
 import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -62,12 +63,40 @@ public class LookupCommands {
         builder.append(whoString);
         builder.append("\" associated with ");
         builder.append(tracking.size());
-        builder.append(" accounts:");
+        builder.append(" accounts/IPs:");
         
         sender.sendMessage(builder.toString());
-        
+
+        // Construct a mapping betweeen UUID and the player's most recent username
+        // Also keep track of the number of names associated with each uuid
+        HashMap<UUID, String> uuidNameMap = new HashMap<>();
+        HashMap<UUID, Integer> uuidNameCount = new HashMap<>();
+
+        for (Track t : tracking) {
+            UUID currentUuid = t.getUniqueId();
+
+            uuidNameMap.put(currentUuid, t.getName());
+            Integer count = uuidNameCount.get(currentUuid);
+            if (count == null) {
+                uuidNameCount.put(currentUuid, 1);
+            } else {
+                uuidNameCount.put(currentUuid, count + 1);
+            }
+        }
+
         // Contents
         for (Track track : tracking) {
+
+            // playerName will either contain the player's latest name, or if they have had multiple names
+            // playerName will have their latest name then in parentheses the name at the time of the tracking entry
+            String playerName = track.getName();
+            if (uuidNameCount.get(track.getUniqueId()) > 1) {
+                String latestName = uuidNameMap.get(track.getUniqueId());
+                if (!latestName.equalsIgnoreCase(playerName)) {
+                    playerName = latestName + " (" + playerName + ")";
+                }
+            }
+
             builder = new StringBuilder();
             builder.append(ChatColor.DARK_GREEN);
             builder.append(" - ");
@@ -75,11 +104,12 @@ public class LookupCommands {
                 builder.append(ChatColor.DARK_AQUA);
             }
 
-            builder.append(track.getName());
+            builder.append(playerName);
+
             if (track.getNickname() != null) {
-                builder.append(" (");
+                builder.append(" {");
                 builder.append(track.getNickname());
-                builder.append(") ");
+                builder.append("} ");
             }
 
             if (track.isNameBanned()) {
