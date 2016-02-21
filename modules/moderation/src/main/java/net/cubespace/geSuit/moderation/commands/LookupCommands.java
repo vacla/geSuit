@@ -190,9 +190,9 @@ public class LookupCommands {
                 GlobalPlayer target = Global.getOfflinePlayer(id);
                 names.add(target.getDisplayName());
             }
-            
-            Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
+
             // Display the list
+            // (showing the 25 most recent matches, order by lastseen)
             sender.sendMessage(ChatColor.RED + "[Tracker] More than one player matched \"" + playerName + "\":");
             for (String name : names) {
                 sender.sendMessage(ChatColor.AQUA + " - " + name);
