@@ -42,7 +42,7 @@ public class WarnCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
 
         if (player == null) {
-            throw new IllegalArgumentException(Global.getMessages().get("warn.unknown-player"));
+            throw new IllegalArgumentException(Global.getMessages().get("player.unknown", "player", playerName));
         }
 
         List<WarnInfo> warnings = actions.getWarnings(player);
@@ -73,7 +73,7 @@ public class WarnCommands {
         GlobalPlayer player = Utilities.getPlayerAdvanced(playerName);
         
         if (player == null) {
-            throw new IllegalArgumentException(Global.getMessages().get("warn.unknown-player"));
+            throw new IllegalArgumentException(Global.getMessages().get("player.unknown", "player", playerName));
         }
         
         List<WarnInfo> warnings = actions.getWarnings(player);
