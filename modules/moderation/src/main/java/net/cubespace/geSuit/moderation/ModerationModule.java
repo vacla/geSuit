@@ -27,7 +27,7 @@ import net.cubespace.geSuit.remote.moderation.TrackingActions;
 import net.cubespace.geSuit.remote.moderation.WarnActions;
 
 @Module(name="Moderation")
-public class ModeraionModule extends BaseModule implements ChannelDataReceiver<BaseMessage> {
+public class ModerationModule extends BaseModule implements ChannelDataReceiver<BaseMessage> {
     
     private BanActions bans;
     private WarnActions warns;
@@ -35,7 +35,7 @@ public class ModeraionModule extends BaseModule implements ChannelDataReceiver<B
     private MuteActions mutes;
     private Channel<BaseMessage> channel;
     
-    public ModeraionModule(GSPlugin plugin) {
+    public ModerationModule(GSPlugin plugin) {
         super(plugin);
     }
     

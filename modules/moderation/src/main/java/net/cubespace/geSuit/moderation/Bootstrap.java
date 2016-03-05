@@ -11,6 +11,6 @@ public class Bootstrap extends JavaPlugin {
         GSPlugin plugin = JavaPlugin.getPlugin(GSPlugin.class);
         ModuleManager manager = plugin.getModuleManager();
         
-        manager.registerModule(ModeraionModule.class);
+        manager.registerModule(ModerationModule.class);
     }
 }
