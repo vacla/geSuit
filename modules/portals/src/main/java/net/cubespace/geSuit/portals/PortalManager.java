@@ -241,9 +241,10 @@ public class PortalManager implements ChannelDataReceiver<BaseMessage> {
             worldPortals.remove(world, portal);
             clear = true;
         }
-        
+
         // Sync it
-        StorageInterface root = Global.getStorageProvider().create("geSuit.portals");
+        boolean storageLogging = true;
+        StorageInterface root = Global.getStorageProvider().create("geSuit.portals", storageLogging);
         
         root.set("#names", portals.keySet());
         root.set(portal.getName().toLowerCase(), portal);

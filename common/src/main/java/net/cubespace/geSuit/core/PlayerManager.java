@@ -41,7 +41,8 @@ public abstract class PlayerManager {
     private Platform platform;
     private StorageProvider storageProvider;
     private StorageInterface allPlayerStorage;
-    
+    private boolean storageLogging;
+
     public PlayerManager(Channel<BaseMessage> channel, RedisConnection redis, StorageProvider storageProvider, Platform platform) {
         playersById = Maps.newHashMap();
         playersByName = Maps.newHashMap();
@@ -53,7 +54,9 @@ public abstract class PlayerManager {
         this.redis = redis;
         this.storageProvider = storageProvider;
         this.platform = platform;
-        allPlayerStorage = storageProvider.create("geSuit.players");
+
+        storageLogging = true;
+        allPlayerStorage = storageProvider.create("geSuit.players", storageLogging);
     }
     
     public RedisConnection getRedis() {
@@ -250,7 +253,7 @@ public abstract class PlayerManager {
     }
     
     private StorageInterface getStorageSection(UUID playerId) {
-        return storageProvider.create("geSuit.players." + Utilities.toString(playerId));
+        return storageProvider.create("geSuit.players." + Utilities.toString(playerId), storageLogging);
     }
     
     protected GlobalPlayer loadPlayer(UUID id, String name, String nickname) {

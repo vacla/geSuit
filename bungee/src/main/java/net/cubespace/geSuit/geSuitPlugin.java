@@ -101,7 +101,7 @@ public class geSuitPlugin extends Plugin implements ConnectionNotifier {
         channelManager = createChannelManager();
         
         BungeePlatform platform = new BungeePlatform(this);
-        StorageProvider storageProvider = new StorageProvider(redis);
+        StorageProvider storageProvider = new StorageProvider(redis, platform);
         
         // Create global manager
         Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);

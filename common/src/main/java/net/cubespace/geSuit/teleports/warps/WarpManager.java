@@ -26,13 +26,16 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
     private Map<String, Warp> serverWarps;
     private boolean serverChanged;
     private Channel<BaseMessage> channel;
-    
+
+    private boolean storageLogging;
+
     public WarpManager(Channel<BaseMessage> channel) {
         globalWarps = Maps.newHashMap();
         serverWarps = Maps.newHashMap();
         
         this.channel = channel;
         channel.addReceiver(this);
+        this.storageLogging = true;
     }
     
     /**
@@ -42,8 +45,8 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
         if (Global.getServer() == null) {
             return;
         }
-        
-        StorageSection root = Global.getStorageProvider().create("geSuit.warps");
+
+        StorageSection root = Global.getStorageProvider().create("geSuit.warps", storageLogging);
         
         // Load global warps
         globalWarps.clear();
@@ -72,8 +75,9 @@ public class WarpManager implements ChannelDataReceiver<BaseMessage> {
         if (Global.getServer() == null) {
             return;
         }
-        
-        StorageInterface root = Global.getStorageProvider().create("geSuit.warps");
+
+        StorageInterface root = Global.getStorageProvider().create("geSuit.warps", storageLogging);
+
         // Save global
         if (globalChanged) {
             root.set("#global", toRedis(globalWarps));

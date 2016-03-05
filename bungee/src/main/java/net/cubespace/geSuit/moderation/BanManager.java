@@ -58,8 +58,9 @@ public class BanManager implements BanActions, ConfigReloadListener {
         this.messages = messages;
         this.proxy = proxy;
         this.platform = platform;
-        
-        ipBans = provider.create("geSuit.ipbans");
+
+        boolean storageLogging = true;
+        ipBans = provider.create("geSuit.ipbans", storageLogging);
     }
     
     public void loadConfig(ModerationConfig config) {

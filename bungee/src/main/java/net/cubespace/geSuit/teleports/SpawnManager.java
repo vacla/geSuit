@@ -20,7 +20,8 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage> {
     }
     
     public void loadSpawns() {
-        StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns");
+        boolean enableLogging = true;
+        StorageSection spawns = Global.getStorageProvider().create("gesuit.spawns", enableLogging);
         spawnNewPlayer = spawns.getSimpleStorable("#new-player", Location.class);
     }
     

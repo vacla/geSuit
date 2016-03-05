@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import net.cubespace.geSuit.core.Platform;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.RedisPipeline;
@@ -24,14 +25,18 @@ import redis.clients.jedis.exceptions.JedisException;
 @SuppressWarnings("unchecked")
 class CachedRedisProvider {
     private final RedisConnection redis;
-    
+    private final Platform platform;
+    private final boolean loggingEnabled;
+
     private final Map<String, Object> cache;
     private final Set<String> modified;
     private final Set<String> hasLoaded;
     
-    public CachedRedisProvider(RedisConnection redis) {
+    public CachedRedisProvider(RedisConnection redis, Platform platform, boolean enableLogging) {
         this.redis = redis;
-        
+        this.platform = platform;
+        this.loggingEnabled = enableLogging;
+
         cache = Maps.newHashMap();
         hasLoaded = Sets.newHashSet();
         modified = Sets.newHashSet();
@@ -660,19 +665,109 @@ class CachedRedisProvider {
     }
     
     public void saveChangesAtomically() throws StorageException {
+        boolean USE_TRANSACTIONS = true;
+
         Jedis jedis = null;
         try {
-            jedis = redis.getJedis();
-            Transaction transaction = jedis.multi();
-            saveChanges(transaction);
-            transaction.exec();
+            if (USE_TRANSACTIONS) {
+                Transaction transaction = jedis.multi();
+                saveChanges(transaction);
+                transaction.exec();
+            } else {
+                jedis = redis.getJedis();
+                saveChanges(jedis);
+            }
+
         } catch (JedisException e) {
             throw handleJedisException(jedis, e);
         } finally {
             redis.returnJedis(jedis);
         }
     }
-    
+
+    private void saveChanges(Jedis jedis) {
+        for (Entry<String, Object> entry : cache.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if (!modified.contains(key)) {
+                continue;
+            }
+
+            if (value instanceof Storable) {
+                saveStorable(jedis, key, (Storable)value);
+            } else if (value instanceof Collection<?>) {
+                saveCollection(jedis, key, (Collection<?>)value);
+            } else if (value instanceof CollectionMarker) {
+                appendCollection(jedis, key, (CollectionMarker)value);
+            } else if (value instanceof Map<?, ?>) {
+                saveMap(jedis, key, (Map<?,?>)value);
+            } else if (value instanceof DeletionMarker) {
+                if (loggingEnabled) {
+                    platform.getLogger().info("Deleting key " + key + " inside saveChanges");
+                }
+                jedis.del(key);
+            } else {
+                if (loggingEnabled) {
+                    platform.getLogger().info("Setting key " + key + " inside saveChanges");
+                }
+                jedis.set(key, DataConversion.toString(value));
+            }
+        }
+
+        modified.clear();
+    }
+
+    private void saveStorable(Jedis jedis, String key, Storable value) {
+        if (loggingEnabled) {
+            platform.getLogger().info("Saving key " + key + " using saveStorable");
+        }
+        Map<String, String> values = Maps.newHashMap();
+        value.save(values);
+        jedis.hmset(key, values);
+    }
+
+    private void saveCollection(Jedis jedis, String key, Collection<?> value) {
+        if (loggingEnabled) {
+            platform.getLogger().info("Saving key " + key + " using saveCollection");
+        }
+        if (value instanceof List<?>) {
+            jedis.del(key);
+            List<String> list = DataConversion.reverseConvertList((List<Object>)value);
+            jedis.lpush(key, Iterables.toArray(list, String.class));
+        } else if (value instanceof Set<?>) {
+            jedis.del(key);
+            Set<String> set = DataConversion.reverseConvertSet((Set<Object>) value);
+            jedis.sadd(key, Iterables.toArray(set, String.class));
+        } else {
+            throw new AssertionError();
+        }
+    }
+
+    private void saveMap(Jedis jedis, String key, Map<?, ?> map) {
+        if (loggingEnabled) {
+            platform.getLogger().info("Saving key " + key + " using saveMap");
+        }
+        Map<String, String> dest = convertMap(map, String.class, String.class);
+        jedis.del(key);
+        jedis.hmset(key, dest);
+    }
+
+    private void appendCollection(Jedis jedis, String key, CollectionMarker marker) {
+        if (loggingEnabled) {
+            platform.getLogger().info("Saving key " + key + " using appendCollection");
+        }
+        if (marker.collectionType.equals(List.class)) {
+            List<String> list = DataConversion.reverseConvertList(marker.valuesToAdd);
+            jedis.lpush(key, Iterables.toArray(list, String.class));
+        } else if (marker.collectionType.equals(Set.class)) {
+            List<String> list = DataConversion.reverseConvertList(marker.valuesToAdd);
+            jedis.sadd(key, Iterables.toArray(list, String.class));
+        } else {
+            throw new AssertionError();
+        }
+    }
+
     private void saveChanges(RedisPipeline pipe) {
         for (Entry<String, Object> entry : cache.entrySet()) {
             String key = entry.getKey();
@@ -691,8 +786,14 @@ class CachedRedisProvider {
             } else if (value instanceof Map<?, ?>) {
                 saveMap(pipe, key, (Map<?,?>)value);
             } else if (value instanceof DeletionMarker) {
+                if (loggingEnabled) {
+                    platform.getLogger().info("Deleting key " + key + " inside saveChanges");
+                }
                 pipe.del(key);
             } else {
+                if (loggingEnabled) {
+                    platform.getLogger().info("Setting key " + key + " inside saveChanges");
+                }
                 pipe.set(key, DataConversion.toString(value));
             }
         }
@@ -701,19 +802,25 @@ class CachedRedisProvider {
     }
     
     private void saveStorable(RedisPipeline pipe, String key, Storable value) {
+        if (loggingEnabled) {
+            platform.getLogger().info("Saving key " + key + " using saveStorable");
+        }
         Map<String, String> values = Maps.newHashMap();
         value.save(values);
         pipe.hmset(key, values);
     }
     
     private void saveCollection(RedisPipeline pipe, String key, Collection<?> value) {
+        if (loggingEnabled) {
+            platform.getLogger().info("Saving key " + key + " using saveCollection");
+        }
         if (value instanceof List<?>) {
             pipe.del(key);
             List<String> list = DataConversion.reverseConvertList((List<Object>)value);
             pipe.lpush(key, Iterables.toArray(list, String.class));
         } else if (value instanceof Set<?>) {
             pipe.del(key);
-            Set<String> set = DataConversion.reverseConvertSet((Set<Object>)value);
+            Set<String> set = DataConversion.reverseConvertSet((Set<Object>) value);
             pipe.sadd(key, Iterables.toArray(set, String.class));
         } else {
             throw new AssertionError();
@@ -721,12 +828,18 @@ class CachedRedisProvider {
     }
     
     private void saveMap(RedisPipeline pipe, String key, Map<?, ?> map) {
+        if (loggingEnabled) {
+            platform.getLogger().info("Saving key " + key + " using saveMap");
+        }
         Map<String, String> dest = convertMap(map, String.class, String.class);
         pipe.del(key);
         pipe.hmset(key, dest);
     }
 
     private void appendCollection(RedisPipeline pipe, String key, CollectionMarker marker) {
+        if (loggingEnabled) {
+            platform.getLogger().info("Saving key " + key + " using appendCollection");
+        }
         if (marker.collectionType.equals(List.class)) {
             List<String> list = DataConversion.reverseConvertList(marker.valuesToAdd);
             pipe.lpush(key, Iterables.toArray(list, String.class));

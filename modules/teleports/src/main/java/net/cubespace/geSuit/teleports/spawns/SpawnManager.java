@@ -50,8 +50,9 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
         if (Global.getServer() == null) {
             return;
         }
-        
-        StorageInterface spawns = Global.getStorageProvider().create("gesuit.spawns");
+
+        boolean storageLogging = true;
+        StorageInterface spawns = Global.getStorageProvider().create("gesuit.spawns", storageLogging);
         spawnGlobal = spawns.getSimpleStorable("#global", Location.class);
         spawnNewPlayer = spawns.getSimpleStorable("#new-player", Location.class);
         
@@ -79,8 +80,9 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
         }
         
         Location spawnLoc = LocationUtil.fromBukkit(location, Global.getServer().getName());
-        
-        StorageInterface spawns = Global.getStorageProvider().create("gesuit.spawns");
+
+        boolean storageLogging = true;
+        StorageInterface spawns = Global.getStorageProvider().create("gesuit.spawns", storageLogging);
         switch (type) {
         case Global:
             spawnGlobal = spawnLoc;
@@ -168,8 +170,9 @@ public class SpawnManager implements ChannelDataReceiver<BaseMessage>, Listener 
         if (Global.getServer() == null) {
             return;
         }
-        
-        StorageInterface spawns = Global.getStorageProvider().create("gesuit.spawns");
+
+        boolean storageLogging = true;
+        StorageInterface spawns = Global.getStorageProvider().create("gesuit.spawns", storageLogging);
         switch (type) {
         case Global:
             spawnGlobal = null;

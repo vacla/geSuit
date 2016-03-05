@@ -29,8 +29,9 @@ public class PortalsModule extends BaseModule {
     public boolean onLoad() throws Exception {
         Channel<BaseMessage> channel = Global.getChannelManager().createChannel("portals", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
-        
-        StorageInterface section = Global.getStorageProvider().create("geSuit.portals");
+
+        boolean storageLogging = true;
+        StorageInterface section = Global.getStorageProvider().create("geSuit.portals", storageLogging);
         
         manager = new PortalManager(channel, section);
         worldEdit = JavaPlugin.getPlugin(WorldEditPlugin.class);
