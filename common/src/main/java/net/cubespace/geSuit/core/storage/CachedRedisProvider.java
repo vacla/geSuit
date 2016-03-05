@@ -669,12 +669,12 @@ class CachedRedisProvider {
 
         Jedis jedis = null;
         try {
+            jedis = redis.getJedis();
             if (USE_TRANSACTIONS) {
                 Transaction transaction = jedis.multi();
                 saveChanges(transaction);
                 transaction.exec();
             } else {
-                jedis = redis.getJedis();
                 saveChanges(jedis);
             }
 
@@ -741,6 +741,10 @@ class CachedRedisProvider {
             if (value.size() > 0) {
                 Set<String> set = DataConversion.reverseConvertSet((Set<Object>) value);
                 jedis.sadd(key, Iterables.toArray(set, String.class));
+            } else {
+                if (loggingEnabled) {
+                    platform.getLogger().info("   ... set " + key + " is empty; nothing to save");
+                }
             }
         } else {
             throw new AssertionError();
@@ -827,6 +831,10 @@ class CachedRedisProvider {
             if (value.size() > 0) {
                 Set<String> set = DataConversion.reverseConvertSet((Set<Object>) value);
                 pipe.sadd(key, Iterables.toArray(set, String.class));
+            } else {
+                if (loggingEnabled) {
+                    platform.getLogger().info("   ... set " + key + " is empty; nothing to save");
+                }
             }
         } else {
             throw new AssertionError();
