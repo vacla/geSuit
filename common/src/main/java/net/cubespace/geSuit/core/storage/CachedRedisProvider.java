@@ -737,8 +737,11 @@ class CachedRedisProvider {
             jedis.lpush(key, Iterables.toArray(list, String.class));
         } else if (value instanceof Set<?>) {
             jedis.del(key);
-            Set<String> set = DataConversion.reverseConvertSet((Set<Object>) value);
-            jedis.sadd(key, Iterables.toArray(set, String.class));
+            // Only save the set if not empty
+            if (value.size() > 0) {
+                Set<String> set = DataConversion.reverseConvertSet((Set<Object>) value);
+                jedis.sadd(key, Iterables.toArray(set, String.class));
+            }
         } else {
             throw new AssertionError();
         }
@@ -820,8 +823,11 @@ class CachedRedisProvider {
             pipe.lpush(key, Iterables.toArray(list, String.class));
         } else if (value instanceof Set<?>) {
             pipe.del(key);
-            Set<String> set = DataConversion.reverseConvertSet((Set<Object>) value);
-            pipe.sadd(key, Iterables.toArray(set, String.class));
+            // Only save the set if not empty
+            if (value.size() > 0) {
+                Set<String> set = DataConversion.reverseConvertSet((Set<Object>) value);
+                pipe.sadd(key, Iterables.toArray(set, String.class));
+            }
         } else {
             throw new AssertionError();
         }
