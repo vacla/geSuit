@@ -2,7 +2,8 @@ name: geSuitTeleports
 main : net.cubespace.geSuitTeleports.geSuitTeleports
 version: ${project.version}b-${build.number}
 description: Part of the gesuit this plugin allows users to teleport to each other.
-author: geNAZt
+softdepend: WorldGaurd
+author: geNAZt, Schmoller, Narimm
 commands:
     tp:
         description: Teleports a player to another player or location (use ~ for relative coordinates when not switching worlds)

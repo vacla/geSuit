@@ -1,5 +1,7 @@
 package net.cubespace.geSuitTeleports;
 
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import net.cubespace.geSuiteSpawn.geSuitSpawn;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,6 +19,8 @@ import net.cubespace.geSuitTeleports.commands.ToggleCommand;
 import net.cubespace.geSuitTeleports.commands.TopCommand;
 import net.cubespace.geSuitTeleports.listeners.TeleportsListener;
 import net.cubespace.geSuitTeleports.listeners.TeleportsMessageListener;
+
+import java.util.List;
 
 public class geSuitTeleports extends JavaPlugin {
     public static geSuitTeleports instance;
@@ -38,6 +42,11 @@ public class geSuitTeleports extends JavaPlugin {
     public static String on_server;
     public static String invalid_yaw;
     public static String invalid_pitch;
+    public static List<String> deny_Teleport;
+    private static WorldGuardPlugin mWorldGuard;
+    public static boolean worldGuarded;
+    public static boolean geSuitSpawns;
+
 
     @Override
     public void onEnable() {
@@ -62,7 +71,22 @@ public class geSuitTeleports extends JavaPlugin {
         on_server = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.on_server"));
         invalid_yaw = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_yaw"));
         invalid_pitch = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_pitch"));
-        registerListeners();
+        if(Bukkit.getPluginManager().isPluginEnabled("WorldGuard")){
+            mWorldGuard = (WorldGuardPlugin)Bukkit.getPluginManager().getPlugin("WorldGuard");
+            worldGuarded = true;
+            deny_Teleport = getConfig().getStringList("teleport.denyon.cmdlist");
+        }else{
+            mWorldGuard = null;
+            worldGuarded = false;
+        }
+        if(Bukkit.getPluginManager().isPluginEnabled("geSuitSpawn")) {
+            geSuitSpawns = true;
+        }else{
+            geSuitSpawns = false;
+        }
+
+
+            registerListeners();
         registerChannels();
         registerCommands();
     }
@@ -90,10 +114,15 @@ public class geSuitTeleports extends JavaPlugin {
 
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(
-                new TeleportsListener(), this);
+                new TeleportsListener(this), this);
     }
 
     public static geSuitTeleports getInstance() {
         return instance;
-    }    
+    }
+
+    public static WorldGuardPlugin getWorldGaurd() {
+        return mWorldGuard;
+    };
+
 }

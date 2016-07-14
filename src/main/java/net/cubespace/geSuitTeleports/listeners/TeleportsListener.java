@@ -1,9 +1,15 @@
 package net.cubespace.geSuitTeleports.listeners;
 
+import com.sk89q.worldguard.bukkit.RegionContainer;
+import com.sk89q.worldguard.bukkit.RegionQuery;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.PermissionsManager;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 
+import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,7 +24,16 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
+import java.util.Set;
+
 public class TeleportsListener implements Listener {
+
+	private static geSuitTeleports plugin;
+
+	public TeleportsListener(geSuitTeleports p){
+		super();
+		plugin = p;
+	}
 	
 	@EventHandler
 	public void playerConnect (PlayerSpawnLocationEvent e){
@@ -31,11 +46,24 @@ public class TeleportsListener implements Listener {
 				return;
 			}
 			TeleportsManager.ignoreTeleport.add(e.getPlayer());
-			e.setSpawnLocation(t.getLocation());
+			Location loc = t.getLocation();
+			if(worldGuardTpAllowed(loc,e.getPlayer())) {
+				e.setSpawnLocation(loc);
+			}else{
+				e.setSpawnLocation(e.getPlayer().getWorld().getSpawnLocation());
+			}
 		}else if (TeleportsManager.pendingTeleportLocations.containsKey(e.getPlayer().getName())){
 			Location l = TeleportsManager.pendingTeleportLocations.get(e.getPlayer().getName());
 			TeleportsManager.ignoreTeleport.add(e.getPlayer());
-			e.setSpawnLocation(l);
+			if(worldGuardTpAllowed(l,e.getPlayer())) {
+				e.setSpawnLocation(l);
+			}else{
+				if((geSuitTeleports.geSuitSpawns) && (SpawnManager.hasWorldSpawn(e.getSpawnLocation().getWorld()))){
+					SpawnManager.sendPlayerToWorldSpawn(e.getPlayer());
+				}else{
+					e.setSpawnLocation(e.getSpawnLocation().getWorld().getSpawnLocation());
+				}
+			}
 		}
 	}
 	
@@ -53,7 +81,12 @@ public class TeleportsListener implements Listener {
 			TeleportsManager.ignoreTeleport.remove(e.getPlayer());
 			return;
 		}
-		TeleportsManager.sendTeleportBackLocation(e.getPlayer(), false);	
+		if(!worldGuardTpAllowed(e.getTo(),e.getPlayer())){
+			e.setCancelled(true);
+			e.setTo(e.getFrom());
+			return;
+		}
+		TeleportsManager.sendTeleportBackLocation(e.getPlayer(), false);
 	}
 	
 	@EventHandler
@@ -101,4 +134,25 @@ public class TeleportsListener implements Listener {
             }
         }, 20 );
 	}
+
+	private boolean worldGuardTpAllowed(Location l, Player p){
+		if(plugin.worldGuarded) {
+			if (!p.hasPermission("worldgaurd.teleports.allregions")) {
+				RegionContainer container = plugin.getWorldGaurd().getRegionContainer();
+				RegionQuery query = container.createQuery();
+				ApplicableRegionSet set = query.getApplicableRegions(l);
+				if (!set.isVirtual())//VirtualSet indicates that there is no region protection to check
+					for (ProtectedRegion region : set) {
+						Set<String> flags = region.getFlag(DefaultFlag.BLOCKED_CMDS);
+						for (String cmd : flags) {
+							if (plugin.deny_Teleport.contains(cmd)) {
+								return false;
+							}
+						}
+					}
+			}
+		}
+		return true;
+	}
+
 }
