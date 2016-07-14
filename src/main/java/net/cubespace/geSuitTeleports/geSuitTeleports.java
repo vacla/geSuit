@@ -20,6 +20,7 @@ import net.cubespace.geSuitTeleports.commands.TopCommand;
 import net.cubespace.geSuitTeleports.listeners.TeleportsListener;
 import net.cubespace.geSuitTeleports.listeners.TeleportsMessageListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class geSuitTeleports extends JavaPlugin {
@@ -71,7 +72,7 @@ public class geSuitTeleports extends JavaPlugin {
         on_server = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.on_server"));
         invalid_yaw = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_yaw"));
         invalid_pitch = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_pitch"));
-        if(Bukkit.getPluginManager().isPluginEnabled("WorldGuard")){
+        if(Bukkit.getPluginManager().isPluginEnabled("WorldGuard")){//check for WorldGaurd
             mWorldGuard = (WorldGuardPlugin)Bukkit.getPluginManager().getPlugin("WorldGuard");
             worldGuarded = true;
             deny_Teleport = getConfig().getStringList("teleport.denyon.cmdlist");
@@ -79,6 +80,7 @@ public class geSuitTeleports extends JavaPlugin {
             mWorldGuard = null;
             worldGuarded = false;
         }
+        //check for geSuitSpawns
         if(Bukkit.getPluginManager().isPluginEnabled("geSuitSpawn")) {
             geSuitSpawns = true;
         }else{

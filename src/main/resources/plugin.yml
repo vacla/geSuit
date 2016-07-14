@@ -125,5 +125,7 @@ permissions:
         description: Ability to bypass the tptoggle using /tp and this permission
     gesuit.teleports.bypass.delay:
         description: Ability to bypass the delay before the actual teleport
+    worldgaurd.teleports.allregions:
+        description: Ability to teleport to all worldgaurded regions bypassing any NoEntry flag in blocked_cmds
         
         

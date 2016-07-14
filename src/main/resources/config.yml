@@ -18,3 +18,6 @@ messages:
   on_server: " on server "
   invalid_yaw: "&cInvalid yaw: "
   invalid_pitch: "&cInvalid pitch: "
+teleport:
+  denyon:
+    cmdlist: "NoEntry"
