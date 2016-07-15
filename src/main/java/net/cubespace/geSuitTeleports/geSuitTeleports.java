@@ -1,7 +1,6 @@
 package net.cubespace.geSuitTeleports;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import net.cubespace.geSuiteSpawn.geSuitSpawn;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,7 +19,6 @@ import net.cubespace.geSuitTeleports.commands.TopCommand;
 import net.cubespace.geSuitTeleports.listeners.TeleportsListener;
 import net.cubespace.geSuitTeleports.listeners.TeleportsMessageListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class geSuitTeleports extends JavaPlugin {
@@ -81,16 +79,13 @@ public class geSuitTeleports extends JavaPlugin {
         }else{
             mWorldGuard = null;
             worldGuarded = false;
+            deny_Teleport = null;
         }
         //check for geSuitSpawns
-        if(Bukkit.getPluginManager().isPluginEnabled("geSuitSpawn")) {
-            geSuitSpawns = true;
-        }else{
-            geSuitSpawns = false;
-        }
+        geSuitSpawns = Bukkit.getPluginManager().isPluginEnabled("geSuitSpawn");
 
 
-            registerListeners();
+        registerListeners();
         registerChannels();
         registerCommands();
     }
@@ -127,6 +122,6 @@ public class geSuitTeleports extends JavaPlugin {
 
     public static WorldGuardPlugin getWorldGaurd() {
         return mWorldGuard;
-    };
+    }
 
 }

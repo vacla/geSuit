@@ -16,7 +16,7 @@ public class TeleportsMessageListener implements PluginMessageListener {
     @Override
     public void onPluginMessageReceived( String channel, Player player, byte[] message ) {
         DataInputStream in = new DataInputStream( new ByteArrayInputStream( message ) );
-        String task = null;
+        String task;
         try {
             task = in.readUTF();
             if ( task.equals( "TeleportToPlayer" ) ) {

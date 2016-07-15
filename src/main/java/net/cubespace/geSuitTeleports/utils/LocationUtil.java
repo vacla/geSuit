@@ -38,7 +38,7 @@ public class LocationUtil {
 
     static
     {
-        List<Vector3D> pos = new ArrayList<Vector3D>();
+        List<Vector3D> pos = new ArrayList<>();
         for (int x = -RADIUS; x <= RADIUS; x++)
         {
             for (int y = -RADIUS; y <= RADIUS; y++)
@@ -107,18 +107,12 @@ public class LocationUtil {
     }
 
     static boolean isBlockAboveAir(final World world, final int x, final int y, final int z) {
-        if (y > world.getMaxHeight()) {
-            return true;
-        }
-        return HOLLOW_MATERIALS.contains(world.getBlockAt(x, y - 1, z).getType());
+        return y > world.getMaxHeight() || HOLLOW_MATERIALS.contains(world.getBlockAt(x, y - 1, z).getType());
     }
 
     public static boolean isBlockUnsafe(final World world, final int x, final int y, final int z) {
-        if (isBlockDamaging(world, x, y, z)) {
-            return true;
-        }
+        return isBlockDamaging(world, x, y, z) || isBlockAboveAir(world, x, y, z);
 
-        return isBlockAboveAir(world, x, y, z);
     }
 
     public static boolean isBlockDamaging(final World world, final int x, final int y, final int z) {
@@ -129,13 +123,7 @@ public class LocationUtil {
         if (below.getType() == Material.FIRE) {
             return true;
         }
-        if (below.getType() == Material.BED_BLOCK) {
-            return true;
-        }
-        if ((!HOLLOW_MATERIALS.contains(world.getBlockAt(x, y, z).getType())) || (!HOLLOW_MATERIALS.contains(world.getBlockAt(x, y + 1, z).getType()))) {
-            return true;
-        }
-        return false;
+        return below.getType() == Material.BED_BLOCK || (!HOLLOW_MATERIALS.contains(world.getBlockAt(x, y, z).getType())) || (!HOLLOW_MATERIALS.contains(world.getBlockAt(x, y + 1, z).getType()));
     }
 
     // Not needed if using getSafeDestination(loc)

@@ -389,12 +389,9 @@ public class TPPosCommand implements CommandExecutor {
 
     private boolean validCoordinates(CommandSender sender, String[] args, int startIndex, boolean allowRelative) {
 
-        if (validCoordinate(sender, allowRelative, "X", args[startIndex]) &&
-            validCoordinate(sender, allowRelative, "Y", args[startIndex + 1]) &&
-            validCoordinate(sender, allowRelative, "Z", args[startIndex + 2])) {
-            return true;
-        }
-        return false;
+        return validCoordinate(sender, allowRelative, "X", args[startIndex]) &&
+                validCoordinate(sender, allowRelative, "Y", args[startIndex + 1]) &&
+                validCoordinate(sender, allowRelative, "Z", args[startIndex + 2]);
     }
 
     private boolean validYawPitch(CommandSender sender, String[] args, int startIndex) {

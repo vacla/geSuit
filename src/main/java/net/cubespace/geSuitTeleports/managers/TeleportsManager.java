@@ -19,11 +19,11 @@ import java.util.HashSet;
 
 
 public class TeleportsManager {
-    public static HashMap<String, Player> pendingTeleports = new HashMap<String, Player>();
-    public static HashMap<String, Location> pendingTeleportLocations = new HashMap<String, Location>();
-    public static HashSet<Player> ignoreTeleport = new HashSet<Player>();
+    public static HashMap<String, Player> pendingTeleports = new HashMap<>();
+    public static HashMap<String, Location> pendingTeleportLocations = new HashMap<>();
+    public static HashSet<Player> ignoreTeleport = new HashSet<>();
 
-    static HashMap<Player, Location> lastLocation = new HashMap<Player, Location>();
+    static HashMap<Player, Location> lastLocation = new HashMap<>();
     
     public static void RemovePlayer(Player player) {
     	pendingTeleports.remove(player.getName());
