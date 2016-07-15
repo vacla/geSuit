@@ -118,7 +118,7 @@ public class geSuitTeleports extends JavaPlugin {
 
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(
-                new TeleportsListener(this), this);
+                new TeleportsListener(), this);
     }
 
     public static geSuitTeleports getInstance() {

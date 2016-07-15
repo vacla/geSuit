@@ -27,11 +27,9 @@ import java.util.Set;
 
 public class TeleportsListener implements Listener {
 
-	private static geSuitTeleports plugin;
 
-	public TeleportsListener(geSuitTeleports p){
+	public TeleportsListener(){
 		super();
-		plugin = p;
 	}
 	
 	@EventHandler
@@ -82,7 +80,7 @@ public class TeleportsListener implements Listener {
 		}
 		if(!worldGuardTpAllowed(e.getTo(),e.getPlayer())){
 			e.setCancelled(true);
-			e.getPlayer().sendMessage(plugin.aborted);
+			e.getPlayer().sendMessage(geSuitTeleports.aborted);
 			e.setTo(e.getFrom());
 			return;
 		}
@@ -137,21 +135,23 @@ public class TeleportsListener implements Listener {
 
 	private boolean worldGuardTpAllowed(Location l, Player p) {
 		Boolean result = true;
-		if (plugin.worldGuarded) {
-			RegionContainer container = plugin.getWorldGaurd().getRegionContainer();
+		if (geSuitTeleports.worldGuarded) {
+			RegionContainer container = geSuitTeleports.getWorldGaurd().getRegionContainer();
 			RegionQuery query = container.createQuery();
 			ApplicableRegionSet set = query.getApplicableRegions(l);
 			if (!set.isVirtual())//VirtualSet indicates that there is no region protection to check
 				for (ProtectedRegion region : set) {
 					Set<String> flags = region.getFlag(DefaultFlag.BLOCKED_CMDS);
-					for (String cmd : flags) {
-						if (plugin.deny_Teleport.contains(cmd)) {
-							if (!p.hasPermission("worldgaurd.teleports.allregions")) {
-								p.sendMessage(plugin.location_blocked);
-								result = false;
-							} else {
-								p.sendMessage("Administrative Bypass of Region Teleport blocking used");
-								result = true;
+					if(flags !=null) {
+						for (String cmd : flags) {
+							if (geSuitTeleports.deny_Teleport.contains(cmd)) {
+								if (!p.hasPermission("worldgaurd.teleports.allregions")) {
+									p.sendMessage(geSuitTeleports.location_blocked);
+									result = false;
+								} else {
+									p.sendMessage("Administrative Bypass of Region Teleport blocking used");
+									result = true;
+								}
 							}
 						}
 					}
