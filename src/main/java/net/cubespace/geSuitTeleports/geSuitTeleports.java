@@ -43,6 +43,7 @@ public class geSuitTeleports extends JavaPlugin {
     public static String on_server;
     public static String invalid_yaw;
     public static String invalid_pitch;
+    public static String location_blocked;
     public static List<String> deny_Teleport;
     private static WorldGuardPlugin mWorldGuard;
     public static boolean worldGuarded;
@@ -72,6 +73,7 @@ public class geSuitTeleports extends JavaPlugin {
         on_server = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.on_server"));
         invalid_yaw = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_yaw"));
         invalid_pitch = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_pitch"));
+        location_blocked = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.location_blocked"));
         if(Bukkit.getPluginManager().isPluginEnabled("WorldGuard")){//check for WorldGaurd
             mWorldGuard = (WorldGuardPlugin)Bukkit.getPluginManager().getPlugin("WorldGuard");
             worldGuarded = true;

@@ -8,7 +8,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.PermissionsManager;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
-
 import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -83,6 +82,7 @@ public class TeleportsListener implements Listener {
 		}
 		if(!worldGuardTpAllowed(e.getTo(),e.getPlayer())){
 			e.setCancelled(true);
+			e.getPlayer().sendMessage(plugin.aborted);
 			e.setTo(e.getFrom());
 			return;
 		}
@@ -135,24 +135,29 @@ public class TeleportsListener implements Listener {
         }, 20 );
 	}
 
-	private boolean worldGuardTpAllowed(Location l, Player p){
-		if(plugin.worldGuarded) {
-			if (!p.hasPermission("worldgaurd.teleports.allregions")) {
-				RegionContainer container = plugin.getWorldGaurd().getRegionContainer();
-				RegionQuery query = container.createQuery();
-				ApplicableRegionSet set = query.getApplicableRegions(l);
-				if (!set.isVirtual())//VirtualSet indicates that there is no region protection to check
-					for (ProtectedRegion region : set) {
-						Set<String> flags = region.getFlag(DefaultFlag.BLOCKED_CMDS);
-						for (String cmd : flags) {
-							if (plugin.deny_Teleport.contains(cmd)) {
-								return false;
+	private boolean worldGuardTpAllowed(Location l, Player p) {
+		Boolean result = true;
+		if (plugin.worldGuarded) {
+			RegionContainer container = plugin.getWorldGaurd().getRegionContainer();
+			RegionQuery query = container.createQuery();
+			ApplicableRegionSet set = query.getApplicableRegions(l);
+			if (!set.isVirtual())//VirtualSet indicates that there is no region protection to check
+				for (ProtectedRegion region : set) {
+					Set<String> flags = region.getFlag(DefaultFlag.BLOCKED_CMDS);
+					for (String cmd : flags) {
+						if (plugin.deny_Teleport.contains(cmd)) {
+							if (!p.hasPermission("worldgaurd.teleports.allregions")) {
+								p.sendMessage(plugin.location_blocked);
+								result = false;
+							} else {
+								p.sendMessage("Administrative Bypass of Region Teleport blocking used");
+								result = true;
 							}
 						}
 					}
-			}
+				}
 		}
-		return true;
+		return result;
 	}
 
 }
