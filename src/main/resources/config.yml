@@ -3,6 +3,7 @@ messages:
   teleporting: "&6Teleportation commencing..."
   aborted: "&cTeleportation aborted because you moved."
   location_blocked: "&cTeleportation blocked to this location - restricted"
+  tp_admin_bypass: "Administrative Bypass of Region Teleport blocking used"
   unsafe_location: "&cUnable to find a safe location for teleport."
   tptop: "&6Teleporting to top."
   invalid_or_offline_player: "&cInvalid username or player is offline: "
@@ -20,4 +21,4 @@ messages:
   invalid_pitch: "&cInvalid pitch: "
 teleport:
   denyon:
-    cmdlist: "NoEntry"
+    cmdlist: "/noentry"

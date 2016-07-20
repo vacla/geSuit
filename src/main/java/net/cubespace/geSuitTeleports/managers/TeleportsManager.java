@@ -22,6 +22,7 @@ public class TeleportsManager {
     public static HashMap<String, Player> pendingTeleports = new HashMap<>();
     public static HashMap<String, Location> pendingTeleportLocations = new HashMap<>();
     public static HashSet<Player> ignoreTeleport = new HashSet<>();
+    public static HashSet<Player> administrativeTeleport = new HashSet<>();
 
     static HashMap<Player, Location> lastLocation = new HashMap<>();
     
@@ -30,6 +31,7 @@ public class TeleportsManager {
     	pendingTeleportLocations.remove(player.getName());
     	ignoreTeleport.remove(player);
     	lastLocation.remove(player);
+        administrativeTeleport.remove(player);
     }
 
     public static void tpAll( CommandSender sender, String targetPlayer ) {
@@ -263,6 +265,9 @@ public class TeleportsManager {
     public static void teleportPlayerToPlayer( final String player, String target ) {
         Player p = Bukkit.getPlayer( player );
         Player t = Bukkit.getPlayer( target );
+        if(t.hasPermission("worldgaurd.teleports.allregions")) {
+            administrativeTeleport.add(p);
+        }
         if ( p != null ) {
             p.teleport( t );
         } else {

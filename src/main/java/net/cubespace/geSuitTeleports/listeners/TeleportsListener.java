@@ -73,7 +73,6 @@ public class TeleportsListener implements Listener {
 		}
 		if(!worldGuardTpAllowed(e.getTo(),e.getPlayer())){ //cancel the event if the location is blocked
 			e.setCancelled(true);
-			e.getPlayer().sendMessage(geSuitTeleports.aborted);
 			e.setTo(e.getFrom());
 			return;
 		}
@@ -138,28 +137,31 @@ public class TeleportsListener implements Listener {
 	private boolean worldGuardTpAllowed(Location l, Player p) {
 		Boolean result = true;
 		Logger log = geSuitTeleports.instance.getLogger();
-		log.info("Checking if WG allows TP. Status of Plugin:"+geSuitTeleports.getInstance().worldGuarded+ "/"+geSuitTeleports.worldGuarded);//Todo remove after debug
-		if (geSuitTeleports.getInstance().worldGuarded) {
+		log.info("Checking if WG allows TP. Status of Plugin:"+geSuitTeleports.worldGuarded);//Todo remove after debug
+		if (geSuitTeleports.worldGuarded) {
 			RegionContainer container = geSuitTeleports.getWorldGaurd().getRegionContainer();
 			RegionQuery query = container.createQuery();
 			ApplicableRegionSet set = query.getApplicableRegions(l);
 			if (!set.isVirtual()) {//VirtualSet indicates that there is no region protection to check
 				for (ProtectedRegion region : set) {
 					Set<String> flags = region.getFlag(DefaultFlag.BLOCKED_CMDS);
-					log.info("Blocked Commands Found:" + flags.toString());//Todo remove after debug
 					if (flags != null) {
+						log.info("Blocked Commands Found:" + flags.toString());//Todo remove after debug
 						for (String cmd : flags) {
 							if (geSuitTeleports.deny_Teleport.contains(cmd)) {
 								log.info("Test for " + cmd + " was true."); //Todo remove after debug
-								if (!p.hasPermission("worldgaurd.teleports.allregions")) {
+								if (!p.hasPermission("worldgaurd.teleports.allregions")||TeleportsManager.administrativeTeleport.contains(p)) {
 									p.sendMessage(geSuitTeleports.location_blocked);
 									result = false;
 								} else {
-									p.sendMessage("Administrative Bypass of Region Teleport blocking used");
+									p.sendMessage(geSuitTeleports.tp_admin_bypass);
+									Bukkit.getConsoleSender().sendMessage("Player:"+ p.getDisplayName()+":" + geSuitTeleports.tp_admin_bypass + "Location: Region=" + region.getId());
+									TeleportsManager.administrativeTeleport.remove(p);
 									result = true;
 								}
 							}
 						}
+						log.info("Tests on List:"+geSuitTeleports.deny_Teleport.toString() + " completed" );//Todo remove after debug
 					}else{
 						log.info("FLAGS was null");//Todo remove after debug
 					}
@@ -168,7 +170,7 @@ public class TeleportsListener implements Listener {
 				log.info("Region set was virtual");//Todo remove after debug
 			}
 		}
-		geSuitTeleports.getInstance().getLogger().info("World gaurd check for TP completed: Player=" + p.getDisplayName() + " Location=(" + l.toString() + ") Region TP protection=" + result);//Todo remove after debug
+		geSuitTeleports.getInstance().getLogger().info("World gaurd check for TP completed: Player=" + p.getDisplayName() + " Location=(" + l.toString() + ") Region TP Allowed=" + result);//Todo remove after debug
 		return result;
 	}
 
