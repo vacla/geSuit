@@ -24,7 +24,7 @@ public class BanCommand extends Command {
             return;
         }
         
-        String reason = null;
+        String reason = "";
         if (args.length > 1) {
             StringBuilder builder = new StringBuilder();
             for (int i = 1; i < args.length; ++i) {
@@ -42,7 +42,7 @@ public class BanCommand extends Command {
             BansManager.banIP(sender.getName(), args[0], reason);
         } else {
             if (reason.isEmpty()) {
-                // Do not allow a warning without a reason since people accidentally do /db instead of /dw
+                // Do not allow a ban without a reason since people accidentally do /db instead of /dw
                 PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BAN_REASON_REQUIRED);
                 return;
             }

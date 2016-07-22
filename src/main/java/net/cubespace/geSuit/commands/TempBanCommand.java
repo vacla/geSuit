@@ -35,7 +35,7 @@ public class TempBanCommand extends Command {
         }
         
 		if (reason.isEmpty()) {
-			// Do not allow a warning without a reason since people accidentally do /dtb instead of /dst
+			// Do not allow a temp ban without a reason since people accidentally do /dtb instead of /dst
 			PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.TEMP_BAN_REASON_REQUIRED);
 			return;
 		}

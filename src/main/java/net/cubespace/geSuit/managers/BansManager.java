@@ -52,7 +52,9 @@ public class BansManager {
         }
 
         if (reason == null || reason.equals("")) {
-            reason = ConfigManager.messages.DEFAULT_BAN_REASON;
+            // Do not allow a ban without a reason since people accidentally do /db instead of /dst or /dtb
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BAN_REASON_REQUIRED);
+            return;
         }
 
         DatabaseManager.bans.banPlayer(t.name, t.uuid, null, bannedBy, reason, "ban");
@@ -309,8 +311,10 @@ public class BansManager {
             }
         }
 
-        if (message.equals("")) {
-            message = ConfigManager.messages.DEFAULT_BAN_REASON;
+        if (message == null || message.equals("")) {
+            // Do not allow a temp ban without a reason since people accidentally do /dtb instead of /dst
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.TEMP_BAN_REASON_REQUIRED);
+            return;
         }
 
         Date sqlToday = new Date(System.currentTimeMillis() + (seconds * 1000L));
@@ -362,7 +366,9 @@ public class BansManager {
     	}
         
         if (reason == null || reason.isEmpty()) {
-            reason = ConfigManager.messages.DEFAULT_WARN_REASON;
+            // Do not allow a warning without a reason since people accidentally do /dw instead of /dst
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.WARN_REASON_REQUIRED);
+            return;
         }
 
         DatabaseManager.bans.warnPlayer(t.name, t.uuid, warnedBy, reason);

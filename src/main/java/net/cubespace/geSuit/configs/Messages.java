@@ -111,6 +111,7 @@ public class Messages extends Config {
     public String IPBAN_PLAYER_BROADCAST = "&c" + "{player} &bhas been ip banned. Reason: {message}";
     public String DEFAULT_BAN_REASON = "Unknown";
     public String DEFAULT_KICK_MESSAGE = "&cUnknown";
+    // Deprecated:
     public String DEFAULT_WARN_REASON = "Unknown";
     public String BAN_PLAYER_MESSAGE = "&c" + "You have been banned.{N}{N}&cReason: &e{message}";
     public String BAN_PLAYER_BROADCAST = "&b" + "{player} has been banned. Reason: {message}";
