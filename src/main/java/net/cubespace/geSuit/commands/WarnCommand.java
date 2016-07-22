@@ -32,10 +32,11 @@ public class WarnCommand extends Command {
         		reason += " " + args[x];
         	}
         }
-        
-        // We never want a completely blank warning
+
         if (reason.isEmpty()) {
-        	reason = "Unspecified";
+			// Do not allow a warning without a reason since people accidentally do /dw instead of /dst
+			PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.WARN_REASON_REQUIRED);
+			return;
         }
 
         BansManager.warnPlayer(sender.getName(), args[0], reason);

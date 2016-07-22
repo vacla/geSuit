@@ -34,10 +34,11 @@ public class TempBanCommand extends Command {
         	}
         }
         
-        // We never want a completely blank warning
-        if (reason.isEmpty()) {
-        	reason = "Unspecified";
-        }
+		if (reason.isEmpty()) {
+			// Do not allow a warning without a reason since people accidentally do /dtb instead of /dst
+			PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.TEMP_BAN_REASON_REQUIRED);
+			return;
+		}
 
         // Calculate specified temp ban duration
         int seconds = TimeParser.parseString(args[1]);

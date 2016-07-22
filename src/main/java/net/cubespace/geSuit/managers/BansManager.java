@@ -798,7 +798,7 @@ public class BansManager {
             	}
 
                 // Construct a mapping betweeen UUID and the player's most recent username
-                // Also keep track of the number of names associated witih each uuid
+                // Also keep track of the number of names associated with each uuid
                 HashMap<String, String> uuidNameMap = new HashMap<>();
                 HashMap<String, Integer> uuidNameCount = new HashMap<>();
 

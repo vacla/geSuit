@@ -41,6 +41,12 @@ public class BanCommand extends Command {
         if (Utilities.isIPAddress(args[0])) {
             BansManager.banIP(sender.getName(), args[0], reason);
         } else {
+            if (reason.isEmpty()) {
+                // Do not allow a warning without a reason since people accidentally do /db instead of /dw
+                PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BAN_REASON_REQUIRED);
+                return;
+            }
+
             BansManager.banPlayer(sender.getName(), args[0], reason);
         }
     }
