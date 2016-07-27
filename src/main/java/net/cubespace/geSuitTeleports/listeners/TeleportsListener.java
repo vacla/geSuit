@@ -150,14 +150,14 @@ public class TeleportsListener implements Listener {
 						for (String cmd : flags) {
 							if (geSuitTeleports.deny_Teleport.contains(cmd)) {
 								log.info("Test for " + cmd + " was true."); //Todo remove after debug
-								if (!p.hasPermission("worldgaurd.teleports.allregions")||TeleportsManager.administrativeTeleport.contains(p)) {
-									p.sendMessage(geSuitTeleports.location_blocked);
-									result = false;
-								} else {
+								if (p.hasPermission("worldgaurd.teleports.allregions")||TeleportsManager.administrativeTeleport.contains(p)) {
 									p.sendMessage(geSuitTeleports.tp_admin_bypass);
-									Bukkit.getConsoleSender().sendMessage("Player:"+ p.getDisplayName()+":" + geSuitTeleports.tp_admin_bypass + "Location: Region=" + region.getId());
+									log.info("Player:"+ p.getDisplayName()+":" + geSuitTeleports.tp_admin_bypass + "Location: Region=" + region.getId());
 									TeleportsManager.administrativeTeleport.remove(p);
 									result = true;
+								} else {
+									p.sendMessage(geSuitTeleports.location_blocked);
+									result = false;
 								}
 							}
 						}
@@ -170,7 +170,7 @@ public class TeleportsListener implements Listener {
 				log.info("Region set was virtual");//Todo remove after debug
 			}
 		}
-		geSuitTeleports.getInstance().getLogger().info("World gaurd check for TP completed: Player=" + p.getDisplayName() + " Location=(" + l.toString() + ") Region TP Allowed=" + result);//Todo remove after debug
+		log.info("World gaurd check for TP completed: Player=" + p.getDisplayName() + " Location=(" + l.toString() + ") Region TP Allowed=" + result);//Todo remove after debug
 		return result;
 	}
 
