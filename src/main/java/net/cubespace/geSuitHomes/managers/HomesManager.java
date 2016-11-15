@@ -15,7 +15,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Set;
 
 public class HomesManager {
@@ -103,17 +102,19 @@ public class HomesManager {
         int userCount = 0;
         int userHomeCount = 0;
         int homeCount = 0;
-        for ( File data : listOfFiles ) {
-            userCount++;
-            FileConfiguration user = YamlConfiguration.loadConfiguration( data );
-            if ( user.contains( "homes" ) ) {
-                userHomeCount++;
-                Set<String> homedata = user.getConfigurationSection( "homes" ).getKeys( false );
-                if ( homedata != null ) {
-                    for ( String homes : homedata ) {
-                        Location loc = new Location( Bukkit.getWorld( user.getString( "homes." + homes + ".world" ) ), user.getDouble( "homes." + homes + ".x" ), user.getDouble( "homes." + homes + ".y" ), user.getDouble( "homes." + homes + ".z" ), ( float ) user.getDouble( "homes." + homes + ".yaw" ), ( float ) user.getDouble( "homes." + homes + ".pitch" ) );
-                        setHome( data.getName().substring( 0, data.getName().length() - 4 ), homes, loc );
-                        homeCount++;
+        if(listOfFiles != null) {
+            for (File data : listOfFiles) {
+                userCount++;
+                FileConfiguration user = YamlConfiguration.loadConfiguration(data);
+                if (user.contains("homes")) {
+                    userHomeCount++;
+                    Set<String> homedata = user.getConfigurationSection("homes").getKeys(false);
+                    if (homedata != null) {
+                        for (String homes : homedata) {
+                            Location loc = new Location(Bukkit.getWorld(user.getString("homes." + homes + ".world")), user.getDouble("homes." + homes + ".x"), user.getDouble("homes." + homes + ".y"), user.getDouble("homes." + homes + ".z"), (float) user.getDouble("homes." + homes + ".yaw"), (float) user.getDouble("homes." + homes + ".pitch"));
+                            setHome(data.getName().substring(0, data.getName().length() - 4), homes, loc);
+                            homeCount++;
+                        }
                     }
                 }
             }
