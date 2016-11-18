@@ -4,13 +4,45 @@
 
     <groupId>net.cubespace</groupId>
     <artifactId>geSuitHomes</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>geSuitHomes</name>
 
     <properties>
-        <build.number>MyM-Snapshot</build.number>
+        <build.number />
+        <plugin.version>${project.version}-${build.number}</plugin.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <scm>
+        <connection>scm:git:git@github.com:AddstarMC/geSuitHomes.git</connection>
+        <developerConnection>scm:git:git@github.com:AddstarMC/geSuitHomes.git</developerConnection>
+        <url>https://github.com/AddstarMC/pandora</url>
+        <tag>HEAD</tag>
+    </scm>
+    <developers>
+        <developer>
+            <id>AddstarMC</id>
+            <name>AddstarMC</name>
+            <url>http://github.com/AddstarMC</url>
+            <roles>
+                <role>developer</role>
+                <role>maintainer</role>
+            </roles>
+            <timezone>10</timezone>
+        </developer>
+    </developers>
+    <distributionManagement>
+        <repository>
+            <id>maven.addstar.com.au</id>
+            <name>maven.addstar.com.au-releases</name>
+            <url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>maven.addstar.com.au</id>
+            <name>maven.addstar.com.au-snapshots</name>
+            <url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <repositories>
         <repository>
@@ -31,8 +63,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
             <version>1.11-R0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
@@ -53,8 +85,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
                 </configuration>
