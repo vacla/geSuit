@@ -4,14 +4,45 @@
 
     <groupId>net.cubespace</groupId>
     <artifactId>geSuitTeleports</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>geSuitTeleports</name>
 
     <properties>
+        <build.number />
+        <plugin.version>${project.version}-${build.number}</plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <build.number>MyM-Snapshot</build.number>
     </properties>
+    <scm>
+        <connection>scm:git:git@github.com:AddstarMC/geSuitTeleport.git</connection>
+        <developerConnection>scm:git:git@github.com:AddstarMC/geSuitTeleport.git</developerConnection>
+        <url>https://github.com/AddstarMC/pandora</url>
+        <tag>HEAD</tag>
+    </scm>
+    <developers>
+        <developer>
+            <id>AddstarMC</id>
+            <name>AddstarMC</name>
+            <url>http://github.com/AddstarMC</url>
+            <roles>
+                <role>developer</role>
+                <role>maintainer</role>
+            </roles>
+            <timezone>10</timezone>
+        </developer>
+    </developers>
+    <distributionManagement>
+        <repository>
+            <id>maven.addstar.com.au</id>
+            <name>maven.addstar.com.au-releases</name>
+            <url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>maven.addstar.com.au</id>
+            <name>maven.addstar.com.au-snapshots</name>
+            <url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <repositories>
       <repository>
@@ -28,14 +59,8 @@
       <dependency>
         <groupId>org.spigotmc</groupId>
         <artifactId>spigot-api</artifactId>
-        <version>1.10-R0.1-SNAPSHOT</version>
+        <version>1.11-R0.1-SNAPSHOT</version>
         <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>sneaky-throw</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
@@ -45,11 +70,9 @@
         <dependency>
             <groupId>net.cubespace</groupId>
             <artifactId>geSuitSpawn</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
-      
     <build>
         <finalName>${project.name}</finalName>
         <resources>
