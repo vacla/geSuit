@@ -1,6 +1,6 @@
 name: geSuitWarps
 main: net.cubespace.geSuitWarps.geSuitWarps
-version: ${project.version}b-${build.number}
+version: ${plugin.version}
 description: Part of the gesuit this plugin allows users to warp to certain points.
 author: geNAZt
 depend: [geSuitTeleports]
