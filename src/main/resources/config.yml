@@ -22,3 +22,6 @@ messages:
 teleport:
   denyon:
     cmdlist: "/noentry"
+options:
+  debug_logging: false
+~
