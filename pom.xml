@@ -53,6 +53,24 @@
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
+        <!-- Addstar repos -->
+        <repository>
+            <id>addstar-ext-release</id>
+            <url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>addstar-ext-snapshot</id>
+            <url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
     </repositories>
 
     <dependencies>
