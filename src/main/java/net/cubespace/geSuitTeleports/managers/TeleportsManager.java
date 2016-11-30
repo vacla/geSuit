@@ -265,7 +265,7 @@ public class TeleportsManager {
     public static void teleportPlayerToPlayer( final String player, String target ) {
         Player p = Bukkit.getPlayer( player );
         Player t = Bukkit.getPlayer( target );
-        if(t.hasPermission("worldgaurd.teleports.allregions")) {
+        if(t.hasPermission("worldguard.teleports.allregions")) {
             administrativeTeleport.add(p);
         }
         if ( p != null ) {

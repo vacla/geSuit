@@ -74,7 +74,7 @@ public class geSuitTeleports extends JavaPlugin {
         invalid_pitch = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.invalid_pitch"));
         location_blocked = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.location_blocked"));
         tp_admin_bypass = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.tp_admin_bypass"));
-        if(Bukkit.getPluginManager().isPluginEnabled("WorldGuard")){//check for WorldGaurd
+        if(Bukkit.getPluginManager().isPluginEnabled("WorldGuard")){//check for WorldGuard
             mWorldGuard = (WorldGuardPlugin)Bukkit.getPluginManager().getPlugin("WorldGuard");
             worldGuarded = true;
             deny_Teleport = getConfig().getStringList("teleport.denyon.cmdlist");
@@ -122,7 +122,7 @@ public class geSuitTeleports extends JavaPlugin {
         return instance;
     }
 
-    public static WorldGuardPlugin getWorldGaurd() {
+    public static WorldGuardPlugin getWorldGuard() {
         return mWorldGuard;
     }
 
