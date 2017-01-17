@@ -4,11 +4,7 @@ import net.cubespace.geSuit.commands.*;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
 import net.cubespace.geSuit.listeners.*;
-import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.DatabaseManager;
-import net.cubespace.geSuit.managers.GeoIPManager;
-import net.cubespace.geSuit.managers.LockDownManager;
-import net.cubespace.geSuit.managers.LoggingManager;
+import net.cubespace.geSuit.managers.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -19,6 +15,7 @@ public class geSuit extends Plugin
     public static geSuit instance;
     public static ProxyServer proxy;
     private boolean DebugEnabled = false;
+    public static APIManager api;
 
     public void onEnable()
     {
@@ -39,6 +36,7 @@ public class geSuit extends Plugin
         registerCommands();
         GeoIPManager.initialize();
         LockDownManager.initialize();
+        api = new APIManager();
     }
 
     private void registerCommands()
