@@ -23,7 +23,7 @@
         <!-- geSuit Modules -->
         <module>modules/moderation</module>
         <module>modules/teleports</module>
-	<module>modules/portals</module>
+        <module>modules/portals</module>
     </modules>
 
     <repositories>

@@ -2,18 +2,13 @@ package net.cubespace.geSuit.teleports.commands;
 
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
-import net.cubespace.geSuit.core.commands.Command;
-import net.cubespace.geSuit.core.commands.CommandContext;
-import net.cubespace.geSuit.core.commands.CommandPriority;
-import net.cubespace.geSuit.core.commands.CommandTabCompleter;
-import net.cubespace.geSuit.core.commands.Optional;
+import net.cubespace.geSuit.core.commands.*;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.core.objects.Result;
 import net.cubespace.geSuit.core.objects.Result.Type;
 import net.cubespace.geSuit.core.util.Utilities;
 import net.cubespace.geSuit.remote.teleports.TeleportActions;
 import net.cubespace.geSuit.teleports.misc.LocationUtil;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -205,12 +200,12 @@ public class TeleportCommands {
             sender.sendMessage(result.getMessage());
         }
     }
-    
-    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleport yourself to another location", usage="/<command> <server> <world> <x> <y> <z>")
+
+    @Command(name = "tp", async = true, permission = "gesuit.teleports.command.tp", aliases = {"teleport", "tpo", "tppos"}, description = "Teleport yourself to another location", usage = "/<command> <server> <world> <x> <y> <z> [yaw] [pitch]")
     @CommandPriority(1)
-    public void tp(CommandContext<Player> context, String serverName, String worldName, int x, int y, int z) {
-    	if (context.isErrored()) {
-    		switch (context.getErrorArg()) {
+    public void tp(CommandContext<Player> context, String serverName, String worldName, int x, int y, int z, @Optional Float yaw, @Optional Float pitch) {
+        if (context.isErrored()) {
+            switch (context.getErrorArg()) {
     		case 2:
     		case 3:
     		case 4:
@@ -229,8 +224,11 @@ public class TeleportCommands {
             sender.sendMessage(Global.getMessages().get("teleport.blocked.area"));
             return;
         }
-        
-        Location target = new Location(serverName, worldName, x, y, z, sender.getLocation().getYaw(), sender.getLocation().getPitch());
+        if (yaw == null) yaw = sender.getLocation().getYaw();
+        if (pitch == null) pitch = sender.getLocation().getPitch();
+
+
+        Location target = new Location(serverName, worldName, x, y, z, yaw, pitch);
         
         Result result = actions.teleport(player, target);
         
@@ -340,11 +338,11 @@ public class TeleportCommands {
             return null;
         }
     }
-    
-    @Command(name="tp", async=true, permission="gesuit.teleports.command.tp", aliases={"teleport", "tpo"}, description="Teleports a player to a new location", usage="/<command> <player> <server> <world> <x> <y> <z>")
-    public void tp(CommandContext<CommandSender> context, String playerName, String serverName, String worldName, int x, int y, int z) {
-    	if (context.isErrored()) {
-    		switch (context.getErrorArg()) {
+
+    @Command(name = "tp", async = true, permission = "gesuit.teleports.command.tp", aliases = {"teleport", "tpo"}, description = "Teleports a player to a new location", usage = "/<command> <player> <server> <world> <x> <y> <z> [yaw] [pitch]")
+    public void tp(CommandContext<CommandSender> context, String playerName, String serverName, String worldName, int x, int y, int z, @Optional Float yaw, @Optional Float pitch) {
+        if (context.isErrored()) {
+            switch (context.getErrorArg()) {
     		case 3:
     		case 4:
     		case 5:
@@ -361,8 +359,11 @@ public class TeleportCommands {
             context.sendMessage(Global.getMessages().get("player.unknown", "player", playerName));
             return;
         }
-        
-        Location target = new Location(serverName, worldName, x, y, z);
+        if (yaw == null) yaw = 0F;
+        if (pitch == null) pitch = 0F;
+
+
+        Location target = new Location(serverName, worldName, x, y, z, yaw, pitch);
         
         Result result = actions.teleport(player, target);
         
@@ -372,11 +373,12 @@ public class TeleportCommands {
     }
     
     @CommandTabCompleter(name="tp")
-    public Iterable<String> tabCompleteTpHere(CommandSender sender, int argument, String input, String playerName, String serverName, String worldName, int x, int y, int z) {
+    public Iterable<String> tabCompleteTpHere(CommandSender sender, int argument, String input, String playerName, String serverName, String worldName, int x, int y, int z, Float yaw, Float pitch) {
         if (argument == 0) { // playerName
             return Utilities.matchPlayerNames(input, true);
         } else {
             return null;
         }
     }
+
 }
