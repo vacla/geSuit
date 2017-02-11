@@ -1,6 +1,6 @@
 name: geSuit
 main : net.cubespace.geSuit.geSuitPlugin
-version: ${project.version}b-${build.number}
-author: geNAZt
+version: ${plugin.version}
+author: AddstarMC geNAZt
 
 depends: [Yamler]

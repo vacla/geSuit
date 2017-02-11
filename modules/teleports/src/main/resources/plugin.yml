@@ -1,6 +1,6 @@
 name: geSuitTeleports
 main : net.cubespace.geSuit.teleports.Bootstrap
-version: ${project.version}b-${build.number}
+version: ${plugin.version}
 description: Part of the gesuit this plugin allows users to teleport to each other.
 depend: [geSuitBukkit]
 author: Schmoller

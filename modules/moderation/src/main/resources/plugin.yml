@@ -1,10 +1,10 @@
 name: geSuitBans
 #main : net.cubespace.geSuitBans.geSuitBans
 main : net.cubespace.geSuit.moderation.Bootstrap
-version: ${project.version}b-${build.number}
+version: ${plugin.version}
 description: Part of the geSuit this plugin allows moderators to ban and kick players
 depend: [geSuitBukkit]
-author: geNAZt
+author: AddstarMC geNatz
 commandsa:
     ban:
         description: Bans a player from the proxy

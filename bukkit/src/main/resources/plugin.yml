@@ -1,5 +1,5 @@
 name: geSuitBukkit
-version: ${project.version}-${build.number}
+version: ${plugin.version}
 author: Schmoller
 
 main: net.cubespace.geSuit.GSPlugin

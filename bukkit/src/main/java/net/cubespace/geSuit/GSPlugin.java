@@ -1,27 +1,25 @@
 package net.cubespace.geSuit;
 
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.logging.Level;
-
 import net.cubespace.geSuit.core.BukkitPlayerManager;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.ServerManager;
-import net.cubespace.geSuit.core.geCore;
 import net.cubespace.geSuit.core.channel.Channel;
 import net.cubespace.geSuit.core.channel.ChannelManager;
 import net.cubespace.geSuit.core.channel.ConnectionNotifier;
 import net.cubespace.geSuit.core.channel.RedisChannelManager;
 import net.cubespace.geSuit.core.commands.BukkitCommandManager;
+import net.cubespace.geSuit.core.geCore;
 import net.cubespace.geSuit.core.lang.Messages;
 import net.cubespace.geSuit.core.messages.BaseMessage;
 import net.cubespace.geSuit.core.storage.RedisConnection;
 import net.cubespace.geSuit.core.storage.StorageProvider;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.FileConfigurationOptions;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
 
 public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
     
@@ -48,7 +46,7 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         channelManager = initializeChannelManager();
         
         BukkitPlatform platform = new BukkitPlatform(this);
-        StorageProvider storageProvider = new StorageProvider(redis);
+        StorageProvider storageProvider = new StorageProvider(redis, platform);
         
         // Create global manager
         Channel<BaseMessage> channel = channelManager.createChannel("players", BaseMessage.class);
@@ -106,12 +104,7 @@ public class GSPlugin extends JavaPlugin implements ConnectionNotifier {
         final RedisChannelManager channelManager = new RedisChannelManager(redis, getLogger());
         
         final CountDownLatch latch = new CountDownLatch(1);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                channelManager.initialize(latch);
-            }
-        }, "GSSubscriptionThread");
+        Thread thread = new Thread(() -> channelManager.initialize(latch), "GSSubscriptionThread");
 
         thread.start();
 
