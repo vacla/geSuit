@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.HashMap;
 
 
@@ -189,6 +190,13 @@ public class SpawnManager {
 
     public static void sendPlayerToSpawn( CommandSender sender ) {
         Player p = ( Player ) sender;
+        if(p.hasPermission("gesuit.spawns.spawn.bed")){
+            try {
+                p.teleport(p.getBedSpawnLocation());
+            }catch(NullPointerException e){
+                //catch if they dont have a bed
+            }
+        }
         if ( SpawnManager.hasWorldSpawn( p.getWorld() ) && p.hasPermission( "gesuit.spawns.spawn.world" ) ) {
             p.teleport( getWorldSpawn( p.getWorld() ) );
         } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "gesuit.spawns.spawn.server" ) ) {
