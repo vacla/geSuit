@@ -1,9 +1,13 @@
 package net.cubespace.geSuit.teleports;
 
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Sets;
+import com.sk89q.worldguard.bukkit.RegionContainer;
+import com.sk89q.worldguard.bukkit.RegionQuery;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.cubespace.geSuit.GSPlugin;
 import net.cubespace.geSuit.core.Global;
 import net.cubespace.geSuit.core.GlobalPlayer;
@@ -17,7 +21,6 @@ import net.cubespace.geSuit.core.messages.TeleportRequestMessage;
 import net.cubespace.geSuit.core.messages.UpdateBackMessage;
 import net.cubespace.geSuit.core.objects.Location;
 import net.cubespace.geSuit.teleports.misc.LocationUtil;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
@@ -32,19 +35,22 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Sets;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listener {
     private Channel<BaseMessage> channel;
     private Cache<UUID, Object> pendingTeleports;
     private Set<Player> backIgnoredPlayers;
-    
-    public TeleportManager() {
+    private GSPlugin plugin;
+
+    public TeleportManager(GSPlugin plugin) {
         channel = Global.getChannelManager().createChannel("tp", BaseMessage.class);
         channel.setCodec(new BaseMessage.Codec());
         channel.addReceiver(this);
+        this.plugin = plugin;
         
         pendingTeleports = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
         backIgnoredPlayers = Sets.newHashSet();
@@ -394,5 +400,45 @@ public class TeleportManager implements ChannelDataReceiver<BaseMessage>, Listen
         
         // Otherwise do a safe teleport
         player.teleport(LocationUtil.getSafeDestination(target), cause);
+    }
+
+    private boolean worldGuardTpAllowed(org.bukkit.Location l, Player p) {
+        Boolean result = true;
+        Logger log = plugin.getLogger();
+        log.info("Checking if WG allows TP. Status of Plugin:" + TeleportsModule.isWorldGuarded());//Todo remove after debug
+        if (TeleportsModule.isWorldGuarded()) {
+            RegionContainer container = TeleportsModule.getmWorldGuard().getRegionContainer();
+            RegionQuery query = container.createQuery();
+            ApplicableRegionSet set = query.getApplicableRegions(l);
+            if (!set.isVirtual()) {//VirtualSet indicates that there is no region protection to check
+                for (ProtectedRegion region : set) {
+                    Set<String> flags = region.getFlag(DefaultFlag.BLOCKED_CMDS);
+                    if (flags != null) {
+                        log.info("Blocked Commands Found:" + flags.toString());//Todo remove after debug
+                        for (String cmd : flags) {
+                            if (TeleportsModule.deny_Teleport.contains(cmd)) {
+                                log.info("Test for " + cmd + " was true."); //Todo remove after debug
+                                if (p.hasPermission("worldgaurd.teleports.allregions") || TeleportsManager.administrativeTeleport.contains(p)) {
+                                    p.sendMessage(geSuitTeleports.tp_admin_bypass);
+                                    log.info("Player:" + p.getDisplayName() + ":" + geSuitTeleports.tp_admin_bypass + "Location: Region=" + region.getId());
+                                    TeleportsManager.administrativeTeleport.remove(p);
+                                    result = true;
+                                } else {
+                                    p.sendMessage(geSuitTeleports.location_blocked);
+                                    result = false;
+                                }
+                            }
+                        }
+                        log.info("Tests on List:" + geSuitTeleports.deny_Teleport.toString() + " completed");//Todo remove after debug
+                    } else {
+                        log.info("FLAGS was null");//Todo remove after debug
+                    }
+                }
+            } else {
+                log.info("Region set was virtual");//Todo remove after debug
+            }
+        }
+        log.info("World gaurd check for TP completed: Player=" + p.getDisplayName() + " Location=(" + l.toString() + ") Region TP Allowed=" + result);//Todo remove after debug
+        return result;
     }
 }
