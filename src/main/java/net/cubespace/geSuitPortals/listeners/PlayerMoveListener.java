@@ -1,9 +1,13 @@
 package net.cubespace.geSuitPortals.listeners;
 
+import net.cubespace.geSuitPortals.geSuitPortals;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -17,7 +21,8 @@ public class PlayerMoveListener implements Listener {
 	
 	@EventHandler(ignoreCancelled = true)
 	public void PlayerMove(PlayerMoveEvent e){
-		if (e.getPlayer().hasMetadata("NPC")) return; // Ignore NPCs
+		Player player = e.getPlayer();
+		if (player.hasMetadata("NPC")) return; // Ignore NPCs
 		Block t = e.getTo().getBlock();
 		Block f = e.getFrom().getBlock();
 		if(f.equals(t)){
@@ -28,13 +33,15 @@ public class PlayerMoveListener implements Listener {
 		}
 		for(Portal p: PortalsManager.PORTALS.get(t.getWorld())){
 			if(p.isBlockInPortal(t)){
-				if(e.getPlayer().hasPermission("gesuit.portals.portal.*")||e.getPlayer().hasPermission("gesuit.portals.portal."+p.getName())){
-					PortalsManager.teleportPlayer(e.getPlayer(), p);
+				if(player.hasPermission("gesuit.portals.portal.*")||player.hasPermission("gesuit.portals.portal."+p.getName())){
+					PortalsManager.teleportPlayer(player, p);
 					Vector unitVector = e.getFrom().toVector().subtract(e.getTo().toVector()).normalize();
-					Location l = e.getPlayer().getLocation();
+					Location l = player.getLocation();
 					l.setYaw(l.getYaw()+180);
-					e.getPlayer().teleport(l);
-					e.getPlayer().setVelocity(unitVector.multiply(0.3));
+					player.teleport(l);
+					player.setVelocity(unitVector.multiply(0.3));
+				} else {
+					player.sendMessage( ChatColor.RED + "Sorry! " + ChatColor.GOLD + "You do not have permission to use this portal." );
 				}
 			}
 		}
