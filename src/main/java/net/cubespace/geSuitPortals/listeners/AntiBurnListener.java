@@ -1,6 +1,7 @@
 package net.cubespace.geSuitPortals.listeners;
 
 import java.util.List;
+
 import net.cubespace.geSuitPortals.managers.PortalsManager;
 import net.cubespace.geSuitPortals.objects.Portal;
 import org.bukkit.Location;
@@ -22,26 +23,26 @@ public class AntiBurnListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDamageEvent(EntityDamageEvent event) {
         if (!PortalsManager.RECEIVED || !(event.getEntity() instanceof Player) ||
-           (!event.getCause().equals(EntityDamageEvent.DamageCause.LAVA) &&
-            !event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK) &&
-            !event.getCause().equals(EntityDamageEvent.DamageCause.FIRE))) return;
+                (!event.getCause().equals(EntityDamageEvent.DamageCause.LAVA) &&
+                        !event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK) &&
+                        !event.getCause().equals(EntityDamageEvent.DamageCause.FIRE))) return;
 
         Location location = event.getEntity().getLocation();
         event.setCancelled(check(event.getEntity(), location.getBlockX(), location.getBlockY(), location.getBlockZ(), FIRE_SPREAD_RADIUS));
     }
 
     private boolean check(Entity entity, int x, int y, int z, int radius) {
-        return  checkIfInPortal(entity.getWorld().getBlockAt(x, y, z)) ||
+        return checkIfInPortal(entity.getWorld().getBlockAt(x, y, z)) ||
                 (radius > 0 && (check(entity, x + 1, y, z, radius - 1)
-                            ||  check(entity, x - 1, y, z, radius - 1)
-                            ||  check(entity, x, y + 1, z, radius - 1)
-                            ||  check(entity, x, y - 1, z, radius - 1)
-                            ||  check(entity, x, y, z + 1, radius - 1)
-                            ||  check(entity, x, y, z - 1, radius - 1)));
+                        || check(entity, x - 1, y, z, radius - 1)
+                        || check(entity, x, y + 1, z, radius - 1)
+                        || check(entity, x, y - 1, z, radius - 1)
+                        || check(entity, x, y, z + 1, radius - 1)
+                        || check(entity, x, y, z - 1, radius - 1)));
     }
 
     private boolean checkIfInPortal(Block block) {
-    	if (block == null) return false;
+        if (block == null) return false;
         if (canIgnite(block)) {
             List<Portal> portals = PortalsManager.PORTALS.get(block.getWorld());
             if (portals != null) {

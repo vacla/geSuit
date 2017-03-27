@@ -32,8 +32,8 @@ public class geSuitPortals extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        for ( ArrayList<Portal> list : PortalsManager.PORTALS.values() ) {
-            for ( Portal p : list ) {
+        for (ArrayList<Portal> list : PortalsManager.PORTALS.values()) {
+            for (Portal p : list) {
                 p.clearPortal();
             }
         }
@@ -41,25 +41,25 @@ public class geSuitPortals extends JavaPlugin {
 
 
     private void loadWorldEdit() {
-        WORLDEDIT = ( WorldEditPlugin ) getServer().getPluginManager().getPlugin( "WorldEdit" );
+        WORLDEDIT = (WorldEditPlugin) getServer().getPluginManager().getPlugin("WorldEdit");
     }
 
     private void registerCommands() {
-        getCommand( "setportal" ).setExecutor( new SetPortalCommand() );
-        getCommand( "delportal" ).setExecutor( new DeletePortalCommand() );
-        getCommand( "portals" ).setExecutor( new ListPortalsCommand() );
+        getCommand("setportal").setExecutor(new SetPortalCommand());
+        getCommand("delportal").setExecutor(new DeletePortalCommand());
+        getCommand("portals").setExecutor(new ListPortalsCommand());
     }
 
     private void registerChannels() {
-        Bukkit.getMessenger().registerIncomingPluginChannel( this, "geSuitPortals", new PortalsMessageListener() );
-        Bukkit.getMessenger().registerOutgoingPluginChannel( this, "geSuitPortals" );
-        Bukkit.getMessenger().registerOutgoingPluginChannel( this, "BungeeCord" );
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, "geSuitPortals", new PortalsMessageListener());
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "geSuitPortals");
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
     private void registerListeners() {
-        getServer().getPluginManager().registerEvents( new PlayerMoveListener(), this );
-        getServer().getPluginManager().registerEvents( new PhysicsListener(), this );
-        getServer().getPluginManager().registerEvents( new PlayerLoginListener(), this );
-        getServer().getPluginManager().registerEvents( new AntiBurnListener(), this );
+        getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
+        getServer().getPluginManager().registerEvents(new PhysicsListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerLoginListener(), this);
+        getServer().getPluginManager().registerEvents(new AntiBurnListener(), this);
     }
 }

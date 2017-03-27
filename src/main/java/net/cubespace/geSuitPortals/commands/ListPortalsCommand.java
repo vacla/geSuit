@@ -9,12 +9,12 @@ import net.cubespace.geSuitPortals.managers.PortalsManager;
 
 public class ListPortalsCommand implements CommandExecutor {
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command,
-			String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command,
+                             String label, String[] args) {
 
-		PortalsManager.getPortalsList(sender.getName());
-		return false;
-	}
+        PortalsManager.getPortalsList(sender.getName());
+        return false;
+    }
 
 }

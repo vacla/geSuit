@@ -12,23 +12,23 @@ import java.util.Iterator;
 
 public class PluginMessageTask extends BukkitRunnable {
 
-	private final ByteArrayOutputStream bytes;
+    private final ByteArrayOutputStream bytes;
 
-	public PluginMessageTask(ByteArrayOutputStream bytes) {
-		this.bytes = bytes;
-	}
-	
-	public void run() {
-	    Iterator<? extends Player> iterator = Bukkit.getOnlinePlayers().iterator();
+    public PluginMessageTask(ByteArrayOutputStream bytes) {
+        this.bytes = bytes;
+    }
+
+    public void run() {
+        Iterator<? extends Player> iterator = Bukkit.getOnlinePlayers().iterator();
         if (iterator.hasNext()) {
             Player player = iterator.next();
-			player.sendPluginMessage(
-					geSuitPortals.INSTANCE,
-					"geSuitPortals",
-					bytes.toByteArray());
-		} else {
-			System.out.println(ChatColor.RED + "Unable to send Plugin Message - No players online.");
-		}
-	}
+            player.sendPluginMessage(
+                    geSuitPortals.INSTANCE,
+                    "geSuitPortals",
+                    bytes.toByteArray());
+        } else {
+            System.out.println(ChatColor.RED + "Unable to send Plugin Message - No players online.");
+        }
+    }
 
 }
