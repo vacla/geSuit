@@ -14,26 +14,35 @@
     </properties>
 
     <repositories>
+        <!-- For spigot -->
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public</url>
+            <id>md5-repo</id>
+            <url>http://repo.md-5.net/content/groups/public/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
         </repository>
+
+        <!-- WorldEdit, WorldGuard -->
         <repository>
-            <id>sk89q-repo</id>
-            <url>http://maven.sk89q.com/repo/</url>
+            <id>sk89q-mvn2</id>
+            <url>http://maven.sk89q.com/repo</url>
         </repository>
     </repositories>
 
     <dependencies>
+        <!-- Spigot -->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.11-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
+        <!-- WorldEdit -->
         <dependency>
-            <groupId>com.sk89q</groupId>
-            <artifactId>worldedit</artifactId>
-            <version>5.4</version>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>6.1.2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
