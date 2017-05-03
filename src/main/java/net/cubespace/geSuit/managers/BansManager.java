@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.Utilities;
-import net.cubespace.geSuit.database.Tracking;
 import net.cubespace.geSuit.events.BanPlayerEvent;
 import net.cubespace.geSuit.events.UnbanPlayerEvent;
 import net.cubespace.geSuit.events.WarnPlayerEvent;
@@ -895,13 +894,19 @@ public class BansManager {
             	PlayerManager.sendMessageToTarget(sender, ChatColor.DARK_AQUA + "-------- " + ChatColor.YELLOW + bt.dispname + "'s OnTime Statistics" + ChatColor.DARK_AQUA + " --------");
 
             	// Player join date/time + number of days
-            	String firstjoin = String.format("%s %s",
-                		DateFormat.getDateInstance(DateFormat.MEDIUM).format(bt.gsp.getFirstOnline()),
-                		DateFormat.getTimeInstance(DateFormat.SHORT).format(bt.gsp.getFirstOnline()));
+                Timestamp firstTime = bt.gsp.getFirstOnline();
+                String firstJoin;
+                if (firstTime != null) {
+                    firstJoin = String.format("%s %s",
+                            DateFormat.getDateInstance(DateFormat.MEDIUM).format(firstTime),
+                            DateFormat.getTimeInstance(DateFormat.SHORT).format(firstTime));
+                } else {
+                    firstJoin = "Uknown - check with admins";
+                }
                 String days = Integer.toString((int) Math.floor((System.currentTimeMillis() - bt.gsp.getFirstOnline().getTime()) / TimeUnit.DAYS.toMillis(1)));
             	PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_FIRST_JOINED
-            			.replace("{date}", firstjoin)
-            			.replace("{days}", days));
+                        .replace("{date}", firstJoin)
+                        .replace("{days}", days));
 
             	// Current session length 
 		        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.ONTIME_TIME_SESSION
