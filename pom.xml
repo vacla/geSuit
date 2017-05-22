@@ -3,7 +3,7 @@
 
     <groupId>net.cubespace</groupId>
     <artifactId>geSuit</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>geSuit</name>
@@ -17,7 +17,7 @@
         <connection>scm:git:git@github.com:AddstarMC/geSuit.git</connection>
         <developerConnection>scm:git:git@github.com:AddstarMC/geSuit.git</developerConnection>
         <url>https://github.com/AddstarMC/geSuit</url>
-        <tag>geSuit-0.9.0</tag>
+        <tag>HEAD</tag>
     </scm>
     <developers>
         <developer>
