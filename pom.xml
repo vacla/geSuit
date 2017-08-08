@@ -111,7 +111,6 @@
     </dependencies>
 
     <build>
-        <finalName>${project.name}</finalName>
         <resources>
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>

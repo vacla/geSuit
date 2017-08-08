@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.objects;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,8 +11,8 @@ import java.util.List;
 public class AdminCommand {
     public String command;
     public String server;
-    public String commandSender;
-    public List<String> args;
+    private String commandSender;
+    public List<String> args = new ArrayList<>();
 
     public AdminCommand(String command, String server, String sender, String... args) {
         this.command = command;
