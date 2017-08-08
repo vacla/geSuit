@@ -1,0 +1,6 @@
+name: geSuitAdmin
+main : net.cubespace.geSuiteSpawn.geSuitAdmin
+version: ${plugin.version}
+author: Narimm
+description: Part of the geSuit (gesuit) this plugin allows admin to perform network wide server specific restarts from proxy
+depend: [SimpleCountDown]
