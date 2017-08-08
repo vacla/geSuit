@@ -61,6 +61,7 @@ public class geSuit extends Plugin
         proxy.getPluginManager().registerCommand(this, new LockdownCommand());
         proxy.getPluginManager().registerCommand(this, new ForceNameHistoryCommand());
         proxy.getPluginManager().registerCommand(this, new ActiveKicksCommand());
+        proxy.getPluginManager().registerCommand(this, new AdminCommands());
         if (ConfigManager.bans.TrackOnTime) {
         	proxy.getPluginManager().registerCommand(this, new OnTimeCommand());
             proxy.getPluginManager().registerCommand(this, new LastLoginsCommand());
@@ -76,6 +77,7 @@ public class geSuit extends Plugin
         getProxy().registerChannel("geSuitWarps");          // Warps in
         getProxy().registerChannel("geSuitHomes");          // Homes in
         getProxy().registerChannel("geSuitAPI");            // API messages in
+        getProxy().registerChannel("geSuitAdmin");
 
         proxy.getPluginManager().registerListener(this, new PlayerListener());
         proxy.getPluginManager().registerListener(this, new BansMessageListener());
@@ -87,6 +89,7 @@ public class geSuit extends Plugin
         proxy.getPluginManager().registerListener(this, new SpawnListener());
         proxy.getPluginManager().registerListener(this, new SpawnMessageListener());
         proxy.getPluginManager().registerListener(this, new APIMessageListener());
+        proxy.getPluginManager().registerListener(this, new AdminMessageListener());
         if (ConfigManager.main.BungeeChatIntegration) {
             proxy.getPluginManager().registerListener(this, new BungeeChatListener());
         }
