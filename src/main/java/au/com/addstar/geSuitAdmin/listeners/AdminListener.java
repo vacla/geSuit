@@ -44,7 +44,9 @@ public class AdminListener implements PluginMessageListener, Listener{
                         instance.getLogger().info("Restart issued by " +sender + " via geSuitAdmin in " + Utilities.buildTimeDiffString(time, 4));
                         instance.getServer().dispatchCommand(instance.getServer().getConsoleSender(), "countdown start " + Utilities.buildShortTimeDiffString(time, 4) + " restart");
                     }else{
-
+                        if(instance.isDebug()) {
+                            instance.getLogger().info("Debug: this Server Name = " + instance.getName());
+                        }
                     }
                     break;
             }
