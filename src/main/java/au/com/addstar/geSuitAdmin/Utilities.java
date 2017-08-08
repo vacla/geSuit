@@ -11,50 +11,49 @@ import java.util.regex.Pattern;
  */
 public class Utilities {
 
-        private static final Pattern TIME_PATTERN = Pattern.compile("([0-9]+)([wdhms])");
-        private static final int SECOND = 1;
-        private static final int MINUTE = SECOND * 60;
-        private static final int HOUR = MINUTE * 60;
-        private static final int DAY = HOUR * 24;
-        private static final int WEEK = DAY * 7;
+    private static final Pattern TIME_PATTERN = Pattern.compile("([0-9]+)([wdhms])");
+    private static final int SECOND = 1;
+    private static final int MINUTE = SECOND * 60;
+    private static final int HOUR = MINUTE * 60;
+    private static final int DAY = HOUR * 24;
+    private static final int WEEK = DAY * 7;
 
-        /**
-         * Parse a string input into seconds, using w(eeks), d(ays), h(ours), m(inutes) and s(econds) For example: 4d8m2s -> 4 days, 8 minutes and 2 seconds
-         *
-         * @param string String to convert to Seconds
-         * @return Seconds
-         */
-        public static int parseString(String string)
-        {
-            Matcher m = TIME_PATTERN.matcher(string);
-            int total = 0;
-            while (m.find()) {
-                int amount = Integer.valueOf(m.group(1));
-                switch (m.group(2).charAt(0)) {
-                    case 's':
-                        total += amount * SECOND;
-                        break;
-                    case 'm':
-                        total += amount * MINUTE;
-                        break;
-                    case 'h':
-                        total += amount * HOUR;
-                        break;
-                    case 'd':
-                        total += amount * DAY;
-                        break;
-                    case 'w':
-                        total += amount * WEEK;
-                        break;
-                }
+    /**
+     * Parse a string input into seconds, using w(eeks), d(ays), h(ours), m(inutes) and s(econds) For example: 4d8m2s -> 4 days, 8 minutes and 2 seconds
+     *
+     * @param string String to convert to Seconds
+     * @return Seconds
+     */
+    public static int parseString(String string) {
+        Matcher m = TIME_PATTERN.matcher(string);
+        int total = 0;
+        while (m.find()) {
+            int amount = Integer.valueOf(m.group(1));
+            switch (m.group(2).charAt(0)) {
+                case 's':
+                    total += amount * SECOND;
+                    break;
+                case 'm':
+                    total += amount * MINUTE;
+                    break;
+                case 'h':
+                    total += amount * HOUR;
+                    break;
+                case 'd':
+                    total += amount * DAY;
+                    break;
+                case 'w':
+                    total += amount * WEEK;
+                    break;
             }
-            return total;
         }
+        return total;
+    }
 
-        public static long parseStringtoMillisecs(String string) {
-            int total = parseString(string);
-            return total * 1000;
-        }
+    public static long parseStringtoMillisecs(String string) {
+        int total = parseString(string);
+        return total * 1000;
+    }
 
 
     public static String buildTimeDiffString(long timeDiff, int precision) {
@@ -162,5 +161,21 @@ public class Utilities {
     public static String createTimeStampString(long timeStamp) {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG).format(timeStamp);
     }
+
+    public static String dumpPacket(String channel, String direction, byte[] bytes) {
+        String data = "";
+        //ByteArrayInputStream ds = new ByteArrayInputStream(bytes);
+        //DataInputStream di = new DataInputStream(ds);
+        // Read upto 20 parameters from the stream and load them into the string list
+        for (int x = 0; x < bytes.length; x++) {
+            byte c = bytes[x];
+            if (c >= 32 && c <= 126) {
+                data += (char) c;
+            } else {
+                data += "\\x" + Integer.toHexString(c);
+            }
+        }
+        return data;
     }
+}
 
