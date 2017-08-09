@@ -18,8 +18,11 @@ public class DebugCommand implements CommandExecutor{
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        instance.setDebug(!instance.isDebug());
-        commandSender.sendMessage("geSuitAdmin Debugging is " + instance.isDebug() + " for " + instance.getServer().getName());
-        return true;
+        if(commandSender.hasPermission("geSuit.admin")) {
+            instance.setDebug(!instance.isDebug());
+            commandSender.sendMessage("geSuitAdmin Debugging is " + instance.isDebug() + " for " + instance.getServer().getName());
+            return true;
+        }
+        return false;
     }
 }
