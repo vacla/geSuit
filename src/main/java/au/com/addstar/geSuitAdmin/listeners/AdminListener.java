@@ -27,6 +27,7 @@ public class AdminListener implements PluginMessageListener, Listener{
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if(instance.isDebug()) {
             instance.getLogger().info("DEBUG: " + Utilities.dumpPacket(channel,"RECV",message));
+            instance.getLogger().info("Debug: this Server Name = " + instance.getName());
         }
         DataInputStream in = new DataInputStream( new ByteArrayInputStream( message ) );
         String task;
@@ -38,12 +39,14 @@ public class AdminListener implements PluginMessageListener, Listener{
                     String server = in.readUTF();
                     String sender = in.readUTF();
                     Long time =  in.readLong();
-                    Server bukkitServer = instance.getServer();
-                    if (bukkitServer.getName().equals(server)) {
-                        bukkitServer.getLogger().info("Restart issued by " +sender + " via geSuitAdmin in " + Utilities.buildTimeDiffString(time, 4));
-                        bukkitServer.dispatchCommand(bukkitServer.getConsoleSender(), "countdown start " + Utilities.buildShortTimeDiffString(time, 4) + " restart");
-                    }else{
 
+                    if (instance.getName().equals(server)) {
+                        instance.getLogger().info("Restart issued by " +sender + " via geSuitAdmin in " + Utilities.buildTimeDiffString(time, 4));
+                        instance.getServer().dispatchCommand(instance.getServer().getConsoleSender(), "countdown start " + Utilities.buildShortTimeDiffString(time, 4) + " restart");
+                    }else{
+                        if(instance.isDebug()) {
+                            instance.getLogger().info("Debug: this Server Name = " + instance.getName());
+                        }
                     }
                     break;
             }
