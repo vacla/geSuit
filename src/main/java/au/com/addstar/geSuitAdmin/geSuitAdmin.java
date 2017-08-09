@@ -2,6 +2,7 @@ package au.com.addstar.geSuitAdmin;
 
 import au.com.addstar.geSuitAdmin.listeners.AdminListener;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import au.com.addstar.geSuitAdmin.commands.DebugCommand;
@@ -11,6 +12,7 @@ import au.com.addstar.geSuitAdmin.commands.DebugCommand;
  * Created by benjamincharlton on 7/08/2017.
  */
 public class geSuitAdmin extends JavaPlugin {
+    public static geSuitAdmin INSTANCE = null;
 
     public boolean isDebug() {
         return debug;
@@ -30,6 +32,7 @@ public class geSuitAdmin extends JavaPlugin {
     @Override
     public void onEnable() {
         super.onEnable();
+        INSTANCE = this;
         registerChannels();
         registerCommands();
         debug =  false;
@@ -45,6 +48,6 @@ public class geSuitAdmin extends JavaPlugin {
         Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
     }
     private void registerCommands() {
-        getCommand("gsAdmin_debug").setExecutor(new DebugCommand(this));
+        getCommand("gsAdmin_debug").setExecutor(new DebugCommand(INSTANCE));
     }
 }
