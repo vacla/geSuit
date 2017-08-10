@@ -1,11 +1,11 @@
 package net.cubespace.geSuit.configs;
 
+import net.cubespace.Yamler.Config.YamlConfig;
 import net.cubespace.geSuit.geSuit;
-import net.cubespace.Yamler.Config.Config;
 
 import java.io.File;
 
-public class SpawnConfig extends Config {
+public class SpawnConfig extends YamlConfig {
     public SpawnConfig() {
         CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "spawns.yml");
     }

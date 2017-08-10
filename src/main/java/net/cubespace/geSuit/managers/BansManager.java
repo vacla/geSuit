@@ -399,26 +399,29 @@ public class BansManager {
         		String[] parts = fullaction.split(" ");
 
         		String action = parts[0];
-        		if (action.equals("kick")) {
-        		    actionType = ActionType.Kick;
-        			if ((t.gsp != null) && (t.gsp.getProxiedPlayer() != null)) {
-        				kickPlayer(warnedBy, t.name, reason, true);
-        			}
-        		}
-        		else if (action.equals("tempban")) {
-        		    actionType = ActionType.TempBan;
-        	        int seconds = TimeParser.parseString(parts[1]);
-        			tempBanPlayer(warnedBy, t.name, seconds, reason, true);
-        			actionExtra = "for " + parts[1];
-        		}
-        		else if (action.equals("ban")) {
-        		    actionType = ActionType.Ban;
-        			banPlayer(warnedBy, t.name, reason, true);
-        		} else {
-                	PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Warning action of \"" + fullaction + "\" is invalid!");
-        			LoggingManager.log(ChatColor.RED + "Warning action of \"" + fullaction + "\" is invalid!");
-        		}
-        	}
+                switch (action) {
+                    case "kick":
+                        actionType = ActionType.Kick;
+                        if ((t.gsp != null) && (t.gsp.getProxiedPlayer() != null)) {
+                            kickPlayer(warnedBy, t.name, reason, true);
+                        }
+                        break;
+                    case "tempban":
+                        actionType = ActionType.TempBan;
+                        int seconds = TimeParser.parseString(parts[1]);
+                        tempBanPlayer(warnedBy, t.name, seconds, reason, true);
+                        actionExtra = "for " + parts[1];
+                        break;
+                    case "ban":
+                        actionType = ActionType.Ban;
+                        banPlayer(warnedBy, t.name, reason, true);
+                        break;
+                    default:
+                        PlayerManager.sendMessageToTarget(sender, ChatColor.RED + "Warning action of \"" + fullaction + "\" is invalid!");
+                        LoggingManager.log(ChatColor.RED + "Warning action of \"" + fullaction + "\" is invalid!");
+                        break;
+                }
+            }
         }
         
         callEvent(new WarnPlayerEvent(t.name, t.uuid, warnedBy, reason, actionType, actionExtra, warncount));
@@ -515,10 +518,8 @@ public class BansManager {
                         ChatColor.GREEN + "[Tracker] IP address \"" + ip + "\" has " + uuidNameMap.size() + " accounts:");
 
                 // Copy the names into a list so that we can sort
-                List<String> sortedNames = new ArrayList();
-                for (String playerName : uuidNameMap.values()) {
-                    sortedNames.add(playerName);
-                }
+                List<String> sortedNames = new ArrayList<>();
+                sortedNames.addAll(uuidNameMap.values());
 
                 // Show warnings for each player, sorting alphabetically by name
                 Collections.sort(sortedNames, String.CASE_INSENSITIVE_ORDER);

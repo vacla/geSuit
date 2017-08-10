@@ -41,24 +41,34 @@ public class SpawnMessageListener implements Listener {
         String task = in.readUTF();
         Server s = (Server) event.getSender();
 
-        if (task.equals("SendToProxySpawn")) {
-            SpawnManager.sendPlayerToProxySpawn(PlayerManager.getPlayer(in.readUTF(), true));
-        } else if (task.equals("GetSpawns")) {
-            SpawnManager.sendSpawns(s);
-        } else if (task.equals("SetServerSpawn")) {
-            SpawnManager.setServerSpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean());
-        } else if (task.equals("SetWorldSpawn")) {
-            SpawnManager.setWorldSpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean());
-        } else if (task.equals("DelWorldSpawn")) {
-            SpawnManager.delWorldSpawn(PlayerManager.getPlayer(in.readUTF(), true), s.getInfo(), in.readUTF());
-        } else if (task.equals("SetNewPlayerSpawn")) {
-            SpawnManager.setNewPlayerSpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
-        } else if (task.equals("SetProxySpawn")) {
-            SpawnManager.setProxySpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
-        } else if (task.equals("SendToArgSpawn")) {
-            SpawnManager.sendPlayerToArgSpawn(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF(), in.readUTF());
-        } else if (task.equals("SendVersion")) {
-            LoggingManager.log(in.readUTF());
+        switch (task) {
+            case "SendToProxySpawn":
+                SpawnManager.sendPlayerToProxySpawn(PlayerManager.getPlayer(in.readUTF(), true));
+                break;
+            case "GetSpawns":
+                SpawnManager.sendSpawns(s);
+                break;
+            case "SetServerSpawn":
+                SpawnManager.setServerSpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean());
+                break;
+            case "SetWorldSpawn":
+                SpawnManager.setWorldSpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()), in.readBoolean());
+                break;
+            case "DelWorldSpawn":
+                SpawnManager.delWorldSpawn(PlayerManager.getPlayer(in.readUTF(), true), s.getInfo(), in.readUTF());
+                break;
+            case "SetNewPlayerSpawn":
+                SpawnManager.setNewPlayerSpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
+                break;
+            case "SetProxySpawn":
+                SpawnManager.setProxySpawn(PlayerManager.getPlayer(in.readUTF(), true), new Location(s.getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
+                break;
+            case "SendToArgSpawn":
+                SpawnManager.sendPlayerToArgSpawn(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF(), in.readUTF());
+                break;
+            case "SendVersion":
+                LoggingManager.log(in.readUTF());
+                break;
         }
 
         in.close();

@@ -1,6 +1,6 @@
 package net.cubespace.geSuit.configs;
 
-import net.cubespace.Yamler.Config.Config;
+import net.cubespace.Yamler.Config.YamlConfig;
 import net.cubespace.geSuit.geSuit;
 
 import java.io.File;
@@ -8,7 +8,7 @@ import java.io.File;
 /**
  * @author benjamincharlton on 26/08/2015.
  */
-public class LockDownConfig extends Config {
+public class LockDownConfig extends YamlConfig {
     public LockDownConfig() {
         CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "lockdown.yml");
     }

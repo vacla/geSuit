@@ -4,7 +4,6 @@ import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
-import net.cubespace.geSuit.managers.PlayerManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;

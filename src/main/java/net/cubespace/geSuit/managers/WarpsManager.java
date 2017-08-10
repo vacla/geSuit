@@ -1,15 +1,15 @@
 package net.cubespace.geSuit.managers;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Warp;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.ChatColor;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class WarpsManager {
     private static HashMap<String, Warp> warps = new HashMap<>();
@@ -80,7 +80,7 @@ public class WarpsManager {
         String globalString = ChatColor.GOLD + "Global warps: \n";
         String hiddenString = ChatColor.GOLD + "Hidden warps: \n";
 
-        Map<String, Warp> sorted = new TreeMap<String, Warp>(warps);
+        Map<String, Warp> sorted = new TreeMap<>(warps);
         for (Warp w : sorted.values()) {
             if (w.isGlobal()) {
                 globalString += w.getName() + ", ";

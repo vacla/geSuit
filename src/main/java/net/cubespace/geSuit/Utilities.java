@@ -13,11 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Utilities {
@@ -63,16 +59,15 @@ public class Utilities {
 		//ByteArrayInputStream ds = new ByteArrayInputStream(bytes);
 		//DataInputStream di = new DataInputStream(ds);
 		// Read upto 20 parameters from the stream and load them into the string list
-		for (int x = 0; x < bytes.length; x++) {
-			byte c = bytes[x];
-			if (c >= 32 && c <= 126) {
-				data += (char) c; 
-			} else {
-				data += "\\x" + Integer.toHexString(c);
-			}
-		}
-		
-		if (consoleOutput) {
+        for (byte c : bytes) {
+            if (c >= 32 && c <= 126) {
+                data += (char) c;
+            } else {
+                data += "\\x" + Integer.toHexString(c);
+            }
+        }
+
+        if (consoleOutput) {
 			geSuit.instance.getLogger().info("DEBUG: [" + channel + "] " + direction + ": " + data);
 		}
 		return data;

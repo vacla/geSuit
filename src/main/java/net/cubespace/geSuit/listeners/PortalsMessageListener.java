@@ -1,10 +1,5 @@
 package net.cubespace.geSuit.listeners;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.sql.SQLException;
-
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
@@ -17,6 +12,11 @@ import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.sql.SQLException;
 
 public class PortalsMessageListener implements Listener {
 
@@ -42,24 +42,31 @@ public class PortalsMessageListener implements Listener {
 
         String task = in.readUTF();
         Server s = (Server) event.getSender();
-        if (task.equals("TeleportPlayer")) {
-            PortalManager.teleportPlayer(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF(), in.readUTF(), in.readBoolean());
-        } else if (task.equals("ListPortals")) {
-            PortalManager.listPortals(PlayerManager.getPlayer(in.readUTF(), true));
-        } else if (task.equals("DeletePortal")) {
-            PortalManager.deletePortal(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF());
-        } else if (task.equals("SetPortal")) {
-            GSPlayer sender = PlayerManager.getPlayer(in.readUTF(), true);
-            boolean selection = in.readBoolean();
-            if (!selection) {
-                PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_SELECTION_MADE);
-            } else {
-                PortalManager.setPortal(sender, in.readUTF(), in.readUTF(), in.readUTF(), in.readUTF(), new Location(s.getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()), new Location(s.getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
-            }
-        } else if (task.equals("RequestPortals")) {
-            PortalManager.getPortals(s.getInfo());
-        } else if (task.equals("SendVersion")) {
-            LoggingManager.log(in.readUTF());
+        switch (task) {
+            case "TeleportPlayer":
+                PortalManager.teleportPlayer(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF(), in.readUTF(), in.readBoolean());
+                break;
+            case "ListPortals":
+                PortalManager.listPortals(PlayerManager.getPlayer(in.readUTF(), true));
+                break;
+            case "DeletePortal":
+                PortalManager.deletePortal(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF());
+                break;
+            case "SetPortal":
+                GSPlayer sender = PlayerManager.getPlayer(in.readUTF(), true);
+                boolean selection = in.readBoolean();
+                if (!selection) {
+                    PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.NO_SELECTION_MADE);
+                } else {
+                    PortalManager.setPortal(sender, in.readUTF(), in.readUTF(), in.readUTF(), in.readUTF(), new Location(s.getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()), new Location(s.getInfo(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble()));
+                }
+                break;
+            case "RequestPortals":
+                PortalManager.getPortals(s.getInfo());
+                break;
+            case "SendVersion":
+                LoggingManager.log(in.readUTF());
+                break;
         }
 
         in.close();

@@ -3,11 +3,7 @@ package net.cubespace.geSuit.profile;
 import com.google.gson.Gson;
 import net.cubespace.geSuit.Utilities;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -116,8 +112,6 @@ public class Profile {
                     result.put(changeTime, oldname);
                 }
             }
-        } catch (MalformedURLException ex) {
-            throw new IllegalStateException();
         } catch (IOException ex) {
             throw new IllegalStateException();
         }

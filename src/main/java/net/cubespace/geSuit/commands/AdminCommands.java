@@ -32,7 +32,7 @@ public class AdminCommands extends Command {
         switch(args[0]){
         case "restart":
             if(args.length != 3){
-               displayHelp();
+                displayHelp(sender);
                break;
             }
             String server = args[1];
@@ -41,12 +41,13 @@ public class AdminCommands extends Command {
             PlayerManager.sendMessageToTarget(sender,"Server Restart Requested for " + server+ " in " + timeString);
             break;
         default:
-            displayHelp();
+            displayHelp(sender);
             break;
         }
 
     }
-    public void displayHelp(){
-        //todo
+
+    public void displayHelp(CommandSender sender) {
+        PlayerManager.sendMessageToTarget(sender, "usage: restart <server> <time>");
     }
 }

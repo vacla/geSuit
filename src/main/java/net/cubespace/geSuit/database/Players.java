@@ -1,24 +1,14 @@
 package net.cubespace.geSuit.database;
 
+import com.google.common.collect.Maps;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import com.google.common.collect.Maps;
+import java.sql.*;
+import java.util.*;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -214,7 +204,7 @@ public class Players implements IRepository {
     public List<String> matchPlayers(String player) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
-        List<String> players = new ArrayList<String>();
+        List<String> players = new ArrayList<>();
         try {
             PreparedStatement getPlayer = connectionHandler.getPreparedStatement("matchPlayers");
             getPlayer.setString(1, "%" + player + "%");     // Player Name
@@ -288,8 +278,8 @@ public class Players implements IRepository {
     
     /**
      * Resolves a player name using the tracking table instead of the players table. This allows it to resolve old names for players
-     * @param names
-     * @return
+     * @param names the names
+     * @return Map
      */
     public Map<String, UUID> resolvePlayerNamesHistoric(Collection<String> names) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();

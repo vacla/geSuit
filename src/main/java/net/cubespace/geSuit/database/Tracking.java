@@ -62,21 +62,24 @@ public class Tracking implements IRepository {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
         	PreparedStatement trackInfo;
-        	
-        	if (type.equals("ip")) {
-        		// Lookup by IP
-            	trackInfo = connectionHandler.getPreparedStatement("getIPTracking");
-                trackInfo.setString(1, search);
-        	}
-        	else if (type.equals("uuid")) {
-        		// Lookup by IP
-            	trackInfo = connectionHandler.getPreparedStatement("getUUIDTracking");
-                trackInfo.setString(1, search);
-        	} else {
-        		// Lookup by player name
-            	trackInfo = connectionHandler.getPreparedStatement("getPlayerTracking");
-                trackInfo.setString(1, search);
-        	}
+
+            switch (type) {
+                case "ip":
+                    // Lookup by IP
+                    trackInfo = connectionHandler.getPreparedStatement("getIPTracking");
+                    trackInfo.setString(1, search);
+                    break;
+                case "uuid":
+                    // Lookup by IP
+                    trackInfo = connectionHandler.getPreparedStatement("getUUIDTracking");
+                    trackInfo.setString(1, search);
+                    break;
+                default:
+                    // Lookup by player name
+                    trackInfo = connectionHandler.getPreparedStatement("getPlayerTracking");
+                    trackInfo.setString(1, search);
+                    break;
+            }
 
             ResultSet res = trackInfo.executeQuery();
             while (res.next()) {

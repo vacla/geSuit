@@ -1,14 +1,14 @@
 package net.cubespace.geSuit.tasks;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *

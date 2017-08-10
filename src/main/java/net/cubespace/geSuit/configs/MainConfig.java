@@ -1,12 +1,13 @@
 package net.cubespace.geSuit.configs;
 
-import java.io.File;
 import net.cubespace.Yamler.Config.Comment;
-import net.cubespace.Yamler.Config.Config;
+import net.cubespace.Yamler.Config.YamlConfig;
 import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.geSuit;
 
-public class MainConfig extends Config {
+import java.io.File;
+
+public class MainConfig extends YamlConfig {
     public MainConfig() {
         CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "config.yml");
     }

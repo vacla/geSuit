@@ -1,9 +1,9 @@
 package net.cubespace.geSuit.configs.SubConfig;
 
 import net.cubespace.Yamler.Config.Comment;
-import net.cubespace.Yamler.Config.Config;
+import net.cubespace.Yamler.Config.YamlConfig;
 
-public class GeoIPSettings extends Config {
+public class GeoIPSettings extends YamlConfig {
     
     public boolean ShowOnLogin = true;
     

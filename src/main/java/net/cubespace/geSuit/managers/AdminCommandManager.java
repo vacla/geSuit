@@ -1,7 +1,6 @@
 package net.cubespace.geSuit.managers;
 
 import net.cubespace.geSuit.objects.AdminCommand;
-import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.pluginmessages.SendAdminCommand;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;

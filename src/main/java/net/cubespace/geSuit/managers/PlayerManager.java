@@ -50,7 +50,7 @@ public class PlayerManager {
 
                         event.setCancelled(true);
                         String timeRemaining = Utilities.buildShortTimeDiffString(LockDownManager.getExpiryTime() - System.currentTimeMillis(), 2);
-                        event.setCancelReason(Utilities.colorize(ConfigManager.messages.LOCKDOWN_MESSAGE.replace("{message}", LockDownManager.getOptionalMessage())));
+                        event.setCancelReason(TextComponent.fromLegacyText(Utilities.colorize(ConfigManager.messages.LOCKDOWN_MESSAGE.replace("{message}", LockDownManager.getOptionalMessage()))));
                         LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to server lockdown! Remaining: " + timeRemaining + ", Until: " + LockDownManager.getExpiryTimeString() + " (" + connection.getAddress().toString() + ")");
                         event.completeIntent(geSuit.instance);
                         return;
@@ -70,16 +70,16 @@ public class PlayerManager {
                                 Date then = b.getBannedUntil();
                                 Date now = new Date();
                                 long timeDiff = then.getTime() - now.getTime();
-                                
-                                event.setCancelReason(Utilities.colorize(ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{time}", sdf.format(then)).replace("{left}", Utilities.buildTimeDiffString(timeDiff, 2)).replace("{shortleft}", Utilities.buildShortTimeDiffString(timeDiff, 10)).replace("{message}", b.getReason())));
+
+                                event.setCancelReason(TextComponent.fromLegacyText(Utilities.colorize(ConfigManager.messages.TEMP_BAN_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{time}", sdf.format(then)).replace("{left}", Utilities.buildTimeDiffString(timeDiff, 2)).replace("{shortleft}", Utilities.buildShortTimeDiffString(timeDiff, 10)).replace("{message}", b.getReason()))));
                                 LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to being temp banned!" + " (" + connection.getAddress().toString() + ")");
                             } else {
                                 banned = false;
                             }
                         } else {
                             event.setCancelled(true);
-    
-                            event.setCancelReason(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{message}", b.getReason())));
+
+                            event.setCancelReason(TextComponent.fromLegacyText(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_MESSAGE.replace("{sender}", b.getBannedBy()).replace("{message}", b.getReason()))));
                             LoggingManager.log(ChatColor.RED + connection.getName() + "'s connection refused due to being banned!" + " (" + connection.getAddress().toString() + ")");
                         }
                         

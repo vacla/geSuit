@@ -45,35 +45,43 @@ public class HomesMessageListener implements Listener {
         String task = in.readUTF();
 
         // TODO: Add input validation! Don't assume all inputs are valid player names (or online)
-        if ( task.equals( "DeleteHome" ) ) {
-            HomesManager.deleteHome(in.readUTF(), in.readUTF() );
-        } else if ( task.equals( "SendPlayerHome" ) ) { //SendOtherPlayerHome sendPlayerToOtherHome
-            HomesManager.sendPlayerToHome( PlayerManager.getPlayer(in.readUTF(), true), in.readUTF() );
-        } else if ( task.equals( "SendOtherPlayerHome" ) ) {
-            HomesManager.sendPlayerToOtherHome( PlayerManager.getPlayer(in.readUTF(), true), in.readUTF(), in.readUTF() );
-        } else if ( task.equals( "SetPlayersHome" ) ) {
-            String player = in.readUTF();
-            GSPlayer gsPlayer = PlayerManager.getPlayer(player, true);
-
-            if (gsPlayer == null) {
-                gsPlayer = DatabaseManager.players.loadPlayer(player);
+        switch (task) {
+            case "DeleteHome":
+                HomesManager.deleteHome(in.readUTF(), in.readUTF());
+                break;
+            case "SendPlayerHome":  //SendOtherPlayerHome sendPlayerToOtherHome
+                HomesManager.sendPlayerToHome(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF());
+                break;
+            case "SendOtherPlayerHome":
+                HomesManager.sendPlayerToOtherHome(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF(), in.readUTF());
+                break;
+            case "SetPlayersHome":
+                String player = in.readUTF();
+                GSPlayer gsPlayer = PlayerManager.getPlayer(player, true);
 
                 if (gsPlayer == null) {
-                    DatabaseManager.players.insertPlayer(new GSPlayer(player, Utilities.getUUID(player), true), "0.0.0.0");
                     gsPlayer = DatabaseManager.players.loadPlayer(player);
-                    gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
-                } else {
-                    gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
-                }
-            }
 
-            HomesManager.createNewHome(gsPlayer, in.readInt(), in.readInt(), in.readUTF(), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
-        } else if ( task.equals( "GetHomesList" ) ) {
-            HomesManager.listPlayersHomes( PlayerManager.getPlayer(in.readUTF(), true), in.readInt() );
-        } else if ( task.equals( "GetOtherHomesList" ) ) {
-            HomesManager.listOtherPlayersHomes( PlayerManager.getPlayer(in.readUTF(), true), in.readUTF() );
-        } else if ( task.equals( "SendVersion" ) ) {
-            LoggingManager.log( in.readUTF() );
+                    if (gsPlayer == null) {
+                        DatabaseManager.players.insertPlayer(new GSPlayer(player, Utilities.getUUID(player), true), "0.0.0.0");
+                        gsPlayer = DatabaseManager.players.loadPlayer(player);
+                        gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
+                    } else {
+                        gsPlayer.setServer(((Server) event.getSender()).getInfo().getName());
+                    }
+                }
+
+                HomesManager.createNewHome(gsPlayer, in.readInt(), in.readInt(), in.readUTF(), new Location(((Server) event.getSender()).getInfo().getName(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat()));
+                break;
+            case "GetHomesList":
+                HomesManager.listPlayersHomes(PlayerManager.getPlayer(in.readUTF(), true), in.readInt());
+                break;
+            case "GetOtherHomesList":
+                HomesManager.listOtherPlayersHomes(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF());
+                break;
+            case "SendVersion":
+                LoggingManager.log(in.readUTF());
+                break;
         }
 
         in.close();

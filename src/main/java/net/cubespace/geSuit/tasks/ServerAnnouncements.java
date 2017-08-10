@@ -1,16 +1,16 @@
 package net.cubespace.geSuit.tasks;
 
-import java.util.ArrayList;
-
 import net.cubespace.geSuit.Utilities;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.util.ArrayList;
+
 public class ServerAnnouncements implements Runnable
 {
 
-    ArrayList<String> list = new ArrayList<String>();
+    ArrayList<String> list = new ArrayList<>();
     int count = 0;
     ServerInfo server;
 

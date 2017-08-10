@@ -1,13 +1,8 @@
 package net.cubespace.geSuit.configs;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-
 import net.cubespace.geSuit.geSuit;
+
+import java.io.*;
 
 public class MOTDFile {
     private File mFile;
@@ -32,25 +27,38 @@ public class MOTDFile {
                 out.close();
                 stream.close();
             }
-            
-            StringBuilder builder = new StringBuilder();
-            BufferedReader reader = new BufferedReader(new FileReader(mFile));
-            while(reader.ready()) {
-        	if (builder.length() != 0) {
-        	    builder.append('\n');
-        	}
-        	builder.append(reader.readLine());
-            }
-            
-            reader.close();
-            mMOTD = builder.toString();
-	} catch (IOException e) {
-	    e.printStackTrace();
-	    mMOTD = "";
-	}
+        load();
+    } catch (IOException e) {
+        e.printStackTrace();
+        mMOTD = "";
     }
-    
+    }
+
     public String getMOTD() {
-	return mMOTD;
+        return mMOTD;
     }
+
+    public void load() {
+        if (mFile.exists()) {
+            try {
+
+
+                StringBuilder builder = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new FileReader(mFile));
+                while (reader.ready()) {
+                    if (builder.length() != 0) {
+                        builder.append('\n');
+                    }
+                    builder.append(reader.readLine());
+                }
+
+                reader.close();
+                mMOTD = builder.toString();
+            } catch (IOException e) {
+                geSuit.proxy.getLogger().warning("Could not reload MOTD:" + mFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
