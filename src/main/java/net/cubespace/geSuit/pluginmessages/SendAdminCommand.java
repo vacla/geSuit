@@ -26,6 +26,7 @@ public class SendAdminCommand {
                 if (time == 0) time = 10000L;
             }
             try {
+                // servername sender milliSecs
                 out.writeUTF("ServerRestart");
                 out.writeUTF(adminCommand.getServer());
                 out.writeUTF(adminCommand.getCommandSender());

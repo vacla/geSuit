@@ -47,7 +47,7 @@ public class BanCommand extends Command {
                 return;
             }
 
-            BansManager.banPlayer(sender.getName(), args[0], reason);
+            BansManager.banPlayer(sender, args[0], reason, false);
         }
     }
 }

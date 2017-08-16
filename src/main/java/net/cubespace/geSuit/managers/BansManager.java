@@ -34,22 +34,25 @@ public class BansManager {
     public static void banPlayer(String bannedBy, String player, String reason, Boolean auto) {
         GSPlayer s = PlayerManager.getPlayer(bannedBy);
         CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+        banPlayer(sender, player, reason, auto);
 
+    }
+
+    public static void banPlayer(CommandSender sender, String player, String reason, Boolean auto) {
         BanTarget t = getBanTarget(player);
         if (t.gsp == null)
-        	PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
-
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.UNKNOWN_PLAYER_STILL_BANNING);
         Ban b = DatabaseManager.bans.getBanInfo(t.name, t.uuid, null);
         if (b != null) {
-        	if (b.getType().equals("tempban")) {
-        		// We don't want tempbans AND bans in place.. it could cause issues!
-        		DatabaseManager.bans.unbanPlayer(b.getId());
-        	} else {
-	            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_ALREADY_BANNED);
-	            return;
-        	}
+            if (b.getType().equals("tempban")) {
+                // We don't want tempbans AND bans in place.. it could cause issues!
+                DatabaseManager.bans.unbanPlayer(b.getId());
+            } else {
+                PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_ALREADY_BANNED);
+                return;
+            }
         }
-
+        String bannedBy = sender.getName();
         if (reason == null || reason.equals("")) {
             // Do not allow a ban without a reason since people accidentally do /db instead of /dst or /dtb
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BAN_REASON_REQUIRED);
@@ -57,7 +60,7 @@ public class BansManager {
         }
 
         DatabaseManager.bans.banPlayer(t.name, t.uuid, null, bannedBy, reason, "ban");
-        
+
         callEvent(new BanPlayerEvent(new Ban(-1, t.name, t.uuid, null, bannedBy, reason, "ban", 1, null, null), auto));
 
         // Player is online so kick them
@@ -67,9 +70,9 @@ public class BansManager {
 
         if (ConfigManager.bans.BroadcastBans) {
             if (auto) {
-            	PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName())), t.name);
+                PlayerManager.sendBroadcast(Utilities.colorize(ConfigManager.messages.BAN_PLAYER_AUTO_BROADCAST.replace("{player}", t.dispname).replace("{sender}", sender.getName())), t.name);
             } else {
-            	PlayerManager.sendBroadcast(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", t.dispname).replace("{message}", reason).replace("{sender}", bannedBy), t.name);
+                PlayerManager.sendBroadcast(ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", t.dispname).replace("{message}", reason).replace("{sender}", bannedBy), t.name);
             }
         } else {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.BAN_PLAYER_BROADCAST.replace("{player}", t.dispname).replace("{message}", reason).replace("{sender}", bannedBy));
@@ -77,10 +80,14 @@ public class BansManager {
 
     }
 
+
     public static void unbanPlayer(String sentBy, String player) {
         GSPlayer s = PlayerManager.getPlayer(sentBy);
         CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+        unbanPlayer(sender, player);
+    }
 
+    public static void unbanPlayer(CommandSender sender, String player) {
         BanTarget t = getBanTarget(player);
         if (!DatabaseManager.bans.isPlayerBanned(t.name, t.uuid, player)) {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_NOT_BANNED);
@@ -90,7 +97,7 @@ public class BansManager {
         Ban b = DatabaseManager.bans.getBanInfo(t.name, t.uuid, player);
 
         DatabaseManager.bans.unbanPlayer(b.getId());
-        callEvent(new UnbanPlayerEvent(b, sentBy));
+        callEvent(new UnbanPlayerEvent(b, sender.getName()));
 
         if (ConfigManager.bans.BroadcastUnbans) {
             PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_UNBANNED.replace("{player}", t.dispname).replace("{sender}", sender.getName()));
@@ -99,10 +106,15 @@ public class BansManager {
         }
     }
 
+
     public static void banIP(String bannedBy, String target, String reason) {
         GSPlayer s = PlayerManager.getPlayer(bannedBy);
         CommandSender sender = (s == null ? ProxyServer.getInstance().getConsole() : s.getProxiedPlayer());
+        banIP(sender, target, reason);
 
+    }
+
+    public static void banIP(CommandSender sender, String target, String reason) {
         if (reason == null || reason.equals("")) {
             reason = Utilities.colorize(ConfigManager.messages.DEFAULT_BAN_REASON);
         }
@@ -111,15 +123,15 @@ public class BansManager {
         String uuid = null;
         String player = null;
         if (Utilities.isIPAddress(target)) {
-        	// Target is just an IP address.. we don't know which player/uuid so keep them null
+            // Target is just an IP address.. we don't know which player/uuid so keep them null
             ip = target;
         } else {
-        	// Target is a player name or uuid.. grab the player details and record it all
+            // Target is a player name or uuid.. grab the player details and record it all
             GSPlayer gs = DatabaseManager.players.loadPlayer(target);
             if (gs != null) {
-	            ip = gs.getIp();
-	            uuid = gs.getUuid();
-	            player = gs.getName();
+                ip = gs.getIp();
+                uuid = gs.getUuid();
+                player = gs.getName();
             }
         }
 
@@ -127,7 +139,7 @@ public class BansManager {
             PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
             return;
         }
-
+        String bannedBy = sender.getName();
         if (!DatabaseManager.bans.isPlayerBanned(ip)) {
             DatabaseManager.bans.banPlayer(player, uuid, ip, bannedBy, reason, "ipban");
             callEvent(new BanPlayerEvent(new Ban(-1, player, uuid, ip, bannedBy, reason, "ipban", 1, null, null), false));
@@ -159,12 +171,13 @@ public class BansManager {
         message = Utilities.colorize(ConfigManager.messages.KICK_PLAYER_MESSAGE.replace("{message}", message).replace("{sender}", sender));
 
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-        	// Don't kick the player executing the command or anyone with bypass permission
-        	if ((!p.hasPermission("gesuit.bypass.kickall")) && (!p.getName().equals(sender))) {
-        		disconnectPlayer(p, message);
-        	}
+            // Don't kick the player executing the command or anyone with bypass permission
+            if ((!p.hasPermission("gesuit.bypass.kickall")) && (!p.getName().equals(sender))) {
+                disconnectPlayer(p, message);
+            }
         }
     }
+
 
     public static void checkPlayersBan(String sentBy, String player) {
         GSPlayer s = PlayerManager.getPlayer(sentBy);
