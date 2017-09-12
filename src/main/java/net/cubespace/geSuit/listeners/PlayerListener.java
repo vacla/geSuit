@@ -2,12 +2,7 @@ package net.cubespace.geSuit.listeners;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
-import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.DatabaseManager;
-import net.cubespace.geSuit.managers.GeoIPManager;
-import net.cubespace.geSuit.managers.LoggingManager;
-import net.cubespace.geSuit.managers.PlayerManager;
-import net.cubespace.geSuit.managers.SpawnManager;
+import net.cubespace.geSuit.managers.*;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -19,7 +14,6 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -40,8 +34,8 @@ public class PlayerListener implements Listener {
 	}
 
     @EventHandler(priority = EventPriority.LOW)
-    public void playerServerConnected(final ServerConnectedEvent e) throws SQLException {
-    	if (PlayerManager.getPlayer(e.getPlayer().getName()) == null) {
+    public void playerServerConnected(final ServerConnectedEvent e) {
+        if (PlayerManager.getPlayer(e.getPlayer().getName()) == null) {
     		// NOTE: This event is called each time the player changes server
     		// This check ensures this is only handled when the player is first connecting to the proxy
     		if (ProxyServer.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {

@@ -3,6 +3,7 @@ package net.cubespace.geSuit.database;
 import com.google.common.collect.Maps;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.GSPlayer;
@@ -160,16 +161,31 @@ public class Players implements IRepository {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
-            PreparedStatement updatePlayer = connectionHandler.getPreparedStatement("updatePlayer");
-            updatePlayer.setString(1, gsPlayer.getUuid());
-            updatePlayer.setString(2, gsPlayer.getName());
+            PreparedStatement updatePlayer = connectionHandler.getPreparedStatement("updatePlayerByUUID");
+            updatePlayer.setString(7, gsPlayer.getUuid());
             updatePlayer.setString(3, gsPlayer.getIp());
             updatePlayer.setBoolean(4, gsPlayer.acceptingTeleports());
             updatePlayer.setBoolean(5, gsPlayer.isNewSpawn());
-            updatePlayer.setString(6, gsPlayer.getName());
-            updatePlayer.setString(7, gsPlayer.getUuid());
+            updatePlayer.setString(2, gsPlayer.getName());
 
-            updatePlayer.executeUpdate();
+            int result = updatePlayer.executeUpdate();
+            if (result > 1) {
+                geSuit.instance.getLogger().warning("PLAYER HAS MULTIPLE UUID ENTRIES WHICH HAVE BEEN UPDATED: " + gsPlayer.toString());
+            }
+            if (result == 0) {
+                geSuit.instance.getLogger().warning("PLAYER IS BEING UPDATED BY NAME: " + gsPlayer.toString());
+
+                PreparedStatement updatePlayerbyName = connectionHandler.getPreparedStatement("updatePlayerbyName");
+                updatePlayerbyName.setString(2, gsPlayer.getName());
+                updatePlayerbyName.setString(3, gsPlayer.getIp());
+                updatePlayerbyName.setBoolean(4, gsPlayer.acceptingTeleports());
+                updatePlayerbyName.setBoolean(5, gsPlayer.isNewSpawn());
+                updatePlayerbyName.setString(7, gsPlayer.getUuid());
+                if (updatePlayerbyName.executeUpdate() != 1) {
+                    geSuit.instance.getLogger().warning("PLAYER COULD NOT BE UPDATED: " + gsPlayer.toString());
+
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -408,7 +424,8 @@ public class Players implements IRepository {
         connection.addPreparedStatement("insertPlayerConvert", "INSERT INTO "+ ConfigManager.main.Table_Players +" (playername,uuid,firstonline,lastonline,ipaddress,tps) VALUES (?, ?, ?, ?, ?, ?)");
         connection.addPreparedStatement("getPlayers", "SELECT * FROM "+ ConfigManager.main.Table_Players);
         connection.addPreparedStatement("setUUID", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ? WHERE playername = ?");
-        connection.addPreparedStatement("updatePlayer", "UPDATE "+ ConfigManager.main.Table_Players +" SET uuid = ?, playername = ?, lastonline = NOW(), ipaddress = ?, tps = ?, newspawn = ? WHERE playername = ? OR uuid = ?");
+        connection.addPreparedStatement("updatePlayerByUUID", "UPDATE " + ConfigManager.main.Table_Players + " SET playername = ?, lastonline = NOW(), ipaddress = ?, tps = ?, newspawn = ? WHERE uuid = ?");
+        connection.addPreparedStatement("updatePlayerByName", "UPDATE " + ConfigManager.main.Table_Players + " SET uuid = ?, lastonline = NOW(), ipaddress = ?, tps = ?, newspawn = ? WHERE playername = ?");
         connection.addPreparedStatement("resolvePlayerName", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE FIND_IN_SET(playername, ?)");
         connection.addPreparedStatement("resolveOldPlayerName", "SELECT player,uuid FROM "+ ConfigManager.main.Table_Tracking +" WHERE FIND_IN_SET(player, ?) GROUP BY player");
         connection.addPreparedStatement("resolveUUID", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE FIND_IN_SET(uuid, ?)");

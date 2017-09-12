@@ -1,9 +1,9 @@
 package net.cubespace.geSuit.commands;
 
+import net.cubespace.geSuit.TimeParser;
 import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.PlayerManager;
-import net.cubespace.geSuit.TimeParser;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -25,17 +25,17 @@ public class TempBanCommand extends Command {
         }
 
         // Get reason string from command arguments
-        String reason = ""; 
+        StringBuilder reason = new StringBuilder();
         for (int x=2; x < args.length; x++) {
-        	if (reason.isEmpty()) {
-        		reason = args[x];
-        	} else {
-        		reason += " " + args[x];
-        	}
+            if (reason.length() == 0) {
+                reason.append(args[x]);
+            } else {
+                reason.append(" ").append(args[x]);
+            }
         }
-        
-		if (reason.isEmpty()) {
-			// Do not allow a temp ban without a reason since people accidentally do /dtb instead of /dst
+
+        if (reason.length() == 0) {
+            // Do not allow a temp ban without a reason since people accidentally do /dtb instead of /dst
 			PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.TEMP_BAN_REASON_REQUIRED);
 			return;
 		}
@@ -46,6 +46,6 @@ public class TempBanCommand extends Command {
             return;
         }
 
-    	BansManager.tempBanPlayer(sender.getName(), args[0], seconds, reason);
+        BansManager.tempBanPlayer(sender.getName(), args[0], seconds, reason.toString());
     }
 }

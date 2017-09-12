@@ -1,9 +1,5 @@
 package net.cubespace.geSuit.listeners;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.sql.SQLException;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.APIManager;
@@ -13,9 +9,13 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+
 public class APIMessageListener implements Listener {
     @EventHandler
-    public void receivePluginMessage(PluginMessageEvent event) throws IOException, SQLException {
+    public void receivePluginMessage(PluginMessageEvent event) throws IOException {
         if (event.isCancelled())
             return;
 

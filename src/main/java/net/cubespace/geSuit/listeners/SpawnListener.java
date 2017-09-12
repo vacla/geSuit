@@ -9,11 +9,9 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import java.sql.SQLException;
-
 public class SpawnListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void sendPlayerToHub(final PostLoginEvent e) throws SQLException {
+    public void sendPlayerToHub(final PostLoginEvent e) {
         if (ConfigManager.spawn.ForceAllPlayersToProxySpawn && !SpawnManager.newPlayers.contains(e.getPlayer())) {
             if (SpawnManager.doesProxySpawnExist()) {
                 SpawnManager.sendPlayerToProxySpawn(PlayerManager.getPlayer(e.getPlayer().getName(), true));

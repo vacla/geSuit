@@ -7,9 +7,6 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
 /**
  * Created for use for the Add5tar MC Minecraft server
  * Created by benjamincharlton on 7/08/2017.
@@ -17,7 +14,7 @@ import java.sql.SQLException;
 public class AdminMessageListener implements Listener {
 
     @EventHandler
-    public void receivePluginMessage(PluginMessageEvent event) throws IOException, SQLException {
+    public void receivePluginMessage(PluginMessageEvent event) {
         if (event.isCancelled()) {
             return;
         }

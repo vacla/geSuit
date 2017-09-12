@@ -1,10 +1,5 @@
 package net.cubespace.geSuit.managers;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
@@ -15,6 +10,11 @@ import net.cubespace.geSuit.pluginmessages.SendPortal;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.config.ServerInfo;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PortalManager {
     private static Map<ServerInfo, List<Portal>> portals = new HashMap<>();
@@ -35,7 +35,7 @@ public class PortalManager {
         }
     }
 
-    public static void setPortal(GSPlayer sender, String name, String type, String dest, String fillType, Location max, Location min) throws SQLException {
+    public static void setPortal(GSPlayer sender, String name, String type, String dest, String fillType, Location max, Location min) {
         if (!(type.equalsIgnoreCase("warp") || type.equalsIgnoreCase("server"))) {
             sender.sendMessage(ConfigManager.messages.INVALID_PORTAL_TYPE);
             return;

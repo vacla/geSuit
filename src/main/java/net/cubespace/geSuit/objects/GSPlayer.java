@@ -1,14 +1,15 @@
 package net.cubespace.geSuit.objects;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import net.cubespace.geSuit.Utilities;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 public class GSPlayer
 {
@@ -150,6 +151,7 @@ public class GSPlayer
 
     /**
      * Will the next server connect be the first server to be joined in this session
+     * @return boolean if first connected
      */
     public boolean firstConnect()
     {
@@ -211,6 +213,7 @@ public class GSPlayer
 
     /**
      * Is this player a new player (as in the first time they have ever joined the proxy)
+     * @return boolean if new player
      */
     public boolean isFirstJoin()
     {
@@ -232,7 +235,8 @@ public class GSPlayer
 
 	/**
 	 * Signifies that this player must be taken to the new player spawn upon first connect
-	 */
+     * @return boolean if newSpawner
+     */
 	public boolean isNewSpawn() {
 		return newSpawn;
 	}

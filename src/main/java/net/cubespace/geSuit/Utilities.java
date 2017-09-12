@@ -28,11 +28,12 @@ public class Utilities {
 
     public static Map<String, String> getUUID(List<String> names) {
         try {
-            Map uuids = Profile.getOnlineUUIDs(names);
-            for (Map.Entry e : (Set<Map.Entry>) uuids.entrySet()) {
-                e.setValue(e.getValue().toString().replace("-", ""));
+            Map<String, UUID> uuids = Profile.getOnlineUUIDs(names);
+            Map<String, String> results = new HashMap<>();
+            for (Map.Entry<String, UUID> e : uuids.entrySet()) {
+                results.put(e.getKey(), e.getValue().toString().replace("-", ""));
             }
-            return (Map<String,String>) uuids;
+            return results;
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -55,23 +56,23 @@ public class Utilities {
     }
 
     public static String dumpPacket(String channel, String direction, byte[] bytes, boolean consoleOutput) {
-		String data = "";
-		//ByteArrayInputStream ds = new ByteArrayInputStream(bytes);
+        StringBuilder data = new StringBuilder();
+        //ByteArrayInputStream ds = new ByteArrayInputStream(bytes);
 		//DataInputStream di = new DataInputStream(ds);
 		// Read upto 20 parameters from the stream and load them into the string list
         for (byte c : bytes) {
             if (c >= 32 && c <= 126) {
-                data += (char) c;
+                data.append((char) c);
             } else {
-                data += "\\x" + Integer.toHexString(c);
+                data.append("\\x").append(Integer.toHexString(c));
             }
         }
 
         if (consoleOutput) {
 			geSuit.instance.getLogger().info("DEBUG: [" + channel + "] " + direction + ": " + data);
 		}
-		return data;
-	}
+        return data.toString();
+    }
     
     public static String buildTimeDiffString(long timeDiff, int precision) {
         StringBuilder builder = new StringBuilder();

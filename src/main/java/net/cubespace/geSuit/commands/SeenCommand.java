@@ -9,7 +9,7 @@ import net.md_5.bungee.api.plugin.Command;
  * Command: /seen
  * Permission needed: gesuit.seen or gesuit.admin
  * Arguments: none
- * What does it do: Displays <player> last online time
+ * What does it do: Displays @link{GSPlayer} last online time
  */
 public class SeenCommand extends Command {
     public SeenCommand() {

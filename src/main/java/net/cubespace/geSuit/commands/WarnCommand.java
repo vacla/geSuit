@@ -24,21 +24,21 @@ public class WarnCommand extends Command {
         }
 
         // Get reason string from command arguments
-        String reason = ""; 
-        for (int x=1; x < args.length; x++) {
-        	if (reason.isEmpty()) {
-        		reason = args[x];
-        	} else {
-        		reason += " " + args[x];
-        	}
+        StringBuilder reason = new StringBuilder();
+        for (int x = 2; x < args.length; x++) {
+            if (reason.length() == 0) {
+                reason.append(args[x]);
+            } else {
+                reason.append(" ").append(args[x]);
+            }
         }
 
-        if (reason.isEmpty()) {
-			// Do not allow a warning without a reason since people accidentally do /dw instead of /dst
+        if (reason.length() == 0) {
+            // Do not allow a warning without a reason since people accidentally do /dw instead of /dst
 			PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.WARN_REASON_REQUIRED);
 			return;
         }
 
-        BansManager.warnPlayer(sender.getName(), args[0], reason);
+        BansManager.warnPlayer(sender.getName(), args[0], reason.toString());
     }
 }

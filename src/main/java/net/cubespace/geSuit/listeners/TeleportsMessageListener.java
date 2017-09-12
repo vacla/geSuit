@@ -16,12 +16,11 @@ import net.md_5.bungee.event.EventHandler;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 
 public class TeleportsMessageListener implements Listener {
 
     @EventHandler
-    public void receivePluginMessage(PluginMessageEvent event) throws IOException, SQLException {
+    public void receivePluginMessage(PluginMessageEvent event) throws IOException {
         if (event.isCancelled()) {
             return;
         }

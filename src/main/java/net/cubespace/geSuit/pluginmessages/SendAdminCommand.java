@@ -19,7 +19,7 @@ public class SendAdminCommand {
     public static void execute(AdminCommand adminCommand) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(bytes);
-        if (adminCommand.command == "restart") {
+        if (adminCommand.command.equals("restart")) {
             Long time = 0L;
             if(adminCommand.getArgs().size() >= 1){
                 time = TimeParser.parseStringtoMillisecs(adminCommand.getArgs().get(0));
