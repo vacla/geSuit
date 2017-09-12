@@ -162,11 +162,11 @@ public class Players implements IRepository {
 
         try {
             PreparedStatement updatePlayer = connectionHandler.getPreparedStatement("updatePlayerByUUID");
-            updatePlayer.setString(7, gsPlayer.getUuid());
-            updatePlayer.setString(3, gsPlayer.getIp());
-            updatePlayer.setBoolean(4, gsPlayer.acceptingTeleports());
-            updatePlayer.setBoolean(5, gsPlayer.isNewSpawn());
-            updatePlayer.setString(2, gsPlayer.getName());
+            updatePlayer.setString(1, gsPlayer.getUuid());
+            updatePlayer.setString(2, gsPlayer.getIp());
+            updatePlayer.setBoolean(3, gsPlayer.acceptingTeleports());
+            updatePlayer.setBoolean(4, gsPlayer.isNewSpawn());
+            updatePlayer.setString(5, gsPlayer.getName());
 
             int result = updatePlayer.executeUpdate();
             if (result > 1) {
@@ -176,11 +176,11 @@ public class Players implements IRepository {
                 geSuit.instance.getLogger().warning("PLAYER IS BEING UPDATED BY NAME: " + gsPlayer.toString());
 
                 PreparedStatement updatePlayerbyName = connectionHandler.getPreparedStatement("updatePlayerbyName");
-                updatePlayerbyName.setString(2, gsPlayer.getName());
-                updatePlayerbyName.setString(3, gsPlayer.getIp());
-                updatePlayerbyName.setBoolean(4, gsPlayer.acceptingTeleports());
-                updatePlayerbyName.setBoolean(5, gsPlayer.isNewSpawn());
-                updatePlayerbyName.setString(7, gsPlayer.getUuid());
+                updatePlayerbyName.setString(1, gsPlayer.getName());
+                updatePlayerbyName.setString(2, gsPlayer.getIp());
+                updatePlayerbyName.setBoolean(3, gsPlayer.acceptingTeleports());
+                updatePlayerbyName.setBoolean(4, gsPlayer.isNewSpawn());
+                updatePlayerbyName.setString(5, gsPlayer.getUuid());
                 if (updatePlayerbyName.executeUpdate() != 1) {
                     geSuit.instance.getLogger().warning("PLAYER COULD NOT BE UPDATED: " + gsPlayer.toString());
 
