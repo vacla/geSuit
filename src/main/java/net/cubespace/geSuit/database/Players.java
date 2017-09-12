@@ -162,11 +162,11 @@ public class Players implements IRepository {
 
         try {
             PreparedStatement updatePlayer = connectionHandler.getPreparedStatement("updatePlayerByUUID");
-            updatePlayer.setString(1, gsPlayer.getUuid());
+            updatePlayer.setString(1, gsPlayer.getName());
             updatePlayer.setString(2, gsPlayer.getIp());
             updatePlayer.setBoolean(3, gsPlayer.acceptingTeleports());
             updatePlayer.setBoolean(4, gsPlayer.isNewSpawn());
-            updatePlayer.setString(5, gsPlayer.getName());
+            updatePlayer.setString(5, gsPlayer.getUuid());
 
             int result = updatePlayer.executeUpdate();
             if (result > 1) {
@@ -176,11 +176,11 @@ public class Players implements IRepository {
                 geSuit.instance.getLogger().warning("PLAYER IS BEING UPDATED BY NAME: " + gsPlayer.toString());
 
                 PreparedStatement updatePlayerbyName = connectionHandler.getPreparedStatement("updatePlayerbyName");
-                updatePlayerbyName.setString(1, gsPlayer.getName());
+                updatePlayerbyName.setString(1, gsPlayer.getUuid());
                 updatePlayerbyName.setString(2, gsPlayer.getIp());
                 updatePlayerbyName.setBoolean(3, gsPlayer.acceptingTeleports());
                 updatePlayerbyName.setBoolean(4, gsPlayer.isNewSpawn());
-                updatePlayerbyName.setString(5, gsPlayer.getUuid());
+                updatePlayerbyName.setString(5, gsPlayer.getName());
                 if (updatePlayerbyName.executeUpdate() != 1) {
                     geSuit.instance.getLogger().warning("PLAYER COULD NOT BE UPDATED: " + gsPlayer.toString());
 
