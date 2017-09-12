@@ -170,10 +170,10 @@ public class Players implements IRepository {
 
             int result = updatePlayer.executeUpdate();
             if (result > 1) {
-                geSuit.instance.getLogger().warning("PLAYER HAS MULTIPLE UUID ENTRIES WHICH HAVE BEEN UPDATED: " + gsPlayer.toString());
+                geSuit.instance.getLogger().warning("PLAYER HAS MULTIPLE UUID ENTRIES WHICH HAVE BEEN UPDATED: " + gsPlayer.getName());
             }
             if (result == 0) {
-                geSuit.instance.getLogger().warning("PLAYER IS BEING UPDATED BY NAME: " + gsPlayer.toString());
+                geSuit.instance.getLogger().warning("PLAYER IS BEING UPDATED BY NAME: " + gsPlayer.getName());
 
                 PreparedStatement updatePlayerbyName = connectionHandler.getPreparedStatement("updatePlayerbyName");
                 updatePlayerbyName.setString(1, gsPlayer.getUuid());
@@ -182,7 +182,7 @@ public class Players implements IRepository {
                 updatePlayerbyName.setBoolean(4, gsPlayer.isNewSpawn());
                 updatePlayerbyName.setString(5, gsPlayer.getName());
                 if (updatePlayerbyName.executeUpdate() != 1) {
-                    geSuit.instance.getLogger().warning("PLAYER COULD NOT BE UPDATED: " + gsPlayer.toString());
+                    geSuit.instance.getLogger().warning("PLAYER COULD NOT BE UPDATED: " + gsPlayer.getName());
 
                 }
             }
