@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.configs;
 
 import net.cubespace.Yamler.Config.Comment;
+import net.cubespace.Yamler.Config.ConfigMode;
 import net.cubespace.Yamler.Config.YamlConfig;
 import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.geSuit;
@@ -10,8 +11,13 @@ import java.io.File;
 public class MainConfig extends YamlConfig {
     public MainConfig() {
         CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "config.yml");
+        CONFIG_MODE = ConfigMode.PATH_BY_UNDERSCORE;
     }
 
+    public MainConfig(File file) {
+        CONFIG_FILE = file;
+        CONFIG_MODE = ConfigMode.PATH_BY_UNDERSCORE;
+    }
     public Database Database = new Database();
 
     @Comment("This can be used if you have multiple Proxies to seperate the Homes in it")
