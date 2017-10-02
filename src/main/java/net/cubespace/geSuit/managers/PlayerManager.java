@@ -420,5 +420,13 @@ public class PlayerManager {
         return "Name History for " + p.getName() + " updated";
     }
 
+    /**
+     * Designed to send player back to a new spawn where they might have to agree
+     * to the original rules or such
+     */
+    public static void sendtoNewSpawn(GSPlayer p) {
+        p.setNewSpawn(true);
+        DatabaseManager.players.updatePlayer(p);
+    }
 
 }

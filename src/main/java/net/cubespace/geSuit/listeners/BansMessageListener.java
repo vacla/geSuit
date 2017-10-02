@@ -5,6 +5,7 @@ import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.BansManager;
 import net.cubespace.geSuit.managers.LockDownManager;
 import net.cubespace.geSuit.managers.LoggingManager;
+import net.cubespace.geSuit.managers.SpawnManager;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -55,6 +56,8 @@ public class BansMessageListener implements Listener {
             case "KickAll":
                 BansManager.kickAll(in.readUTF(), in.readUTF());
                 break;
+            case "NewSpawn":
+                SpawnManager.sendPlayerToNewPlayerSpawn(in.readUTF(), in.readUTF());
             case "UnbanPlayer":
                 BansManager.unbanPlayer(in.readUTF(), in.readUTF());
                 break;

@@ -338,6 +338,7 @@ public class BansManager {
         String shortTimeDiff = Utilities.buildShortTimeDiffString(seconds * 1000L, 10);
 
         DatabaseManager.bans.tempBanPlayer(t.name, t.uuid, bannedBy, message, sdf.format(sqlToday));
+        PlayerManager.sendtoNewSpawn(t.gsp);
         callEvent(new BanPlayerEvent(new Ban(-1, t.name, t.uuid, null, bannedBy, message, "tempban", 1, null, new Timestamp(System.currentTimeMillis() + (seconds * 1000L))), auto));
 
         if ((t.gsp != null) && (t.gsp.getProxiedPlayer() != null)) {
@@ -1116,7 +1117,7 @@ public class BansManager {
 
     	// Try to find the player online
     	GSPlayer t = PlayerManager.matchOnlinePlayer(player);
-        
+
         // If they are not online, try to find them as an offline player
         if (t == null) {
         	t = DatabaseManager.players.loadPlayer(player);

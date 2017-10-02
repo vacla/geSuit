@@ -7,11 +7,14 @@ import net.cubespace.geSuit.geSuit;
 import java.io.File;
 
 public class Messages extends YamlConfig {
+
+
     public Messages() {
         CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "messages.yml");
         CONFIG_MODE = ConfigMode.FIELD_IS_KEY;
     }
 
+    public static final String BUNGEE_COMMAND_NEWSPAWN_USAGE = "&cUsage: !newSpawn <player>";
     public String BUNGEE_COMMAND_SEEN_USAGE = "&cUsage: /seen <player>";
     public String PLAYER_CONNECT_PROXY = "{player}&e has joined the server!";
     public String PLAYER_DISCONNECT_PROXY = "{player}&e has left the server!";

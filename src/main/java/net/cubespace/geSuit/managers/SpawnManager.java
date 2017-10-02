@@ -1,16 +1,19 @@
 package net.cubespace.geSuit.managers;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Spawn;
 import net.cubespace.geSuit.pluginmessages.DelWorldSpawn;
 import net.cubespace.geSuit.pluginmessages.SendSpawn;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpawnManager {
     public static Location NewPlayerSpawn;
@@ -132,5 +135,40 @@ public class SpawnManager {
         }
 
         TeleportToLocation.execute(player, targetSpawn);
+    }
+
+    public static void sendPlayerToNewPlayerSpawn(String sentBy, String player) {
+        GSPlayer sender = PlayerManager.getPlayer(sentBy);
+        GSPlayer target = PlayerManager.matchOnlinePlayer(player);
+        if (target == null) { //player is not ONLINE
+            target = DatabaseManager.players.loadPlayer(player);
+            if (target == null) { //Player NOT Found offline either
+                sender.sendMessage("We could not find a player matching: " + player);
+            } else { //Set OFFLINE to logon at new spawn
+                PlayerManager.sendtoNewSpawn(target);
+                sender.sendMessage("Offline player: " + target.getName() + " will spawn in at the new player spawn next logon");
+            }
+        } else {
+            sendPlayerToNewPlayerSpawn(target);
+            sender.sendMessage(target.getName() + " has been sent to the New Player Spawn");
+            target.sendMessage("You have been sent back to the new player spawn.  You will need to follow the process for a new player again.  Agreeing to any server rules or requirements to be allowed to play.");
+        }
+    }
+
+    public static void sendPlayerToNewPlayerSpawn(CommandSender sender, String player) {
+        GSPlayer target = PlayerManager.matchOnlinePlayer(player);
+        if (target == null) { //player is not ONLINE
+            target = DatabaseManager.players.loadPlayer(player);
+            if (target == null) { //Player NOT Found offline either
+                sender.sendMessage(TextComponent.fromLegacyText("We could not find a player matching: " + player));
+            } else {//Set OFFLINE to logon at new spawn
+                PlayerManager.sendtoNewSpawn(target);
+                sender.sendMessage(TextComponent.fromLegacyText(target.getName() + " has been sent to the New Player Spawn"));
+            }
+        } else {
+            sendPlayerToNewPlayerSpawn(target);
+            sender.sendMessage(TextComponent.fromLegacyText(target.getName() + " has been sent to the New Player Spawn"));
+            target.sendMessage("You have been sent back to the new player spawn.  You will need to follow the process for a new player again.  Agreeing to any server rules or requirements to be allowed to play.");
+        }
     }
 }
