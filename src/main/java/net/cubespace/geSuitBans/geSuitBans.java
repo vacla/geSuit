@@ -1,7 +1,6 @@
 package net.cubespace.geSuitBans;
 
 import net.cubespace.geSuitBans.commands.*;
-
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class geSuitBans extends JavaPlugin {
@@ -32,6 +31,8 @@ public class geSuitBans extends JavaPlugin {
         getCommand( "lastlogins" ).setExecutor( new LastLoginsCommand());
         getCommand("namehistory").setExecutor( new NameHistoryCommand() );
         getCommand("lockdown").setExecutor(new LockDownCommand());
+        getCommand("newSpawn").setExecutor(new NewSpawnCommand());
+
     }
 
     private void registerChannels() {

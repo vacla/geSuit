@@ -1,12 +1,13 @@
 package net.cubespace.geSuitBans.managers;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import net.cubespace.geSuitBans.geSuitBans;
 import net.cubespace.geSuitBans.tasks.PluginMessageTask;
 import net.cubespace.geSuitBans.utils.TimeParser;
 import org.bukkit.ChatColor;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 
 public class BansManager {
@@ -23,6 +24,19 @@ public class BansManager {
             e.printStackTrace();
         }
         new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+    }
+
+    public static void forceToNewSpawn(String sender, String player) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("NewSpawn");
+            out.writeUTF(sender);
+            out.writeUTF(player);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask(b).runTaskAsynchronously(geSuitBans.instance);
     }
 
     public static void warnPlayer( String sender, String player, String msg ) {
