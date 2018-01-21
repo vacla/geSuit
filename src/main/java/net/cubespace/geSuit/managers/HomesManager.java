@@ -5,6 +5,7 @@ import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -254,4 +255,29 @@ public class HomesManager {
         PlayerManager.sendMessageToTarget(p, ConfigManager.messages.HOME_DELETED.replace("{home}", home));
     }
 
+    public static void deleteOtherHome(GSPlayer sender, String playername, String home) {
+        GSPlayer player = DatabaseManager.players.loadPlayer(playername);
+        if (player == null) {
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.PLAYER_DOES_NOT_EXIST);
+            return;
+        }
+        loadPlayersHomes(player);
+        Home h = getHome(player, home);
+        if (h == null) {
+            PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.HOME_DOES_NOT_EXIST.replace("{home}", home));
+            return;
+        }
+        for (ArrayList<Home> list : player.getHomes().values()) {
+            if (list.contains(h)) {
+                list.remove(h);
+                break;
+            }
+        }
+        DatabaseManager.homes.deleteHome(h);
+        PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.HOME_OTHER_DELETED.replace("{home}", home).replace("{player}", playername));
+        ProxiedPlayer bungeePlayer = geSuit.instance.getProxy().getPlayer(player.getUuid());
+        if (bungeePlayer != null) {
+            PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_DELETED.replace("{home}", home));
+        }
+    }
 }

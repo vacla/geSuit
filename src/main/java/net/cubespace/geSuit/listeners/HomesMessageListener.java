@@ -48,6 +48,8 @@ public class HomesMessageListener implements Listener {
             case "DeleteHome":
                 HomesManager.deleteHome(in.readUTF(), in.readUTF());
                 break;
+            case "DeleteOtherPlayerHome":
+                HomesManager.deleteOtherHome(PlayerManager.getPlayer(in.readUTF()), in.readUTF(), in.readUTF());
             case "SendPlayerHome":  //SendOtherPlayerHome sendPlayerToOtherHome
                 HomesManager.sendPlayerToHome(PlayerManager.getPlayer(in.readUTF(), true), in.readUTF());
                 break;

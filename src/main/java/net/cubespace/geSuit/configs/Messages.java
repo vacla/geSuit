@@ -146,7 +146,7 @@ public class Messages extends YamlConfig {
     public String HOME_SET = "&6" + "Your home \"{home}\" has been set";
     public String HOME_DOES_NOT_EXIST = "&c" + "That home does not exist";
     public String HOME_DELETED = "&c" + "Your home \"{home}\" has been deleted";
-    
+    public String HOME_OTHER_DELETED = "&c" + "{player}\'s home \"{home}\" has been deleted";
     // Seen messages
     public String PLAYER_SEEN_ONLINE = "&6Player &c{player} &6is &aonline&6 since {timediff}{N}&6 {date}";
     public String PLAYER_SEEN_OFFLINE = "&6Player &c{player} &6is &4offline&6 since {timediff}{N}&6 {date}";
