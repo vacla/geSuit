@@ -1,8 +1,8 @@
 name: geSuitHomes
 main : net.cubespace.geSuitHomes.geSuitHomes
-version: ${project.version}b-${build.number}
+version: ${plugin.version}
 description: Part of the gesuit this plugin allows users to set homes in each server.
-author: geNAZt
+author: Narimm
 depend: [geSuitTeleports]
 commands:
     sethome:
@@ -47,6 +47,12 @@ permissions:
         children:
             gesuit.homes.commands.importhomes: true
             gesuit.homes.user: true
+    gesuit.home.commands.other:
+        description: Give access to homes commands for other players
+        children:
+            gesuit.homes.commands.delhome.others: true
+            gesuit.homes.commands.homes.other: true
+            gesuit.homes.commands.homes.other: true
     gesuit.homes.user:
         description: Gives access to all gesuit homes user commands
         children:

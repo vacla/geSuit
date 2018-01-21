@@ -33,6 +33,21 @@ public class HomesManager {
 
     }
 
+    public static void deleteOtherHime( CommandSender sender, String player, String home ) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream( b );
+        try {
+            out.writeUTF( "DeleteOtherPlayerHome" );
+            out.writeUTF( sender.getName() );
+            out.writeUTF( player );
+            out.writeUTF( home );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
+
+    }
+
     public static void sendHome( CommandSender sender, String home ) {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
