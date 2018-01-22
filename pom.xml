@@ -12,6 +12,8 @@
         <build.number />
         <plugin.version>${project.version}-${build.number}</plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spigot.version>1.12.2-R0.1-SNAPSHOT</spigot.version>
+        <worldgaurd.version>6.1.1-SNAPSHOT</worldgaurd.version>
     </properties>
     <scm>
         <connection>scm:git:git@github.com:AddstarMC/geSuitTeleport.git</connection>
@@ -77,13 +79,13 @@
       <dependency>
         <groupId>org.spigotmc</groupId>
         <artifactId>spigot-api</artifactId>
-        <version>1.11-R0.1-SNAPSHOT</version>
+        <version>${spigot.version}</version>
         <scope>provided</scope>
       </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
-            <version>6.1.1-SNAPSHOT</version>
+            <version>${worldgaurd.version}</version>
         </dependency>
         <dependency>
             <groupId>net.cubespace</groupId>
@@ -108,8 +110,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
                 </configuration>
