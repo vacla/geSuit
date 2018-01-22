@@ -120,17 +120,8 @@ public class TeleportsManager {
 	                        player.saveData();
 	                        ByteArrayOutputStream b = new ByteArrayOutputStream();
 	                        DataOutputStream out = new DataOutputStream(b);
-	                        try {
-	                            out.writeUTF("TeleportToPlayer");
-	                            out.writeUTF(player.getName());
-	                            out.writeUTF(player.getName());
-	                            out.writeUTF(target);
-	                            out.writeBoolean(false);
-	                            out.writeBoolean(true);
-	                        } catch (IOException e) {
-	                            e.printStackTrace();
-	                        }
-	                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+                            doTeleportToPlayer(out, player, target);
+                            new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
 	                    } else {
 	                        player.sendMessage(geSuitTeleports.aborted);
 	                    }
@@ -141,20 +132,24 @@ public class TeleportsManager {
             player.saveData();
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
-            try {
-                out.writeUTF("TeleportToPlayer");
-                out.writeUTF(player.getName());
-                out.writeUTF(player.getName());
-                out.writeUTF(target);
-                out.writeBoolean(false);
-                out.writeBoolean(true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            doTeleportToPlayer(out, player, target);
             new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
         }
     }
-    
+
+    private static void doTeleportToPlayer(DataOutputStream out, Player player, String target) {
+        try {
+            out.writeUTF("TeleportToPlayer");
+            out.writeUTF(player.getName());
+            out.writeUTF(player.getName());
+            out.writeUTF(target);
+            out.writeBoolean(false);
+            out.writeBoolean(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void doLeaveServer( Player p ) {
         if (p == null) {
             return;
@@ -219,15 +214,8 @@ public class TeleportsManager {
 	                        player.saveData();
 	                        ByteArrayOutputStream b = new ByteArrayOutputStream();
 	                        DataOutputStream out = new DataOutputStream(b);
-	                        try {
-	                            out.writeUTF("SendPlayerBack");
-	                            out.writeUTF(sender.getName());
-	                            out.writeBoolean(sender.hasPermission("gesuit.teleports.back.death"));
-	                            out.writeBoolean(sender.hasPermission("gesuit.teleports.back.teleport"));
-	                        } catch (IOException e) {
-	                            e.printStackTrace();
-	                        }
-	                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+                            doSendBack(out, sender);
+                            new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
 	                    } else {
 	                        player.sendMessage(geSuitTeleports.aborted);
 	                    }
@@ -238,15 +226,19 @@ public class TeleportsManager {
             player.saveData();
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
-            try {
-                out.writeUTF("SendPlayerBack");
-                out.writeUTF(sender.getName());
-                out.writeBoolean(sender.hasPermission("gesuit.teleports.back.death"));
-                out.writeBoolean(sender.hasPermission("gesuit.teleports.back.teleport"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            doSendBack(out, sender);
             new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+        }
+    }
+
+    private static void doSendBack(DataOutputStream out, CommandSender sender) {
+        try {
+            out.writeUTF("SendPlayerBack");
+            out.writeUTF(sender.getName());
+            out.writeBoolean(sender.hasPermission("gesuit.teleports.back.death"));
+            out.writeBoolean(sender.hasPermission("gesuit.teleports.back.teleport"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -344,17 +336,8 @@ public class TeleportsManager {
 		                    player.saveData();
 		                    ByteArrayOutputStream b = new ByteArrayOutputStream();
 		                    DataOutputStream out = new DataOutputStream(b);
-		                    try {
-		                        out.writeUTF("TeleportToPlayer");
-		                        out.writeUTF(sender.getName());
-		                        out.writeUTF(playerName);
-		                        out.writeUTF(target);
-		                        out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.silent"));
-		                        out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.bypass"));
-		                    } catch (IOException e) {
-		                        e.printStackTrace();
-		                    }
-		                    new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+                            doTeleportToPlayer(out, sender, playerName, target);
+                            new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
 		                } else {
 		                    player.sendMessage(geSuitTeleports.aborted);
 		                }
@@ -365,17 +348,21 @@ public class TeleportsManager {
             player.saveData();
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
-            try {
-                out.writeUTF("TeleportToPlayer");
-                out.writeUTF(sender.getName());
-                out.writeUTF(playerName);
-                out.writeUTF(target);
-                out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.silent"));
-                out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.bypass"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            doTeleportToPlayer(out, sender, playerName, target);
             new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+        }
+    }
+
+    private static void doTeleportToPlayer(DataOutputStream out, CommandSender sender, String playerName, String target) {
+        try {
+            out.writeUTF("TeleportToPlayer");
+            out.writeUTF(sender.getName());
+            out.writeUTF(playerName);
+            out.writeUTF(target);
+            out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.silent"));
+            out.writeBoolean(sender.hasPermission("gesuit.teleports.tp.bypass"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
