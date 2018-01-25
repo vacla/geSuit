@@ -1,7 +1,7 @@
 name: geSuitPortals
 main : net.cubespace.geSuitPortals.geSuitPortals
-version: ${project.version}b-${build.number}
-description: Part of the geSuit this plugin allows users to use portals to move around the server.
+version: ${plugin.version}
+description: Part of the geSuit this plugin allows users to use portals to move around the server. Built against Spigot ${spigot.version}
 author: geNAZt
 depend: [WorldEdit, geSuitTeleports]
 commands:
