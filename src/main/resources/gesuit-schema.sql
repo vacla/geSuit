@@ -65,6 +65,7 @@ CREATE TABLE `homes` (
 CREATE TABLE `players` (
   `playername` varchar(100) DEFAULT NULL,
   `uuid` varchar(100) NOT NULL DEFAULT '',
+  `firstonline` datetime NOT NULL,
   `lastonline` datetime NOT NULL,
   `ipaddress` varchar(100) DEFAULT NULL,
   `tps` tinyint(1) DEFAULT '1',
