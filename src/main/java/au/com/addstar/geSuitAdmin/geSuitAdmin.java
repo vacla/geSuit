@@ -23,7 +23,7 @@ public class geSuitAdmin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        deRegisterChannels();
+        unRegisterChannels();
         super.onDisable();
     }
 
@@ -42,7 +42,7 @@ public class geSuitAdmin extends JavaPlugin {
 
     }
 
-    private void deRegisterChannels(){
+    private void unRegisterChannels(){
         Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
     }
     private void registerCommands() {
