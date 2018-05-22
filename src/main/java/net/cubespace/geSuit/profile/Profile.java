@@ -100,6 +100,9 @@ public class Profile {
             connection.setDoInput(true);
             connection.setDoOutput(false);
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), UTF8));
+            if (connection.getResponseCode() == 429) {
+                return null;
+            }
             NameHistory[] names = gson.get().fromJson(in, NameHistory[].class);
             for (NameHistory name : names) {
                 if (name.getName() != null) {

@@ -33,6 +33,44 @@ public class Players implements IRepository {
 
         return true;
     }
+    
+    public List<UUID> getUUIDs(String start, String end) {
+        List<UUID> results = new ArrayList<>();
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+        try {
+            PreparedStatement getUUIDs = connectionHandler.getPreparedStatement("getUUIDS");
+            getUUIDs.setString(1, start);
+            getUUIDs.setString(2, end);
+            ResultSet res = getUUIDs.executeQuery();
+            while (res.next()) {
+                results.add(Utilities.makeUUID(res.getString("uuid")));
+            }
+            connectionHandler.release();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            connectionHandler.release();
+        }
+        return results;
+    }
+    
+    public List<UUID> getAllUUIDs() {
+        List<UUID> results = new ArrayList<>();
+        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
+        try {
+            PreparedStatement getUUIDs = connectionHandler.getPreparedStatement("getAllUUIDS");
+            ResultSet res = getUUIDs.executeQuery();
+            while (res.next()) {
+                results.add(Utilities.makeUUID(res.getString("uuid")));
+            }
+            connectionHandler.release();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            connectionHandler.release();
+        }
+        return results;
+    }
 
     public String getPlayerIP(String player) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
@@ -429,6 +467,9 @@ public class Players implements IRepository {
         connection.addPreparedStatement("resolvePlayerName", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE FIND_IN_SET(playername, ?)");
         connection.addPreparedStatement("resolveOldPlayerName", "SELECT player,uuid FROM "+ ConfigManager.main.Table_Tracking +" WHERE FIND_IN_SET(player, ?) GROUP BY player");
         connection.addPreparedStatement("resolveUUID", "SELECT playername,uuid FROM "+ ConfigManager.main.Table_Players +" WHERE FIND_IN_SET(uuid, ?)");
+        connection.addPreparedStatement("getAllUUIDS", "SELECT uuid FROM " + ConfigManager.main.Table_Players);
+        connection.addPreparedStatement("getUUIDS", "SELECT uuid FROM " + ConfigManager.main.Table_Players + " WHERE " +
+                "uuid BETWEEN ? and ?");
     }
 
     @Override

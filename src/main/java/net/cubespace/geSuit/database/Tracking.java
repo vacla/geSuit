@@ -1,8 +1,10 @@
 package net.cubespace.geSuit.database;
 
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
+import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Track;
 import net.cubespace.geSuit.profile.Profile;
@@ -11,16 +13,13 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
  */
 public class Tracking implements IRepository {
-
+    
     public void insertTracking(String player, String uuid, String ip) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
@@ -110,8 +109,9 @@ public class Tracking implements IRepository {
         UUID id = Utilities.makeUUID(player.getUuid());
         String ip = player.getIp();
         Map<Timestamp, String> input = Profile.getMojangNameHistory(id);
+        TreeMap<Timestamp, String> sorted = new TreeMap<>(input);
         Date firstSeen = new Date(0);
-        for (Map.Entry<Timestamp, String> e : input.entrySet()) {
+        for (Map.Entry<Timestamp, String> e : sorted.entrySet()) {
             String oldName = e.getValue();
             Timestamp time = e.getKey();
             Date changedAt = new Date(time.getTime());
@@ -153,6 +153,50 @@ public class Tracking implements IRepository {
         }
 
         return tracking;
+    }
+    
+    private SortedMap<Timestamp, String> createMap() {
+        return new TreeMap<>();
+    }
+    
+    public void batchUpdateNameHistories(final List<UUID> uuids) {
+        geSuit.instance.getProxy().getScheduler().runAsync(
+                geSuit.instance, nameHistoryUpdater((uuids)));
+    }
+    
+    Runnable nameHistoryUpdater(final List<UUID> uuids) {
+        Runnable runner = new Runnable() {
+            public void run() {
+                for (UUID uuid : uuids) {
+                    int updated = 0;
+                    try {
+                        Map<Timestamp, String> input = Profile.getMojangNameHistory(uuid);
+                        Date changedAt = new Date(0);
+                        TreeMap<Timestamp, String> sorted = new TreeMap<>(input);
+                        while (sorted.size() > 0) {
+                            Map.Entry<Timestamp, String> e = sorted.pollLastEntry();
+                            String oldName = e.getValue();
+                            Timestamp time = e.getKey();
+                            Date firstSeen = new Date(time.getTime());
+                            if (changedAt.before(firstSeen)) changedAt = firstSeen;
+                            insertHistoricTracking(oldName, uuid.toString(), "", firstSeen, changedAt);
+                            updated++;
+                            changedAt = firstSeen;
+                        }
+                        if (updated % 500 == 0) {
+                            LoggingManager.log("0Updating database....." + updated + " processed...");
+                        }
+                        Thread.sleep(1200);
+                    } catch (IllegalStateException | InterruptedException e) {
+                        String mess = e.getMessage();
+                        System.out.println("Interrupted at UUID :" + uuid + " Cause:" + mess);
+                        e.printStackTrace();
+                    }
+                    LoggingManager.log("Updated " + updated + " entries into Tracking Table....");
+                }
+            }
+        };
+        return runner;
     }
 
     public Track checkNameChange(UUID id, String playername) {

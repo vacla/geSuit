@@ -96,6 +96,8 @@ public class Messages extends YamlConfig {
     public String BUNGEE_COMMAND_KICKHISTORY_DISABLED = "&c" + "Kick History is globally disabled";
     public String BUNGEE_COMMAND_NAMES_USAGE = "&c" + "Usage: !names <player|uuid>";
     public String BUNGEE_COMMAND_NAMEHISTORYUPDATE_USAGE = "&c" + "Usage: !UpdateNameHistory <player|uuid>";
+    public String BUNGEE_COMMAND_BATCHNAMEHISTORYUPDATE_USAGE = "&c" + "Usage !ForceBatchNameUpdate <all|<param 1> " +
+            "<param 2>";
     public String WARN_REASON_REQUIRED = "&c" + "You must provide a reason for the warning";
     public String BAN_REASON_REQUIRED = "&c" + "You must provide a reason for the ban";
     public String TEMP_BAN_REASON_REQUIRED = "&c" + "You must provide a reason for the temp ban";

@@ -419,7 +419,16 @@ public class PlayerManager {
         DatabaseManager.tracking.insertNameHistory(p);
         return "Name History for " + p.getName() + " updated";
     }
-
+    
+    public static void batchUpdatePlayerNames(CommandSender sender, boolean all, String start, String end) {
+        if (all) {
+            List<UUID> uuids = DatabaseManager.players.getAllUUIDs();
+            DatabaseManager.tracking.batchUpdateNameHistories(uuids);
+        } else {
+            List<UUID> uuids = DatabaseManager.players.getUUIDs(start, end);
+            DatabaseManager.tracking.batchUpdateNameHistories(uuids);
+        }
+    }
     /**
      * Designed to send player back to a new spawn where they might have to agree
      * to the original rules or such
