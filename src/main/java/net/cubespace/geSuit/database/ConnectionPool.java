@@ -1,8 +1,8 @@
 package net.cubespace.geSuit.database;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
-import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.configs.SubConfig.Database;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class ConnectionPool {
@@ -34,7 +35,11 @@ public class ConnectionPool {
 
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-                Connection connection = DriverManager.getConnection("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database, database.Username, database.Password);
+                Properties props = new Properties();
+                props.put("user", database.Username);
+                props.put("password", database.Password);
+                props.put("useSSL", database.useSSL);
+                Connection connection = DriverManager.getConnection("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database, props);
 
                 ch = new ConnectionHandler(connection);
                 for(IRepository repository : repositories) {

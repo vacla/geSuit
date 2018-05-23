@@ -12,4 +12,5 @@ public class Database extends YamlConfig {
     public String Username = "username";
     public String Password = "password";
     public Integer Threads = 5;
+    public boolean useSSL = false;
 }
