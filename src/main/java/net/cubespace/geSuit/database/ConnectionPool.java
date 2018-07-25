@@ -7,12 +7,7 @@ import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
@@ -31,8 +26,7 @@ public class ConnectionPool {
         this.dbConfig = database;
 
         for (int i = 0; i < database.Threads; i++) {
-            ConnectionHandler ch;
-
+            ConnectionHandler ch = null;
             try {
                 Class.forName("com.mysql.jdbc.Driver");
                 Properties props = new Properties();
@@ -40,18 +34,17 @@ public class ConnectionPool {
                 props.put("password", database.Password);
                 props.put("useSSL", database.useSSL);
                 Connection connection = DriverManager.getConnection("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database, props);
-
-                ch = new ConnectionHandler(connection);
-                for(IRepository repository : repositories) {
+                for (IRepository repository : repositories) {
+                    ch = new ConnectionHandler(connection);
                     repository.registerPreparedStatements(ch);
+
                 }
+                connections.add(ch);
             } catch (SQLException | ClassNotFoundException ex) {
                 System.out.println(ChatColor.DARK_RED + "SQL is unable to conect");
                 ex.printStackTrace();
                 throw new IllegalStateException();
             }
-
-            connections.add(ch);
         }
 
         ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {

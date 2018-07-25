@@ -432,6 +432,7 @@ public class PlayerManager {
     /**
      * Designed to send player back to a new spawn where they might have to agree
      * to the original rules or such
+     * @param p the @code{GSPlayer} to spawn.
      */
     public static void sendtoNewSpawn(GSPlayer p) {
         p.setNewSpawn(true);
