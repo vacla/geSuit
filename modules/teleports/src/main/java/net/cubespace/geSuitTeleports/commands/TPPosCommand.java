@@ -422,15 +422,7 @@ public class TPPosCommand implements CommandExecutor {
                 coordValue = coordValue.substring(1);
         }
 
-        if (!NumberUtils.isNumber(coordValue)) {
-            if (coordName.equals("X"))
-                sender.sendMessage(geSuitTeleports.invalid_x_coordinate_or_player + coordValue);
-            else
-                sender.sendMessage(geSuitTeleports.invalid + coordName + geSuitTeleports.coordinate + coordValue);
-            return false;
-        }
-
-        return true;
+        return !TPCommand.checkValidCoord(sender, coordName, coordValue);
     }
 
 }
