@@ -2,6 +2,8 @@ package au.com.addstar.geSuitAdmin.listeners;
 
 import au.com.addstar.geSuitAdmin.Utilities;
 import au.com.addstar.geSuitAdmin.geSuitAdmin;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -41,8 +43,17 @@ public class AdminListener implements PluginMessageListener, Listener{
                     Long time =  in.readLong();
 
                     if (instance.getName().equals(server)) {
-                        instance.getLogger().info("Restart issued by " +sender + " via geSuitAdmin in " + Utilities.buildTimeDiffString(time, 4));
-                        instance.getServer().dispatchCommand(instance.getServer().getConsoleSender(), "countdown start " + Utilities.buildShortTimeDiffString(time, 4) + " restart");
+                        instance.getServer().shutdown();
+                        String timeString = Utilities.buildTimeDiffString(time, 4);
+                        instance.getLogger().info("Shutdown issued by " +sender + " via " +
+                                "geSuitAdmin" +
+                                " in " + timeString);
+                        instance.getServer().broadcastMessage(ChatColor.RED+ " == THIS SERVER " +
+                                "WILL" +
+                                " " +
+                                "RESTART IN  " + timeString + " THIS IS THE LAST WARNING...please" +
+                                " move to another server now to avoid disconnection == ");
+                        Bukkit.getScheduler().runTaskLater(instance, Bukkit::shutdown,time);
                     }else{
                         if(instance.isDebug()) {
                             instance.getLogger().info("Debug: this Server Name = " + instance.getName());

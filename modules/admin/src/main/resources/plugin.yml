@@ -1,6 +1,7 @@
 name: geSuitAdmin
 main : au.com.addstar.geSuitAdmin.geSuitAdmin
 version: ${plugin.version}
+api-version: ${spigot.api.version}
 author: Narimm
 description: Part of the geSuit (gesuit) this plugin allows admin to perform network wide server specific restarts from proxy
 depend: [SimpleCountDown]

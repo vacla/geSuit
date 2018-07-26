@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class geSuitAdmin extends JavaPlugin {
     private static geSuitAdmin INSTANCE = null;
+    private static String CHANNEL_NAME = "bungeecord:gesuitadmin";
     private boolean debug;
 
     public boolean isDebug() {
@@ -38,7 +39,7 @@ public class geSuitAdmin extends JavaPlugin {
 
     private void registerChannels() {
         Bukkit.getMessenger().registerIncomingPluginChannel(this,
-                "geSuitAdmin", new AdminListener(this));
+                CHANNEL_NAME, new AdminListener(this));
 
     }
 
