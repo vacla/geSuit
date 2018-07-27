@@ -9,7 +9,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class DelWorldSpawn {
-    public static String OUTGOING_CHANNEL = "geSuitSpawns";
 
     public static void execute(ServerInfo server, String world) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -21,7 +20,10 @@ public class DelWorldSpawn {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, server, bytes));
+    
+        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+                .CHANNEL_NAMES.SPAWN_CHANNEL.toString(),
+                server,
+                bytes));
     }
 }

@@ -12,7 +12,6 @@ import java.io.IOException;
  * @author geNAZt (fabian.fassbender42@googlemail.com)
  */
 public class SendSpawn {
-    public static String OUTGOING_CHANNEL = "geSuitSpawns";
 
     public static void execute(Spawn spawn) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -30,7 +29,9 @@ public class SendSpawn {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, spawn.getLocation().getServer(), bytes));
+    
+        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+                .CHANNEL_NAMES.SPAWN_CHANNEL.toString(), spawn
+                .getLocation().getServer(), bytes));
     }
 }

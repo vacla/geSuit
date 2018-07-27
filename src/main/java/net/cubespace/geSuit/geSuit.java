@@ -71,15 +71,9 @@ public class geSuit extends Plugin
 
     private void registerListeners()
     {
-        getProxy().registerChannel("geSuitTeleport");       // Teleport out/in
-        getProxy().registerChannel("geSuitSpawns");         // Spawns out/in
-        getProxy().registerChannel("geSuitBans");           // Bans in
-        getProxy().registerChannel("geSuitPortals");        // Portals out/in
-        getProxy().registerChannel("geSuitWarps");          // Warps in
-        getProxy().registerChannel("geSuitHomes");          // Homes in
-        getProxy().registerChannel("geSuitAPI");            // API messages in
-        getProxy().registerChannel("geSuitAdmin");
-
+        for (CHANNEL_NAMES name : CHANNEL_NAMES.values()) {
+            getProxy().registerChannel(name.toString());
+        }
         proxy.getPluginManager().registerListener(this, new PlayerListener());
         proxy.getPluginManager().registerListener(this, new BansMessageListener());
         proxy.getPluginManager().registerListener(this, new TeleportsListener());
@@ -114,4 +108,27 @@ public class geSuit extends Plugin
             geSuit.instance.getLogger().info("DEBUG: " + msg);
 		}
 	}
+    
+    public enum CHANNEL_NAMES {
+        
+        TELEPORT_CHANNEL("bungeecord:gesuitteleport"),
+        SPAWN_CHANNEL("bungeecord:gesuitspawns"),
+        BAN_CHANNEL("bungeecord:gesuitbans"),
+        PORTAL_CHANNEL("bungeecord:gesuitportals"),
+        WARP_CHANNEL("bungeecord:gesuitwarps"),
+        HOME_CHANNEL("bungeecord:gesuithomes"),
+        API_CHANNEL("bungeecord:gesuitapi"),
+        ADMIN_CHANNEL("bungeecord:gesuitadmin");
+        
+        private final String channelName;
+        
+        CHANNEL_NAMES(String string) {
+            channelName = string;
+        }
+        
+        @Override
+        public String toString() {
+            return channelName;
+        }
+    }
 }

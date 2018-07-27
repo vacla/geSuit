@@ -16,9 +16,6 @@ import java.io.IOException;
  */
 public class TeleportToLocation
 {
-
-    public static String OUTGOING_CHANNEL = "geSuitTeleport";
-
     public static void execute(GSPlayer player, Location location)
     {
         if (location.getServer() == null) {
@@ -53,7 +50,8 @@ public class TeleportToLocation
         catch (IOException e) {
             e.printStackTrace();
         }
-
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, location.getServer(), bytes));
+    
+        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+                .CHANNEL_NAMES.TELEPORT_CHANNEL.toString(), location.getServer(), bytes));
     }
 }
