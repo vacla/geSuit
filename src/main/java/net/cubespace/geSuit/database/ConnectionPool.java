@@ -79,7 +79,7 @@ public class ConnectionPool {
             ConfigManager.main.Inited = true;
             try {
                 ConfigManager.main.save();
-            } catch (InvalidConfigurationException e) {
+            } catch (InvalidConfigurationException ignored) {
 
             }
         } else {

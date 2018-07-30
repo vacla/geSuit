@@ -72,14 +72,14 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>au.com.addstar</groupId>
-            <artifactId>waterfall-api</artifactId>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
             <version>1.13-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>au.com.addstar</groupId>
-            <artifactId>waterfall-chat</artifactId>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-chat</artifactId>
             <version>1.13-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
