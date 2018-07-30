@@ -7,12 +7,7 @@ import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
@@ -86,7 +81,7 @@ public class ConnectionPool {
             ConfigManager.main.Inited = true;
             try {
                 ConfigManager.main.save();
-            } catch (InvalidConfigurationException e) {
+            } catch (InvalidConfigurationException ignored) {
 
             }
         } else {
