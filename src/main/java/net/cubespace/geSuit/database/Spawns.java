@@ -20,8 +20,8 @@ public class Spawns implements IRepository {
 
         try {
             PreparedStatement getSpawn = connectionHandler.getPreparedStatement("getSpawn");
+            if (getSpawn == null) return null;
             getSpawn.setString(1, spawnName);
-
             ResultSet res = getSpawn.executeQuery();
             while (res.next()) {
                 location = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
