@@ -31,9 +31,9 @@ public class ConnectionPool {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
                 Properties props = new Properties();
-                props.put("user", database.Username);
-                props.put("password", database.Password);
-                props.put("useSSL", database.useSSL);
+                props.put("user", (database.Username == null) ? "" : database.Username);
+                props.put("password", (database.Password == null) ? "" : database.Password);
+                props.put("useSSL", (database.useSSL == null) ? "false" : database.useSSL.toString());
                 Connection connection = DriverManager.getConnection("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database, props);
 
                 ch = new ConnectionHandler(connection);
@@ -48,17 +48,15 @@ public class ConnectionPool {
 
             connections.add(ch);
         }
-
-        ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {
-            public void run() {
-                Iterator<ConnectionHandler> cons = connections.iterator();
-                while (cons.hasNext()) {
-                    ConnectionHandler con = cons.next();
-
-                    if (!con.isUsed() && con.isOldConnection()) {
-                        con.closeConnection();
-                        cons.remove();
-                    }
+    
+        ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, () -> {
+            Iterator<ConnectionHandler> cons = connections.iterator();
+            while (cons.hasNext()) {
+                ConnectionHandler con = cons.next();
+            
+                if (!con.isUsed() && con.isOldConnection()) {
+                    con.closeConnection();
+                    cons.remove();
                 }
             }
         }, 10, 10, TimeUnit.SECONDS);
@@ -207,23 +205,23 @@ public class ConnectionPool {
     }
 
     private boolean checkTable(String table, Connection connection) {
-        DatabaseMetaData dbm = null;
+        DatabaseMetaData dbm;
         try {
             dbm = connection.getMetaData();
         } catch (SQLException e2) {
             e2.printStackTrace();
             return false;
         }
-
-        ResultSet tables = null;
+    
+        ResultSet tables;
         try {
             tables = dbm.getTables(null, null, table, null);
         } catch (SQLException e1) {
             e1.printStackTrace();
             return false;
         }
-
-        boolean check = false;
+    
+        boolean check;
         try {
             check = tables.next();
         } catch (SQLException e) {

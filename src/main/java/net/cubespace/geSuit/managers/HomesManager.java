@@ -26,10 +26,8 @@ public class HomesManager {
                 PlayerManager.sendMessageToTarget(player, ConfigManager.messages.NO_HOMES_ALLOWED_SERVER);
                 return;
             }
-
-            if (player.getHomes().get(player.getServer()) == null) {
-                player.getHomes().put(player.getServer(), new ArrayList<Home>());
-            }
+    
+            player.getHomes().computeIfAbsent(player.getServer(), k -> new ArrayList<>());
 
             Home homeObject = new Home(player, home, loc);
             player.getHomes().get(player.getServer()).add(homeObject);
@@ -38,7 +36,7 @@ public class HomesManager {
             PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_SET.replace("{home}", home));
         } else {
             Home home1 = getHome(player, home);
-            if (home1.loc.getServer().getName().equals(loc.getServer().getName())) {
+            if (home1 != null && home1.loc.getServer().getName().equals(loc.getServer().getName())) {
                 home1.setLoc(loc);
                 DatabaseManager.homes.updateHome(home1);
                 PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_UPDATED.replace("{home}", home));
@@ -81,16 +79,16 @@ public class HomesManager {
             if (player.getHomes().get(server).isEmpty()) {
                 continue;
             }
-
-            String homes;
+    
+            StringBuilder homes;
             if (server.equals(player.getServer())) {
-                homes = ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server);
+                homes = new StringBuilder(ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server));
             } else {
-                homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
+                homes = new StringBuilder(ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server));
             }
 
             for (Home h : player.getHomes().get(server)) {
-                homes += h.name + ", ";
+                homes.append(h.name).append(", ");
                 currcount++;
             }
 
@@ -133,16 +131,16 @@ public class HomesManager {
             if (player.getHomes().get(server).isEmpty()) {
                 continue;
             }
-
-            String homes;
-            if (server.equals(sender.getServer())) {
-                homes = ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server);
+    
+            StringBuilder homes;
+            if (sender.getServer() != null && server.equals(sender.getServer())) {
+                homes = new StringBuilder(ConfigManager.messages.HOMES_PREFIX_THIS_SERVER.replace("{server}", server));
             } else {
-                homes = ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server);
+                homes = new StringBuilder(ConfigManager.messages.HOMES_PREFIX_OTHER_SERVER.replace("{server}", server));
             }
 
             for (Home h : player.getHomes().get(server)) {
-                homes += h.name + ", ";
+                homes.append(h.name).append(", ");
                 currcount++;
             }
 

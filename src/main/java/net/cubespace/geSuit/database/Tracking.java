@@ -154,49 +154,42 @@ public class Tracking implements IRepository {
 
         return tracking;
     }
-    
-    private SortedMap<Timestamp, String> createMap() {
-        return new TreeMap<>();
-    }
-    
+
     public void batchUpdateNameHistories(final List<UUID> uuids) {
         geSuit.instance.getProxy().getScheduler().runAsync(
                 geSuit.instance, nameHistoryUpdater((uuids)));
     }
     
     Runnable nameHistoryUpdater(final List<UUID> uuids) {
-        Runnable runner = new Runnable() {
-            public void run() {
-                for (UUID uuid : uuids) {
-                    int updated = 0;
-                    try {
-                        Map<Timestamp, String> input = Profile.getMojangNameHistory(uuid);
-                        Date changedAt = new Date(0);
-                        TreeMap<Timestamp, String> sorted = new TreeMap<>(input);
-                        while (sorted.size() > 0) {
-                            Map.Entry<Timestamp, String> e = sorted.pollLastEntry();
-                            String oldName = e.getValue();
-                            Timestamp time = e.getKey();
-                            Date firstSeen = new Date(time.getTime());
-                            if (changedAt.before(firstSeen)) changedAt = firstSeen;
-                            insertHistoricTracking(oldName, uuid.toString(), "", firstSeen, changedAt);
-                            updated++;
-                            changedAt = firstSeen;
-                        }
-                        if (updated % 500 == 0) {
-                            LoggingManager.log("0Updating database....." + updated + " processed...");
-                        }
-                        Thread.sleep(1200);
-                    } catch (IllegalStateException | InterruptedException e) {
-                        String mess = e.getMessage();
-                        System.out.println("Interrupted at UUID :" + uuid + " Cause:" + mess);
-                        e.printStackTrace();
+        return () -> {
+            for (UUID uuid : uuids) {
+                int updated = 0;
+                try {
+                    Map<Timestamp, String> input = Profile.getMojangNameHistory(uuid);
+                    Date changedAt = new Date(0);
+                    TreeMap<Timestamp, String> sorted = new TreeMap<>(input);
+                    while (sorted.size() > 0) {
+                        Map.Entry<Timestamp, String> e = sorted.pollLastEntry();
+                        String oldName = e.getValue();
+                        Timestamp time = e.getKey();
+                        Date firstSeen = new Date(time.getTime());
+                        if (changedAt.before(firstSeen)) changedAt = firstSeen;
+                        insertHistoricTracking(oldName, uuid.toString(), "", firstSeen, changedAt);
+                        updated++;
+                        changedAt = firstSeen;
                     }
-                    LoggingManager.log("Updated " + updated + " entries into Tracking Table....");
+                    if (updated % 500 == 0) {
+                        LoggingManager.log("0Updating database....." + updated + " processed...");
+                    }
+                    Thread.sleep(1200);
+                } catch (IllegalStateException | InterruptedException e) {
+                    String mess = e.getMessage();
+                    System.out.println("Interrupted at UUID :" + uuid + " Cause:" + mess);
+                    e.printStackTrace();
                 }
+                LoggingManager.log("Updated " + updated + " entries into Tracking Table....");
             }
         };
-        return runner;
     }
 
     public Track checkNameChange(UUID id, String playername) {
