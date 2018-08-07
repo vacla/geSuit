@@ -12,7 +12,10 @@ The jar file will be inside the _target/_ folder
 ##Installing:
 Builds for this plugin may be found [here](http://jenkins.addstar.com.au/job/geSuit), or you can [compile it yourself](#building)
 
-Requires [Yamler](https://www.spigotmc.org/resources/yamler.315/) version 2.3 and a MySQL server
+#1.13
+The 1.0 Version is targetted for 1.13 servers please use 0.9.x builds for 1.12
+
+Requires [Yamler](https://www.spigotmc.org/resources/yamler.315/) version 2.4 and a MySQL server
 
 * Place geSuit.jar (and Yamler) inside your bungee's _plugins/_ folder, and restart BungeeCord.
 * Fill in your MySQL server's information in config.yml (inside the _geSuit/_ folder)
@@ -30,3 +33,4 @@ The following Bukkit / Spigot plugins are optional, and require the base geSuit 
 * [Spawn](https://github.com/AddstarMC/geSuitSpawn)
 * [Portals](https://github.com/AddstarMC/geSuitPortals)
 * [Warps](https://github.com/AddstarMC/geSuitWarps)
+* [Admin](https://github.com/AddstarMC/geSuitAdmin)
