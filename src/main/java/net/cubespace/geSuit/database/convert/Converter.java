@@ -5,14 +5,10 @@ import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.IRepository;
+import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
-import net.cubespace.geSuit.objects.GSPlayer;
-import net.cubespace.geSuit.objects.Home;
-import net.cubespace.geSuit.objects.Location;
-import net.cubespace.geSuit.objects.Portal;
-import net.cubespace.geSuit.objects.Spawn;
-import net.cubespace.geSuit.objects.Warp;
+import net.cubespace.geSuit.objects.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,7 +24,7 @@ public class Converter {
     private ConnectionPool connectionPool = new ConnectionPool();
 
     private class Players implements IRepository {
-        public void convert() {
+        void convert() {
             ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
@@ -80,7 +76,7 @@ public class Converter {
     }
 
     private class Homes implements IRepository {
-        public void convert() {
+        void convert() {
             ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
@@ -120,7 +116,7 @@ public class Converter {
     }
 
     private class Portals implements IRepository {
-        public void convert() {
+        void convert() {
             ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
@@ -170,7 +166,7 @@ public class Converter {
     }
 
     private class Bans implements IRepository {
-        public void convert() {
+        void convert() {
             ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
@@ -224,7 +220,7 @@ public class Converter {
     }
 
     private class Spawns implements IRepository {
-        public void convert() {
+        void convert() {
             ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
@@ -261,7 +257,7 @@ public class Converter {
     }
 
     private class Warps implements IRepository {
-        public void convert() {
+        void convert() {
             ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
@@ -298,38 +294,40 @@ public class Converter {
     }
 
     public void convert() {
-        new Thread(){
-            public void run() {
-                Players players = new Players();
-                Homes homes = new Homes();
-                Portals portals = new Portals();
-                Bans bans = new Bans();
-                Spawns spawns = new Spawns();
-                Warps warps = new Warps();
-
-                connectionPool.addRepository(players);
-                connectionPool.addRepository(homes);
-                connectionPool.addRepository(portals);
-                connectionPool.addRepository(bans);
-                connectionPool.addRepository(spawns);
-                connectionPool.addRepository(warps);
-
+        new Thread(() -> {
+            Players players = new Players();
+            Homes homes = new Homes();
+            Portals portals = new Portals();
+            Bans bans = new Bans();
+            Spawns spawns = new Spawns();
+            Warps warps = new Warps();
+        
+            connectionPool.addRepository(players);
+            connectionPool.addRepository(homes);
+            connectionPool.addRepository(portals);
+            connectionPool.addRepository(bans);
+            connectionPool.addRepository(spawns);
+            connectionPool.addRepository(warps);
+            try {
                 connectionPool.initialiseConnections(ConfigManager.main.BungeeSuiteDatabase);
-
+            
                 players.convert();
                 homes.convert();
                 portals.convert();
                 bans.convert();
                 spawns.convert();
                 warps.convert();
-
+            
                 ConfigManager.main.ConvertFromBungeeSuite = false;
                 try {
                     ConfigManager.main.save();
-                } catch (InvalidConfigurationException e) {
-
+                } catch (InvalidConfigurationException ignored) {
+                
                 }
+            } catch (IllegalStateException e) {
+                geSuit.instance.getLogger().warning("Could not initialize BungeeSuitDatabase");
+                e.printStackTrace();
             }
-        }.start();
+        }).start();
     }
 }

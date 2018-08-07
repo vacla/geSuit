@@ -21,8 +21,8 @@ public class ConnectionPool {
     public void addRepository(IRepository repository) {
         repositories.add(repository);
     }
-
-    public boolean initialiseConnections(Database database) {
+    
+    public boolean initialiseConnections(Database database) throws IllegalStateException {
         this.dbConfig = database;
 
         for (int i = 0; i < database.Threads; i++) {
@@ -43,7 +43,7 @@ public class ConnectionPool {
             } catch (SQLException | ClassNotFoundException ex) {
                 System.out.println(ChatColor.DARK_RED + "SQL is unable to conect");
                 ex.printStackTrace();
-                throw new IllegalStateException();
+                throw new IllegalStateException(ex.getMessage());
             }
         }
     
@@ -69,7 +69,7 @@ public class ConnectionPool {
                     } catch (SQLException e) {
                         e.printStackTrace();
                         geSuit.instance.getLogger().severe("Could not create Table " + tableInformation[0].substring(0, 20) + " ...");
-                        throw new IllegalStateException();
+                        throw new IllegalStateException(e.getMessage());
                     }
                 }
             }

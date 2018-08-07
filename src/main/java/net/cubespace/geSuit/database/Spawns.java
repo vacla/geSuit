@@ -17,7 +17,7 @@ public class Spawns implements IRepository {
     public Location getSpawn(String spawnName) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         Location location = null;
-
+        if (connectionHandler == null) return null;
         try {
             PreparedStatement getSpawn = connectionHandler.getPreparedStatement("getSpawn");
             getSpawn.setString(1, spawnName);
@@ -39,7 +39,7 @@ public class Spawns implements IRepository {
     public Location getServerSpawn(String spawnName, String serverName) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         Location location = null;
-
+        if (connectionHandler == null) return null;
         try {
             PreparedStatement getServerSpawn = connectionHandler.getPreparedStatement("getServerSpawn");
             getServerSpawn.setString(1, spawnName);
@@ -78,7 +78,7 @@ public class Spawns implements IRepository {
     public List<Spawn> getSpawnsForServer(String server) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         List<Spawn> spawns = new ArrayList<>();
-
+        if (connectionHandler == null) return null;
         try {
             PreparedStatement getSpawnsForServer = connectionHandler.getPreparedStatement("getSpawnsForServer");
             getSpawnsForServer.setString(1, server);

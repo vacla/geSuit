@@ -20,7 +20,7 @@ public class Portals implements IRepository {
     public Map<ServerInfo, List<Portal>> getPortals() {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         Map<ServerInfo, List<Portal>> portalMap = new HashMap<>();
-
+        if (connectionHandler == null) return portalMap;
         try {
             PreparedStatement getPortals = connectionHandler.getPreparedStatement("getPortals");
             ResultSet res = getPortals.executeQuery();
@@ -39,12 +39,7 @@ public class Portals implements IRepository {
                 double zmin = res.getDouble("zmin");
 
                 Portal p = new Portal(name, server, fill, type, dest, new Location(server, world, xmax, ymax, zmax), new Location(server, world, xmin, ymin, zmin));
-                List<Portal> list = portalMap.get(p.getServer());
-                if (list == null) {
-                    list = new ArrayList<>();
-                    portalMap.put(p.getServer(), list);
-                }
-
+                List<Portal> list = portalMap.computeIfAbsent(p.getServer(), k -> new ArrayList<>());
                 list.add(p);
             }
             res.close();

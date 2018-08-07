@@ -17,7 +17,7 @@ public class Warps implements IRepository {
     public List<Warp> getWarps() {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         List<Warp> warps = new ArrayList<>();
-
+        if (connectionHandler == null) return warps;
         try {
             PreparedStatement getWarps = connectionHandler.getPreparedStatement("getWarps");
 

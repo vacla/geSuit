@@ -1,18 +1,20 @@
-#geSuit
-
+geSuit - Bungeecord plugin 
+===
 Plugin suite for BungeeCord
 
-##Building:
+Building 
+---
 Clone this repo, cd into it and run
 
     mvn package
 
-The jar file will be inside the _target/_ folder
+The jar file will be inside the `target` folder
 
-##Installing:
+Installing:
+---
 Builds for this plugin may be found [here](http://jenkins.addstar.com.au/job/geSuit), or you can [compile it yourself](#building)
 
-#1.13
+####1.13
 The 1.0 Version is targetted for 1.13 servers please use 0.9.x builds for 1.12
 
 Requires [Yamler](https://www.spigotmc.org/resources/yamler.315/) version 2.4 and a MySQL server
@@ -23,7 +25,8 @@ Requires [Yamler](https://www.spigotmc.org/resources/yamler.315/) version 2.4 an
 * Give the players permission to use the commands
 * Done!
 
-##Additional features: 
+Additional features:
+---
 
 The following Bukkit / Spigot plugins are optional, and require the base geSuit to function.
 
