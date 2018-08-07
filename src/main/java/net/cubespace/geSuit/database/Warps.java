@@ -20,7 +20,7 @@ public class Warps implements IRepository {
         if (connectionHandler == null) return warps;
         try {
             PreparedStatement getWarps = connectionHandler.getPreparedStatement("getWarps");
-
+            if (getWarps == null) return warps;
             ResultSet res = getWarps.executeQuery();
             while (res.next()) {
                 Location location = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));

@@ -23,6 +23,7 @@ public class Portals implements IRepository {
         if (connectionHandler == null) return portalMap;
         try {
             PreparedStatement getPortals = connectionHandler.getPreparedStatement("getPortals");
+            if (getPortals == null) return portalMap;
             ResultSet res = getPortals.executeQuery();
             while (res.next()) {
                 String name = res.getString("portalname");
