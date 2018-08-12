@@ -22,7 +22,7 @@ public class WarpsMessageListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        if (!event.getTag().equalsIgnoreCase("geSuitWarps")) {
+        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.WARP_CHANNEL.toString())) {
             return;
         }
         if (!(event.getSender() instanceof Server))

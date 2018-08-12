@@ -28,7 +28,7 @@ public class HomesMessageListener implements Listener {
         if ( !( event.getSender() instanceof Server ) )
             return;
 
-        if ( !event.getTag().equalsIgnoreCase( "geSuitHomes" ) ) {
+        if ( !event.getTag().equalsIgnoreCase( geSuit.CHANNEL_NAMES.HOME_CHANNEL.toString() ) ) {
             return;
         }
 
