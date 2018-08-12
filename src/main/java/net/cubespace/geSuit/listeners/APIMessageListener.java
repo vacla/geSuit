@@ -22,7 +22,7 @@ public class APIMessageListener implements Listener {
         if (!(event.getSender() instanceof Server))
             return;
 
-        if (!event.getTag().equalsIgnoreCase("geSuitAPI")) {
+        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.API_CHANNEL.toString())) {
             return;
         }
 

@@ -27,7 +27,7 @@ public class BansMessageListener implements Listener {
             return;
         }
 
-        if (!event.getTag().equalsIgnoreCase("geSuitBans")) {
+        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.BAN_CHANNEL.toString())) {
             return;
         }
 

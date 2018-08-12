@@ -26,7 +26,7 @@ public class PortalsMessageListener implements Listener {
         }
         if (!(event.getSender() instanceof Server))
             return;
-        if (!event.getTag().equalsIgnoreCase("geSuitPortals")) {
+        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.PORTAL_CHANNEL.toString())) {
             return;
         }
 

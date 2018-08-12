@@ -26,7 +26,7 @@ public class TeleportsMessageListener implements Listener {
         }
         if (!(event.getSender() instanceof Server))
             return;
-        if (!event.getTag().equalsIgnoreCase("geSuitTeleport")) {
+        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.TELEPORT_CHANNEL.toString())) {
             return;
         }
 
