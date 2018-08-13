@@ -37,3 +37,8 @@ The following Bukkit / Spigot plugins are optional, and require the base geSuit 
 * [Portals](https://github.com/AddstarMC/geSuitPortals)
 * [Warps](https://github.com/AddstarMC/geSuitWarps)
 * [Admin](https://github.com/AddstarMC/geSuitAdmin)
+
+Integration Tests:
+---
+Requirements:
+- Mysql server - with a user:gesuit password:gesuit and a db:gesuit.
