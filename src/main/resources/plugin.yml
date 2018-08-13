@@ -1,4 +1,4 @@
 name: geSuit
 main : net.cubespace.geSuit.geSuit
-version: ${project.version}b-${build.number}
-author: geNAZt
+version: ${plugin.version}
+author: Narimm, geNAZt

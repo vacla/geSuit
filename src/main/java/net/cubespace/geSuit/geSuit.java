@@ -1,45 +1,17 @@
 package net.cubespace.geSuit;
 
-import net.cubespace.geSuit.commands.ActiveKicksCommand;
-import net.cubespace.geSuit.commands.AdminCommands;
-import net.cubespace.geSuit.commands.BanCommand;
-import net.cubespace.geSuit.commands.DebugCommand;
-import net.cubespace.geSuit.commands.ForceBatchNameHistoryUpdateCommand;
-import net.cubespace.geSuit.commands.ForceNameHistoryCommand;
-import net.cubespace.geSuit.commands.KickHistoryCommand;
-import net.cubespace.geSuit.commands.LastLoginsCommand;
-import net.cubespace.geSuit.commands.LockdownCommand;
-import net.cubespace.geSuit.commands.MOTDCommand;
-import net.cubespace.geSuit.commands.NamesCommand;
-import net.cubespace.geSuit.commands.OnTimeCommand;
-import net.cubespace.geSuit.commands.ReloadCommand;
-import net.cubespace.geSuit.commands.SeenCommand;
-import net.cubespace.geSuit.commands.TempBanCommand;
-import net.cubespace.geSuit.commands.UnbanCommand;
-import net.cubespace.geSuit.commands.WarnCommand;
-import net.cubespace.geSuit.commands.WarnHistoryCommand;
-import net.cubespace.geSuit.commands.WhereCommand;
+import net.cubespace.geSuit.commands.*;
 import net.cubespace.geSuit.database.convert.Converter;
-import net.cubespace.geSuit.listeners.APIMessageListener;
-import net.cubespace.geSuit.listeners.AdminMessageListener;
-import net.cubespace.geSuit.listeners.BansMessageListener;
-import net.cubespace.geSuit.listeners.BungeeChatListener;
-import net.cubespace.geSuit.listeners.HomesMessageListener;
-import net.cubespace.geSuit.listeners.PlayerListener;
-import net.cubespace.geSuit.listeners.PortalsMessageListener;
-import net.cubespace.geSuit.listeners.SpawnListener;
-import net.cubespace.geSuit.listeners.SpawnMessageListener;
-import net.cubespace.geSuit.listeners.TeleportsListener;
-import net.cubespace.geSuit.listeners.TeleportsMessageListener;
-import net.cubespace.geSuit.listeners.WarpsMessageListener;
-import net.cubespace.geSuit.managers.APIManager;
-import net.cubespace.geSuit.managers.ConfigManager;
-import net.cubespace.geSuit.managers.GeoIPManager;
-import net.cubespace.geSuit.managers.LockDownManager;
-import net.cubespace.geSuit.managers.LoggingManager;
+import net.cubespace.geSuit.listeners.*;
+import net.cubespace.geSuit.managers.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
+import org.bstats.bungeecord.Metrics;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class geSuit extends Plugin
 {
@@ -65,6 +37,15 @@ public class geSuit extends Plugin
         GeoIPManager.initialize();
         LockDownManager.initialize();
         api = new APIManager();
+        Metrics metrics = new Metrics(this);
+        Metrics.SimpleBarChart chart = new Metrics.SimpleBarChart("Servers", () -> {
+            Map<String, Integer> map = new HashMap<>();
+            map.put("Server Count", getProxy().getServers().size());
+            return map;
+        });
+        metrics.addCustomChart(chart);
+    
+    
     }
 
     private void registerCommands()
