@@ -20,7 +20,7 @@ import java.util.List;
 public class Homes implements IRepository {
     public void addHome(Home home) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
+        if (connectionHandler == null) return;
         try {
             PreparedStatement addHome = connectionHandler.getPreparedStatement("addHome");
             addHome.setString(1, (home.owner.getUuid() != null) ? home.owner.getUuid() : home.owner.getName());
@@ -43,7 +43,7 @@ public class Homes implements IRepository {
 
     public void updateHome(Home home) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
+        if (connectionHandler == null) return;
         try {
             PreparedStatement updateHome = connectionHandler.getPreparedStatement("updateHome");
             updateHome.setString(1, home.loc.getServer().getName());
@@ -66,7 +66,7 @@ public class Homes implements IRepository {
 
     public void deleteHome(Home home) {
         ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
+        if (connectionHandler == null) return;
         try {
             PreparedStatement deleteHome = connectionHandler.getPreparedStatement("deleteHome");
             deleteHome.setString(1, home.name);

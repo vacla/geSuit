@@ -1,14 +1,7 @@
 package net.cubespace.geSuit.managers;
 
-import net.cubespace.geSuit.database.Bans;
-import net.cubespace.geSuit.database.ConnectionPool;
-import net.cubespace.geSuit.database.Homes;
-import net.cubespace.geSuit.database.OnTime;
-import net.cubespace.geSuit.database.Players;
-import net.cubespace.geSuit.database.Portals;
-import net.cubespace.geSuit.database.Spawns;
-import net.cubespace.geSuit.database.Tracking;
-import net.cubespace.geSuit.database.Warps;
+import net.cubespace.geSuit.database.*;
+import net.cubespace.geSuit.geSuit;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -43,16 +36,19 @@ public class DatabaseManager {
         connectionPool.addRepository(warps);
         connectionPool.addRepository(tracking);
         connectionPool.addRepository(ontime);
-        connectionPool.initialiseConnections(ConfigManager.main.Database);
-
-        // Add the description column to the warps table if missing
-        connectionPool.AddStringColumnIfMissing("warps", "description", 128);
-
-        AnnouncementManager.loadAnnouncements();
-        WarpsManager.loadWarpLocations();
-        PortalManager.loadPortals();
-        SpawnManager.loadSpawns();
-
+        try {
+            connectionPool.initialiseConnections(ConfigManager.main.Database);
+            // Add the description column to the warps table if missing
+            connectionPool.AddStringColumnIfMissing("warps", "description", 128);
+            AnnouncementManager.loadAnnouncements();
+            WarpsManager.loadWarpLocations();
+            PortalManager.loadPortals();
+            SpawnManager.loadSpawns();
+        
+        } catch (IllegalStateException e) {
+            geSuit.instance.getLogger().warning("Gesuit could not initaliaze the database.... as " +
+                    "a result no warps portals or spawn locations are loaded....");
+        }
     }
 
 }

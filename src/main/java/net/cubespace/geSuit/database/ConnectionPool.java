@@ -24,28 +24,8 @@ public class ConnectionPool {
 
     public boolean initialiseConnections(Database database) {
         this.dbConfig = database;
-
         for (int i = 0; i < database.Threads; i++) {
-            ConnectionHandler ch;
-
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-                Properties props = new Properties();
-                props.put("user", (database.Username == null) ? "" : database.Username);
-                props.put("password", (database.Password == null) ? "" : database.Password);
-                props.put("useSSL", (database.useSSL == null) ? "false" : database.useSSL.toString());
-                Connection connection = DriverManager.getConnection("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database, props);
-
-                ch = new ConnectionHandler(connection);
-                for(IRepository repository : repositories) {
-                    repository.registerPreparedStatements(ch);
-                }
-            } catch (SQLException | ClassNotFoundException ex) {
-                System.out.println(ChatColor.DARK_RED + "SQL is unable to conect");
-                ex.printStackTrace();
-                throw new IllegalStateException();
-            }
-
+            ConnectionHandler ch = createConnectionHandler(database);
             connections.add(ch);
         }
     
@@ -89,6 +69,27 @@ public class ConnectionPool {
         }
 
         return true;
+    }
+    
+    protected ConnectionHandler createConnectionHandler(Database database) throws IllegalStateException {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Properties props = new Properties();
+            props.put("user", (database.Username == null) ? "" : database.Username);
+            props.put("password", (database.Password == null) ? "" : database.Password);
+            props.put("useSSL", (database.useSSL == null) ? "false" : database.useSSL.toString());
+            Connection connection = DriverManager.getConnection("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database, props);
+            
+            ConnectionHandler ch = new ConnectionHandler(connection);
+            for (IRepository repository : repositories) {
+                repository.registerPreparedStatements(ch);
+            }
+            return ch;
+        } catch (SQLException | ClassNotFoundException ex) {
+            System.out.println(ChatColor.DARK_RED + "SQL is unable to conect");
+            ex.printStackTrace();
+            throw new IllegalStateException();
+        }
     }
 
     /**

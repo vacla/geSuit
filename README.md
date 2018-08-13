@@ -1,18 +1,23 @@
-#geSuit
-
+geSuit - Bungeecord plugin 
+===
 Plugin suite for BungeeCord
 
-##Building:
+Building 
+---
 Clone this repo, cd into it and run
 
     mvn package
 
-The jar file will be inside the _target/_ folder
+The jar file will be inside the `target` folder
 
-##Installing:
+Installing:
+---
 Builds for this plugin may be found [here](http://jenkins.addstar.com.au/job/geSuit), or you can [compile it yourself](#building)
 
-Requires [Yamler](https://www.spigotmc.org/resources/yamler.315/) version 2.3 and a MySQL server
+####1.13
+The 1.0 Version is targetted for 1.13 servers please use 0.9.x builds for 1.12
+
+Requires [Yamler](https://www.spigotmc.org/resources/yamler.315/) version 2.4 and a MySQL server
 
 * Place geSuit.jar (and Yamler) inside your bungee's _plugins/_ folder, and restart BungeeCord.
 * Fill in your MySQL server's information in config.yml (inside the _geSuit/_ folder)
@@ -20,7 +25,8 @@ Requires [Yamler](https://www.spigotmc.org/resources/yamler.315/) version 2.3 an
 * Give the players permission to use the commands
 * Done!
 
-##Additional features: 
+Additional features:
+---
 
 The following Bukkit / Spigot plugins are optional, and require the base geSuit to function.
 
@@ -30,3 +36,9 @@ The following Bukkit / Spigot plugins are optional, and require the base geSuit 
 * [Spawn](https://github.com/AddstarMC/geSuitSpawn)
 * [Portals](https://github.com/AddstarMC/geSuitPortals)
 * [Warps](https://github.com/AddstarMC/geSuitWarps)
+* [Admin](https://github.com/AddstarMC/geSuitAdmin)
+
+Integration Tests:
+---
+Requirements:
+- Mysql server - with a user:gesuit password:gesuit and a db:gesuit.
