@@ -2,13 +2,17 @@ package net.cubespace.geSuit.database.convert;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.Utilities;
-import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.ConnectionPool;
 import net.cubespace.geSuit.database.IRepository;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
-import net.cubespace.geSuit.objects.*;
+import net.cubespace.geSuit.objects.GSPlayer;
+import net.cubespace.geSuit.objects.Home;
+import net.cubespace.geSuit.objects.Location;
+import net.cubespace.geSuit.objects.Portal;
+import net.cubespace.geSuit.objects.Spawn;
+import net.cubespace.geSuit.objects.Warp;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,7 +29,7 @@ public class Converter {
 
     private class Players implements IRepository {
         void convert() {
-            ConnectionHandler connectionHandler = connectionPool.getConnection();
+            ConnectionPool connectionHandler = connectionPool;
 
             try {
                 Map<String,String> playerUuids;
@@ -53,8 +57,6 @@ public class Converter {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                connectionHandler.release();
             }
         }
 
@@ -64,7 +66,7 @@ public class Converter {
         }
 
         @Override
-        public void registerPreparedStatements(ConnectionHandler connection) {
+        public void registerPreparedStatements(ConnectionPool connection) {
             connection.addPreparedStatement("selectPlayers", "SELECT * FROM BungeePlayers");
             connection.addPreparedStatement("selectPlayerNames", "SELECT playername FROM BungeePlayers");
         }
@@ -77,10 +79,8 @@ public class Converter {
 
     private class Homes implements IRepository {
         void convert() {
-            ConnectionHandler connectionHandler = connectionPool.getConnection();
-
             try {
-                PreparedStatement selectHomes = connectionHandler.getPreparedStatement("selectHomes");
+                PreparedStatement selectHomes = connectionPool.getPreparedStatement("selectHomes");
 
                 ResultSet res = selectHomes.executeQuery();
                 while (res.next()) {
@@ -94,8 +94,6 @@ public class Converter {
                 res.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                connectionHandler.release();
             }
         }
 
@@ -105,7 +103,7 @@ public class Converter {
         }
 
         @Override
-        public void registerPreparedStatements(ConnectionHandler connection) {
+        public void registerPreparedStatements(ConnectionPool connection) {
             connection.addPreparedStatement("selectHomes", "SELECT * FROM BungeeHomes");
         }
 
@@ -117,10 +115,8 @@ public class Converter {
 
     private class Portals implements IRepository {
         void convert() {
-            ConnectionHandler connectionHandler = connectionPool.getConnection();
-
             try {
-                PreparedStatement selectPortals = connectionHandler.getPreparedStatement("selectPortals");
+                PreparedStatement selectPortals = connectionPool.getPreparedStatement("selectPortals");
 
                 ResultSet res = selectPortals.executeQuery();
                 while (res.next()) {
@@ -144,8 +140,6 @@ public class Converter {
                 res.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-            }  finally {
-                connectionHandler.release();
             }
         }
 
@@ -155,7 +149,7 @@ public class Converter {
         }
 
         @Override
-        public void registerPreparedStatements(ConnectionHandler connection) {
+        public void registerPreparedStatements(ConnectionPool connection) {
             connection.addPreparedStatement("selectPortals", "SELECT * FROM BungeePortals");
         }
 
@@ -167,12 +161,11 @@ public class Converter {
 
     private class Bans implements IRepository {
         void convert() {
-            ConnectionHandler connectionHandler = connectionPool.getConnection();
 
             try {
                 Map<String, String> playerUuid;
                 List<String> players = new ArrayList<>();
-                PreparedStatement selectBanPlayers = connectionHandler.getPreparedStatement("selectBanPlayers");
+                PreparedStatement selectBanPlayers = connectionPool.getPreparedStatement("selectBanPlayers");
                 try (ResultSet res = selectBanPlayers.executeQuery()) {
                     while (res.next()) {
                         players.add(res.getString("player"));
@@ -180,7 +173,7 @@ public class Converter {
                 }
                 playerUuid = Utilities.getUUID(players);
 
-                PreparedStatement selectBans = connectionHandler.getPreparedStatement("selectBans");
+                PreparedStatement selectBans = connectionPool.getPreparedStatement("selectBans");
 
                 ResultSet res = selectBans.executeQuery();
                 while (res.next()) {
@@ -197,8 +190,6 @@ public class Converter {
                 res.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-            }  finally {
-                connectionHandler.release();
             }
         }
 
@@ -208,7 +199,7 @@ public class Converter {
         }
 
         @Override
-        public void registerPreparedStatements(ConnectionHandler connection) {
+        public void registerPreparedStatements(ConnectionPool connection) {
             connection.addPreparedStatement("selectBanPlayers", "SELECT player FROM BungeeBans");
             connection.addPreparedStatement("selectBans", "SELECT * FROM BungeeBans");
         }
@@ -221,10 +212,8 @@ public class Converter {
 
     private class Spawns implements IRepository {
         void convert() {
-            ConnectionHandler connectionHandler = connectionPool.getConnection();
-
             try {
-                PreparedStatement selectSpawns = connectionHandler.getPreparedStatement("selectSpawns");
+                PreparedStatement selectSpawns = connectionPool.getPreparedStatement("selectSpawns");
 
                 ResultSet res = selectSpawns.executeQuery();
                 while (res.next()) {
@@ -235,8 +224,6 @@ public class Converter {
                 res.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                connectionHandler.release();
             }
         }
 
@@ -246,7 +233,7 @@ public class Converter {
         }
 
         @Override
-        public void registerPreparedStatements(ConnectionHandler connection) {
+        public void registerPreparedStatements(ConnectionPool connection) {
             connection.addPreparedStatement("selectSpawns", "SELECT * FROM BungeeSpawns");
         }
 
@@ -258,10 +245,8 @@ public class Converter {
 
     private class Warps implements IRepository {
         void convert() {
-            ConnectionHandler connectionHandler = connectionPool.getConnection();
-
             try {
-                PreparedStatement selectWarps = connectionHandler.getPreparedStatement("selectWarps");
+                PreparedStatement selectWarps = connectionPool.getPreparedStatement("selectWarps");
 
                 ResultSet res = selectWarps.executeQuery();
                 while (res.next()) {
@@ -272,8 +257,6 @@ public class Converter {
                 res.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                connectionHandler.release();
             }
         }
 
@@ -283,7 +266,7 @@ public class Converter {
         }
 
         @Override
-        public void registerPreparedStatements(ConnectionHandler connection) {
+        public void registerPreparedStatements(ConnectionPool connection) {
             connection.addPreparedStatement("selectWarps", "SELECT * FROM BungeeWarps");
         }
 

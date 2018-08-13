@@ -18,11 +18,10 @@ import java.util.Map;
  */
 public class Portals implements IRepository {
     public Map<ServerInfo, List<Portal>> getPortals() {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         Map<ServerInfo, List<Portal>> portalMap = new HashMap<>();
 
         try {
-            PreparedStatement getPortals = connectionHandler.getPreparedStatement("getPortals");
+            PreparedStatement getPortals = DatabaseManager.connectionPool.getPreparedStatement("getPortals");
             if (getPortals == null) return portalMap;
             ResultSet res = getPortals.executeQuery();
             while (res.next()) {
@@ -53,33 +52,26 @@ public class Portals implements IRepository {
             return portalMap;
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
 
         return null;
     }
 
     public void deletePortal(String portalName) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
-            PreparedStatement deletePortal = connectionHandler.getPreparedStatement("deletePortal");
+            PreparedStatement deletePortal = DatabaseManager.connectionPool.getPreparedStatement("deletePortal");
             deletePortal.setString(1, portalName);
 
             deletePortal.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public void insertPortal(Portal portal) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
         try {
-            PreparedStatement insertPortal = connectionHandler.getPreparedStatement("insertPortal");
+            PreparedStatement insertPortal = DatabaseManager.connectionPool.getPreparedStatement("insertPortal");
             insertPortal.setString(1, portal.getName());
             insertPortal.setString(2, portal.getServer().getName());
             insertPortal.setString(3, portal.getType());
@@ -94,18 +86,15 @@ public class Portals implements IRepository {
             insertPortal.setInt(12, (int) portal.getMin().getZ());
 
             insertPortal.executeUpdate();
+            insertPortal.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public void updatePortal(Portal portal) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
         try {
-            PreparedStatement updatePortal = connectionHandler.getPreparedStatement("updatePortal");
+            PreparedStatement updatePortal = DatabaseManager.connectionPool.getPreparedStatement("updatePortal");
             updatePortal.setString(1, portal.getServer().getName());
             updatePortal.setString(2, portal.getMax().getWorld());
             updatePortal.setString(3, portal.getType());
@@ -122,8 +111,6 @@ public class Portals implements IRepository {
             updatePortal.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
@@ -145,7 +132,7 @@ public class Portals implements IRepository {
     }
 
     @Override
-    public void registerPreparedStatements(ConnectionHandler connection) {
+    public void registerPreparedStatements(ConnectionPool connection) {
         connection.addPreparedStatement("getPortals", "SELECT * FROM " + ConfigManager.main.Table_Portals);
         connection.addPreparedStatement("deletePortal", "DELETE FROM "+ ConfigManager.main.Table_Portals +" WHERE portalname = ?");
         connection.addPreparedStatement("insertPortal", "INSERT INTO "+ ConfigManager.main.Table_Portals +" (portalname,server,type,destination,world,filltype,xmax,xmin,ymax,ymin,zmax,zmin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");

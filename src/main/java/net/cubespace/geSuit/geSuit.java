@@ -1,10 +1,42 @@
 package net.cubespace.geSuit;
 
-import net.cubespace.geSuit.commands.*;
-import net.cubespace.geSuit.database.ConnectionHandler;
+import net.cubespace.geSuit.commands.ActiveKicksCommand;
+import net.cubespace.geSuit.commands.AdminCommands;
+import net.cubespace.geSuit.commands.BanCommand;
+import net.cubespace.geSuit.commands.DebugCommand;
+import net.cubespace.geSuit.commands.ForceBatchNameHistoryUpdateCommand;
+import net.cubespace.geSuit.commands.ForceNameHistoryCommand;
+import net.cubespace.geSuit.commands.KickHistoryCommand;
+import net.cubespace.geSuit.commands.LastLoginsCommand;
+import net.cubespace.geSuit.commands.LockdownCommand;
+import net.cubespace.geSuit.commands.MOTDCommand;
+import net.cubespace.geSuit.commands.NamesCommand;
+import net.cubespace.geSuit.commands.OnTimeCommand;
+import net.cubespace.geSuit.commands.ReloadCommand;
+import net.cubespace.geSuit.commands.SeenCommand;
+import net.cubespace.geSuit.commands.TempBanCommand;
+import net.cubespace.geSuit.commands.UnbanCommand;
+import net.cubespace.geSuit.commands.WarnCommand;
+import net.cubespace.geSuit.commands.WarnHistoryCommand;
+import net.cubespace.geSuit.commands.WhereCommand;
 import net.cubespace.geSuit.database.convert.Converter;
-import net.cubespace.geSuit.listeners.*;
-import net.cubespace.geSuit.managers.*;
+import net.cubespace.geSuit.listeners.APIMessageListener;
+import net.cubespace.geSuit.listeners.AdminMessageListener;
+import net.cubespace.geSuit.listeners.BansMessageListener;
+import net.cubespace.geSuit.listeners.BungeeChatListener;
+import net.cubespace.geSuit.listeners.HomesMessageListener;
+import net.cubespace.geSuit.listeners.PlayerListener;
+import net.cubespace.geSuit.listeners.PortalsMessageListener;
+import net.cubespace.geSuit.listeners.SpawnListener;
+import net.cubespace.geSuit.listeners.SpawnMessageListener;
+import net.cubespace.geSuit.listeners.TeleportsListener;
+import net.cubespace.geSuit.listeners.TeleportsMessageListener;
+import net.cubespace.geSuit.listeners.WarpsMessageListener;
+import net.cubespace.geSuit.managers.APIManager;
+import net.cubespace.geSuit.managers.ConfigManager;
+import net.cubespace.geSuit.managers.GeoIPManager;
+import net.cubespace.geSuit.managers.LockDownManager;
+import net.cubespace.geSuit.managers.LoggingManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -23,10 +55,6 @@ public class geSuit extends Plugin
         LoggingManager.log(ChatColor.GREEN + "Starting geSuit");
         proxy = ProxyServer.getInstance();
         LoggingManager.log(ChatColor.GREEN + "Initialising Managers");
-
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-        connectionHandler.release();
-
         if (ConfigManager.main.ConvertFromBungeeSuite) {
             Converter converter = new Converter();
             converter.convert();
@@ -94,11 +122,6 @@ public class geSuit extends Plugin
         if (ConfigManager.main.BungeeChatIntegration) {
             proxy.getPluginManager().registerListener(this, new BungeeChatListener());
         }
-    }
-
-    public void onDisable()
-    {
-        DatabaseManager.connectionPool.closeConnections();
     }
 
 	public boolean isDebugEnabled() {

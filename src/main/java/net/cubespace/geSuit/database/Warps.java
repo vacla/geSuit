@@ -15,11 +15,9 @@ import java.util.List;
  */
 public class Warps implements IRepository {
     public List<Warp> getWarps() {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         List<Warp> warps = new ArrayList<>();
-
         try {
-            PreparedStatement getWarps = connectionHandler.getPreparedStatement("getWarps");
+            PreparedStatement getWarps = DatabaseManager.connectionPool.getPreparedStatement("getWarps");
             if (getWarps == null) return warps;
             ResultSet res = getWarps.executeQuery();
             while (res.next()) {
@@ -32,20 +30,18 @@ public class Warps implements IRepository {
                         res.getString("description")));
             }
             res.close();
+            getWarps.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
 
         return warps;
     }
 
     public void insertWarp(Warp warp) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
-            PreparedStatement insertWarp = connectionHandler.getPreparedStatement("insertWarp");
+            PreparedStatement insertWarp = DatabaseManager.connectionPool.getPreparedStatement("insertWarp");
             insertWarp.setString(1, warp.getName());
             insertWarp.setString(2, warp.getLocation().getServer().getName());
             insertWarp.setString(3, warp.getLocation().getWorld());
@@ -59,18 +55,16 @@ public class Warps implements IRepository {
             insertWarp.setString(11, warp.getDescription());
 
             insertWarp.executeUpdate();
+            insertWarp.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public void updateWarp(Warp warp) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
-            PreparedStatement updateWarp = connectionHandler.getPreparedStatement("updateWarp");
+            PreparedStatement updateWarp = DatabaseManager.connectionPool.getPreparedStatement("updateWarp");
             updateWarp.setString(1, warp.getLocation().getServer().getName());
             updateWarp.setString(2, warp.getLocation().getWorld());
             updateWarp.setDouble(3, warp.getLocation().getX());
@@ -84,25 +78,22 @@ public class Warps implements IRepository {
             updateWarp.setString(11, warp.getName());
 
             updateWarp.executeUpdate();
+            updateWarp.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public void deleteWarp(String warp) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
-            PreparedStatement deleteWarp = connectionHandler.getPreparedStatement("deleteWarp");
+            PreparedStatement deleteWarp = DatabaseManager.connectionPool.getPreparedStatement("deleteWarp");
             deleteWarp.setString(1, warp);
 
             deleteWarp.executeUpdate();
+            deleteWarp.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
@@ -123,7 +114,7 @@ public class Warps implements IRepository {
     }
 
     @Override
-    public void registerPreparedStatements(ConnectionHandler connection) {
+    public void registerPreparedStatements(ConnectionPool connection) {
         connection.addPreparedStatement("getWarps", "SELECT * FROM "+ ConfigManager.main.Table_Warps + " ORDER BY warpname");
         connection.addPreparedStatement("insertWarp", "INSERT INTO "+ ConfigManager.main.Table_Warps +" (warpname, server, world, x, y, z, yaw, pitch, hidden, global, description) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
         connection.addPreparedStatement("updateWarp", "UPDATE "+ ConfigManager.main.Table_Warps +" SET server=?, world=?, x=?, y=?, z=?, yaw=?, pitch=?, hidden=?, global=?, description=? WHERE warpname=?");

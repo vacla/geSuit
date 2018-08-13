@@ -19,10 +19,8 @@ import java.util.List;
  */
 public class Homes implements IRepository {
     public void addHome(Home home) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-        if (connectionHandler == null) return;
         try {
-            PreparedStatement addHome = connectionHandler.getPreparedStatement("addHome");
+            PreparedStatement addHome = DatabaseManager.connectionPool.getPreparedStatement("addHome");
             addHome.setString(1, (home.owner.getUuid() != null) ? home.owner.getUuid() : home.owner.getName());
             addHome.setString(2, home.name);
             addHome.setString(3, home.loc.getServer().getName());
@@ -36,16 +34,12 @@ public class Homes implements IRepository {
             addHome.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public void updateHome(Home home) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-        if (connectionHandler == null) return;
         try {
-            PreparedStatement updateHome = connectionHandler.getPreparedStatement("updateHome");
+            PreparedStatement updateHome = DatabaseManager.connectionPool.getPreparedStatement("updateHome");
             updateHome.setString(1, home.loc.getServer().getName());
             updateHome.setString(2, home.loc.getWorld());
             updateHome.setDouble(3, home.loc.getX());
@@ -59,33 +53,25 @@ public class Homes implements IRepository {
             updateHome.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public void deleteHome(Home home) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-        if (connectionHandler == null) return;
         try {
-            PreparedStatement deleteHome = connectionHandler.getPreparedStatement("deleteHome");
+            PreparedStatement deleteHome = DatabaseManager.connectionPool.getPreparedStatement("deleteHome");
             deleteHome.setString(1, home.name);
             deleteHome.setString(2, (home.owner.getUuid() != null) ? home.owner.getUuid() : home.owner.getName());
 
             deleteHome.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public List<Home> getHomesForPlayer(GSPlayer player) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         List<Home> homes = new ArrayList<>();
-
         try {
-            PreparedStatement getAllHomesForPlayer = connectionHandler.getPreparedStatement("getAllHomesForPlayer");
+            PreparedStatement getAllHomesForPlayer = DatabaseManager.connectionPool.getPreparedStatement("getAllHomesForPlayer");
             getAllHomesForPlayer.setString(1, (player.getUuid() != null) ? player.getUuid() : player.getName());
 
             ResultSet res = getAllHomesForPlayer.executeQuery();
@@ -99,8 +85,6 @@ public class Homes implements IRepository {
             return homes;
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
 
         return null;
@@ -122,7 +106,7 @@ public class Homes implements IRepository {
     }
 
     @Override
-    public void registerPreparedStatements(ConnectionHandler connection) {
+    public void registerPreparedStatements(ConnectionPool connection) {
         connection.addPreparedStatement("addHome", "INSERT INTO "+ ConfigManager.main.Table_Homes +" (player,home_name,server,world,x,y,z,yaw,pitch) VALUES(?,?,?,?,?,?,?,?,?)");
         connection.addPreparedStatement("updateHome", "UPDATE "+ ConfigManager.main.Table_Homes +" SET server = ?, world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE player = ? AND home_name = ?");
         connection.addPreparedStatement("getAllHomesForPlayer", "SELECT * FROM "+ ConfigManager.main.Table_Homes +" WHERE player = ?");
@@ -140,19 +124,14 @@ public class Homes implements IRepository {
 
         if (installedVersion < 2) {
             // Version 2 adds UUIDs as Field
-            ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
             try {
-                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Homes +"` DROP FOREIGN KEY `homes_ibfk_1`;");
+                DatabaseManager.connectionPool.getConnection().createStatement().execute("ALTER TABLE `" + ConfigManager.main.Table_Homes + "` DROP FOREIGN KEY `homes_ibfk_1`;");
             } catch (SQLException e) {
                 e.printStackTrace();
                 return;
-            } finally {
-                connectionHandler.release();
             }
-
-            connectionHandler = DatabaseManager.connectionPool.getConnection();
             // Convert all Names to UUIDs
-            PreparedStatement getHomes = connectionHandler.getPreparedStatement("getHomes");
+            PreparedStatement getHomes = DatabaseManager.connectionPool.getPreparedStatement("getHomes");
             try {
                 ResultSet res = getHomes.executeQuery();
                 while (res.next()) {
@@ -160,18 +139,14 @@ public class Homes implements IRepository {
                     String uuid = Utilities.getUUID(player);
 
                     if (uuid != null) {
-                        ConnectionHandler connectionHandler1 = DatabaseManager.connectionPool.getConnection();
-
                         try {
-                            PreparedStatement updateHomesToUUID = connectionHandler1.getPreparedStatement("updateHomesToUUID");
+                            PreparedStatement updateHomesToUUID = DatabaseManager.connectionPool.getPreparedStatement("updateHomesToUUID");
                             updateHomesToUUID.setString(1, uuid);
                             updateHomesToUUID.setString(2, player);
                             updateHomesToUUID.executeUpdate();
                         } catch (SQLException e) {
                             System.out.println("Could not update Home for update to version 2");
                             e.printStackTrace();
-                        } finally {
-                            connectionHandler1.release();
                         }
                     }
                 }
@@ -179,14 +154,9 @@ public class Homes implements IRepository {
                 System.out.println("Could not get Homes for update to version 2");
                 e.printStackTrace();
                 return;
-            } finally {
-                connectionHandler.release();
             }
-
-            connectionHandler = DatabaseManager.connectionPool.getConnection();
-
             try {
-                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Homes +"` ADD  CONSTRAINT `homes_ibfk_1` FOREIGN KEY (`player`) REFERENCES `"+ ConfigManager.main.Table_Players +"`(`uuid`) ON DELETE CASCADE ON UPDATE CASCADE;");
+                DatabaseManager.connectionPool.getConnection().createStatement().execute("ALTER TABLE `" + ConfigManager.main.Table_Homes + "` ADD  CONSTRAINT `homes_ibfk_1` FOREIGN KEY (`player`) REFERENCES `" + ConfigManager.main.Table_Players + "`(`uuid`) ON DELETE CASCADE ON UPDATE CASCADE;");
             } catch (SQLException e) {
                 e.printStackTrace();
                 return;
