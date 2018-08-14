@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.database;
 
 import com.google.common.collect.Maps;
+
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
@@ -8,8 +9,17 @@ import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -17,18 +27,15 @@ import java.util.*;
 public class Players implements IRepository {
 
     public boolean playerExists(String player) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
-            PreparedStatement playerExists = connectionHandler.getPreparedStatement("playerExists");
+            PreparedStatement playerExists = DatabaseManager.connectionPool.getPreparedStatement("playerExists");
             playerExists.setString(1, player);
             playerExists.setString(2, player);
 
             return playerExists.executeQuery().next();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
 
         return true;
@@ -36,47 +43,40 @@ public class Players implements IRepository {
     
     public List<UUID> getUUIDs(String start, String end) {
         List<UUID> results = new ArrayList<>();
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
-            PreparedStatement getUUIDs = connectionHandler.getPreparedStatement("getUUIDS");
+            PreparedStatement getUUIDs = DatabaseManager.connectionPool.getPreparedStatement("getUUIDS");
             getUUIDs.setString(1, start);
             getUUIDs.setString(2, end);
             ResultSet res = getUUIDs.executeQuery();
             while (res.next()) {
                 results.add(Utilities.makeUUID(res.getString("uuid")));
             }
-            connectionHandler.release();
+            getUUIDs.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
         return results;
     }
     
     public List<UUID> getAllUUIDs() {
         List<UUID> results = new ArrayList<>();
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
-            PreparedStatement getUUIDs = connectionHandler.getPreparedStatement("getAllUUIDS");
+            PreparedStatement getUUIDs = DatabaseManager.connectionPool.getPreparedStatement("getAllUUIDS");
             ResultSet res = getUUIDs.executeQuery();
             while (res.next()) {
                 results.add(Utilities.makeUUID(res.getString("uuid")));
             }
-            connectionHandler.release();
+            getUUIDs.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
         return results;
     }
 
     public String getPlayerIP(String player) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
-            PreparedStatement getPlayerIP = connectionHandler.getPreparedStatement("getPlayerIP");
+            PreparedStatement getPlayerIP = DatabaseManager.connectionPool.getPreparedStatement("getPlayerIP");
             getPlayerIP.setString(1, player);
             getPlayerIP.setString(2, player);
 
@@ -86,22 +86,16 @@ public class Players implements IRepository {
                 ip = res.getString("ipaddress");
             }
             res.close();
-
             return ip;
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
-
         return null;
     }
 
     public boolean getPlayerTPS(String player) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
         try {
-            PreparedStatement getPlayerTPS = connectionHandler.getPreparedStatement("getPlayerTPS");
+            PreparedStatement getPlayerTPS = DatabaseManager.connectionPool.getPreparedStatement("getPlayerTPS");
             getPlayerTPS.setString(1, player);
             getPlayerTPS.setString(2, player);
 
@@ -115,18 +109,14 @@ public class Players implements IRepository {
             return tps;
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
 
         return true;
     }
 
     public String[] getAltPlayer(String uuid, String ip, boolean ignoreSelf) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
         try {
-            PreparedStatement getAltPlayer = connectionHandler.getPreparedStatement("getAltPlayer");
+            PreparedStatement getAltPlayer = DatabaseManager.connectionPool.getPreparedStatement("getAltPlayer");
             getAltPlayer.setString(1, ip);
             
             String altname = "";
@@ -152,18 +142,14 @@ public class Players implements IRepository {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
 
         return null;
     }
 
     public void insertPlayer(GSPlayer player, String ip) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
         try {
-            PreparedStatement insertPlayer = connectionHandler.getPreparedStatement("insertPlayer");
+            PreparedStatement insertPlayer = DatabaseManager.connectionPool.getPreparedStatement("insertPlayer");
             insertPlayer.setString(1, player.getName());
             insertPlayer.setString(2, player.getUuid());
             insertPlayer.setString(3, ip);
@@ -171,15 +157,12 @@ public class Players implements IRepository {
             insertPlayer.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public void insertPlayerConvert(String player, String uuid, Timestamp lastonline, String ip, boolean tps) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
-            PreparedStatement insertPlayerConvert = connectionHandler.getPreparedStatement("insertPlayerConvert");
+            PreparedStatement insertPlayerConvert = DatabaseManager.connectionPool.getPreparedStatement("insertPlayerConvert");
             insertPlayerConvert.setString(1, player);
             insertPlayerConvert.setString(2, uuid);
             insertPlayerConvert.setTimestamp(3, lastonline);
@@ -190,16 +173,12 @@ public class Players implements IRepository {
             insertPlayerConvert.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public void updatePlayer(GSPlayer gsPlayer) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
         try {
-            PreparedStatement updatePlayer = connectionHandler.getPreparedStatement("updatePlayerByUUID");
+            PreparedStatement updatePlayer = DatabaseManager.connectionPool.getPreparedStatement("updatePlayerByUUID");
             updatePlayer.setString(1, gsPlayer.getName());
             updatePlayer.setString(2, gsPlayer.getIp());
             updatePlayer.setBoolean(3, gsPlayer.acceptingTeleports());
@@ -207,13 +186,14 @@ public class Players implements IRepository {
             updatePlayer.setString(5, gsPlayer.getUuid());
 
             int result = updatePlayer.executeUpdate();
+            updatePlayer.close();
             if (result > 1) {
                 geSuit.instance.getLogger().warning("PLAYER HAS MULTIPLE UUID ENTRIES WHICH HAVE BEEN UPDATED: " + gsPlayer.getName());
             }
             if (result == 0) {
                 geSuit.instance.getLogger().warning("PLAYER IS BEING UPDATED BY NAME: " + gsPlayer.getName());
 
-                PreparedStatement updatePlayerbyName = connectionHandler.getPreparedStatement("updatePlayerbyName");
+                PreparedStatement updatePlayerbyName = DatabaseManager.connectionPool.getPreparedStatement("updatePlayerbyName");
                 updatePlayerbyName.setString(1, gsPlayer.getUuid());
                 updatePlayerbyName.setString(2, gsPlayer.getIp());
                 updatePlayerbyName.setBoolean(3, gsPlayer.acceptingTeleports());
@@ -223,20 +203,17 @@ public class Players implements IRepository {
                     geSuit.instance.getLogger().warning("PLAYER COULD NOT BE UPDATED: " + gsPlayer.getName());
 
                 }
+                updatePlayer.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public GSPlayer loadPlayer(String player) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
         GSPlayer player1 = null;
         try {
-            PreparedStatement getPlayer = connectionHandler.getPreparedStatement("getPlayer");
+            PreparedStatement getPlayer = DatabaseManager.connectionPool.getPreparedStatement("getPlayer");
             getPlayer.setString(1, player);
             getPlayer.setString(2, player);
 
@@ -246,21 +223,17 @@ public class Players implements IRepository {
             }
 
             res.close();
+            getPlayer.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
-
         return player1;
     }
 
     public List<String> matchPlayers(String player) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
         List<String> players = new ArrayList<>();
         try {
-            PreparedStatement getPlayer = connectionHandler.getPreparedStatement("matchPlayers");
+            PreparedStatement getPlayer = DatabaseManager.connectionPool.getPreparedStatement("matchPlayers");
             getPlayer.setString(1, "%" + player + "%");     // Player Name
             getPlayer.setString(2, player);                 // UUID
 
@@ -270,18 +243,14 @@ public class Players implements IRepository {
             }
 
             res.close();
+            getPlayer.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
-
         return players;
     }
     
     public Map<String, UUID> resolvePlayerNames(Collection<String> names) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
         Map<String, UUID> resolved = Maps.newHashMapWithExpectedSize(names.size());
         try {
             int maxBatch = 40;
@@ -296,7 +265,7 @@ public class Players implements IRepository {
                 builder.append(name);
                 
                 if (count >= maxBatch) {
-                    PreparedStatement statement = connectionHandler.getPreparedStatement("resolvePlayerName");
+                    PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("resolvePlayerName");
                     statement.setString(1, builder.toString());
                     
                     ResultSet results = statement.executeQuery();
@@ -311,7 +280,7 @@ public class Players implements IRepository {
             }
             
             if (count > 0) {
-                PreparedStatement statement = connectionHandler.getPreparedStatement("resolvePlayerName");
+                PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("resolvePlayerName");
                 statement.setString(1, builder.toString());
                 
                 ResultSet results = statement.executeQuery();
@@ -325,8 +294,6 @@ public class Players implements IRepository {
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyMap();
-        } finally {
-            connectionHandler.release();
         }
     }
     
@@ -336,7 +303,6 @@ public class Players implements IRepository {
      * @return Map
      */
     public Map<String, UUID> resolvePlayerNamesHistoric(Collection<String> names) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         Map<String, UUID> resolved = Maps.newHashMapWithExpectedSize(names.size());
         try {
@@ -352,7 +318,7 @@ public class Players implements IRepository {
                 builder.append(name);
                 
                 if (count >= maxBatch) {
-                    PreparedStatement statement = connectionHandler.getPreparedStatement("resolveOldPlayerName");
+                    PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("resolveOldPlayerName");
                     statement.setString(1, builder.toString());
                     
                     ResultSet results = statement.executeQuery();
@@ -367,7 +333,7 @@ public class Players implements IRepository {
             }
             
             if (count > 0) {
-                PreparedStatement statement = connectionHandler.getPreparedStatement("resolveOldPlayerName");
+                PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("resolveOldPlayerName");
                 statement.setString(1, builder.toString());
                 
                 ResultSet results = statement.executeQuery();
@@ -381,14 +347,10 @@ public class Players implements IRepository {
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyMap();
-        } finally {
-            connectionHandler.release();
         }
     }
     
     public Map<UUID, String> resolveUUIDs(Collection<UUID> ids) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-
         Map<UUID, String> resolved = Maps.newHashMapWithExpectedSize(ids.size());
         try {
             int maxBatch = 40;
@@ -403,7 +365,7 @@ public class Players implements IRepository {
                 builder.append(id.toString().replace("-", ""));
                 
                 if (count >= maxBatch) {
-                    PreparedStatement statement = connectionHandler.getPreparedStatement("resolveUUID");
+                    PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("resolveUUID");
                     statement.setString(1, builder.toString());
                     
                     ResultSet results = statement.executeQuery();
@@ -418,7 +380,7 @@ public class Players implements IRepository {
             }
             
             if (count > 0) {
-                PreparedStatement statement = connectionHandler.getPreparedStatement("resolveUUID");
+                PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("resolveUUID");
                 statement.setString(1, builder.toString());
                 
                 ResultSet results = statement.executeQuery();
@@ -432,8 +394,6 @@ public class Players implements IRepository {
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyMap();
-        } finally {
-            connectionHandler.release();
         }
     }
 
@@ -450,7 +410,7 @@ public class Players implements IRepository {
     }
 
     @Override
-    public void registerPreparedStatements(ConnectionHandler connection) {
+    public void registerPreparedStatements(ConnectionPool connection) {
         connection.addPreparedStatement("getPlayerIP", "SELECT ipaddress FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
         connection.addPreparedStatement("playerExists", "SELECT playername FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
         connection.addPreparedStatement("getPlayerTPS", "SELECT tps FROM "+ ConfigManager.main.Table_Players +" WHERE playername = ? OR uuid = ?");
@@ -480,22 +440,16 @@ public class Players implements IRepository {
 
         if (installedVersion < 2) {
             // Version 2 adds UUIDs as Field
-            ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
             try {
-                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Players +"` ADD `uuid` VARCHAR(100) NULL AFTER `playername`, ADD UNIQUE (`uuid`) ;");
+                DatabaseManager.connectionPool.getConnection().createStatement().execute("ALTER TABLE `" + ConfigManager.main.Table_Players + "` ADD `uuid` VARCHAR(100) NULL AFTER `playername`, ADD UNIQUE (`uuid`) ;");
             } catch (SQLException e) {
                 System.out.println("Could not update the Player Database to version 2");
                 e.printStackTrace();
                 return;
-            } finally {
-                connectionHandler.release();
             }
-
-            connectionHandler = DatabaseManager.connectionPool.getConnection();
-
             // Convert all Names to UUIDs
-            PreparedStatement getPlayers = connectionHandler.getPreparedStatement("getPlayers");
+            PreparedStatement getPlayers = DatabaseManager.connectionPool.getPreparedStatement("getPlayers");
             try {
                 ResultSet res = getPlayers.executeQuery();
                 while (res.next()) {
@@ -503,18 +457,14 @@ public class Players implements IRepository {
                     String uuid = Utilities.getUUID(playername);
 
                     if (uuid != null) {
-                        ConnectionHandler connectionHandler1 = DatabaseManager.connectionPool.getConnection();
-
                         try {
-                            PreparedStatement preparedStatement = connectionHandler1.getPreparedStatement("setUUID");
+                            PreparedStatement preparedStatement = DatabaseManager.connectionPool.getPreparedStatement("setUUID");
                             preparedStatement.setString(1, uuid);
                             preparedStatement.setString(2, playername);
                             preparedStatement.executeUpdate();
                         } catch (SQLException e) {
                             System.out.println("Could not update Player for update to version 2");
                             e.printStackTrace();
-                        } finally {
-                            connectionHandler1.release();
                         }
                     }
                 }
@@ -522,37 +472,29 @@ public class Players implements IRepository {
                 System.out.println("Could not get Players for update to version 2");
                 e.printStackTrace();
                 return;
-            } finally {
-                connectionHandler.release();
             }
         }
         if (installedVersion < 3) {
             // Version 3 adds "firstonline" field
-            ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
             try {
                 System.out.println("Upgrading Player Database to version 3...");
-                connectionHandler.getConnection().createStatement().execute("ALTER TABLE `"+ ConfigManager.main.Table_Players +"` ADD `firstonline` DATETIME NOT NULL AFTER `uuid`;");
+                DatabaseManager.connectionPool.getConnection().createStatement().execute("ALTER TABLE `" + ConfigManager.main.Table_Players + "` ADD `firstonline` DATETIME NOT NULL AFTER `uuid`;");
             } catch (SQLException e) {
                 System.out.println("Could not update the Player Database to version 3");
                 e.printStackTrace();
                 return;
-            } finally {
-                connectionHandler.release();
             }
 
             // Convert any existing "firstonline" values to the current "lastonline" values
-            connectionHandler = DatabaseManager.connectionPool.getConnection();
-            Statement stmt = null; 
+            Statement stmt = null;
             try {
-            	stmt = connectionHandler.getConnection().createStatement();
+                stmt = DatabaseManager.connectionPool.getConnection().createStatement();
             	stmt.executeUpdate("UPDATE `"+ ConfigManager.main.Table_Players +"` SET firstonline=lastonline");
             	stmt.close();
             } catch (SQLException e) {
                 System.out.println("Could not upgrade firstonline values of existing players");
                 e.printStackTrace();
                 return;
-            } finally {
-                connectionHandler.release();
             }
         }
 

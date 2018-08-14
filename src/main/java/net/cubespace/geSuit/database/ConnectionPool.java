@@ -1,127 +1,131 @@
 package net.cubespace.geSuit.database;
 
+import au.com.addstar.dripreporter.DripReporterApi;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.plugin.Plugin;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 public class ConnectionPool {
-    private Database dbConfig;
+    private HikariConfig dbConfig = new HikariConfig();
+    private HikariDataSource dataSource;
+    private Map<String, PreparedStatement> preparedStatements = new HashMap<>();
     private ArrayList<IRepository> repositories = new ArrayList<>();
-    private ArrayList<ConnectionHandler> connections = new ArrayList<>();
 
     public void addRepository(IRepository repository) {
         repositories.add(repository);
     }
 
     public boolean initialiseConnections(Database database) {
-        this.dbConfig = database;
-        for (int i = 0; i < database.Threads; i++) {
-            ConnectionHandler ch = createConnectionHandler(database);
-            connections.add(ch);
-        }
-    
-        ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, () -> {
-            Iterator<ConnectionHandler> cons = connections.iterator();
-            while (cons.hasNext()) {
-                ConnectionHandler con = cons.next();
-            
-                if (!con.isUsed() && con.isOldConnection()) {
-                    con.closeConnection();
-                    cons.remove();
-                }
-            }
-        }, 10, 10, TimeUnit.SECONDS);
+        if (configureDataSource(database)) {
+            if (!ConfigManager.main.Inited) {
+                for (IRepository repository : repositories) {
+                    String[] tableInformation = repository.getTable();
 
-        if (!ConfigManager.main.Inited) {
-            for(IRepository repository : repositories) {
-                String[] tableInformation = repository.getTable();
-
-                if (!doesTableExist(tableInformation[0])) {
-                    try {
-                        standardQuery("CREATE TABLE IF NOT EXISTS `"+ tableInformation[0] +"` (" + tableInformation[1] + ");");
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                        geSuit.instance.getLogger().severe("Could not create Table " + tableInformation[0].substring(0, 20) + " ...");
-                        throw new IllegalStateException();
+                    if (!doesTableExist(tableInformation[0])) {
+                        try {
+                            standardQuery("CREATE TABLE IF NOT EXISTS `" + tableInformation[0] + "` (" + tableInformation[1] + ");");
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            geSuit.instance.getLogger().severe("Could not create Table " + tableInformation[0].substring(0, 20) + " ...");
+                            throw new IllegalStateException(e.getMessage());
+                        }
                     }
                 }
-            }
 
-            ConfigManager.main.Inited = true;
-            try {
-                ConfigManager.main.save();
-            } catch (InvalidConfigurationException ignored) {
+                ConfigManager.main.Inited = true;
+                try {
+                    ConfigManager.main.save();
+                } catch (InvalidConfigurationException ignored) {
 
-            }
-        } else {
-            for(IRepository repository : repositories) {
-                repository.checkUpdate();
+                }
+            } else {
+                for (IRepository repository : repositories) {
+                    repository.checkUpdate();
+                }
             }
         }
 
         return true;
     }
-    
-    protected ConnectionHandler createConnectionHandler(Database database) throws IllegalStateException {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Properties props = new Properties();
-            props.put("user", (database.Username == null) ? "" : database.Username);
-            props.put("password", (database.Password == null) ? "" : database.Password);
-            props.put("useSSL", (database.useSSL == null) ? "false" : database.useSSL.toString());
-            Connection connection = DriverManager.getConnection("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database, props);
-            
-            ConnectionHandler ch = new ConnectionHandler(connection);
-            for (IRepository repository : repositories) {
-                repository.registerPreparedStatements(ch);
+
+    private boolean configureDataSource(Database database) {
+        dbConfig.setDriverClassName("com.mysql.jdbc.Driver");
+        dbConfig.setJdbcUrl("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database + "?useSSL=" + database.useSSL);
+        dbConfig.setUsername(database.Username);
+        dbConfig.setPassword(database.Password);
+        setDataSourceDefaults();
+        for (Map.Entry<String, String> property : database.properties.entrySet()) {
+            dbConfig.addDataSourceProperty(property.getKey(), property.getValue());
+        }
+        dataSource = new HikariDataSource(dbConfig);
+        if (database.useMetrics) {
+            try {
+                Plugin p = geSuit.instance.getProxy().getPluginManager().getPlugin("DripCordReporter");
+                if (p instanceof DripReporterApi) {
+                    dataSource.setMetricRegistry(((DripReporterApi) p).getRegistry());
+                    dataSource.setHealthCheckRegistry(((DripReporterApi) p).getHealthRegistry());
+                }
+            } catch (Exception e) {
+                geSuit.instance.getLogger().log(Level.INFO, "geSuit could not add Metrics to the Database Source");
+                e.printStackTrace();
             }
-            return ch;
-        } catch (SQLException | ClassNotFoundException ex) {
-            System.out.println(ChatColor.DARK_RED + "SQL is unable to conect");
-            ex.printStackTrace();
-            throw new IllegalStateException();
+        }
+        for (IRepository rep : repositories) {
+            rep.registerPreparedStatements(this);
+        }
+        return true;
+    }
+
+    private void setDataSourceDefaults() {
+        dbConfig.addDataSourceProperty("cachePrepStmts", "true");
+        dbConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+        dbConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        dbConfig.addDataSourceProperty("useServerPrepStmts", "true");
+        dbConfig.addDataSourceProperty("useLocalSessionState", "true");
+        dbConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
+        dbConfig.addDataSourceProperty("elideSetAutoCommits", "true");
+        dbConfig.addDataSourceProperty("maintainTimeStats", "false");
+    }
+
+    public PreparedStatement getPreparedStatement(String name) {
+        return preparedStatements.get(name);
+    }
+
+    public void addPreparedStatement(String name, String sql, int mode) {
+        try {
+            preparedStatements.put(name, dataSource.getConnection().prepareStatement(sql, mode));
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    /**
-     * @return Returns a free connection from the pool of connections. Creates a new connection if there are none available
-     */
-    public synchronized ConnectionHandler getConnection() {
-        for (ConnectionHandler c : connections) {
-            if (!c.isUsed()) {
-                return c;
-            }
-        }
-
-        // create a new connection as none are free
-        ConnectionHandler ch;
-
+    public void addPreparedStatement(String name, String sql) {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://" + dbConfig.Host + ":" + dbConfig.Port + "/" + dbConfig.Database, dbConfig.Username, dbConfig.Password);
-
-            ch = new ConnectionHandler(connection);
-            for(IRepository repository : repositories) {
-                repository.registerPreparedStatements(ch);
-            }
-        } catch (SQLException | ClassNotFoundException ex) {
-            System.out.println(ChatColor.DARK_RED + "SQL is unable to conect");
-            return null;
+            preparedStatements.put(name, dataSource.getConnection().prepareStatement(sql));
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+    }
 
-        connections.add(ch);
-
-        return ch;
-
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 
     /*
@@ -130,26 +134,20 @@ public class ConnectionPool {
      */
     public void AddStringColumnIfMissing(String table, String column, int length) {
 
-        ConnectionHandler ch = getConnection();
-
-        Boolean columnExists = doesTableHaveColumn(ch, table, column);
-
+        Boolean columnExists = doesTableHaveColumn(table, column);
         if (!columnExists) {
-            addStringColumnToTable(ch, table, column, length);
+            addStringColumnToTable(table, column, length);
         }
-
-        ch.release();
-
     }
 
-    private void addStringColumnToTable(ConnectionHandler ch, String table, String column, int length) {
+    private void addStringColumnToTable(String table, String column, int length) {
 
         try {
             geSuit.instance.getLogger().info("Adding column " + column + " to table " + table);
 
             String query = "ALTER TABLE `" + table + "` ADD `" + column + "` varchar(" + length + ") NULL";
 
-            Statement statement = ch.getConnection().createStatement();
+            Statement statement = dataSource.getConnection().createStatement();
             statement.executeUpdate(query);
             statement.close();
 
@@ -161,24 +159,16 @@ public class ConnectionPool {
     }
 
     private void standardQuery(String query) throws SQLException {
-        ConnectionHandler ch = getConnection();
-
-        Statement statement = ch.getConnection().createStatement();
+        Statement statement = dataSource.getConnection().createStatement();
         statement.executeUpdate(query);
         statement.close();
-
-        ch.release();
     }
 
     private boolean doesTableExist(String table) {
-        ConnectionHandler ch = getConnection();
-        boolean check = checkTable(table, ch.getConnection());
-        ch.release();
-
-        return check;
+        return checkTable(table);
     }
 
-    private Boolean doesTableHaveColumn(ConnectionHandler ch, String table, String column) {
+    private Boolean doesTableHaveColumn(String table, String column) {
 
         try {
 
@@ -188,7 +178,7 @@ public class ConnectionPool {
                             "TABLE_NAME = '" + table + "' AND " +
                             "COLUMN_NAME = '" + column + "';";
 
-            Statement statement = ch.getConnection().createStatement();
+            Statement statement = dataSource.getConnection().createStatement();
             ResultSet res = statement.executeQuery(query);
             while (res.next()) {
                 int colCount = res.getInt("RowCount");
@@ -205,15 +195,15 @@ public class ConnectionPool {
         }
     }
 
-    private boolean checkTable(String table, Connection connection) {
+    private boolean checkTable(String table) {
         DatabaseMetaData dbm;
         try {
-            dbm = connection.getMetaData();
+            dbm = dataSource.getConnection().getMetaData();
         } catch (SQLException e2) {
             e2.printStackTrace();
             return false;
         }
-    
+
         ResultSet tables;
         try {
             tables = dbm.getTables(null, null, table, null);
@@ -221,7 +211,7 @@ public class ConnectionPool {
             e1.printStackTrace();
             return false;
         }
-    
+
         boolean check;
         try {
             check = tables.next();
@@ -231,11 +221,5 @@ public class ConnectionPool {
         }
 
         return check;
-    }
-
-    public void closeConnections() {
-        for (ConnectionHandler c : connections) {
-            c.closeConnection();
-        }
     }
 }

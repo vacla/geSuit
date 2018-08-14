@@ -1,13 +1,17 @@
 package net.cubespace.geSuit;
 
 import net.cubespace.geSuit.commands.*;
-import net.cubespace.geSuit.database.ConnectionHandler;
 import net.cubespace.geSuit.database.convert.Converter;
 import net.cubespace.geSuit.listeners.*;
 import net.cubespace.geSuit.managers.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
+import org.bstats.bungeecord.Metrics;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class geSuit extends Plugin
 {
@@ -23,10 +27,6 @@ public class geSuit extends Plugin
         LoggingManager.log(ChatColor.GREEN + "Starting geSuit");
         proxy = ProxyServer.getInstance();
         LoggingManager.log(ChatColor.GREEN + "Initialising Managers");
-
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
-        connectionHandler.release();
-
         if (ConfigManager.main.ConvertFromBungeeSuite) {
             Converter converter = new Converter();
             converter.convert();
@@ -37,6 +37,15 @@ public class geSuit extends Plugin
         GeoIPManager.initialize();
         LockDownManager.initialize();
         api = new APIManager();
+        Metrics metrics = new Metrics(this);
+        Metrics.SimpleBarChart chart = new Metrics.SimpleBarChart("Servers", () -> {
+            Map<String, Integer> map = new HashMap<>();
+            map.put("Server Count", getProxy().getServers().size());
+            return map;
+        });
+        metrics.addCustomChart(chart);
+    
+    
     }
 
     private void registerCommands()
@@ -88,11 +97,6 @@ public class geSuit extends Plugin
         if (ConfigManager.main.BungeeChatIntegration) {
             proxy.getPluginManager().registerListener(this, new BungeeChatListener());
         }
-    }
-
-    public void onDisable()
-    {
-        DatabaseManager.connectionPool.closeConnections();
     }
 
 	public boolean isDebugEnabled() {

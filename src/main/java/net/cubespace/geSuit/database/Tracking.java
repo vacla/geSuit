@@ -13,7 +13,11 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -21,61 +25,56 @@ import java.util.*;
 public class Tracking implements IRepository {
     
     public void insertTracking(String player, String uuid, String ip) {
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
 
         try {
-            PreparedStatement insertPlayer = connectionHandler.getPreparedStatement("insertTracking");
+            PreparedStatement insertPlayer = DatabaseManager.connectionPool.getPreparedStatement("insertTracking");
             insertPlayer.setString(1, player);
             insertPlayer.setString(2, uuid);
             insertPlayer.setString(3, ip);
 
             insertPlayer.executeUpdate();
+            insertPlayer.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public void insertHistoricTracking(String player, String uuid, String ip, Date changedDate, Date lastSeen) {
 
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
-            PreparedStatement insertPlayer = connectionHandler.getPreparedStatement("insertHistoricTracking");
+            PreparedStatement insertPlayer = DatabaseManager.connectionPool.getPreparedStatement("insertHistoricTracking");
             insertPlayer.setString(1, player);
             insertPlayer.setString(2, uuid);
             insertPlayer.setString(3, ip);
             insertPlayer.setDate(4, changedDate);
             insertPlayer.setDate(5, lastSeen);
             insertPlayer.executeUpdate();
+            insertPlayer.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
     }
 
     public List<Track> getPlayerTracking(String search, String type) {
         List<Track> tracking = new ArrayList<>();
 
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
         	PreparedStatement trackInfo;
 
             switch (type) {
                 case "ip":
                     // Lookup by IP
-                    trackInfo = connectionHandler.getPreparedStatement("getIPTracking");
+                    trackInfo = DatabaseManager.connectionPool.getPreparedStatement("getIPTracking");
                     trackInfo.setString(1, search);
                     break;
                 case "uuid":
                     // Lookup by IP
-                    trackInfo = connectionHandler.getPreparedStatement("getUUIDTracking");
+                    trackInfo = DatabaseManager.connectionPool.getPreparedStatement("getUUIDTracking");
                     trackInfo.setString(1, search);
                     break;
                 default:
                     // Lookup by player name
-                    trackInfo = connectionHandler.getPreparedStatement("getPlayerTracking");
+                    trackInfo = DatabaseManager.connectionPool.getPreparedStatement("getPlayerTracking");
                     trackInfo.setString(1, search);
                     break;
             }
@@ -96,12 +95,10 @@ public class Tracking implements IRepository {
             }
 
             res.close();
+            trackInfo.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
-
         return tracking;
     }
 
@@ -122,10 +119,8 @@ public class Tracking implements IRepository {
 
     public List<Track> getNameHistory(UUID id) {
         List<Track> tracking = new ArrayList<>();
-
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
-            PreparedStatement statement = connectionHandler.getPreparedStatement("getNameHistory");
+            PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("getNameHistory");
             String uuid = id.toString().replace("-", "");
             statement.setString(1, uuid);
             statement.setString(2, uuid);
@@ -146,12 +141,10 @@ public class Tracking implements IRepository {
             }
 
             res.close();
+            statement.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
-
         return tracking;
     }
 
@@ -194,10 +187,8 @@ public class Tracking implements IRepository {
 
     public Track checkNameChange(UUID id, String playername) {
         Track tracking = null;
-
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
-            PreparedStatement statement = connectionHandler.getPreparedStatement("checkNameChange");
+            PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("checkNameChange");
             String uuid = id.toString().replace("-", "");
             statement.setString(1, uuid);
             statement.setString(2, playername);
@@ -218,10 +209,9 @@ public class Tracking implements IRepository {
             }
 
             res.close();
+            statement.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
 
         return tracking;
@@ -238,7 +228,7 @@ public class Tracking implements IRepository {
     }
 
     @Override
-    public void registerPreparedStatements(ConnectionHandler connection) {
+    public void registerPreparedStatements(ConnectionPool connection) {
         connection.addPreparedStatement("insertHistoricTracking", "INSERT INTO " + ConfigManager.main.Table_Tracking + " (player,uuid,ip,firstseen,lastseen) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE player=player");
         connection.addPreparedStatement("insertTracking", "INSERT INTO "+ ConfigManager.main.Table_Tracking +" (player,uuid,ip,firstseen,lastseen) VALUES (?, ?, ?, NOW(), NOW()) ON DUPLICATE KEY UPDATE lastseen=NOW()");
         connection.addPreparedStatement("getPlayerTracking", "SELECT t2.ip, t2.player, t2.uuid, t2.firstseen, t2.lastseen, b.type, b.banned_playername, b.banned_uuid, b.banned_ip FROM "+ ConfigManager.main.Table_Tracking +" AS t1 JOIN "+ ConfigManager.main.Table_Tracking +" AS t2 ON t1.ip=t2.ip LEFT JOIN " + ConfigManager.main.Table_Bans + " AS b ON (t2.ip=b.banned_ip OR t2.player=b.banned_playername OR t2.uuid=b.banned_uuid) AND b.type != 'warn' AND b.active=1 WHERE t1.player=? GROUP BY t2.player,t2.uuid,t2.ip ORDER BY t2.lastseen;");

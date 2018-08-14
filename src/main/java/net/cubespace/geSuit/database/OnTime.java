@@ -7,7 +7,11 @@ import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.objects.TimeRecord;
 import net.md_5.bungee.api.ChatColor;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -97,11 +101,10 @@ public class OnTime implements IRepository {
         	sqlvalues.append(values.get(x));
         }
 
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         Statement stmt = null;
         try {
         	// Sadly, we can't use prepared statements here because the statement is dynamic
-            stmt = connectionHandler.getConnection().createStatement();
+            stmt = DatabaseManager.connectionPool.getConnection().createStatement();
         	stmt.executeUpdate("INSERT DELAYED INTO "+ ConfigManager.main.Table_OnTime + " " +
         			"(uuid,timeslot,time) VALUES " + sqlvalues + " " +
         			"ON DUPLICATE KEY UPDATE time=time+VALUES(time)"
@@ -115,56 +118,52 @@ public class OnTime implements IRepository {
 				System.out.println("ERROR: Failed to close SQL Statement!");
 				e.printStackTrace();
 			}
-    		connectionHandler.release();
         }
     }
 
     public TimeRecord getPlayerOnTime(String uuid) {
         TimeRecord trec = new TimeRecord(uuid);
 
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
             PreparedStatement timeInfo;
             ResultSet res;
 
             // Time today
-            timeInfo = connectionHandler.getPreparedStatement("getOnTimeToday");
+            timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeToday");
             timeInfo.setString(1, uuid);
             res = timeInfo.executeQuery();
             if (res.next()) trec.setTimeToday(res.getLong(1) * 1000);
             res.close();
 
         	// Time this week
-        	timeInfo = connectionHandler.getPreparedStatement("getOnTimeWeek");
+            timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeWeek");
             timeInfo.setString(1, uuid);
             res = timeInfo.executeQuery();
             if (res.next()) trec.setTimeWeek(res.getLong(1) * 1000);
             res.close();
 
         	// Time this month
-        	timeInfo = connectionHandler.getPreparedStatement("getOnTimeMonth");
+            timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeMonth");
             timeInfo.setString(1, uuid);
             res = timeInfo.executeQuery();
             if (res.next()) trec.setTimeMonth(res.getLong(1) * 1000);
             res.close();
 
         	// Time this year
-        	timeInfo = connectionHandler.getPreparedStatement("getOnTimeYear");
+            timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeYear");
             timeInfo.setString(1, uuid);
             res = timeInfo.executeQuery();
             if (res.next()) trec.setTimeYear(res.getLong(1) * 1000);
             res.close();
 
         	// Total time
-        	timeInfo = connectionHandler.getPreparedStatement("getOnTimeTotal");
+            timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeTotal");
             timeInfo.setString(1, uuid);
             res = timeInfo.executeQuery();
             if (res.next()) trec.setTimeTotal(res.getLong(1) * 1000);
             res.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
 
         return trec;
@@ -172,11 +171,10 @@ public class OnTime implements IRepository {
 
     public Map<String, Long> getOnTimeTop(int pagenum) {
         LinkedHashMap<String, Long> results = null;
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try {
             PreparedStatement top;
             ResultSet res;
-            top = connectionHandler.getPreparedStatement("getOnTimeTop");
+            top = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeTop");
 
             results = new LinkedHashMap<>();
             int offset = (pagenum < 1) ? 0 : (pagenum - 1) * 10;	// Offset = Page number x 10 (but starts at 0 and no less than 0
@@ -192,8 +190,6 @@ public class OnTime implements IRepository {
             res.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
 
         return results;
@@ -201,11 +197,10 @@ public class OnTime implements IRepository {
 
     public Map<Timestamp, Long> getLastLogins(String uuid, int num){
         LinkedHashMap<Timestamp, Long> results = null;
-        ConnectionHandler connectionHandler = DatabaseManager.connectionPool.getConnection();
         try{
             PreparedStatement lastLogins;
             ResultSet res;
-            lastLogins = connectionHandler.getPreparedStatement("getLastLogins");
+            lastLogins = DatabaseManager.connectionPool.getPreparedStatement("getLastLogins");
             lastLogins.setString(1,uuid);
             lastLogins.setInt(2,num);
             results = new LinkedHashMap<>();
@@ -218,8 +213,6 @@ public class OnTime implements IRepository {
             res.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connectionHandler.release();
         }
         return results;
     }
@@ -235,7 +228,7 @@ public class OnTime implements IRepository {
     }
 
     @Override
-    public void registerPreparedStatements(ConnectionHandler connection) {
+    public void registerPreparedStatements(ConnectionPool connection) {
         connection.addPreparedStatement("getOnTimeToday", "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=? AND timeslot >= CURRENT_DATE()");
         connection.addPreparedStatement("getOnTimeWeek",  "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=? AND timeslot >= STR_TO_DATE(CONCAT(YEARWEEK(NOW()), ' Sunday'), '%X%V %W')");
         connection.addPreparedStatement("getOnTimeMonth", "SELECT SUM(time) FROM "+ ConfigManager.main.Table_OnTime +" ontime WHERE uuid=? AND timeslot >= DATE_FORMAT(NOW(), '%Y-%m-01')");
