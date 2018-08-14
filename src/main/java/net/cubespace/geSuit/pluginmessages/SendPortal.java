@@ -13,7 +13,6 @@ import java.io.IOException;
  * @author geNAZt (fabian.fassbender42@googlemail.com)
  */
 public class SendPortal {
-    public static String OUTGOING_CHANNEL = "geSuitPortals";
 
     public static void execute(Portal p) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -38,7 +37,9 @@ public class SendPortal {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, p.getServer(), bytes));
+    
+        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+                .CHANNEL_NAMES.PORTAL_CHANNEL.toString(), p
+                .getServer(), bytes));
     }
 }

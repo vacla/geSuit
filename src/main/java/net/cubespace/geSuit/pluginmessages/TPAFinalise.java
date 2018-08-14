@@ -10,7 +10,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class TPAFinalise {
-    public static String OUTGOING_CHANNEL = "geSuitTeleport";
 
     public static void execute(GSPlayer player, GSPlayer target) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -23,7 +22,9 @@ public class TPAFinalise {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-		geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, ProxyServer.getInstance().getServerInfo(player.getServer()), bytes));
+    
+        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+                .CHANNEL_NAMES.TELEPORT_CHANNEL.toString(),
+                ProxyServer.getInstance().getServerInfo(player.getServer()), bytes));
     }
 }

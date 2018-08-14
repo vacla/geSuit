@@ -20,7 +20,7 @@ public class AdminMessageListener implements Listener {
         }
         if (!(event.getSender() instanceof Server))
             return;
-        if (!event.getTag().equalsIgnoreCase("geSuitAdmin")) {
+        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.ADMIN_CHANNEL.toString())) {
             return;
         }
         if (geSuit.instance.isDebugEnabled()) {

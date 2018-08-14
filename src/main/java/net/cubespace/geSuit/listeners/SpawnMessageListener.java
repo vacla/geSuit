@@ -24,7 +24,7 @@ public class SpawnMessageListener implements Listener {
         }
         if (!(event.getSender() instanceof Server))
             return;
-        if (!event.getTag().equalsIgnoreCase("geSuitSpawns")) {
+        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.SPAWN_CHANNEL.toString())) {
             return;
         }
 

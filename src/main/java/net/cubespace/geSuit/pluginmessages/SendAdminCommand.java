@@ -20,7 +20,7 @@ public class SendAdminCommand {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(bytes);
         if (adminCommand.command.equals("restart")) {
-            Long time = 0L;
+            long time = 0L;
             if(adminCommand.getArgs().size() >= 1){
                 time = TimeParser.parseStringtoMillisecs(adminCommand.getArgs().get(0));
                 if (time == 0) time = 10000L;
@@ -34,7 +34,9 @@ public class SendAdminCommand {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, ProxyServer.getInstance().getServerInfo(adminCommand.getServer()), bytes));
+            geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+                    .CHANNEL_NAMES.ADMIN_CHANNEL.toString(),
+                    ProxyServer.getInstance().getServerInfo(adminCommand.getServer()), bytes));
         }else{
             //not supported
         }

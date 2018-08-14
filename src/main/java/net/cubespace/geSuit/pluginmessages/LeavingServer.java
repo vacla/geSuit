@@ -10,7 +10,6 @@ import java.io.IOException;
 
 public class LeavingServer
 {
-    public static String OUTGOING_CHANNEL = "geSuitTeleport";
 
     public static void execute(GSPlayer player)
     {
@@ -30,7 +29,9 @@ public class LeavingServer
         catch (IOException e) {
             e.printStackTrace();
         }
-
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(OUTGOING_CHANNEL, player.getProxiedPlayer().getServer().getInfo(), bytes));
+    
+        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+                .CHANNEL_NAMES.TELEPORT_CHANNEL.toString(), player
+                .getProxiedPlayer().getServer().getInfo(), bytes));
     }
 }

@@ -26,7 +26,7 @@ public class TeleportsMessageListener implements Listener {
         }
         if (!(event.getSender() instanceof Server))
             return;
-        if (!event.getTag().equalsIgnoreCase("geSuitTeleport")) {
+        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.TELEPORT_CHANNEL.toString())) {
             return;
         }
 
@@ -48,10 +48,10 @@ public class TeleportsMessageListener implements Listener {
             String server = in.readUTF();
             String serverName = (!server.equals("")) ? server : ((Server) event.getSender()).getInfo().getName();
             String world = in.readUTF();
-
-            Double X = in.readDouble();
-            Double Y = in.readDouble();
-            Double Z = in.readDouble();
+    
+            double X = in.readDouble();
+            double Y = in.readDouble();
+            double Z = in.readDouble();
 
             float yaw = 0;
             float pitch = 0;

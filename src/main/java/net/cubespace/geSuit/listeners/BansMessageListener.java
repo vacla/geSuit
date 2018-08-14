@@ -14,6 +14,7 @@ import net.md_5.bungee.event.EventHandler;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class BansMessageListener implements Listener {
 
@@ -26,8 +27,8 @@ public class BansMessageListener implements Listener {
         if (!(event.getSender() instanceof Server)) {
             return;
         }
-
-        if (!event.getTag().equalsIgnoreCase("geSuitBans")) {
+    
+        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.BAN_CHANNEL.toString())) {
             return;
         }
 
@@ -114,7 +115,7 @@ public class BansMessageListener implements Listener {
             case "LockDownStatus":
                 LockDownManager.checkExpiry(in.readUTF());
             default:
-                return;
+                geSuit.instance.getLogger().log(Level.INFO, task + " : has no handler ");
         }
     }
 
