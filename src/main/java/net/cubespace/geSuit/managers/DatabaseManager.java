@@ -1,6 +1,14 @@
 package net.cubespace.geSuit.managers;
 
-import net.cubespace.geSuit.database.*;
+import net.cubespace.geSuit.database.Bans;
+import net.cubespace.geSuit.database.ConnectionPool;
+import net.cubespace.geSuit.database.Homes;
+import net.cubespace.geSuit.database.OnTime;
+import net.cubespace.geSuit.database.Players;
+import net.cubespace.geSuit.database.Portals;
+import net.cubespace.geSuit.database.Spawns;
+import net.cubespace.geSuit.database.Tracking;
+import net.cubespace.geSuit.database.Warps;
 import net.cubespace.geSuit.geSuit;
 
 /**
@@ -18,6 +26,7 @@ public class DatabaseManager {
     public static OnTime ontime;
 
     static {
+        //geSuit.instance.getLogger().log(Level.INFO, "Instantiating DatabaseManager");
         players = new Players();
         homes = new Homes();
         bans = new Bans();

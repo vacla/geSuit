@@ -23,6 +23,9 @@ public class DebugCommand extends Command
         super("gsdebug");
     }
 
+    private boolean ppvalid = false;
+    private boolean gsvalid = false;
+    private String sname = "";
     @Override
     public void execute(CommandSender sender, String[] args)
     {
@@ -50,21 +53,10 @@ public class DebugCommand extends Command
 					PlayerManager.sendMessageToTarget(sender, "List of entries in onlinePlayers:");
 					for (String player : PlayerManager.onlinePlayers.keySet()) {
 						GSPlayer gs = PlayerManager.onlinePlayers.get(player);
-						Boolean gsvalid = false;
-						Boolean ppvalid = false;
-						String sname = "";
-
-						if (gs != null) {
-							gsvalid = true;
-							ProxiedPlayer pp = gs.getProxiedPlayer();
-							if (pp != null) {
-								ppvalid = true;
-								Server s = pp.getServer();
-								if ((s != null) && (s.getInfo() != null)) {
-									sname = s.getInfo().getName();
-								}
-							}
-						}
+                        gsvalid = false;
+                        ppvalid = false;
+                        sname = "";
+                        getPlayer(gs);
 						PlayerManager.sendMessageToTarget(sender, "  " + ChatColor.AQUA + player +
 								ChatColor.WHITE + " -> GS:" + (gsvalid ? ChatColor.GREEN + "yes" : ChatColor.RED + "no") +
 								ChatColor.WHITE + " / PP:" + (ppvalid ? ChatColor.GREEN + "yes" : ChatColor.RED + "no") +
@@ -76,21 +68,10 @@ public class DebugCommand extends Command
 					PlayerManager.sendMessageToTarget(sender, "List of entries in cachedplayers:");
 					for (UUID uuid : PlayerManager.cachedPlayers.keySet()) {
 						GSPlayer gs = PlayerManager.cachedPlayers.get(uuid);
-						Boolean gsvalid = false;
-						Boolean ppvalid = false;
-						String sname = "";
-
-						if (gs != null) {
-							gsvalid = true;
-							ProxiedPlayer pp = gs.getProxiedPlayer();
-							if (pp != null) {
-								ppvalid = true;
-								Server s = pp.getServer();
-								if ((s != null) && (s.getInfo() != null)) {
-									sname = s.getInfo().getName();
-								}
-							}
-						}
+                        gsvalid = false;
+                        ppvalid = false;
+                        sname = "";
+                        getPlayer(gs);
 						PlayerManager.sendMessageToTarget(sender, "  " + ChatColor.AQUA + uuid +
 								ChatColor.WHITE + " -> GS:" + (gsvalid ? ChatColor.GREEN + "yes" + ChatColor.AQUA + " (" + gs.getName() + ")" : ChatColor.RED + "no") +
 								ChatColor.WHITE + " / PP:" + (ppvalid ? ChatColor.GREEN + "yes" : ChatColor.RED + "no") +
@@ -102,5 +83,19 @@ public class DebugCommand extends Command
 					break;
 			}
 		}
+    }
+
+    private void getPlayer(GSPlayer player) {
+        if (player != null) {
+            gsvalid = true;
+            ProxiedPlayer pp = player.getProxiedPlayer();
+            if (pp != null) {
+                ppvalid = true;
+                Server s = pp.getServer();
+                if ((s != null) && (s.getInfo() != null)) {
+                    sname = s.getInfo().getName();
+                }
+            }
+        }
     }
 }

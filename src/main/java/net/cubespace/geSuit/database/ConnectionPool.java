@@ -25,6 +25,7 @@ import java.util.logging.Level;
 public class ConnectionPool {
     private HikariConfig dbConfig = new HikariConfig();
     private HikariDataSource dataSource;
+    private Connection preparing;
     private Map<String, PreparedStatement> preparedStatements = new HashMap<>();
     private ArrayList<IRepository> repositories = new ArrayList<>();
 
@@ -65,32 +66,40 @@ public class ConnectionPool {
         return true;
     }
 
-    private boolean configureDataSource(Database database) {
+    protected boolean configureDataSource(Database database) {
         dbConfig.setDriverClassName("com.mysql.jdbc.Driver");
         dbConfig.setJdbcUrl("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database + "?useSSL=" + database.useSSL);
         dbConfig.setUsername(database.Username);
         dbConfig.setPassword(database.Password);
+        dbConfig.setInitializationFailTimeout(10000);
+        dbConfig.setValidationTimeout(15000);
+        if (database.useMetrics) enableMetrics();
         setDataSourceDefaults();
         for (Map.Entry<String, String> property : database.properties.entrySet()) {
             dbConfig.addDataSourceProperty(property.getKey(), property.getValue());
         }
         dataSource = new HikariDataSource(dbConfig);
-        if (database.useMetrics) {
-            try {
-                Plugin p = geSuit.instance.getProxy().getPluginManager().getPlugin("DripCordReporter");
-                if (p instanceof DripReporterApi) {
-                    dataSource.setMetricRegistry(((DripReporterApi) p).getRegistry());
-                    dataSource.setHealthCheckRegistry(((DripReporterApi) p).getHealthRegistry());
-                }
-            } catch (Exception e) {
-                geSuit.instance.getLogger().log(Level.INFO, "geSuit could not add Metrics to the Database Source");
-                e.printStackTrace();
-            }
+        try {
+            preparing = dataSource.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         for (IRepository rep : repositories) {
             rep.registerPreparedStatements(this);
         }
         return true;
+    }
+
+    private void enableMetrics() {
+        geSuit.instance.getLogger().log(Level.INFO, "geSuit is adding metrics....");
+        try {
+            Plugin p = geSuit.instance.getProxy().getPluginManager().getPlugin("DripCordReporter");
+            dbConfig.setMetricRegistry(((DripReporterApi) p).getRegistry());
+            dbConfig.setHealthCheckRegistry(((DripReporterApi) p).getHealthRegistry());
+        } catch (Exception e) {
+            geSuit.instance.getLogger().log(Level.WARNING, "geSuit could not add Metrics to the Database Source");
+            e.printStackTrace();
+        }
     }
 
     private void setDataSourceDefaults() {
@@ -118,7 +127,7 @@ public class ConnectionPool {
 
     public void addPreparedStatement(String name, String sql) {
         try {
-            preparedStatements.put(name, dataSource.getConnection().prepareStatement(sql));
+            preparedStatements.put(name, preparing.prepareStatement(sql));
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -1,7 +1,6 @@
 package net.cubespace.geSuit.database;
 
 import net.cubespace.geSuit.configs.SubConfig.Database;
-import net.cubespace.geSuit.managers.ConfigManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,19 +16,19 @@ public class ConnectionPoolIntegrationTest {
 
     @Before
     public void Setup() {
-        ConfigManager manager = new ConfigManager();
         config = new Database();
         config.Database = "geSuit";
         config.Port = "3306";
         config.Username = "root";
         config.Password = "password";
         config.Host = "localhost";
+        config.useMetrics = false;
     }
 
     @Test
-    public void ConnectionPoolIntegrationTest() {
+    public void ConnectionPoolTest() {
         ConnectionPool pool = new ConnectionPool();
-        pool.initialiseConnections(config);
+        pool.configureDataSource(config);
         try {
             assert (pool.getConnection() != null);
         } catch (SQLException e) {
