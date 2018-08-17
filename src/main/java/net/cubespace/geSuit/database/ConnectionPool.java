@@ -1,22 +1,15 @@
 package net.cubespace.geSuit.database;
 
 import au.com.addstar.dripreporter.DripReporterApi;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +18,7 @@ import java.util.logging.Level;
 public class ConnectionPool {
     private HikariConfig dbConfig = new HikariConfig();
     private HikariDataSource dataSource;
-    private Connection preparing;
-    private Map<String, PreparedStatement> preparedStatements = new HashMap<>();
+    private Map<String, String> statementCache = new HashMap<>();
     private ArrayList<IRepository> repositories = new ArrayList<>();
 
     public void addRepository(IRepository repository) {
@@ -67,23 +59,13 @@ public class ConnectionPool {
     }
 
     protected boolean configureDataSource(Database database) {
-        dbConfig.setDriverClassName("com.mysql.jdbc.Driver");
         dbConfig.setJdbcUrl("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database + "?useSSL=" + database.useSSL);
         dbConfig.setUsername(database.Username);
         dbConfig.setPassword(database.Password);
-        dbConfig.setInitializationFailTimeout(10000);
-        dbConfig.setValidationTimeout(15000);
         if (database.useMetrics) enableMetrics();
-        setDataSourceDefaults();
-        for (Map.Entry<String, String> property : database.properties.entrySet()) {
-            dbConfig.addDataSourceProperty(property.getKey(), property.getValue());
-        }
+        setDataSourceDefaults(database);
+        dbConfig.setPoolName("geSuit-Pool");
         dataSource = new HikariDataSource(dbConfig);
-        try {
-            preparing = dataSource.getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         for (IRepository rep : repositories) {
             rep.registerPreparedStatements(this);
         }
@@ -101,40 +83,78 @@ public class ConnectionPool {
             e.printStackTrace();
         }
     }
-
-    private void setDataSourceDefaults() {
-        dbConfig.addDataSourceProperty("cachePrepStmts", "true");
-        dbConfig.addDataSourceProperty("prepStmtCacheSize", "250");
-        dbConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        dbConfig.addDataSourceProperty("useServerPrepStmts", "true");
-        dbConfig.addDataSourceProperty("useLocalSessionState", "true");
-        dbConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
-        dbConfig.addDataSourceProperty("elideSetAutoCommits", "true");
-        dbConfig.addDataSourceProperty("maintainTimeStats", "false");
+    
+    private void setDataSourceDefaults(Database database) {
+        dbConfig.addDataSourceProperty("cachePrepStmts", true);
+        dbConfig.addDataSourceProperty("prepStmtCacheSize", 250);
+        dbConfig.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
+        dbConfig.addDataSourceProperty("useServerPrepStmts", true);
+        dbConfig.addDataSourceProperty("useLocalSessionState", true);
+        dbConfig.addDataSourceProperty("rewriteBatchedStatements", true);
+        dbConfig.addDataSourceProperty("elideSetAutoCommits", true);
+        dbConfig.addDataSourceProperty("maintainTimeStats", false);
+        dbConfig.addDataSourceProperty("maximumPoolSize", 20);
+        dbConfig.setInitializationFailTimeout(10000);
+        dbConfig.setValidationTimeout(15000);
+        //this allows the config to override the hardset defaults...but ensure those defaults are
+        // set if non else are.
+        for (Map.Entry<String, Object> property : database.properties.entrySet()) {
+            dbConfig.addDataSourceProperty(property.getKey(), property.getValue());
+        }
+    }
+    
+    public String getSQL(String name) {
+        return statementCache.getOrDefault(name, null);
+    }
+    
+    public void addSQL(String name, String sql) {
+        statementCache.put(name, sql);
+    }
+    
+    public PreparedStatement prepareSQL(String name) {
+        try {
+            return dataSource.getConnection().prepareStatement(getSQL(name
+            ));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public PreparedStatement getPreparedStatement(String name) {
-        return preparedStatements.get(name);
+        return prepareSQL(name);
     }
 
     public void addPreparedStatement(String name, String sql, int mode) {
+        Connection connection = getConnection();
         try {
-            preparedStatements.put(name, dataSource.getConnection().prepareStatement(sql, mode));
+            PreparedStatement statement = connection.prepareStatement(sql, mode);
+            connection.close();
+            statement.close();
+            statementCache.put(name, sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void addPreparedStatement(String name, String sql) {
+        Connection connection = getConnection();
         try {
-            preparedStatements.put(name, preparing.prepareStatement(sql));
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.close();
+            statementCache.put(name, sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
-    public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+    
+    public Connection getConnection() {
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /*

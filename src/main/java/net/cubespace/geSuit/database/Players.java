@@ -1,7 +1,6 @@
 package net.cubespace.geSuit.database;
 
 import com.google.common.collect.Maps;
-
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
@@ -9,17 +8,8 @@ import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
 
 /**
  * @author geNAZt (fabian.fassbender42@googlemail.com)
@@ -105,7 +95,8 @@ public class Players implements IRepository {
                 tps = res.getBoolean("tps");
             }
             res.close();
-
+            getPlayerTPS.close();
+            getPlayerTPS.getConnection().close();
             return tps;
         } catch (Exception e) {
             e.printStackTrace();
@@ -431,7 +422,7 @@ public class Players implements IRepository {
         connection.addPreparedStatement("getUUIDS", "SELECT uuid FROM " + ConfigManager.main.Table_Players + " WHERE " +
                 "uuid BETWEEN ? and ?");
     }
-
+    
     @Override
     public void checkUpdate() {
         int installedVersion = ConfigManager.main.Version_Database_Players;
