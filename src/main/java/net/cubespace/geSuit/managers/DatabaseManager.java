@@ -15,6 +15,7 @@ import net.cubespace.geSuit.geSuit;
  * @author geNAZt (fabian.fassbender42@googlemail.com)
  */
 public class DatabaseManager {
+    public static boolean enabled = false;
     public static ConnectionPool connectionPool;
     public static Homes homes;
     public static Bans bans;
@@ -26,7 +27,7 @@ public class DatabaseManager {
     public static OnTime ontime;
 
     static {
-        //geSuit.instance.getLogger().log(Level.INFO, "Instantiating DatabaseManager");
+        //geSuit.getInstance().getLogger().log(Level.INFO, "Instantiating DatabaseManager");
         players = new Players();
         homes = new Homes();
         bans = new Bans();
@@ -45,19 +46,26 @@ public class DatabaseManager {
         connectionPool.addRepository(warps);
         connectionPool.addRepository(tracking);
         connectionPool.addRepository(ontime);
-        try {
-            connectionPool.initialiseConnections(ConfigManager.main.Database);
-            // Add the description column to the warps table if missing
-            connectionPool.AddStringColumnIfMissing("warps", "description", 128);
-            AnnouncementManager.loadAnnouncements();
-            WarpsManager.loadWarpLocations();
-            PortalManager.loadPortals();
-            SpawnManager.loadSpawns();
-        
-        } catch (IllegalStateException e) {
-            geSuit.instance.getLogger().warning("Gesuit could not initaliaze the database.... as " +
-                    "a result no warps portals or spawn locations are loaded....");
-        }
+        geSuit.getInstance().getProxy().getScheduler().runAsync(geSuit.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    if (connectionPool.initialiseConnections(ConfigManager.main.Database)) {
+                        connectionPool.AddStringColumnIfMissing("warps", "description", 128);
+                        AnnouncementManager.loadAnnouncements();
+                        WarpsManager.loadWarpLocations();
+                        PortalManager.loadPortals();
+                        SpawnManager.loadSpawns();
+                        enabled = true;
+                    }
+                } catch (IllegalStateException e) {
+                    geSuit.getInstance().getLogger().warning("Gesuit could not initaliaze the database.... as " +
+                            "a result no warps portals or spawn locations are loaded....");
+                    enabled = false;
+                }
+            }
+        });
     }
 
 }

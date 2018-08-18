@@ -7,6 +7,7 @@ import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.objects.TimeRecord;
 import net.md_5.bungee.api.ChatColor;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,9 +34,9 @@ public class OnTime implements IRepository {
         start.setTimeInMillis(tsStart);
         Calendar end = Calendar.getInstance();
         end.setTimeInMillis(tsEnd);
-        
-        if (geSuit.instance.isDebugEnabled())
-        	geSuit.instance.DebugMsg("OnTime (" +player+ "): " + sdf.format(new Date(start.getTimeInMillis())) + " -> " + sdf.format(new Date(end.getTimeInMillis())));
+    
+        if (geSuit.getInstance().isDebugEnabled())
+            geSuit.getInstance().DebugMsg("OnTime (" + player + "): " + sdf.format(new Date(start.getTimeInMillis())) + " -> " + sdf.format(new Date(end.getTimeInMillis())));
 
         // Set up the initial slots
         Calendar slot = Calendar.getInstance();
@@ -72,9 +73,9 @@ public class OnTime implements IRepository {
         	// Only record positive online times  
         	if (time > 0) {
         		time = (time / 1000);  // Convert from milliseconds to seconds
-
-                if (geSuit.instance.isDebugEnabled())
-                	geSuit.instance.DebugMsg("   " +
+        
+                if (geSuit.getInstance().isDebugEnabled())
+                    geSuit.getInstance().DebugMsg("   " +
 	        			"Row " + loop + ": " +
 	        			"Slot: " + sdf.format(new Date(slot.getTimeInMillis())) + " = " +
 	        			sdf.format(new Date(from)) + " -> " +
@@ -104,11 +105,13 @@ public class OnTime implements IRepository {
         Statement stmt = null;
         try {
         	// Sadly, we can't use prepared statements here because the statement is dynamic
-            stmt = DatabaseManager.connectionPool.getConnection().createStatement();
+            Connection con = DatabaseManager.connectionPool.getConnection();
+            stmt = con.createStatement();
         	stmt.executeUpdate("INSERT DELAYED INTO "+ ConfigManager.main.Table_OnTime + " " +
         			"(uuid,timeslot,time) VALUES " + sqlvalues + " " +
         			"ON DUPLICATE KEY UPDATE time=time+VALUES(time)"
         	);
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -124,63 +127,66 @@ public class OnTime implements IRepository {
     public TimeRecord getPlayerOnTime(String uuid) {
         TimeRecord trec = new TimeRecord(uuid);
 
-        try {
-            PreparedStatement timeInfo;
-            ResultSet res;
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                Connection con1 = DatabaseManager.connectionPool.getConnection();
+                Connection con2 = DatabaseManager.connectionPool.getConnection();
+                Connection con3 = DatabaseManager.connectionPool.getConnection();
+                Connection con4 = DatabaseManager.connectionPool.getConnection();
 
+                PreparedStatement timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeToday", con);
+                PreparedStatement timeInfo2 = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeWeek", con1);
+                PreparedStatement timeInfo3 = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeMonth", con2);
+                PreparedStatement timeInfo4 = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeYear", con3);
+                PreparedStatement timeInfo5 = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeTotal", con4)
+        ) {
+            ResultSet res;
             // Time today
-            timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeToday");
             timeInfo.setString(1, uuid);
             res = timeInfo.executeQuery();
             if (res.next()) trec.setTimeToday(res.getLong(1) * 1000);
             res.close();
-
         	// Time this week
-            timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeWeek");
-            timeInfo.setString(1, uuid);
-            res = timeInfo.executeQuery();
+            timeInfo2.setString(1, uuid);
+            res = timeInfo2.executeQuery();
             if (res.next()) trec.setTimeWeek(res.getLong(1) * 1000);
             res.close();
 
         	// Time this month
-            timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeMonth");
-            timeInfo.setString(1, uuid);
-            res = timeInfo.executeQuery();
+
+            timeInfo3.setString(1, uuid);
+            res = timeInfo3.executeQuery();
             if (res.next()) trec.setTimeMonth(res.getLong(1) * 1000);
             res.close();
 
         	// Time this year
-            timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeYear");
-            timeInfo.setString(1, uuid);
-            res = timeInfo.executeQuery();
+            timeInfo4.setString(1, uuid);
+            res = timeInfo4.executeQuery();
             if (res.next()) trec.setTimeYear(res.getLong(1) * 1000);
             res.close();
-
         	// Total time
-            timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeTotal");
-            timeInfo.setString(1, uuid);
+            timeInfo5.setString(1, uuid);
             res = timeInfo.executeQuery();
             if (res.next()) trec.setTimeTotal(res.getLong(1) * 1000);
             res.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return trec;
     }    
 
     public Map<String, Long> getOnTimeTop(int pagenum) {
         LinkedHashMap<String, Long> results = null;
-        try {
-            PreparedStatement top;
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement top = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeTop", con)
+        ) {
             ResultSet res;
-            top = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeTop");
 
             results = new LinkedHashMap<>();
             int offset = (pagenum < 1) ? 0 : (pagenum - 1) * 10;	// Offset = Page number x 10 (but starts at 0 and no less than 0
             top.setInt(1, offset);
             res = top.executeQuery();
-
             // Build current page of results
             while (res.next()) {
                 String name = res.getString("pname");
@@ -191,20 +197,19 @@ public class OnTime implements IRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return results;
     }
 
     public Map<Timestamp, Long> getLastLogins(String uuid, int num){
         LinkedHashMap<Timestamp, Long> results = null;
-        try{
-            PreparedStatement lastLogins;
-            ResultSet res;
-            lastLogins = DatabaseManager.connectionPool.getPreparedStatement("getLastLogins");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement lastLogins = DatabaseManager.connectionPool.getPreparedStatement("getLastLogins", con)
+        ) {
             lastLogins.setString(1,uuid);
             lastLogins.setInt(2,num);
             results = new LinkedHashMap<>();
-            res = lastLogins.executeQuery();
+            ResultSet res = lastLogins.executeQuery();
             while (res.next()) {
                 Timestamp lastlogin = res.getTimestamp("logintime");
                 Long ontime = res.getLong("ontime");

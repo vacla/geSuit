@@ -14,6 +14,7 @@ import net.cubespace.geSuit.objects.Portal;
 import net.cubespace.geSuit.objects.Spawn;
 import net.cubespace.geSuit.objects.Warp;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,19 +32,20 @@ public class Converter {
         void convert() {
             ConnectionPool connectionHandler = connectionPool;
 
-            try {
+            try (Connection con = DatabaseManager.connectionPool.getConnection()) {
                 Map<String,String> playerUuids;
                 List<String> names = new ArrayList<>();
-                PreparedStatement selectPlayerNames = connectionHandler.getPreparedStatement("selectPlayerNames");
+                PreparedStatement selectPlayerNames = connectionHandler.getPreparedStatement("selectPlayerNames", con);
                 try (ResultSet resultSet = selectPlayerNames.executeQuery()) {
                     while (resultSet.next()) {
                         names.add(resultSet.getString("playername"));
                     }
                 }
+
                 
                 playerUuids = Utilities.getUUID(names);
-
-                PreparedStatement selectPlayers = connectionHandler.getPreparedStatement("selectPlayers");
+                selectPlayerNames.close();
+                PreparedStatement selectPlayers = connectionHandler.getPreparedStatement("selectPlayers", con);
 
                 try (ResultSet resultSet = selectPlayers.executeQuery()) {
                     while(resultSet.next()) {
@@ -55,6 +57,7 @@ public class Converter {
                         DatabaseManager.players.insertPlayerConvert(playerName, uuid, resultSet.getTimestamp("lastonline"), resultSet.getString("ipaddress"), resultSet.getBoolean("tps"));
                     }
                 }
+                selectPlayers.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -79,8 +82,8 @@ public class Converter {
 
     private class Homes implements IRepository {
         void convert() {
-            try {
-                PreparedStatement selectHomes = connectionPool.getPreparedStatement("selectHomes");
+            try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+                PreparedStatement selectHomes = connectionPool.getPreparedStatement("selectHomes", con);
 
                 ResultSet res = selectHomes.executeQuery();
                 while (res.next()) {
@@ -115,8 +118,8 @@ public class Converter {
 
     private class Portals implements IRepository {
         void convert() {
-            try {
-                PreparedStatement selectPortals = connectionPool.getPreparedStatement("selectPortals");
+            try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+                PreparedStatement selectPortals = connectionPool.getPreparedStatement("selectPortals", con);
 
                 ResultSet res = selectPortals.executeQuery();
                 while (res.next()) {
@@ -162,18 +165,18 @@ public class Converter {
     private class Bans implements IRepository {
         void convert() {
 
-            try {
+            try (Connection con = DatabaseManager.connectionPool.getConnection()) {
                 Map<String, String> playerUuid;
                 List<String> players = new ArrayList<>();
-                PreparedStatement selectBanPlayers = connectionPool.getPreparedStatement("selectBanPlayers");
+                PreparedStatement selectBanPlayers = connectionPool.getPreparedStatement("selectBanPlayers", con);
                 try (ResultSet res = selectBanPlayers.executeQuery()) {
                     while (res.next()) {
                         players.add(res.getString("player"));
                     }
                 }
                 playerUuid = Utilities.getUUID(players);
-
-                PreparedStatement selectBans = connectionPool.getPreparedStatement("selectBans");
+                selectBanPlayers.close();
+                PreparedStatement selectBans = connectionPool.getPreparedStatement("selectBans", con);
 
                 ResultSet res = selectBans.executeQuery();
                 while (res.next()) {
@@ -188,6 +191,7 @@ public class Converter {
                 }
 
                 res.close();
+                selectBans.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -212,8 +216,8 @@ public class Converter {
 
     private class Spawns implements IRepository {
         void convert() {
-            try {
-                PreparedStatement selectSpawns = connectionPool.getPreparedStatement("selectSpawns");
+            try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+                PreparedStatement selectSpawns = connectionPool.getPreparedStatement("selectSpawns", con);
 
                 ResultSet res = selectSpawns.executeQuery();
                 while (res.next()) {
@@ -245,8 +249,8 @@ public class Converter {
 
     private class Warps implements IRepository {
         void convert() {
-            try {
-                PreparedStatement selectWarps = connectionPool.getPreparedStatement("selectWarps");
+            try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+                PreparedStatement selectWarps = connectionPool.getPreparedStatement("selectWarps", con);
 
                 ResultSet res = selectWarps.executeQuery();
                 while (res.next()) {
@@ -308,7 +312,7 @@ public class Converter {
                 
                 }
             } catch (IllegalStateException e) {
-                geSuit.instance.getLogger().warning("Could not initialize BungeeSuitDatabase");
+                geSuit.getInstance().getLogger().warning("Could not initialize BungeeSuitDatabase");
                 e.printStackTrace();
             }
         }).start();

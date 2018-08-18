@@ -5,6 +5,7 @@ import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Warp;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -16,8 +17,8 @@ import java.util.List;
 public class Warps implements IRepository {
     public List<Warp> getWarps() {
         List<Warp> warps = new ArrayList<>();
-        try {
-            PreparedStatement getWarps = DatabaseManager.connectionPool.getPreparedStatement("getWarps");
+        try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+            PreparedStatement getWarps = DatabaseManager.connectionPool.getPreparedStatement("getWarps", con);
             if (getWarps == null) return warps;
             ResultSet res = getWarps.executeQuery();
             while (res.next()) {
@@ -40,8 +41,8 @@ public class Warps implements IRepository {
 
     public void insertWarp(Warp warp) {
 
-        try {
-            PreparedStatement insertWarp = DatabaseManager.connectionPool.getPreparedStatement("insertWarp");
+        try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+            PreparedStatement insertWarp = DatabaseManager.connectionPool.getPreparedStatement("insertWarp", con);
             insertWarp.setString(1, warp.getName());
             insertWarp.setString(2, warp.getLocation().getServer().getName());
             insertWarp.setString(3, warp.getLocation().getWorld());
@@ -63,8 +64,8 @@ public class Warps implements IRepository {
 
     public void updateWarp(Warp warp) {
 
-        try {
-            PreparedStatement updateWarp = DatabaseManager.connectionPool.getPreparedStatement("updateWarp");
+        try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+            PreparedStatement updateWarp = DatabaseManager.connectionPool.getPreparedStatement("updateWarp", con);
             updateWarp.setString(1, warp.getLocation().getServer().getName());
             updateWarp.setString(2, warp.getLocation().getWorld());
             updateWarp.setDouble(3, warp.getLocation().getX());
@@ -86,8 +87,8 @@ public class Warps implements IRepository {
 
     public void deleteWarp(String warp) {
 
-        try {
-            PreparedStatement deleteWarp = DatabaseManager.connectionPool.getPreparedStatement("deleteWarp");
+        try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+            PreparedStatement deleteWarp = DatabaseManager.connectionPool.getPreparedStatement("deleteWarp", con);
             deleteWarp.setString(1, warp);
 
             deleteWarp.executeUpdate();

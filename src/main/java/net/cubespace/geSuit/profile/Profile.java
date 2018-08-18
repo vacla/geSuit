@@ -1,9 +1,14 @@
 package net.cubespace.geSuit.profile;
 
 import com.google.gson.Gson;
+
 import net.cubespace.geSuit.Utilities;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -28,14 +33,7 @@ public class Profile {
         }
     }
     private static final Charset UTF8 = Charset.forName("UTF-8");
-    private static final ThreadLocal<Gson> gson = new ThreadLocal<Gson>() {
-
-        @Override
-        protected Gson initialValue() {
-            return new Gson();
-        }
-        
-    };
+    private static final ThreadLocal<Gson> gson = ThreadLocal.withInitial(() -> new Gson());
     private String id;
     private String name;
 

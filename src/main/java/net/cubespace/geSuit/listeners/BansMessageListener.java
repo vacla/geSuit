@@ -33,7 +33,7 @@ public class BansMessageListener implements Listener {
         }
 
 		// Message debugging (can be toggled live)
-		if (geSuit.instance.isDebugEnabled()) {
+        if (geSuit.getInstance().isDebugEnabled()) {
 			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
 		}
 
@@ -115,7 +115,7 @@ public class BansMessageListener implements Listener {
             case "LockDownStatus":
                 LockDownManager.checkExpiry(in.readUTF());
             default:
-                geSuit.instance.getLogger().log(Level.INFO, task + " : has no handler ");
+                geSuit.getInstance().getLogger().log(Level.INFO, task + " : has no handler ");
         }
     }
 

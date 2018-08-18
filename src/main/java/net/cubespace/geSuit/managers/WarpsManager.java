@@ -76,38 +76,38 @@ public class WarpsManager {
         if (!(server || global || hidden)) {
             s.sendMessage(ChatColor.RED + "No warps to display");
         }
-        String serverString = ChatColor.GOLD + "Server warps: \n";
-        String globalString = ChatColor.GOLD + "Global warps: \n";
-        String hiddenString = ChatColor.GOLD + "Hidden warps: \n";
+        StringBuilder serverString = new StringBuilder(ChatColor.GOLD + "Server warps: \n");
+        StringBuilder globalString = new StringBuilder(ChatColor.GOLD + "Global warps: \n");
+        StringBuilder hiddenString = new StringBuilder(ChatColor.GOLD + "Hidden warps: \n");
 
         Map<String, Warp> sorted = new TreeMap<>(warps);
         for (Warp w : sorted.values()) {
             if (w.isGlobal()) {
-                globalString += w.getName() + ", ";
+                globalString.append(w.getName()).append(", ");
             } else if (w.isHidden()) {
-                hiddenString += w.getName() + ", ";
+                hiddenString.append(w.getName()).append(", ");
             } else if (s.getServer().equals(w.getLocation().getServer().getName())) {
-                serverString += w.getName() + ", ";
+                serverString.append(w.getName()).append(", ");
             } else if (bypass) {
-                globalString += w.getName() + ", ";
+                globalString.append(w.getName()).append(", ");
             }
         }
         if (server) {
             if (serverString.length() == 17) {
-                serverString += ChatColor.RED + " none  ";
+                serverString.append(ChatColor.RED + " none  ");
             }
             s.sendMessage(serverString.substring(0, serverString.length() - 2));
         }
         if (global) {
             if (globalString.length() == 17) {
-                globalString += ChatColor.RED + " none  ";
+                globalString.append(ChatColor.RED + " none  ");
             }
 
             s.sendMessage(globalString.substring(0, globalString.length() - 2));
         }
         if (hidden) {
             if (hiddenString.length() == 17) {
-                hiddenString += ChatColor.RED + " none  ";
+                hiddenString.append(ChatColor.RED + " none  ");
             }
             s.sendMessage(hiddenString.substring(0, hiddenString.length() - 2));
         }

@@ -16,7 +16,7 @@ public class SpawnListener implements Listener {
             if (SpawnManager.doesProxySpawnExist()) {
                 SpawnManager.sendPlayerToProxySpawn(PlayerManager.getPlayer(e.getPlayer().getName(), true));
             } else {
-                geSuit.instance.getLogger().warning("Wanted to use ForceAllPlayersToProxySpawn without a Proxy Spawn set");
+                geSuit.getInstance().getLogger().warning("Wanted to use ForceAllPlayersToProxySpawn without a Proxy Spawn set");
             }
         }
     }

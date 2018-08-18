@@ -5,6 +5,7 @@ import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Spawn;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -17,8 +18,8 @@ public class Spawns implements IRepository {
     public Location getSpawn(String spawnName) {
         Location location = null;
 
-        try {
-            PreparedStatement getSpawn = DatabaseManager.connectionPool.getPreparedStatement("getSpawn");
+        try (Connection con = DatabaseManager.connectionPool.getConnection();
+             PreparedStatement getSpawn = DatabaseManager.connectionPool.getPreparedStatement("getSpawn", con)) {
             if (getSpawn == null) return null;
             getSpawn.setString(1, spawnName);
             ResultSet res = getSpawn.executeQuery();
@@ -26,7 +27,6 @@ public class Spawns implements IRepository {
                 location = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
             }
             res.close();
-            getSpawn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -36,8 +36,8 @@ public class Spawns implements IRepository {
     public Location getServerSpawn(String spawnName, String serverName) {
         Location location = null;
 
-        try {
-            PreparedStatement getServerSpawn = DatabaseManager.connectionPool.getPreparedStatement("getServerSpawn");
+        try (Connection con = DatabaseManager.connectionPool.getConnection();
+             PreparedStatement getServerSpawn = DatabaseManager.connectionPool.getPreparedStatement("getServerSpawn", con)) {
             getServerSpawn.setString(1, spawnName);
             getServerSpawn.setString(2, serverName);
 
@@ -46,7 +46,6 @@ public class Spawns implements IRepository {
                 location = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
             }
             res.close();
-            getServerSpawn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,13 +54,12 @@ public class Spawns implements IRepository {
 
     public void deleteWorldSpawn(String server, String world) {
 
-        try {
-            PreparedStatement deleteSpawn = DatabaseManager.connectionPool.getPreparedStatement("deleteWorldSpawn");
+        try (Connection con = DatabaseManager.connectionPool.getConnection();
+             PreparedStatement deleteSpawn = DatabaseManager.connectionPool.getPreparedStatement("deleteWorldSpawn", con)) {
             deleteSpawn.setString(1, server);
             deleteSpawn.setString(2, world);
 
             deleteSpawn.executeUpdate();
-            deleteSpawn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,17 +68,17 @@ public class Spawns implements IRepository {
     public List<Spawn> getSpawnsForServer(String server) {
         List<Spawn> spawns = new ArrayList<>();
 
-        try {
-            PreparedStatement getSpawnsForServer = DatabaseManager.connectionPool.getPreparedStatement("getSpawnsForServer");
-            getSpawnsForServer.setString(1, server);
+        try (Connection con = DatabaseManager.connectionPool.getConnection();
+             PreparedStatement getSpawnsForServer = DatabaseManager.connectionPool.getPreparedStatement("getSpawnsForServer", con)
+        ) {
 
+            getSpawnsForServer.setString(1, server);
             ResultSet res = getSpawnsForServer.executeQuery();
             while (res.next()) {
                 Location location = new Location(res.getString("server"), res.getString("world"), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("yaw"), res.getFloat("pitch"));
                 spawns.add(new Spawn(res.getString("spawnname"), location));
             }
             res.close();
-            getSpawnsForServer.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,8 +89,9 @@ public class Spawns implements IRepository {
 
     public void insertSpawn(Spawn spawn) {
 
-        try {
-            PreparedStatement insertSpawn = DatabaseManager.connectionPool.getPreparedStatement("insertSpawn");
+        try (Connection con = DatabaseManager.connectionPool.getConnection();
+             PreparedStatement insertSpawn = DatabaseManager.connectionPool.getPreparedStatement("insertSpawn", con)
+        ) {
             insertSpawn.setString(1, spawn.getName());
             insertSpawn.setString(2, spawn.getLocation().getServer().getName());
             insertSpawn.setString(3, spawn.getLocation().getWorld());
@@ -103,7 +102,6 @@ public class Spawns implements IRepository {
             insertSpawn.setFloat(8, spawn.getLocation().getPitch());
 
             insertSpawn.executeUpdate();
-            insertSpawn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,8 +109,9 @@ public class Spawns implements IRepository {
 
     public void updateSpawn(Spawn spawn) {
 
-        try {
-            PreparedStatement updateSpawn = DatabaseManager.connectionPool.getPreparedStatement("updateSpawn");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement updateSpawn = DatabaseManager.connectionPool.getPreparedStatement("updateSpawn", con)) {
             updateSpawn.setString(1, spawn.getLocation().getWorld());
             updateSpawn.setDouble(2, spawn.getLocation().getX());
             updateSpawn.setDouble(3, spawn.getLocation().getY());
@@ -123,7 +122,6 @@ public class Spawns implements IRepository {
             updateSpawn.setString(8, spawn.getLocation().getServer().getName());
 
             updateSpawn.executeUpdate();
-            updateSpawn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

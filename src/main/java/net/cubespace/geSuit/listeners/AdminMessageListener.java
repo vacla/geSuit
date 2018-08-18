@@ -23,7 +23,7 @@ public class AdminMessageListener implements Listener {
         if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.ADMIN_CHANNEL.toString())) {
             return;
         }
-        if (geSuit.instance.isDebugEnabled()) {
+        if (geSuit.getInstance().isDebugEnabled()) {
             Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
         }
         event.setCancelled(true);

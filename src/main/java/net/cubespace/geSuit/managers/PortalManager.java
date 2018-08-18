@@ -60,11 +60,7 @@ public class PortalManager {
             }
         }
 
-        List<Portal> list = portals.get(max.getServer());
-        if (list == null) {
-            list = new ArrayList<>();
-            portals.put(max.getServer(), list);
-        }
+        List<Portal> list = portals.computeIfAbsent(max.getServer(), k -> new ArrayList<>());
 
         Portal p = new Portal(name, max.getServer().getName(), fillType, type, dest, max, min);
         if (doesPortalExist(name)) {
@@ -157,15 +153,15 @@ public class PortalManager {
 
     public static void listPortals(GSPlayer p) {
         for (ServerInfo s : portals.keySet()) {
-            String message = "";
-            message += ChatColor.GOLD + s.getName() + ": " + ChatColor.RESET;
+            StringBuilder message = new StringBuilder();
+            message.append(ChatColor.GOLD).append(s.getName()).append(": ").append(ChatColor.RESET);
 
             List<Portal> list = portals.get(s);
             for (Portal portal : list) {
-                message += portal.getName() + ", ";
+                message.append(portal.getName()).append(", ");
             }
 
-            p.sendMessage(message);
+            p.sendMessage(message.toString());
         }
     }
 }

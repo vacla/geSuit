@@ -163,7 +163,7 @@ public class HomesManager {
 
         for (Home home : homes) {
             if (home.loc.getServer() == null) {
-                geSuit.instance.getLogger().warning("Invalid server for home \"" + home.name + "\" of player " + player.getName() + "!");
+                geSuit.getInstance().getLogger().warning("Invalid server for home \"" + home.name + "\" of player " + player.getName() + "!");
                 continue;
             }
 
@@ -273,7 +273,7 @@ public class HomesManager {
         }
         DatabaseManager.homes.deleteHome(h);
         PlayerManager.sendMessageToTarget(sender, ConfigManager.messages.HOME_OTHER_DELETED.replace("{home}", home).replace("{player}", playername));
-        ProxiedPlayer bungeePlayer = geSuit.instance.getProxy().getPlayer(player.getUuid());
+        ProxiedPlayer bungeePlayer = geSuit.getInstance().getProxy().getPlayer(player.getUuid());
         if (bungeePlayer != null) {
             PlayerManager.sendMessageToTarget(player, ConfigManager.messages.HOME_DELETED.replace("{home}", home));
         }

@@ -6,6 +6,7 @@ import net.cubespace.geSuit.objects.Location;
 import net.cubespace.geSuit.objects.Portal;
 import net.md_5.bungee.api.config.ServerInfo;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -20,8 +21,10 @@ public class Portals implements IRepository {
     public Map<ServerInfo, List<Portal>> getPortals() {
         Map<ServerInfo, List<Portal>> portalMap = new HashMap<>();
 
-        try {
-            PreparedStatement getPortals = DatabaseManager.connectionPool.getPreparedStatement("getPortals");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement getPortals = DatabaseManager.connectionPool.getPreparedStatement("getPortals", con)
+        ) {
             if (getPortals == null) return portalMap;
             ResultSet res = getPortals.executeQuery();
             while (res.next()) {
@@ -39,11 +42,7 @@ public class Portals implements IRepository {
                 double zmin = res.getDouble("zmin");
 
                 Portal p = new Portal(name, server, fill, type, dest, new Location(server, world, xmax, ymax, zmax), new Location(server, world, xmin, ymin, zmin));
-                List<Portal> list = portalMap.get(p.getServer());
-                if (list == null) {
-                    list = new ArrayList<>();
-                    portalMap.put(p.getServer(), list);
-                }
+                List<Portal> list = portalMap.computeIfAbsent(p.getServer(), k -> new ArrayList<>());
 
                 list.add(p);
             }
@@ -59,10 +58,10 @@ public class Portals implements IRepository {
 
     public void deletePortal(String portalName) {
 
-        try {
-            PreparedStatement deletePortal = DatabaseManager.connectionPool.getPreparedStatement("deletePortal");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement deletePortal = DatabaseManager.connectionPool.getPreparedStatement("deletePortal", con)) {
             deletePortal.setString(1, portalName);
-
             deletePortal.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,8 +69,9 @@ public class Portals implements IRepository {
     }
 
     public void insertPortal(Portal portal) {
-        try {
-            PreparedStatement insertPortal = DatabaseManager.connectionPool.getPreparedStatement("insertPortal");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement insertPortal = DatabaseManager.connectionPool.getPreparedStatement("insertPortal", con)) {
             insertPortal.setString(1, portal.getName());
             insertPortal.setString(2, portal.getServer().getName());
             insertPortal.setString(3, portal.getType());
@@ -84,17 +84,17 @@ public class Portals implements IRepository {
             insertPortal.setInt(10, (int) portal.getMin().getY());
             insertPortal.setInt(11, (int) portal.getMax().getZ());
             insertPortal.setInt(12, (int) portal.getMin().getZ());
-
             insertPortal.executeUpdate();
-            insertPortal.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void updatePortal(Portal portal) {
-        try {
-            PreparedStatement updatePortal = DatabaseManager.connectionPool.getPreparedStatement("updatePortal");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement updatePortal = DatabaseManager.connectionPool.getPreparedStatement("updatePortal", con)
+        ) {
             updatePortal.setString(1, portal.getServer().getName());
             updatePortal.setString(2, portal.getMax().getWorld());
             updatePortal.setString(3, portal.getType());

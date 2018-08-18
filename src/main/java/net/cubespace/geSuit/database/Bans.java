@@ -6,6 +6,7 @@ import net.cubespace.geSuit.managers.ConfigManager;
 import net.cubespace.geSuit.managers.DatabaseManager;
 import net.cubespace.geSuit.objects.Ban;
 
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,9 +30,11 @@ public class Bans implements IRepository {
     }
 
     public boolean isPlayerBanned(String player, String uuid, String ip) {
-
-        try {
-            PreparedStatement isPlayerBanned = DatabaseManager.connectionPool.getPreparedStatement("isPlayerBanned");
+    
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement isPlayerBanned = DatabaseManager.connectionPool.getPreparedStatement(
+                        "isPlayerBanned", con)) {
             isPlayerBanned.setString(1, player);
             isPlayerBanned.setString(2, uuid);
             isPlayerBanned.setString(3, ip);
@@ -44,8 +47,11 @@ public class Bans implements IRepository {
     }
 
     public int banPlayer(String banned_playername, String banned_uuid, String banned_ip, String bannedBy, String reason, String type) {
-        try {
-            PreparedStatement banPlayer = DatabaseManager.connectionPool.getPreparedStatement("banPlayer");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement banPlayer =
+                        DatabaseManager.connectionPool.getPreparedStatement("banPlayer", con)
+        ) {
             banPlayer.setString(1, banned_playername);
             banPlayer.setString(2, banned_uuid);
             banPlayer.setString(3, banned_ip);
@@ -66,9 +72,12 @@ public class Bans implements IRepository {
     }
 
     public int warnPlayer(String banned_playername, String banned_uuid, String bannedBy, String reason) {
-
-        try {
-            PreparedStatement banPlayer = DatabaseManager.connectionPool.getPreparedStatement("warnPlayer");
+    
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement banPlayer =
+                        DatabaseManager.connectionPool.getPreparedStatement("warnPlayer", con)
+        ) {
             banPlayer.setString(1, banned_playername);
             banPlayer.setString(2, banned_uuid);
             banPlayer.setString(3, bannedBy);
@@ -87,9 +96,12 @@ public class Bans implements IRepository {
     }
 
     public int kickPlayer(String banned_playername, String banned_uuid, String bannedBy, String reason) {
-
-        try {
-            PreparedStatement banPlayer = DatabaseManager.connectionPool.getPreparedStatement("kickPlayer");
+    
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement banPlayer =
+                        DatabaseManager.connectionPool.getPreparedStatement("kickPlayer", con)
+        ) {
             banPlayer.setString(1, banned_playername);
             banPlayer.setString(2, banned_uuid);
             banPlayer.setString(3, bannedBy);
@@ -108,8 +120,11 @@ public class Bans implements IRepository {
     }
 
     public void tempBanPlayer(String banned_playername, String banned_uuid, String banned_by, String reason, String till) {
-        try {
-            PreparedStatement tempBanPlayer = DatabaseManager.connectionPool.getPreparedStatement("tempBanPlayer");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement tempBanPlayer =
+                        DatabaseManager.connectionPool.getPreparedStatement("tempBanPlayer", con)
+        ) {
             tempBanPlayer.setString(1, banned_playername);
             tempBanPlayer.setString(2, banned_uuid);
             tempBanPlayer.setString(3, banned_by);
@@ -124,8 +139,11 @@ public class Bans implements IRepository {
 
     public List<Ban> getBanHistory(String lookup) {
         List<Ban> bans = new ArrayList<>();
-        try {
-            PreparedStatement banInfo = DatabaseManager.connectionPool.getPreparedStatement("banHistory");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement banInfo =
+                        DatabaseManager.connectionPool.getPreparedStatement("banHistory", con)
+        ) {
             banInfo.setString(1, lookup);
             banInfo.setString(2, lookup);
             banInfo.setString(3, lookup);
@@ -145,8 +163,11 @@ public class Bans implements IRepository {
 
     public List<Ban> getWarnHistory(String player, String uuid) {
         List<Ban> bans = new ArrayList<>();
-        try {
-            PreparedStatement banInfo = DatabaseManager.connectionPool.getPreparedStatement("warnHistory");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement banInfo =
+                        DatabaseManager.connectionPool.getPreparedStatement("warnHistory", con)
+        ) {
             banInfo.setString(1, player);
             banInfo.setString(2, uuid);
 
@@ -165,11 +186,13 @@ public class Bans implements IRepository {
 
     public List<Ban> getKickHistory(String player, String uuid) {
         List<Ban> bans = new ArrayList<>();
-        try {
-            PreparedStatement banInfo = DatabaseManager.connectionPool.getPreparedStatement("kickHistory");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement banInfo =
+                        DatabaseManager.connectionPool.getPreparedStatement("kickHistory", con)
+        ) {
             banInfo.setString(1, player);
             banInfo.setString(2, uuid);
-
             ResultSet res = banInfo.executeQuery();
             while (res.next()) {
                 bans.add(new Ban(res.getInt("id"), res.getString("banned_playername"), res.getString("banned_uuid"), res.getString("banned_ip"), res.getString("banned_by"), res.getString("reason"), res.getString("type"), res.getInt("active"), res.getTimestamp("banned_on"), res.getTimestamp("banned_until")));
@@ -184,8 +207,11 @@ public class Bans implements IRepository {
 
     public List<Ban> getKickWarnHistory(String player, String uuid) {
         List<Ban> bans = new ArrayList<>();
-        try {
-            PreparedStatement banInfo = DatabaseManager.connectionPool.getPreparedStatement("kickwarnHistory");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement banInfo =
+                        DatabaseManager.connectionPool.getPreparedStatement("kickwarnHistory", con)
+        ) {
             banInfo.setString(1, player);
             banInfo.setString(2, uuid);
 
@@ -208,9 +234,12 @@ public class Bans implements IRepository {
 
     public Ban getBanInfo(String player, String uuid, String ip) {
         Ban b = null;
-
-        try {
-            PreparedStatement banInfo = DatabaseManager.connectionPool.getPreparedStatement("banInfo");
+    
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement banInfo =
+                        DatabaseManager.connectionPool.getPreparedStatement("banInfo", con)
+        ) {
             banInfo.setString(1, player);
             banInfo.setString(2, uuid);
             banInfo.setString(3, ip);
@@ -229,29 +258,35 @@ public class Bans implements IRepository {
     }
 
     public void unbanPlayer(int id) {
-        try {
-            PreparedStatement unbanPlayer = DatabaseManager.connectionPool.getPreparedStatement("unbanPlayer");
-            unbanPlayer.setInt(1, id);
-            unbanPlayer.executeUpdate();
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement statement =
+                        DatabaseManager.connectionPool.getPreparedStatement("unbanPlayer", con)
+        ) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void insertBanConvert(String bannedBy, String player, String uuid, String ip, String reason, String type, int active, Date bannedOn, Date bannedUntil) {
-        try {
-            PreparedStatement insertBanConvert = DatabaseManager.connectionPool.getPreparedStatement("insertBanConvert");
-            insertBanConvert.setString(1, player); //playerName
-            insertBanConvert.setString(2, uuid); //UUID
-            insertBanConvert.setString(3, ip); //IP
-            insertBanConvert.setString(4, bannedBy);
-            insertBanConvert.setString(5, reason);
-            insertBanConvert.setString(6, type);
-            insertBanConvert.setInt(6, active);
-            insertBanConvert.setDate(7, bannedOn);
-            insertBanConvert.setDate(8, bannedUntil);
-
-            insertBanConvert.executeUpdate();
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement statement =
+                        DatabaseManager.connectionPool.getPreparedStatement("insertBanConvert", con)
+        ) {
+            statement.setString(1, player); //playerName
+            statement.setString(2, uuid); //UUID
+            statement.setString(3, ip); //IP
+            statement.setString(4, bannedBy);
+            statement.setString(5, reason);
+            statement.setString(6, type);
+            statement.setInt(6, active);
+            statement.setDate(7, bannedOn);
+            statement.setDate(8, bannedUntil);
+        
+            statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -306,9 +341,12 @@ public class Bans implements IRepository {
         if (installedVersion < 2) {
             // Version 2 adds UUIDs as Field
             // Convert all Names to UUIDs
-            PreparedStatement getBans = DatabaseManager.connectionPool.getPreparedStatement("getBans");
-            try {
-                ResultSet res = getBans.executeQuery();
+            try (
+                    Connection con = DatabaseManager.connectionPool.getConnection();
+                    PreparedStatement statement =
+                            DatabaseManager.connectionPool.getPreparedStatement("getBans", con)
+            ) {
+                ResultSet res = statement.executeQuery();
                 while (res.next()) {
                     String bannedEntity = res.getString("banned_uuid");
 
@@ -316,11 +354,16 @@ public class Bans implements IRepository {
                         String uuid = Utilities.getUUID(bannedEntity);
 
                         if (uuid != null) {
-                            try {
-                                PreparedStatement updateToUUID = DatabaseManager.connectionPool.getPreparedStatement("updateToUUID");
-                                updateToUUID.setString(1, uuid);
-                                updateToUUID.setInt(2, res.getInt("id"));
-                                updateToUUID.executeUpdate();
+                            try (
+                                    Connection con2 =
+                                            DatabaseManager.connectionPool.getConnection();
+                                    PreparedStatement statement2 =
+                                            DatabaseManager.connectionPool.getPreparedStatement(
+                                                    "updateToUUID", con2)
+                            ) {
+                                statement2.setString(1, uuid);
+                                statement2.setInt(2, res.getInt("id"));
+                                statement2.executeUpdate();
                             } catch (SQLException e) {
                                 System.out.println("Could not update Ban for update to version 2");
                                 e.printStackTrace();
@@ -337,13 +380,17 @@ public class Bans implements IRepository {
 
         if (installedVersion < 3) { //dimensionZ aggressive+freedom-of-ban update
             boolean updateCompleted = false;
-            try {
-                PreparedStatement updateToVersion3 = DatabaseManager.connectionPool.getPreparedStatement("updateToVersion3-part1");
-                updateToVersion3.executeUpdate();
-                updateToVersion3 = DatabaseManager.connectionPool.getPreparedStatement("updateToVersion3-part2");
-                updateToVersion3.executeUpdate();
-                updateToVersion3 = DatabaseManager.connectionPool.getPreparedStatement("updateToVersion3-part3");
-                updateToVersion3.executeUpdate();
+            try (
+                    Connection con = DatabaseManager.connectionPool.getConnection();
+                    PreparedStatement statement =
+                            DatabaseManager.connectionPool.getPreparedStatement("updateToVersion3-part1", con);
+                    PreparedStatement statement2 = DatabaseManager.connectionPool.getPreparedStatement("updateToVersion3-part2", con);
+                    PreparedStatement statement3 = DatabaseManager.connectionPool.getPreparedStatement("updateToVersion3-part3", con)
+
+            ) {
+                statement.executeUpdate();
+                statement2.executeUpdate();
+                statement3.executeUpdate();
                 System.out.println("Updated Bans to version 3!");
                 updateCompleted = true;
             } catch (SQLException ex) {

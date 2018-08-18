@@ -1,15 +1,24 @@
 package net.cubespace.geSuit.database;
 
 import au.com.addstar.dripreporter.DripReporterApi;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.geSuit.configs.SubConfig.Database;
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.sql.*;
+import org.jetbrains.annotations.Nullable;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +27,7 @@ import java.util.logging.Level;
 public class ConnectionPool {
     private HikariConfig dbConfig = new HikariConfig();
     private HikariDataSource dataSource;
+    private boolean configured = false;
     private Map<String, String> statementCache = new HashMap<>();
     private ArrayList<IRepository> repositories = new ArrayList<>();
 
@@ -36,7 +46,7 @@ public class ConnectionPool {
                             standardQuery("CREATE TABLE IF NOT EXISTS `" + tableInformation[0] + "` (" + tableInformation[1] + ");");
                         } catch (SQLException e) {
                             e.printStackTrace();
-                            geSuit.instance.getLogger().severe("Could not create Table " + tableInformation[0].substring(0, 20) + " ...");
+                            geSuit.getInstance().getLogger().severe("Could not create Table " + tableInformation[0].substring(0, 20) + " ...");
                             throw new IllegalStateException(e.getMessage());
                         }
                     }
@@ -59,6 +69,7 @@ public class ConnectionPool {
     }
 
     protected boolean configureDataSource(Database database) {
+        if (configured) return true;
         dbConfig.setJdbcUrl("jdbc:mysql://" + database.Host + ":" + database.Port + "/" + database.Database + "?useSSL=" + database.useSSL);
         dbConfig.setUsername(database.Username);
         dbConfig.setPassword(database.Password);
@@ -69,17 +80,18 @@ public class ConnectionPool {
         for (IRepository rep : repositories) {
             rep.registerPreparedStatements(this);
         }
+        configured = true;
         return true;
     }
 
     private void enableMetrics() {
-        geSuit.instance.getLogger().log(Level.INFO, "geSuit is adding metrics....");
+        geSuit.getInstance().getLogger().log(Level.INFO, "geSuit is adding metrics....");
         try {
-            Plugin p = geSuit.instance.getProxy().getPluginManager().getPlugin("DripCordReporter");
+            Plugin p = geSuit.getInstance().getProxy().getPluginManager().getPlugin("DripCordReporter");
             dbConfig.setMetricRegistry(((DripReporterApi) p).getRegistry());
             dbConfig.setHealthCheckRegistry(((DripReporterApi) p).getHealthRegistry());
         } catch (Exception e) {
-            geSuit.instance.getLogger().log(Level.WARNING, "geSuit could not add Metrics to the Database Source");
+            geSuit.getInstance().getLogger().log(Level.WARNING, "geSuit could not add Metrics to the Database Source");
             e.printStackTrace();
         }
     }
@@ -102,28 +114,48 @@ public class ConnectionPool {
             dbConfig.addDataSourceProperty(property.getKey(), property.getValue());
         }
     }
-    
-    public String getSQL(String name) {
+
+    private String getSQL(String name) {
         return statementCache.getOrDefault(name, null);
     }
     
     public void addSQL(String name, String sql) {
         statementCache.put(name, sql);
     }
-    
-    public PreparedStatement prepareSQL(String name) {
-        try {
-            return dataSource.getConnection().prepareStatement(getSQL(name
-            ));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+
+    private PreparedStatement prepareSQL(String name) throws SQLException {
+        Connection connection = dataSource.getConnection();
+        return prepareSQL(name, connection);
     }
 
-    public PreparedStatement getPreparedStatement(String name) {
+    private PreparedStatement prepareSQL(String name, Connection connection) throws SQLException {
+        String sql = getSQL(name);
+        if (sql == null) {
+            geSuit.getInstance().getLogger().warning("No SQL found for entry: " + name);
+            return null;
+        }
+        return connection.prepareStatement(sql);
+    }
+
+    @Nullable
+    public PreparedStatement getPreparedStatement(String name, Connection connection) throws SQLException {
+        return prepareSQL(name, connection);
+    }
+    
+    /**
+     * @param name the key to a statement
+     *
+     * @return A PreparedStatement ready for execution
+     *
+     * @deprecated using this method does not allow correct resource mamangement and can lead to
+     *         connections being held out of the pool ...until timeout.  if you use it you must
+     *         close the connection explicitly.
+     */
+    @Deprecated
+    public PreparedStatement getPreparedStatement(String name) throws SQLException {
         return prepareSQL(name);
     }
+    
 
     public void addPreparedStatement(String name, String sql, int mode) {
         Connection connection = getConnection();
@@ -142,6 +174,7 @@ public class ConnectionPool {
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.close();
+            connection.close();
             statementCache.put(name, sql);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -170,27 +203,30 @@ public class ConnectionPool {
     }
 
     private void addStringColumnToTable(String table, String column, int length) {
-
+    
         try {
-            geSuit.instance.getLogger().info("Adding column " + column + " to table " + table);
+            geSuit.getInstance().getLogger().info("Adding column " + column + " to table " + table);
 
             String query = "ALTER TABLE `" + table + "` ADD `" + column + "` varchar(" + length + ") NULL";
-
-            Statement statement = dataSource.getConnection().createStatement();
+            Connection con = dataSource.getConnection();
+            Statement statement = con.createStatement();
             statement.executeUpdate(query);
             statement.close();
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
-            geSuit.instance.getLogger().severe("Could not add column " + column + " to table " + table);
+            geSuit.getInstance().getLogger().severe("Could not add column " + column + " to table " + table);
             throw new IllegalStateException();
         }
     }
 
     private void standardQuery(String query) throws SQLException {
-        Statement statement = dataSource.getConnection().createStatement();
+        Connection connection = dataSource.getConnection();
+        Statement statement = connection.createStatement();
         statement.executeUpdate(query);
         statement.close();
+        connection.close();
     }
 
     private boolean doesTableExist(String table) {
@@ -206,8 +242,8 @@ public class ConnectionPool {
                             "WHERE TABLE_SCHEMA = database() AND " +
                             "TABLE_NAME = '" + table + "' AND " +
                             "COLUMN_NAME = '" + column + "';";
-
-            Statement statement = dataSource.getConnection().createStatement();
+            Connection con = dataSource.getConnection();
+            Statement statement =con.createStatement();
             ResultSet res = statement.executeQuery(query);
             while (res.next()) {
                 int colCount = res.getInt("RowCount");
@@ -215,11 +251,12 @@ public class ConnectionPool {
                     return true;
             }
             statement.close();
+            con.close();
             return false;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            geSuit.instance.getLogger().severe("Could not validate column " + column + " on table " + table);
+            geSuit.getInstance().getLogger().severe("Could not validate column " + column + " on table " + table);
             throw new IllegalStateException();
         }
     }

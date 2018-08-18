@@ -9,6 +9,7 @@ import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Track;
 import net.cubespace.geSuit.profile.Profile;
 
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,14 +27,13 @@ public class Tracking implements IRepository {
     
     public void insertTracking(String player, String uuid, String ip) {
 
-        try {
-            PreparedStatement insertPlayer = DatabaseManager.connectionPool.getPreparedStatement("insertTracking");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection(); PreparedStatement insertPlayer = DatabaseManager.connectionPool.getPreparedStatement("insertTracking", con)) {
             insertPlayer.setString(1, player);
             insertPlayer.setString(2, uuid);
             insertPlayer.setString(3, ip);
 
             insertPlayer.executeUpdate();
-            insertPlayer.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,15 +41,16 @@ public class Tracking implements IRepository {
 
     public void insertHistoricTracking(String player, String uuid, String ip, Date changedDate, Date lastSeen) {
 
-        try {
-            PreparedStatement insertPlayer = DatabaseManager.connectionPool.getPreparedStatement("insertHistoricTracking");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement insertPlayer = DatabaseManager.connectionPool.getPreparedStatement("insertHistoricTracking", con)
+        ) {
             insertPlayer.setString(1, player);
             insertPlayer.setString(2, uuid);
             insertPlayer.setString(3, ip);
             insertPlayer.setDate(4, changedDate);
             insertPlayer.setDate(5, lastSeen);
             insertPlayer.executeUpdate();
-            insertPlayer.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,23 +59,23 @@ public class Tracking implements IRepository {
     public List<Track> getPlayerTracking(String search, String type) {
         List<Track> tracking = new ArrayList<>();
 
-        try {
+        try (Connection con = DatabaseManager.connectionPool.getConnection()) {
         	PreparedStatement trackInfo;
 
             switch (type) {
                 case "ip":
                     // Lookup by IP
-                    trackInfo = DatabaseManager.connectionPool.getPreparedStatement("getIPTracking");
+                    trackInfo = DatabaseManager.connectionPool.getPreparedStatement("getIPTracking", con);
                     trackInfo.setString(1, search);
                     break;
                 case "uuid":
                     // Lookup by IP
-                    trackInfo = DatabaseManager.connectionPool.getPreparedStatement("getUUIDTracking");
+                    trackInfo = DatabaseManager.connectionPool.getPreparedStatement("getUUIDTracking", con);
                     trackInfo.setString(1, search);
                     break;
                 default:
                     // Lookup by player name
-                    trackInfo = DatabaseManager.connectionPool.getPreparedStatement("getPlayerTracking");
+                    trackInfo = DatabaseManager.connectionPool.getPreparedStatement("getPlayerTracking", con);
                     trackInfo.setString(1, search);
                     break;
             }
@@ -119,8 +120,8 @@ public class Tracking implements IRepository {
 
     public List<Track> getNameHistory(UUID id) {
         List<Track> tracking = new ArrayList<>();
-        try {
-            PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("getNameHistory");
+        try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+            PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("getNameHistory", con);
             String uuid = id.toString().replace("-", "");
             statement.setString(1, uuid);
             statement.setString(2, uuid);
@@ -149,8 +150,8 @@ public class Tracking implements IRepository {
     }
 
     public void batchUpdateNameHistories(final List<UUID> uuids) {
-        geSuit.instance.getProxy().getScheduler().runAsync(
-                geSuit.instance, nameHistoryUpdater((uuids)));
+        geSuit.getInstance().getProxy().getScheduler().runAsync(
+                geSuit.getInstance(), nameHistoryUpdater((uuids)));
     }
     
     Runnable nameHistoryUpdater(final List<UUID> uuids) {
@@ -187,8 +188,8 @@ public class Tracking implements IRepository {
 
     public Track checkNameChange(UUID id, String playername) {
         Track tracking = null;
-        try {
-            PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("checkNameChange");
+        try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+            PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("checkNameChange", con);
             String uuid = id.toString().replace("-", "");
             statement.setString(1, uuid);
             statement.setString(2, playername);

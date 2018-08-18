@@ -8,9 +8,11 @@ import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Home;
 import net.cubespace.geSuit.objects.Location;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +21,10 @@ import java.util.List;
  */
 public class Homes implements IRepository {
     public void addHome(Home home) {
-        try {
-            PreparedStatement addHome = DatabaseManager.connectionPool.getPreparedStatement("addHome");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement addHome = DatabaseManager.connectionPool.getPreparedStatement("addHome", con)
+        ) {
             addHome.setString(1, (home.owner.getUuid() != null) ? home.owner.getUuid() : home.owner.getName());
             addHome.setString(2, home.name);
             addHome.setString(3, home.loc.getServer().getName());
@@ -38,8 +42,10 @@ public class Homes implements IRepository {
     }
 
     public void updateHome(Home home) {
-        try {
-            PreparedStatement updateHome = DatabaseManager.connectionPool.getPreparedStatement("updateHome");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement updateHome = DatabaseManager.connectionPool.getPreparedStatement("updateHome", con)
+        ) {
             updateHome.setString(1, home.loc.getServer().getName());
             updateHome.setString(2, home.loc.getWorld());
             updateHome.setDouble(3, home.loc.getX());
@@ -57,8 +63,11 @@ public class Homes implements IRepository {
     }
 
     public void deleteHome(Home home) {
-        try {
-            PreparedStatement deleteHome = DatabaseManager.connectionPool.getPreparedStatement("deleteHome");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement deleteHome =
+                        DatabaseManager.connectionPool.getPreparedStatement("deleteHome", con)
+        ) {
             deleteHome.setString(1, home.name);
             deleteHome.setString(2, (home.owner.getUuid() != null) ? home.owner.getUuid() : home.owner.getName());
 
@@ -70,10 +79,12 @@ public class Homes implements IRepository {
 
     public List<Home> getHomesForPlayer(GSPlayer player) {
         List<Home> homes = new ArrayList<>();
-        try {
-            PreparedStatement getAllHomesForPlayer = DatabaseManager.connectionPool.getPreparedStatement("getAllHomesForPlayer");
+        try (
+                Connection con = DatabaseManager.connectionPool.getConnection();
+                PreparedStatement getAllHomesForPlayer = DatabaseManager.connectionPool.getPreparedStatement(
+                        "getAllHomesForPlayer", con)
+        ) {
             getAllHomesForPlayer.setString(1, (player.getUuid() != null) ? player.getUuid() : player.getName());
-
             ResultSet res = getAllHomesForPlayer.executeQuery();
             while (res.next()) {
                 String server = res.getString("server");
@@ -81,13 +92,11 @@ public class Homes implements IRepository {
                 homes.add(new Home(player, res.getString("home_name"), l));
             }
             res.close();
-
-            return homes;
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-
-        return null;
+        return homes;
     }
 
     @Override
@@ -124,23 +133,31 @@ public class Homes implements IRepository {
 
         if (installedVersion < 2) {
             // Version 2 adds UUIDs as Field
-            try {
-                DatabaseManager.connectionPool.getConnection().createStatement().execute("ALTER TABLE `" + ConfigManager.main.Table_Homes + "` DROP FOREIGN KEY `homes_ibfk_1`;");
+            try (
+                    Connection con = DatabaseManager.connectionPool.getConnection();
+                    Statement s = con.createStatement()
+            ) {
+                s.execute("ALTER TABLE `" + ConfigManager.main.Table_Homes +
+                        "` DROP FOREIGN KEY `homes_ibfk_1`;");
             } catch (SQLException e) {
                 e.printStackTrace();
                 return;
             }
             // Convert all Names to UUIDs
-            PreparedStatement getHomes = DatabaseManager.connectionPool.getPreparedStatement("getHomes");
-            try {
+            try (
+                    Connection con = DatabaseManager.connectionPool.getConnection();
+                    PreparedStatement getHomes = DatabaseManager.connectionPool.getPreparedStatement("getHomes", con)
+
+            ) {
                 ResultSet res = getHomes.executeQuery();
                 while (res.next()) {
                     String player = res.getString("player");
                     String uuid = Utilities.getUUID(player);
 
                     if (uuid != null) {
-                        try {
-                            PreparedStatement updateHomesToUUID = DatabaseManager.connectionPool.getPreparedStatement("updateHomesToUUID");
+                        try (
+                                PreparedStatement updateHomesToUUID = DatabaseManager.connectionPool.getPreparedStatement("updateHomesToUUID", con)
+                        ) {
                             updateHomesToUUID.setString(1, uuid);
                             updateHomesToUUID.setString(2, player);
                             updateHomesToUUID.executeUpdate();
@@ -155,8 +172,13 @@ public class Homes implements IRepository {
                 e.printStackTrace();
                 return;
             }
-            try {
-                DatabaseManager.connectionPool.getConnection().createStatement().execute("ALTER TABLE `" + ConfigManager.main.Table_Homes + "` ADD  CONSTRAINT `homes_ibfk_1` FOREIGN KEY (`player`) REFERENCES `" + ConfigManager.main.Table_Players + "`(`uuid`) ON DELETE CASCADE ON UPDATE CASCADE;");
+            try (
+                    Connection con = DatabaseManager.connectionPool.getConnection();
+                    Statement s = con.createStatement()
+            ) {
+                s.execute("ALTER TABLE `" + ConfigManager.main.Table_Homes +
+                        "` ADD  CONSTRAINT `homes_ibfk_1` FOREIGN KEY (`player`) REFERENCES `" + ConfigManager.main.Table_Players + "`(`uuid`) ON DELETE CASCADE ON UPDATE CASCADE;");
+                
             } catch (SQLException e) {
                 e.printStackTrace();
                 return;

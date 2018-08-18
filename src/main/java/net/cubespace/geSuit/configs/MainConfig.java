@@ -10,7 +10,7 @@ import java.io.File;
 
 public class MainConfig extends YamlConfig {
     public MainConfig() {
-        CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "config.yml");
+        CONFIG_FILE = new File(geSuit.getInstance().getDataFolder(), "config.yml");
         CONFIG_MODE = ConfigMode.PATH_BY_UNDERSCORE;
     }
 

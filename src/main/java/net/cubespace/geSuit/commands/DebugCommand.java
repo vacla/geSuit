@@ -37,9 +37,9 @@ public class DebugCommand extends Command
     	if (args.length == 0) {
 	
 	        // Toggle debug
-	        geSuit.instance.setDebugEnabled(!geSuit.instance.isDebugEnabled());
-	        
-	        PlayerManager.sendMessageToTarget(sender, "geSuit debug is now: " + (geSuit.instance.isDebugEnabled() ? "ENABLED" : "DISABLED"));
+            geSuit.getInstance().setDebugEnabled(!geSuit.getInstance().isDebugEnabled());
+        
+            PlayerManager.sendMessageToTarget(sender, "geSuit debug is now: " + (geSuit.getInstance().isDebugEnabled() ? "ENABLED" : "DISABLED"));
     	} else {
     		String action = args[0];
 			switch (action) {

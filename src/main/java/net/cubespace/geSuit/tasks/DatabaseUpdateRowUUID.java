@@ -4,6 +4,7 @@ import net.cubespace.geSuit.managers.DatabaseManager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -42,8 +43,8 @@ public class DatabaseUpdateRowUUID implements Runnable
         if (uuid == null || uuid.isEmpty()) {
             ProxyServer.getInstance().getLogger().warning("Could not fetch UUID for player " + playerName);
         } else {
-            try {
-                PreparedStatement updateUUID = DatabaseManager.connectionPool.getPreparedStatement("updateRowUUID");
+            try (Connection con = DatabaseManager.connectionPool.getConnection()) {
+                PreparedStatement updateUUID = DatabaseManager.connectionPool.getPreparedStatement("updateRowUUID", con);
                 updateUUID.setString(1, uuid);
                 updateUUID.setInt(2, rowID);
                 updateUUID.executeUpdate();

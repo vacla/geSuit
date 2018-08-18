@@ -30,7 +30,7 @@ public class SendSpawn {
             e.printStackTrace();
         }
     
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), new SendPluginMessage(geSuit
                 .CHANNEL_NAMES.SPAWN_CHANNEL.toString(), spawn
                 .getLocation().getServer(), bytes));
     }

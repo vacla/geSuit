@@ -1,9 +1,5 @@
 package net.cubespace.geSuit.managers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.cubespace.geSuit.objects.Location;
@@ -11,6 +7,10 @@ import net.cubespace.geSuit.pluginmessages.TPAFinalise;
 import net.cubespace.geSuit.pluginmessages.TeleportToLocation;
 import net.cubespace.geSuit.pluginmessages.TeleportToPlayer;
 import net.md_5.bungee.api.ProxyServer;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class TeleportManager {
     public static HashMap<GSPlayer, GSPlayer> pendingTeleportsTPA = new HashMap<>(); // Player ----teleported---> player
@@ -57,20 +57,17 @@ public class TeleportManager {
         pendingTeleportsTPA.put(bt, bp);
         bp.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", bt.getName()));
         bt.sendMessage(ConfigManager.messages.PLAYER_REQUESTS_TO_TELEPORT_TO_YOU.replace("{player}", bp.getName()));
-        ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {
-            @Override
-            public void run() {
-                if (pendingTeleportsTPA.containsKey(bt)) {
-                    if (!pendingTeleportsTPA.get(bt).equals(bp)) {
-                        return;
-                    }
-                    if (bp != null) {
-                        bp.sendMessage(ConfigManager.messages.TPA_REQUEST_TIMED_OUT.replace("{player}", bt.getName()));
-                    }
-                    pendingTeleportsTPA.remove(bt);
-                    if (bt != null) {
-                        bt.sendMessage(ConfigManager.messages.TP_REQUEST_OTHER_TIMED_OUT.replace("{player}", bp.getName()));
-                    }
+        ProxyServer.getInstance().getScheduler().schedule(geSuit.getInstance(), () -> {
+            if (pendingTeleportsTPA.containsKey(bt)) {
+                if (!pendingTeleportsTPA.get(bt).equals(bp)) {
+                    return;
+                }
+                if (bp != null) {
+                    bp.sendMessage(ConfigManager.messages.TPA_REQUEST_TIMED_OUT.replace("{player}", bt.getName()));
+                }
+                pendingTeleportsTPA.remove(bt);
+                if (bt != null) {
+                    bt.sendMessage(ConfigManager.messages.TP_REQUEST_OTHER_TIMED_OUT.replace("{player}", bp.getName()));
                 }
             }
         }, expireTime, TimeUnit.SECONDS);
@@ -99,20 +96,17 @@ public class TeleportManager {
         bp.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", bp.getName()));
         bt.sendMessage(ConfigManager.messages.PLAYER_REQUESTS_YOU_TELEPORT_TO_THEM.replace("{player}", bp.getName()));
 
-        ProxyServer.getInstance().getScheduler().schedule(geSuit.instance, new Runnable() {
-            @Override
-            public void run() {
-                if (pendingTeleportsTPAHere.containsKey(bt)) {
-                    if (!pendingTeleportsTPAHere.get(bt).equals(bp)) {
-                        return;
-                    }
-                    if (bp != null) {
-                        bp.sendMessage(ConfigManager.messages.TPAHERE_REQUEST_TIMED_OUT.replace("{player}", bt.getName()));
-                    }
-                    pendingTeleportsTPAHere.remove(bt);
-                    if (bt != null) {
-                        bt.sendMessage(ConfigManager.messages.TP_REQUEST_OTHER_TIMED_OUT.replace("{player}", bp.getName()));
-                    }
+        ProxyServer.getInstance().getScheduler().schedule(geSuit.getInstance(), () -> {
+            if (pendingTeleportsTPAHere.containsKey(bt)) {
+                if (!pendingTeleportsTPAHere.get(bt).equals(bp)) {
+                    return;
+                }
+                if (bp != null) {
+                    bp.sendMessage(ConfigManager.messages.TPAHERE_REQUEST_TIMED_OUT.replace("{player}", bt.getName()));
+                }
+                pendingTeleportsTPAHere.remove(bt);
+                if (bt != null) {
+                    bt.sendMessage(ConfigManager.messages.TP_REQUEST_OTHER_TIMED_OUT.replace("{player}", bp.getName()));
                 }
             }
         }, expireTime, TimeUnit.SECONDS);

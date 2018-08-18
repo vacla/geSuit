@@ -2,7 +2,12 @@ package net.cubespace.geSuit.listeners;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
-import net.cubespace.geSuit.managers.*;
+import net.cubespace.geSuit.managers.ConfigManager;
+import net.cubespace.geSuit.managers.DatabaseManager;
+import net.cubespace.geSuit.managers.GeoIPManager;
+import net.cubespace.geSuit.managers.LoggingManager;
+import net.cubespace.geSuit.managers.PlayerManager;
+import net.cubespace.geSuit.managers.SpawnManager;
 import net.cubespace.geSuit.objects.GSPlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -21,7 +26,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void playerLogin(LoginEvent event) {
-        event.registerIntent(geSuit.instance);
+        event.registerIntent(geSuit.getInstance());
         PlayerManager.initPlayer(event.getConnection(), event);
     }
     
@@ -67,66 +72,62 @@ public class PlayerListener implements Listener {
     		
     		// Launch the MOTD message scheduler
     		if (ConfigManager.main.MOTD_Enabled && (p.firstConnect() || newspawn)) {
-    	    	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
-    				@Override
-    				public void run() {
-    					if (ProxyServer.getInstance().getPlayer(e.getPlayer().getUniqueId()) != null) {	// Check if player is still online
-	    					if (p.isFirstJoin() || newspawn) {
-	    		            	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motdNew.getMOTD().replace("{player}", p.getName()));
-	    		            } else {
-	    		            	PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motd.getMOTD().replace("{player}", p.getName()));
-	    		            }
-    	    			}
-    				}
-    	    	}, 500, TimeUnit.MILLISECONDS); 
+				geSuit.proxy.getScheduler().schedule(geSuit.getInstance(), () -> {
+					if (ProxyServer.getInstance().getPlayer(e.getPlayer().getUniqueId()) != null) {    // Check if player is still online
+						if (p.isFirstJoin() || newspawn) {
+							PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motdNew.getMOTD().replace("{player}", p.getName()));
+						} else {
+							PlayerManager.sendMessageToTarget(e.getPlayer().getName(), ConfigManager.motd.getMOTD().replace("{player}", p.getName()));
+						}
+					}
+				}, 500, TimeUnit.MILLISECONDS);
 	        }
 
     		p.connected();
 
     		final String[] fAlt = alt;
-        	geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
-        		@Override
-    			public void run() {
-        			// Show alt account logins for this player (if enabled)
-        			if ((ConfigManager.bans.ShowAltAccounts) && (fAlt != null)) {
-        				boolean bannedAlt = false;
-        				if (ConfigManager.bans.ShowBannedAltAccounts) {
-        					if (DatabaseManager.bans.isPlayerBanned(fAlt[0], fAlt[1], null))	// Check if alt is banned (by name or UUID)
-        						bannedAlt = true;
-        				}
+			geSuit.proxy.getScheduler().schedule(geSuit.getInstance(), () -> {
+				// Show alt account logins for this player (if enabled)
+				if ((ConfigManager.bans.ShowAltAccounts) && (fAlt != null)) {
+					boolean bannedAlt = false;
+					if (ConfigManager.bans.ShowBannedAltAccounts) {
+						if (DatabaseManager.bans.isPlayerBanned(fAlt[0], fAlt[1], null))    // Check if alt is banned (by name or UUID)
+							bannedAlt = true;
+					}
 
-        				if (bannedAlt) {
-        					// Alt player is banned
-        					String msg = ConfigManager.messages.PLAYER_BANNED_ALT_JOIN.
-	    	    					replace("{player}", p.getName()).
-	    	    					replace("{alt}", fAlt[0]).
-	    	    					replace("{ip}", p.getIp());
-        					Utilities.doBungeeChatMirror("StaffNotice", msg);
-        				} else {
-        					// Alt player is NOT banned
-	        				String msg = ConfigManager.messages.PLAYER_ALT_JOIN.
-	    	    					replace("{player}", p.getName()).
-	    	    					replace("{alt}", fAlt[0]).
-	    	    					replace("{ip}", p.getIp());
-	    	    			Utilities.doBungeeChatMirror("StaffNotice", msg);
-        				}
-    	    		}
+					if (bannedAlt) {
+						// Alt player is banned
+						String msg = ConfigManager.messages.PLAYER_BANNED_ALT_JOIN.
+								replace("{player}", p.getName()).
+								replace("{alt}", fAlt[0]).
+								replace("{ip}", p.getIp());
+						Utilities.doBungeeChatMirror("StaffNotice", msg);
+					} else {
+						// Alt player is NOT banned
+						String msg = ConfigManager.messages.PLAYER_ALT_JOIN.
+								replace("{player}", p.getName()).
+								replace("{alt}", fAlt[0]).
+								replace("{ip}", p.getIp());
+						Utilities.doBungeeChatMirror("StaffNotice", msg);
+					}
+				}
 
-    	    		// Show Geo location notifications for player (if enabled)
-    	    		if (ConfigManager.bans.GeoIP.ShowOnLogin) {
-                        String location = GeoIPManager.lookup(e.getPlayer().getAddress().getAddress());
-                        if (location != null) {
-                            String msg = ConfigManager.messages.PLAYER_GEOIP.
-                                    replace("{player}", p.getName()).
-                                    replace("{location}", location);
-                            Utilities.doBungeeChatMirror("StaffNotice", msg);
-                        }
-    	    		}
+				// Show Geo location notifications for player (if enabled)
+				if (ConfigManager.bans.GeoIP.ShowOnLogin) {
+					geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), () -> {
+						String location = GeoIPManager.lookup(e.getPlayer().getAddress().getAddress());
+						if (location != null) {
+							String msg = ConfigManager.messages.PLAYER_GEOIP.
+									replace("{player}", p.getName()).
+									replace("{location}", location);
+							Utilities.doBungeeChatMirror("StaffNotice", msg);
+						}
+					});
+				}
 
-    				// Update player tracking information
-    				PlayerManager.updateTracking(p);
-    			}
-        	}, 100, TimeUnit.MILLISECONDS); 
+				// Update player tracking information
+				PlayerManager.updateTracking(p);
+			}, 100, TimeUnit.MILLISECONDS);
     	}
     }
 
@@ -136,27 +137,23 @@ public class PlayerListener implements Listener {
         
         final GSPlayer p = PlayerManager.cachedPlayers.remove(e.getPlayer().getUniqueId());
         if (dcTime > 0) {
-            geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
-                @Override
-                public void run() {
-                    if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
-                        if (ConfigManager.main.BroadcastProxyConnectionMessages) {
-                            PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_DISCONNECT_PROXY.replace("{player}", p.getName()));
-                        }
-                    } else {
-                        PlayerManager.kickedPlayers.remove(e.getPlayer());
-                    }
+			geSuit.proxy.getScheduler().schedule(geSuit.getInstance(), () -> {
+				if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
+					if (ConfigManager.main.BroadcastProxyConnectionMessages) {
+						PlayerManager.sendBroadcast(ConfigManager.messages.PLAYER_DISCONNECT_PROXY.replace("{player}", p.getName()));
+					}
+				} else {
+					PlayerManager.kickedPlayers.remove(e.getPlayer());
+				}
 
-                    PlayerManager.unloadPlayer(e.getPlayer().getName());
-                    DatabaseManager.players.updatePlayer(p);
+				PlayerManager.unloadPlayer(e.getPlayer().getName());
+				DatabaseManager.players.updatePlayer(p);
 
-                    // Update time tracking (if enabled)
-                	if (ConfigManager.bans.TrackOnTime) {
-                		DatabaseManager.ontime.updatePlayerOnTime(p.getName(), p.getUuid(), p.getLoginTime(), new Date().getTime());
-                	}
-                }
-
-            }, dcTime, TimeUnit.SECONDS);
+				// Update time tracking (if enabled)
+				if (ConfigManager.bans.TrackOnTime) {
+					DatabaseManager.ontime.updatePlayerOnTime(p.getName(), p.getUuid(), p.getLoginTime(), new Date().getTime());
+				}
+			}, dcTime, TimeUnit.SECONDS);
         } else {
             if (!PlayerManager.kickedPlayers.contains(e.getPlayer())) {
                 if (ConfigManager.main.BroadcastProxyConnectionMessages) {
@@ -170,18 +167,15 @@ public class PlayerListener implements Listener {
             }
             PlayerManager.unloadPlayer(e.getPlayer().getName());
 
-            geSuit.proxy.getScheduler().schedule(geSuit.instance, new Runnable() {
-                @Override
-                public void run() {
-                	// Always update the player record when they disconnect
-                	DatabaseManager.players.updatePlayer(p);
+			geSuit.proxy.getScheduler().schedule(geSuit.getInstance(), () -> {
+				// Always update the player record when they disconnect
+				DatabaseManager.players.updatePlayer(p);
 
-                	// Update time tracking (if enabled)
-                	if (ConfigManager.bans.TrackOnTime) {
-                		DatabaseManager.ontime.updatePlayerOnTime(p.getName(), p.getUuid(), p.getLoginTime(), new Date().getTime());
-                	}
-                }
-            }, 1, TimeUnit.MILLISECONDS);
+				// Update time tracking (if enabled)
+				if (ConfigManager.bans.TrackOnTime) {
+					DatabaseManager.ontime.updatePlayerOnTime(p.getName(), p.getUuid(), p.getLoginTime(), new Date().getTime());
+				}
+			}, 1, TimeUnit.MILLISECONDS);
         }
     }
 }

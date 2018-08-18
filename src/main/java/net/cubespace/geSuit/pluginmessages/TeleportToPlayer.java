@@ -30,7 +30,7 @@ public class TeleportToPlayer {
             e.printStackTrace();
         }
     
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), new SendPluginMessage(geSuit
                 .CHANNEL_NAMES.TELEPORT_CHANNEL.toString(), ProxyServer.getInstance().getServerInfo(target.getServer()), bytes));
     }
 }

@@ -29,11 +29,11 @@ public class MainConfigTest {
     }
 
     @Test
-    public void load() throws Exception {
+    public void load() {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         testFile.delete();
     }
 

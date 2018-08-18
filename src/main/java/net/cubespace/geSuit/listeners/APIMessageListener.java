@@ -27,7 +27,7 @@ public class APIMessageListener implements Listener {
         }
 
 		// Message debugging (can be toggled live)
-		if (geSuit.instance.isDebugEnabled()) {
+        if (geSuit.getInstance().isDebugEnabled()) {
 			Utilities.dumpPacket(event.getTag(), "SEND", event.getData(), true);
 		}
 

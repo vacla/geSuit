@@ -6,13 +6,13 @@ import net.cubespace.geSuit.geSuit;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 public class BansConfig extends YamlConfig {
     public BansConfig() {
-        CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "bans.yml");
+        CONFIG_FILE = new File(geSuit.getInstance().getDataFolder(), "bans.yml");
     }
 
     public Boolean Enabled = true;
@@ -32,7 +32,7 @@ public class BansConfig extends YamlConfig {
     public long TempBanTime = 300000; // Time in ms that a player is autobanned for
 
     // List of strings to look for in ban reasons for the purposes of ignoring the ban when counting kicks
-    public List<String> KickReasonIgnoreList = new ArrayList<>(Arrays.asList("AutoKick: Anti-AFK"));
+    public List<String> KickReasonIgnoreList = new ArrayList<>(Collections.singletonList("AutoKick: Anti-AFK"));
 
     public HashMap<Integer, String> Actions = new HashMap<>();
     

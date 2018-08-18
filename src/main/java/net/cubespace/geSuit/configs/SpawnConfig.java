@@ -7,7 +7,7 @@ import java.io.File;
 
 public class SpawnConfig extends YamlConfig {
     public SpawnConfig() {
-        CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "spawns.yml");
+        CONFIG_FILE = new File(geSuit.getInstance().getDataFolder(), "spawns.yml");
     }
 
 	public Boolean SpawnNewPlayerAtNewspawn = false;

@@ -14,7 +14,7 @@ public class LeavingServer
     public static void execute(GSPlayer player)
     {
         if (player.getServer() == null) {
-            geSuit.instance.getLogger().severe("Player has no Server, this should never happen. Please check");
+            geSuit.getInstance().getLogger().severe("Player has no Server, this should never happen. Please check");
             new Throwable().printStackTrace();
             return;
         }
@@ -30,7 +30,7 @@ public class LeavingServer
             e.printStackTrace();
         }
     
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), new SendPluginMessage(geSuit
                 .CHANNEL_NAMES.TELEPORT_CHANNEL.toString(), player
                 .getProxiedPlayer().getServer().getInfo(), bytes));
     }

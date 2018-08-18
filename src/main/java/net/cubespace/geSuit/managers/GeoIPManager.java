@@ -1,5 +1,12 @@
 package net.cubespace.geSuit.managers;
 
+import com.maxmind.geoip.InvalidDatabaseException;
+import com.maxmind.geoip.Location;
+import com.maxmind.geoip.LookupService;
+import com.maxmind.geoip.regionName;
+
+import net.cubespace.geSuit.geSuit;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,21 +16,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
 
-import net.cubespace.geSuit.geSuit;
-
-import com.maxmind.geoip.Location;
-import com.maxmind.geoip.LookupService;
-import com.maxmind.geoip.regionName;
-
 public class GeoIPManager {
     private static LookupService mLookup;
     private static File mDatabaseFile;
     
     public static void initialize() {
         if (ConfigManager.bans.GeoIP.ShowCity) {
-            mDatabaseFile = new File(geSuit.instance.getDataFolder(), "GeoIPCity.dat");
+            mDatabaseFile = new File(geSuit.getInstance().getDataFolder(), "GeoIPCity.dat");
         } else {
-            mDatabaseFile = new File(geSuit.instance.getDataFolder(), "GeoIP.dat");
+            mDatabaseFile = new File(geSuit.getInstance().getDataFolder(), "GeoIP.dat");
         }
         
         if (!mDatabaseFile.exists()) {
@@ -32,7 +33,7 @@ public class GeoIPManager {
                     return;
                 }
             } else {
-                geSuit.instance.getLogger().warning("[GeoIP] No GeoIP database is available locally and updating is off. Lookups will be unavailable");
+                geSuit.getInstance().getLogger().warning("[GeoIP] No GeoIP database is available locally and updating is off. Lookups will be unavailable");
                 return;
             }
         }
@@ -40,7 +41,7 @@ public class GeoIPManager {
         try {
             mLookup = new LookupService(mDatabaseFile);
         } catch(IOException e) {
-            geSuit.instance.getLogger().warning("[GeoIP] Unable to read GeoIP database, if this No GeoIP database is available locally and updating is off. Lookups will be unavailable");
+            geSuit.getInstance().getLogger().warning("[GeoIP] Unable to read GeoIP database, if this No GeoIP database is available locally and updating is off. Lookups will be unavailable");
         }
     }
     
@@ -51,7 +52,17 @@ public class GeoIPManager {
         }
         
         if (ConfigManager.bans.GeoIP.ShowCity) {
-            Location loc = mLookup.getLocation(address);
+
+            if (address == InetAddress.getLoopbackAddress() || address.isAnyLocalAddress()) {
+                return null;
+            }
+            Location loc;
+            try {
+                loc = mLookup.getLocation(address);
+            } catch (InvalidDatabaseException e) {
+                geSuit.getInstance().getLogger().info("GEOIP: Could not retrieve:  " + address.toString());
+                return null;
+            }
             if (loc == null) {
                 return null;
             }
@@ -83,12 +94,12 @@ public class GeoIPManager {
         }
         
         if (url == null || url.trim().isEmpty()) {
-            geSuit.instance.getLogger().severe("[GeoIP] There is no configured update url!");
+            geSuit.getInstance().getLogger().severe("[GeoIP] There is no configured update url!");
             return false;
         }
         
         try {
-            geSuit.instance.getLogger().info("[GeoIP] Downloading GeoIP database... This may take a while");
+            geSuit.getInstance().getLogger().info("[GeoIP] Downloading GeoIP database... This may take a while");
             long lastNotify = System.currentTimeMillis();
             URLConnection con = new URL(url).openConnection();
             con.setConnectTimeout(10000);
@@ -110,14 +121,14 @@ public class GeoIPManager {
                 current += length;
                 if (System.currentTimeMillis() - lastNotify > 2000) {
                     if (total == -1) {
-                        geSuit.instance.getLogger().info(String.format("[GeoIP] Downloading GeoIP database... %d bytes", current));
+                        geSuit.getInstance().getLogger().info(String.format("[GeoIP] Downloading GeoIP database... %d bytes", current));
                     } else {
                         double percent = current / (double)total;
                         percent *= 100;
                         if (percent > 100) {
                             percent = 100;
                         }
-                        geSuit.instance.getLogger().info(String.format("[GeoIP] Downloading GeoIP database... %.0f%%", percent));
+                        geSuit.getInstance().getLogger().info(String.format("[GeoIP] Downloading GeoIP database... %.0f%%", percent));
                     }
                     lastNotify = System.currentTimeMillis();
                 }
@@ -126,10 +137,10 @@ public class GeoIPManager {
             }
             output.close();
             input.close();
-            geSuit.instance.getLogger().info("[GeoIP] Download complete");
+            geSuit.getInstance().getLogger().info("[GeoIP] Download complete");
             return true;
         } catch(IOException e) {
-            geSuit.instance.getLogger().severe("[GeoIP] Download failed. IOException: " + e.getMessage());
+            geSuit.getInstance().getLogger().severe("[GeoIP] Download failed. IOException: " + e.getMessage());
             return false;
         }
     }

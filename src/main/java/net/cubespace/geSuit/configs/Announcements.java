@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class Announcements extends YamlConfig {
     public Announcements() {
-        CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "announcements.yml");
+        CONFIG_FILE = new File(geSuit.getInstance().getDataFolder(), "announcements.yml");
     }
 
     public Boolean Enabled = true;

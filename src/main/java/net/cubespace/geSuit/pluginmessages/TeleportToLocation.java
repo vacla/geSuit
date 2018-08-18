@@ -19,7 +19,7 @@ public class TeleportToLocation
     public static void execute(GSPlayer player, Location location)
     {
         if (location.getServer() == null) {
-            geSuit.instance.getLogger().severe("Location has no Server, this should never happen. Please check");
+            geSuit.getInstance().getLogger().severe("Location has no Server, this should never happen. Please check");
             new Exception("").printStackTrace();
             return;
         }
@@ -51,7 +51,7 @@ public class TeleportToLocation
             e.printStackTrace();
         }
     
-        geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), new SendPluginMessage(geSuit
                 .CHANNEL_NAMES.TELEPORT_CHANNEL.toString(), location.getServer(), bytes));
     }
 }

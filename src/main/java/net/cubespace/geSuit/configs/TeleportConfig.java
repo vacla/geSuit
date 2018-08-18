@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class TeleportConfig extends YamlConfig {
     public TeleportConfig() {
-        CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "teleport.yml");
+        CONFIG_FILE = new File(geSuit.getInstance().getDataFolder(), "teleport.yml");
     }
 
     public Integer TeleportRequestExpireTime = 10;

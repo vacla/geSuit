@@ -34,7 +34,7 @@ public class SendAdminCommand {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            geSuit.proxy.getScheduler().runAsync(geSuit.instance, new SendPluginMessage(geSuit
+            geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), new SendPluginMessage(geSuit
                     .CHANNEL_NAMES.ADMIN_CHANNEL.toString(),
                     ProxyServer.getInstance().getServerInfo(adminCommand.getServer()), bytes));
         }else{

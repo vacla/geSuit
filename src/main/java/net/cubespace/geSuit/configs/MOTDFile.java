@@ -9,14 +9,14 @@ public class MOTDFile {
     private String mMOTD;
 
     public MOTDFile( String name ) {
-        mFile = new File(geSuit.instance.getDataFolder(), name);
+        mFile = new File(geSuit.getInstance().getDataFolder(), name);
     }
     
     public void init() {
 	try {
 	    // Save the default motd file
             if (!mFile.exists()) {
-                InputStream stream = geSuit.instance.getResourceAsStream(mFile.getName());
+                InputStream stream = geSuit.getInstance().getResourceAsStream(mFile.getName());
                 FileOutputStream out = new FileOutputStream(mFile);
                 byte[] buffer = new byte[2048];
                 int read = 0;

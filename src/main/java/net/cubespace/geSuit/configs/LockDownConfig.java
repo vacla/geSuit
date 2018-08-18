@@ -10,7 +10,7 @@ import java.io.File;
  */
 public class LockDownConfig extends YamlConfig {
     public LockDownConfig() {
-        CONFIG_FILE = new File(geSuit.instance.getDataFolder(), "lockdown.yml");
+        CONFIG_FILE = new File(geSuit.getInstance().getDataFolder(), "lockdown.yml");
     }
 
     public String LockdownTime = "5m";
