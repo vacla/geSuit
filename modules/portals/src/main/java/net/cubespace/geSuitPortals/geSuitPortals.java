@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public class geSuitPortals extends JavaPlugin {
     public static geSuitPortals INSTANCE = null;
     public static WorldEditPlugin WORLDEDIT = null;
+    public static String CHANNEL_NAME = "bungeecord:geSuitPortals";
 
     @Override
     public void onEnable() {
@@ -51,8 +52,9 @@ public class geSuitPortals extends JavaPlugin {
     }
 
     private void registerChannels() {
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, "geSuitPortals", new PortalsMessageListener());
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "geSuitPortals");
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, CHANNEL_NAME, new PortalsMessageListener
+                ());
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, CHANNEL_NAME);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
