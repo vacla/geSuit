@@ -85,10 +85,14 @@ public class geSuit extends Plugin
 
     private void registerListeners()
     {
-        boolean legacy = false;
-        if (ConfigManager.main.enableLegacy) legacy = true;
+        boolean legacy = ConfigManager.main.enableLegacy;
         for (CHANNEL_NAMES name : CHANNEL_NAMES.values()) {
             getProxy().registerChannel(name.toString());
+        }
+        if (legacy) {
+            for (CHANNEL_NAMES name : CHANNEL_NAMES.values()) {
+                getProxy().registerChannel(name.getLegacy());
+            }
         }
         proxy.getPluginManager().registerListener(this, new PlayerListener());
         proxy.getPluginManager().registerListener(this, new BansMessageListener(legacy));

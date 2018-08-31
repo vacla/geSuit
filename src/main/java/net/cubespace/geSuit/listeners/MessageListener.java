@@ -28,7 +28,8 @@ public abstract class MessageListener implements Listener {
     public static boolean eventNotMatched(PluginMessageEvent event) {
         if (event.isCancelled()) return true;
         if (!(event.getSender() instanceof Server)) return true;
-        if (event.getTag().equalsIgnoreCase(channelName.toString()) || (isLegacy && event.getTag().equalsIgnoreCase(channelName.getLegacy()))) {
+        if (event.getTag().equalsIgnoreCase(channelName.toString())
+                || (isLegacy && event.getTag().equalsIgnoreCase(channelName.getLegacy()))) {
             if (geSuit.getInstance().isDebugEnabled()) {
                 Utilities.dumpPacket(event.getTag(), "SEND", event.getData(), true);
             }
