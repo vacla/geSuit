@@ -150,6 +150,7 @@ public class ConnectionPool {
      * @deprecated using this method does not allow correct resource mamangement and can lead to
      *         connections being held out of the pool ...until timeout.  if you use it you must
      *         close the connection explicitly.
+     * @throws SQLException if it cannot get a connection or prepare the statement.
      */
     @Deprecated
     public PreparedStatement getPreparedStatement(String name) throws SQLException {

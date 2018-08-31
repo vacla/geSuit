@@ -22,6 +22,8 @@ public abstract class MessageListener implements Listener {
 
     /**
      * If true the handler should continue processing the event - but the event will now be cancelled.
+     * @param event The event to check
+     * @return boolean
      */
     public static boolean eventNotMatched(PluginMessageEvent event) {
         if (event.isCancelled()) return true;
