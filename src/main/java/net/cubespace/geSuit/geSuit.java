@@ -85,20 +85,22 @@ public class geSuit extends Plugin
 
     private void registerListeners()
     {
+        boolean legacy = false;
+        if (ConfigManager.main.enableLegacy) legacy = true;
         for (CHANNEL_NAMES name : CHANNEL_NAMES.values()) {
             getProxy().registerChannel(name.toString());
         }
         proxy.getPluginManager().registerListener(this, new PlayerListener());
-        proxy.getPluginManager().registerListener(this, new BansMessageListener());
+        proxy.getPluginManager().registerListener(this, new BansMessageListener(legacy));
         proxy.getPluginManager().registerListener(this, new TeleportsListener());
-        proxy.getPluginManager().registerListener(this, new TeleportsMessageListener());
-        proxy.getPluginManager().registerListener(this, new WarpsMessageListener());
-        proxy.getPluginManager().registerListener(this, new HomesMessageListener());
-        proxy.getPluginManager().registerListener(this, new PortalsMessageListener());
+        proxy.getPluginManager().registerListener(this, new TeleportsMessageListener(legacy));
+        proxy.getPluginManager().registerListener(this, new WarpsMessageListener(legacy));
+        proxy.getPluginManager().registerListener(this, new HomesMessageListener(legacy));
+        proxy.getPluginManager().registerListener(this, new PortalsMessageListener(legacy));
         proxy.getPluginManager().registerListener(this, new SpawnListener());
-        proxy.getPluginManager().registerListener(this, new SpawnMessageListener());
-        proxy.getPluginManager().registerListener(this, new APIMessageListener());
-        proxy.getPluginManager().registerListener(this, new AdminMessageListener());
+        proxy.getPluginManager().registerListener(this, new SpawnMessageListener(legacy));
+        proxy.getPluginManager().registerListener(this, new APIMessageListener(legacy));
+        proxy.getPluginManager().registerListener(this, new AdminMessageListener(legacy));
         if (ConfigManager.main.BungeeChatIntegration) {
             proxy.getPluginManager().registerListener(this, new BungeeChatListener());
         }
@@ -119,25 +121,36 @@ public class geSuit extends Plugin
 	}
     
     public enum CHANNEL_NAMES {
-        
-        TELEPORT_CHANNEL("bungeecord:gesuitteleport"),
-        SPAWN_CHANNEL("bungeecord:gesuitspawns"),
-        BAN_CHANNEL("bungeecord:gesuitbans"),
-        PORTAL_CHANNEL("bungeecord:gesuitportals"),
-        WARP_CHANNEL("bungeecord:gesuitwarps"),
-        HOME_CHANNEL("bungeecord:gesuithomes"),
-        API_CHANNEL("bungeecord:gesuitapi"),
-        ADMIN_CHANNEL("bungeecord:gesuitadmin");
-        
+
+        TELEPORT_CHANNEL("bungeecord:gesuitteleport", "gesuitteleport"),
+        SPAWN_CHANNEL("bungeecord:gesuitspawns", "gesuitspawns"),
+        BAN_CHANNEL("bungeecord:gesuitbans", "gesuitbans"),
+        PORTAL_CHANNEL("bungeecord:gesuitportals", "gesuitportals"),
+        WARP_CHANNEL("bungeecord:gesuitwarps", "gesuitwarps"),
+        HOME_CHANNEL("bungeecord:gesuithomes", "gesuithomes"),
+        API_CHANNEL("bungeecord:gesuitapi", "gesuitapi"),
+        ADMIN_CHANNEL("bungeecord:gesuitadmin", "gesuitadmin");
+
         private final String channelName;
-        
+        private final String legacy_channelName;
+
         CHANNEL_NAMES(String string) {
+            this(string, null);
+        }
+
+        CHANNEL_NAMES(String string, String legacy) {
+
             channelName = string;
+            legacy_channelName = legacy;
         }
         
         @Override
         public String toString() {
             return channelName;
+        }
+
+        public String getLegacy() {
+            return legacy_channelName;
         }
     }
 }

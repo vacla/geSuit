@@ -16,28 +16,16 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 
-public class BansMessageListener implements Listener {
+public class BansMessageListener extends MessageListener {
+
+    public BansMessageListener(boolean legacy) {
+        super(legacy, geSuit.CHANNEL_NAMES.BAN_CHANNEL);
+    }
 
     @EventHandler
     public void receivePluginMessage(PluginMessageEvent event) throws IOException {
-        if (event.isCancelled()) {
-            return;
-        }
+        if (eventNotMatched(event)) return;
 
-        if (!(event.getSender() instanceof Server)) {
-            return;
-        }
-    
-        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.BAN_CHANNEL.toString())) {
-            return;
-        }
-
-		// Message debugging (can be toggled live)
-        if (geSuit.getInstance().isDebugEnabled()) {
-			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
-		}
-
-        event.setCancelled(true);
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
         String task = in.readUTF();

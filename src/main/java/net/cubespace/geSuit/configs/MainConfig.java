@@ -51,7 +51,10 @@ public class MainConfig extends YamlConfig {
     public Integer PlayerDisconnectDelay = 0;
     @Comment("This should be true on offline Mode Server since they can't use UUIDs provided by Mojang")
     public Boolean OverwriteUUID = false;
-    
+
+    @Comment("Legacy channel handling...channels names prior to 1.13 were not namespaced...enabling this will support legacy and namespaced names.")
+    public Boolean enableLegacy = false;
+
     @Comment("Enable this if you want to use BungeeChat with geSuit.")
     public Boolean BungeeChatIntegration = false;
 

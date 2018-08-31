@@ -17,23 +17,15 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class TeleportsMessageListener implements Listener {
+public class TeleportsMessageListener extends MessageListener {
+
+    public TeleportsMessageListener(boolean legacy) {
+        super(legacy, geSuit.CHANNEL_NAMES.TELEPORT_CHANNEL);
+    }
 
     @EventHandler
     public void receivePluginMessage(PluginMessageEvent event) throws IOException {
-        if (event.isCancelled()) {
-            return;
-        }
-        if (!(event.getSender() instanceof Server))
-            return;
-        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.TELEPORT_CHANNEL.toString())) {
-            return;
-        }
-
-		// Message debugging (can be toggled live)
-        if (geSuit.getInstance().isDebugEnabled()) {
-			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
-		}
+        if (eventNotMatched(event)) return;
 
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
         String task = in.readUTF();

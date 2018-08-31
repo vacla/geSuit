@@ -15,26 +15,15 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class WarpsMessageListener implements Listener {
+public class WarpsMessageListener extends MessageListener {
+
+    public WarpsMessageListener(boolean legacy) {
+        super(legacy, geSuit.CHANNEL_NAMES.WARP_CHANNEL);
+    }
 
     @EventHandler
     public void receivePluginMessage(PluginMessageEvent event) throws IOException {
-        if (event.isCancelled()) {
-            return;
-        }
-        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.WARP_CHANNEL.toString())) {
-            return;
-        }
-        if (!(event.getSender() instanceof Server))
-            return;
-
-        // Message debugging (can be toggled live)
-        if (geSuit.getInstance().isDebugEnabled()) {
-			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
-		}
-
-        event.setCancelled(true);
-
+        if (eventNotMatched(event)) return;
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
         String task = in.readUTF();

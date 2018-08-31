@@ -13,25 +13,15 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class APIMessageListener implements Listener {
+public class APIMessageListener extends MessageListener {
+
+    public APIMessageListener(boolean legacy) {
+        super(legacy, geSuit.CHANNEL_NAMES.API_CHANNEL);
+    }
     @EventHandler
     public void receivePluginMessage(PluginMessageEvent event) throws IOException {
-        if (event.isCancelled())
-            return;
-
-        if (!(event.getSender() instanceof Server))
-            return;
-    
-        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.API_CHANNEL.toString())) {
-            return;
-        }
-
+        if (eventNotMatched(event)) return;
 		// Message debugging (can be toggled live)
-        if (geSuit.getInstance().isDebugEnabled()) {
-			Utilities.dumpPacket(event.getTag(), "SEND", event.getData(), true);
-		}
-
-        event.setCancelled(true);
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
         String task = in.readUTF();

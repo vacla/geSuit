@@ -17,25 +17,15 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class PortalsMessageListener implements Listener {
+public class PortalsMessageListener extends MessageListener {
+
+    public PortalsMessageListener(boolean legacy) {
+        super(legacy, geSuit.CHANNEL_NAMES.PORTAL_CHANNEL);
+    }
 
     @EventHandler
     public void receivePluginMessage(PluginMessageEvent event) throws IOException {
-        if (event.isCancelled()) {
-            return;
-        }
-        if (!(event.getSender() instanceof Server))
-            return;
-        if (!event.getTag().equalsIgnoreCase(geSuit.CHANNEL_NAMES.PORTAL_CHANNEL.toString())) {
-            return;
-        }
-
-        // Message debugging (can be toggled live)
-        if (geSuit.getInstance().isDebugEnabled()) {
-			Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
-		}
-
-        event.setCancelled(true);
+        if (eventNotMatched(event)) return;
 
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
