@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 /target/
 /bin
 /.project
 /.classpath
 /.settings/
 
+=======
+/.settings
+/.project
+/.classpath
+/bin
+/target
+*.*~
+>>>>>>> banmaster

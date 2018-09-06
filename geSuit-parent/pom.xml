@@ -9,6 +9,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>../bungee</module>
+        <module>../modules/bans</module>
     </modules>
     <properties>
         <build.number/>
