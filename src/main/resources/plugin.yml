@@ -1,0 +1,75 @@
+name: geSuitHomes
+main : net.cubespace.geSuitHomes.geSuitHomes
+version: ${plugin.version}
+description: Part of the gesuit this plugin allows users to set homes in each server.
+author: Narimm
+depend: [geSuitTeleports]
+commands:
+    sethome:
+        description: Sets the players home location.
+        usage: |
+               /<command>
+               /<command> (home name)
+        permission: gesuit.homes.commands.sethome
+        permission-message: §cYou do not have permission for this command
+    delhome:
+        description: Deletes a players home.
+        usage: |
+               /<command>
+               /<command>(home name)
+        permission: gesuit.homes.commands.delhome
+        permission-message: §cYou do not have permission for this command
+    home:
+        description: Teleports you home
+        usage: |
+                /<command>
+                /<command> (home name)
+        permission: gesuit.homes.commands.home
+        permission-message: §cYou do not have permission for this command
+    homes:
+        description: Lists all of your homes
+        usage: /<command>
+        permission: gesuit.homes.commands.homes
+        permission-message: §cYou do not have permission for this command      
+    importhomes:
+        description: imports homes from your essentials data
+        usage: /<command>
+        permission: gesuit.homes.commands.importhomes
+        permission-message: §cYou do not have permission for this command
+permissions:
+    gesuit.homes.*:
+        description: Gives access to all home commands
+        default: op
+        children:
+            gesuit.homes.admin: true
+    gesuit.homes.admin:
+        description: Gives access to all gesuit homes commands
+        children:
+            gesuit.homes.commands.importhomes: true
+            gesuit.homes.user: true
+    gesuit.home.commands.other:
+        description: Give access to homes commands for other players
+        children:
+            gesuit.homes.commands.delhome.others: true
+            gesuit.homes.commands.homes.other: true
+            gesuit.homes.commands.homes.other: true
+    gesuit.homes.user:
+        description: Gives access to all gesuit homes user commands
+        children:
+            gesuit.homes.commands.sethome: true
+            gesuit.homes.commands.delhome: true
+            gesuit.homes.commands.homes: true
+            gesuit.homes.commands.home: true
+    gesuit.homes.limits.*:
+        decription: Gives maximum home limits for both global and server
+        children:
+            gesuit.homes.limits.server.*: true
+            gesuit.homes.limits.global.*: true
+    gesuit.homes.limits.server.*:
+        description: Gives maximum homes allowed for each server
+        children:
+            gesuit.homes.limits.server.<number of allowed homes>: true
+    gesuit.homes.limits.global.*:
+        description: Gives maximum homes allowed for the whole proxy
+        children:
+            gesuit.homes.limits.global.<number of allowed homes>: true
