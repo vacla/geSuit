@@ -82,7 +82,6 @@ public class geSuit extends Plugin
             proxy.getPluginManager().registerCommand(this, new LastLoginsCommand());
         }
     }
-
     private void registerListeners()
     {
         boolean legacy = ConfigManager.main.enableLegacy;
@@ -94,6 +93,13 @@ public class geSuit extends Plugin
                 getProxy().registerChannel(name.getLegacy());
             }
         }
+        String lineEnd = System.getProperty("line.separator");
+        StringBuilder mess = new StringBuilder();
+        mess.append("Gesuit Report: Proxy has registered the following channels:" + lineEnd);
+        for (String channel : getProxy().getChannels()) {
+            mess.append(channel).append(lineEnd);
+        }
+        getProxy().getLogger().info(mess.toString());
         proxy.getPluginManager().registerListener(this, new PlayerListener());
         proxy.getPluginManager().registerListener(this, new BansMessageListener(legacy));
         proxy.getPluginManager().registerListener(this, new TeleportsListener());
