@@ -37,10 +37,7 @@ public class Loc {
         if (loc.getBlockY() != y) {
             return false;
         }
-        if (loc.getBlockZ() != z) {
-            return false;
-        }
-        return true;
+        return !(loc.getBlockZ() != z);
     }
 
     public boolean equals(Block block) {
@@ -54,9 +51,6 @@ public class Loc {
         if (loc.getBlockY() != y) {
             return false;
         }
-        if (loc.getBlockZ() != z) {
-            return false;
-        }
-        return true;
+        return !(loc.getBlockZ() != z);
     }
 }

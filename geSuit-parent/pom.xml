@@ -11,6 +11,7 @@
         <module>../bungee</module>
         <module>../modules/bans</module>
         <module>../modules/spawn</module>
+        <module>../modules/portals</module>
     </modules>
     <properties>
         <build.number/>
