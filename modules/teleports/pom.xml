@@ -11,38 +11,12 @@
         <relativePath>../common/pom.xml</relativePath>
     </parent>
     <properties>
-        <build.number />
-        <plugin.version>${project.version}-${build.number}</plugin.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spigot.version>1.12.2-R0.1-SNAPSHOT</spigot.version>
         <worldgaurd.version>6.1.1-SNAPSHOT</worldgaurd.version>
     </properties>
     <repositories>
-      <repository>
-        <id>spigot-repo</id>
-        <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-      </repository>
         <repository>
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
-        </repository>
-        <!-- Addstar repos -->
-        <repository>
-            <id>addstar-ext-release</id>
-            <url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>addstar-ext-snapshot</id>
-            <url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
         </repository>
     </repositories>
 
@@ -55,7 +29,7 @@
         <dependency>
             <groupId>net.cubespace</groupId>
             <artifactId>geSuitSpawn</artifactId>
-            <version>0.1.1-SNAPSHOT</version>
+            <version>0.9.3-RC</version>
         </dependency>
     </dependencies>
     <build>
