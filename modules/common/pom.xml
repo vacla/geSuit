@@ -20,7 +20,8 @@
         <module>../teleports</module>
     </modules>
     <properties>
-        <spigot.version>1.12.2-R0.1-SNAPSHOT</spigot.version>
+        <spigot.api.version>1.12.2</spigot.api.version>
+        <spigot.version>${spigot.api.version}-R0.1-SNAPSHOT</spigot.version>
     </properties>
     <repositories>
         <repository>
@@ -42,7 +43,6 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>${project.name}</finalName>
         <resources>
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>
