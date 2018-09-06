@@ -224,7 +224,7 @@ public class LocationUtil {
             }
         }
 
-        return y < 0 ? true : false;
+        return y < 0;
     }
 
     public static boolean worldGuardTpAllowed(Location l, Player p) {

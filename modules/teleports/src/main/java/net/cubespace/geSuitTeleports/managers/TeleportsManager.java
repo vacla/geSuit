@@ -268,9 +268,7 @@ public class TeleportsManager {
             Bukkit.getScheduler().runTaskLaterAsynchronously( geSuitTeleports.instance, new Runnable() {
                 @Override
                 public void run() {
-                    if ( pendingTeleports.containsKey( player ) ) {
-                        pendingTeleports.remove( player );
-                    }
+                    pendingTeleports.remove( player );
 
                 }
             }, 100L);
@@ -310,9 +308,7 @@ public class TeleportsManager {
             Bukkit.getScheduler().runTaskLaterAsynchronously( geSuitTeleports.instance, new Runnable() {
                 @Override
                 public void run() {
-                    if ( pendingTeleportLocations.containsKey( player ) ) {
-                        pendingTeleportLocations.remove( player );
-                    }
+                    pendingTeleportLocations.remove( player );
                 }
             }, 100L);
         }

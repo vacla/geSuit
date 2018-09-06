@@ -15,6 +15,7 @@
         <module>../modules/admin</module>
         <module>../modules/homes</module>
         <module>../modules/warps</module>
+        <module>../modules/teleports</module>
     </modules>
     <properties>
         <build.number/>
