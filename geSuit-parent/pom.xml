@@ -12,6 +12,9 @@
         <module>../modules/bans</module>
         <module>../modules/spawn</module>
         <module>../modules/portals</module>
+        <module>../modules/admin</module>
+        <module>../modules/homes</module>
+        <module>../modules/warps</module>
     </modules>
     <properties>
         <build.number/>
