@@ -1,48 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>net.cubespace</groupId>
     <artifactId>geSuitPortals</artifactId>
-    <version>0.1.1</version>
     <packaging>jar</packaging>
     <name>geSuitPortals</name>
     <parent>
         <groupId>net.cubespace</groupId>
-        <artifactId>geSuit-parent</artifactId>
+        <artifactId>geSuitCommon</artifactId>
         <version>0.9.3-RC</version>
+        <relativePath>../common/pom.xml</relativePath>
     </parent>
-    <properties>
-        <plugin.version>${project.version}-${build.number}</plugin.version>
-        <build.number/>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spigot.version>1.12.2-R0.1-SNAPSHOT</spigot.version>
-    </properties>
-
     <repositories>
-        <!-- For spigot -->
-        <repository>
-            <id>md5-repo</id>
-            <url>http://repo.md-5.net/content/groups/public/</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-        </repository>
-
         <!-- WorldEdit, WorldGuard -->
         <repository>
             <id>sk89q-mvn2</id>
             <url>http://maven.sk89q.com/repo</url>
         </repository>
     </repositories>
-
     <dependencies>
-        <!-- Spigot -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>${spigot.version}</version>
-            <scope>provided</scope>
-        </dependency>
         <!-- WorldEdit -->
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>

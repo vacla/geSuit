@@ -1,17 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>net.cubespace</groupId>
     <artifactId>geSuitTeleports</artifactId>
-    <version>0.2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>geSuitTeleports</name>
     <parent>
         <groupId>net.cubespace</groupId>
-        <artifactId>geSuit-parent</artifactId>
+        <artifactId>geSuitCommon</artifactId>
         <version>0.9.3-RC</version>
-        <relativePath>../../geSuit-parent/pom.xml</relativePath>
+        <relativePath>../common/pom.xml</relativePath>
     </parent>
     <properties>
         <build.number />
@@ -20,37 +17,6 @@
         <spigot.version>1.12.2-R0.1-SNAPSHOT</spigot.version>
         <worldgaurd.version>6.1.1-SNAPSHOT</worldgaurd.version>
     </properties>
-    <scm>
-        <connection>scm:git:git@github.com:AddstarMC/geSuitTeleport.git</connection>
-        <developerConnection>scm:git:git@github.com:AddstarMC/geSuitTeleport.git</developerConnection>
-        <url>https://github.com/AddstarMC/pandora</url>
-        <tag>HEAD</tag>
-    </scm>
-    <developers>
-        <developer>
-            <id>AddstarMC</id>
-            <name>AddstarMC</name>
-            <url>http://github.com/AddstarMC</url>
-            <roles>
-                <role>developer</role>
-                <role>maintainer</role>
-            </roles>
-            <timezone>10</timezone>
-        </developer>
-    </developers>
-    <distributionManagement>
-        <repository>
-            <id>maven.addstar.com.au</id>
-            <name>maven.addstar.com.au-releases</name>
-            <url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
-        </repository>
-        <snapshotRepository>
-            <id>maven.addstar.com.au</id>
-            <name>maven.addstar.com.au-snapshots</name>
-            <url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <repositories>
       <repository>
         <id>spigot-repo</id>
@@ -81,12 +47,6 @@
     </repositories>
 
     <dependencies>
-      <dependency>
-        <groupId>org.spigotmc</groupId>
-        <artifactId>spigot-api</artifactId>
-        <version>${spigot.version}</version>
-        <scope>provided</scope>
-      </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
