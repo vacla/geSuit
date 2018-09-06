@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 /target/
 /bin
 /.project
@@ -6,10 +7,15 @@
 /.settings/
 
 =======
+=======
+>>>>>>> spawnmaster
 /.settings
 /.project
 /.classpath
 /bin
 /target
 *.*~
+<<<<<<< HEAD
 >>>>>>> banmaster
+=======
+>>>>>>> spawnmaster

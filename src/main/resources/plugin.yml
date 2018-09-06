@@ -1,0 +1,104 @@
+name: geSuiteSpawn
+main : net.cubespace.geSuiteSpawn.geSuitSpawn
+version: ${plugin.version}
+description: Part of the geSuit (gesuit) this plugin allows users to set a proxy wide spawn
+author: geNAZt
+depend: [geSuitTeleports]
+commands:
+    setnewspawn:
+        description: Sets the new players spawn point.
+        permission: gesuit.spawns.command.setnewspawn
+        aliases: [sns, setnewplayerspawn, setnoobspawn]
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    setworldspawn:
+        description: Sets the proxies world spawn point.
+        permission: gesuit.spawns.command.setworldspawn
+        aliases: [sws]
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    delworldspawn:
+        description: Deletes the proxies world spawn point.
+        permission: gesuit.spawns.command.delworldspawn
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    setserverspawn:
+        description: Sets the servers spawn point.
+        permission: gesuit.spawns.command.setserverspawn
+        aliases: [sss]
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    setglobalspawn:
+        description: Sets the proxies global spawn point.
+        permission: gesuit.spawns.command.setglobalspawn
+        aliases: [sgs, setproxyspawn,sethub,sethubspawn]
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    spawn:
+        description: Sends the player to the relevent spawn
+        permission: gesuit.spawns.command.spawn
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
+    worldspawn:
+        description: Sends the player to the worlds spawn
+        permission: gesuit.spawns.command.worldspawn
+        aliases: [ws]
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
+    serverspawn:
+        description: Sends the player to the servers spawn
+        permission: gesuit.spawns.command.serverspawn
+        aliases: [ss]
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
+    globalspawn:
+        description: Sends the player to the proxys spawn
+        permission: gesuit.spawns.command.globalspawn
+        aliases: [gs,hub,lobby]
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
+    warpspawn:
+        description: Sends the player to a specified spawn
+        permission: gesuit.spawns.command.warpspawn
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player) (spawnName) (serverName)
+
+permissions:
+    gesuit.spawns.*:
+        description: gives access to all gesuitspawn commands and features
+        default: op
+        children:
+            gesuit.spawns.admin: true
+    gesuit.spawns.admin:
+        description: gives access to all admin features of gesuitspawn
+        children:
+            gesuit.spawns.command.setnewspawn: true
+            gesuit.spawns.command.setworldspawn: true
+            gesuit.spawns.command.setserverspawn: true
+            gesuit.spawns.command.setglobalspawn: true
+            gesuit.spawns.command.spawn: true
+            gesuit.spawns.command.worldspawn: true
+            gesuit.spawns.command.serverspawn: true
+            gesuit.spawns.command.globalspawn: true
+    gesuit.spawns.new.world:
+        description: Teleports players with no server.data to the world spawn on first connect
+        default: false
+    gesuit.spawns.new.server:
+        description: Teleports players with no server.data to the server spawn on first connect
+        default: false
+    gesuit.spawns.new.global:
+        description: Teleports players with no server.data to the proxy spawn on first connect
+        default: false
+    gesuit.spawns.spawn.bed:
+        description: If a player has a bed spawn then the player will respawn at the bed on death
+        default: false
+    gesuit.spawns.spawn.world:
+        description: IF the player doesnt have a bed location or bed perm then the player will respawn at the world spawn if there is one
+        default: false
+    gesuit.spawns.spawn.server:
+        description: If the player doesnt have the world/bed perms or there is no bed/world spawn location the player will spawn at the server spawn if there is one on death
+        default: false
+    gesuit.spawns.spawn.global:
+        description: On death if none of the previous cases are met the player will respawn at the proxy spawn.
+        default: false
+    
