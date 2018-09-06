@@ -5,5 +5,11 @@
 /.settings/
 
 /.settings
+=======
+/.settings
+/.project
+/.classpath
+/bin
 /target
 *.*~
+classes

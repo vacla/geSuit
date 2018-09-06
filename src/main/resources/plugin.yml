@@ -1,0 +1,47 @@
+name: geSuitPortals
+main : net.cubespace.geSuitPortals.geSuitPortals
+version: ${plugin.version}
+description: Part of the geSuit this plugin allows users to use portals to move around the server. Built against Spigot ${spigot.version}
+author: geNAZt
+depend: [WorldEdit, geSuitTeleports]
+commands:
+    setportal:
+        description: Creates a portal to a destination
+        aliases: [createportal, makeportal, sportal]
+        usage: Error use /setportal (portal name) (type) (destination) *(filltype)
+        permission: gesuit.portals.command.setportal
+        permission-message: §cYou do not have permission for this command
+    delportal:
+        description: Deletes a specific portal
+        aliases: [deleteportal, dportal, removeportal]
+        usage: Error use /delportal (portal name)
+        permission: gesuit.portals.command.delportal
+        permission-message: §cYou do not have permission for this command
+    portals:
+        description: Gives a list of portals to the player
+        aliases: [portalslist, portallist, listportals]
+        permission: gesuit.portals.command.portals
+        permission-message: §cYou do not have permission for this command
+permissions:
+    gesuit.portals.*:
+        description: Gives access to all gesuitPortal commands
+        default: op
+        children:
+            gesuit.portals.admin: true
+    gesuit.portals.admin:
+        description: Gives access to all gesuitPortal admin commands
+        children:
+            gesuit.portals.user: true
+            gesuit.portals.command.portals: true
+            gesuit.portals.command.delportal: true
+            gesuit.portals.command.setportal: true
+    gesuit.portals.user:
+        description: Gives access to all gesuitPortal user commands
+        children:
+            gesuit.portals.portal.*: true
+    gesuit.portals.portal.*:
+        description: Gives access to all portals
+        children:
+            gesuit.portals.portal.<portalname>: true
+    gesuit.portals.portal.<portalname>:
+        description: Gives access tp <portalname>
