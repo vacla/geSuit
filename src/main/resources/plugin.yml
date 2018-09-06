@@ -1,0 +1,131 @@
+name: geSuitTeleports
+main : net.cubespace.geSuitTeleports.geSuitTeleports
+version: ${plugin.version}
+description: Part of the gesuit this plugin allows users to teleport to each other.
+softdepend: [WorldGuard]
+author: geNAZt, Schmoller, Narimm
+commands:
+    tp:
+        description: Teleports a player to another player or location (use ~ for relative coordinates when not switching worlds)
+        aliases: [teleport,tpo]
+        permission: gesuit.teleports.command.tp
+        permission-message: §cYou do not have permission for this command
+        usage: |
+               /<command> (player)
+               /<command> (player) (player)
+               /<command> (x) (y) (z) [world]
+               /<command> (player) (x) (y) (z) [world]
+               /<command> (player) (x) (y) (z) [world] [server]
+               /<command> (server) (world) (x) (y) (z)
+    tppos:
+        description: Teleports a player to a specific location (use ~ for relative coordinates when not switching worlds)
+        permission: gesuit.teleports.command.tppos
+        permission-message: §cYou do not have permission for this command
+        usage: |
+               /<command> (x) (y) (z) [world]
+               /<command> (x) (y) (z) (yaw) (pitch) [world] [server]
+               /<command> (player) (x) (y) (z) [world]
+               /<command> (player) (x) (y) (z) (yaw) (pitch) [world] [server]
+    tphere:
+        description: Teleports a player to you
+        aliases: [teleporthere,tptome,tpohere]
+        permission: gesuit.teleports.command.tphere
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
+    tpahere:
+        description: Requests a player teleport to you
+        aliases: [teleportaskhere]
+        permission: gesuit.teleports.command.tpahere
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
+    tpall:
+        description: Requests all players teleport to you
+        aliases: [teleportall]
+        permission: gesuit.teleports.command.tpall
+        permission-message: §cYou do not have permission for this command
+        usage: |
+               /<command>
+               /<command> (player)
+    tpa:
+        description: Sends a teleport request to a player
+        aliases: [tpask,teleportask,tpto]
+        permission: gesuit.teleports.command.tpa
+        permission-message: §cYou do not have permission for this command
+        usage: /<command> (player)
+    tpaccept:
+        description: Accepts a players teleport request
+        aliases: [teleportaccept,tpyes]
+        permission: gesuit.teleports.command.tpaccept
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    tpdeny:
+        description: Denies a teleport request
+        aliases: [teleportdeny,tpno]
+        permission: gesuit.teleports.command.tpdeny
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    back:
+        description: Sends you back to your last death or teleport location
+        permission: gesuit.teleports.command.back
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    tptoggle:
+        description: Toggles the receiving of tp requests
+        permission: gesuit.teleports.command.tptoggle
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+    top:
+        description: Teleport to the highest block at your current position.
+        permission: gesuit.teleports.command.top
+        permission-message: §cYou do not have permission for this command
+        usage: /<command>
+
+permissions:
+    gesuit.teleports.*:
+        description: Gives access to all gesuitTeleport commands
+        default: op
+        children:
+            gesuit.teleports.admin: true
+    gesuit.teleports.admin:
+        description: Gives access to all gesuitTeleport admin commands
+        children:
+            gesuit.teleports.vip: true
+            gesuit.teleports.command.tp: true
+            gesuit.teleports.command.tphere: true
+            gesuit.teleports.command.tpall: true
+            gesuit.teleports.tp.silent: true
+            gesuit.teleports.tp.bypass: true
+    gesuit.teleports.vip:
+        decsription: Gives access to all gesuitTeleport vip commands
+        children:
+            gesuit.teleports.command.tptoggle: true
+            gesuit.teleports.command.top: true
+            gesuit.teleports.back.*: true
+            gesuit.teleports.user: true
+    gesuit.teleports.user:
+        description: Gives access to all gesuitTeleport user commands
+        children:
+            gesuit.teleports.command.tpahere: true
+            gesuit.teleports.command.tpa: true
+            gesuit.teleports.command.tpaccept: true
+            gesuit.teleports.command.tpdeny: true
+    gesuit.teleports.back.*:
+        description: Gives full access to the back command
+        children:
+            gesuit.teleports.command.back: true
+            gesuit.teleports.back.death: true
+            gesuit.teleports.back.teleport: true
+    gesuit.teleports.back.death:
+        description: Gives access to /back for death points
+    gesuit.teleports.back.teleport:
+        description: Gives access to /back for teleports
+    gesuit.teleports.tp.silent:
+        description: Does not send a teleport message to the player you teleported to
+    gesuit.teleports.tp.bypass:
+        description: Ability to bypass the tptoggle using /tp and this permission
+    gesuit.teleports.bypass.delay:
+        description: Ability to bypass the delay before the actual teleport
+    worldguard.teleports.allregions:
+        description: Ability to teleport to all worldguarded regions bypassing any NoEntry flag in blocked_cmds
+        
+        
