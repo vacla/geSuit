@@ -212,8 +212,7 @@ public class SpawnManager {
     }
 
     public static void delWorldSpawn( String worldName) {
-        if (SPAWNS.containsKey( worldName ))
-            SPAWNS.remove(worldName);
+        SPAWNS.remove(worldName);
 
     }
 

@@ -1,21 +1,9 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 /target/
 /bin
 /.project
 /.classpath
 /.settings/
 
-=======
-=======
->>>>>>> spawnmaster
 /.settings
-/.project
-/.classpath
-/bin
 /target
 *.*~
-<<<<<<< HEAD
->>>>>>> banmaster
-=======
->>>>>>> spawnmaster
