@@ -1,5 +1,6 @@
 package net.cubespace.geSuit.listeners;
 
+import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.event.EventHandler;
@@ -16,6 +17,9 @@ public class AdminMessageListener extends MessageListener {
 
     @EventHandler
     public void receivePluginMessage(PluginMessageEvent event) {
+        if (geSuit.getInstance().isDebugEnabled()) {
+            Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
+        }
         if (eventNotMatched(event)) return;
         //todo any message processing here
     }

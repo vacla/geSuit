@@ -31,7 +31,7 @@ public abstract class MessageListener implements Listener {
         if (event.getTag().equalsIgnoreCase(channelName.toString())
                 || (isLegacy && event.getTag().equalsIgnoreCase(channelName.getLegacy()))) {
             if (geSuit.getInstance().isDebugEnabled()) {
-                Utilities.dumpPacket(event.getTag(), "SEND", event.getData(), true);
+                geSuit.getInstance().getLogger().info("Packet Matched and will be handled on channel: " + channelName + " Legacy:" + isLegacy);
             }
             event.setCancelled(true);
             return false;
