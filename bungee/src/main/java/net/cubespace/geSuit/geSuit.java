@@ -90,16 +90,11 @@ public class geSuit extends Plugin
         }
         if (legacy) {
             for (CHANNEL_NAMES name : CHANNEL_NAMES.values()) {
-                getProxy().registerChannel(name.getLegacy());
+                getProxy().registerChannel(name.getLegacy());                 // For new bukkit plugins on 1.12 bungee
+                getProxy().registerChannel(name.getLegacy().toLowerCase());   // For old legacy bukkit plugins
             }
         }
-        String lineEnd = System.getProperty("line.separator");
-        StringBuilder mess = new StringBuilder();
-        mess.append("Gesuit Report: Proxy has registered the following channels:" + lineEnd);
-        for (String channel : getProxy().getChannels()) {
-            mess.append(channel).append(lineEnd);
-        }
-        getProxy().getLogger().info(mess.toString());
+
         proxy.getPluginManager().registerListener(this, new PlayerListener());
         proxy.getPluginManager().registerListener(this, new BansMessageListener(legacy));
         proxy.getPluginManager().registerListener(this, new TeleportsListener());
@@ -132,14 +127,14 @@ public class geSuit extends Plugin
     
     public enum CHANNEL_NAMES {
 
-        TELEPORT_CHANNEL("bungeecord:gesuitteleport", "gesuitteleport"),
-        SPAWN_CHANNEL("bungeecord:gesuitspawns", "gesuitspawns"),
-        BAN_CHANNEL("bungeecord:gesuitbans", "gesuitbans"),
-        PORTAL_CHANNEL("bungeecord:gesuitportals", "gesuitportals"),
-        WARP_CHANNEL("bungeecord:gesuitwarps", "gesuitwarps"),
-        HOME_CHANNEL("bungeecord:gesuithomes", "gesuithomes"),
-        API_CHANNEL("bungeecord:gesuitapi", "gesuitapi"),
-        ADMIN_CHANNEL("bungeecord:gesuitadmin", "gesuitadmin");
+        TELEPORT_CHANNEL("bungeecord:gesuitteleport", "geSuitTeleport"),
+        SPAWN_CHANNEL("bungeecord:gesuitspawns", "geSuitSpawns"),
+        BAN_CHANNEL("bungeecord:gesuitbans", "geSuitBans"),
+        PORTAL_CHANNEL("bungeecord:gesuitportals", "geSuitPortals"),
+        WARP_CHANNEL("bungeecord:gesuitwarps", "geSuitWarps"),
+        HOME_CHANNEL("bungeecord:gesuithomes", "geSuitHomes"),
+        API_CHANNEL("bungeecord:gesuitapi", "geSuitAPI"),
+        ADMIN_CHANNEL("bungeecord:gesuitadmin", "geSuitAdmin");
 
         private final String channelName;
         private final String legacy_channelName;
