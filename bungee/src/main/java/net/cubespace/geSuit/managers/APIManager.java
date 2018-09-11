@@ -44,7 +44,7 @@ public class APIManager {
 
                 out.writeUTF(builder.toString());
 
-                new SendPluginMessage("geSuitAPI", server, stream).run();
+                new SendPluginMessage(geSuit.CHANNEL_NAMES.API_CHANNEL, server, stream).run();
             } catch (IOException e) {
                 throw new AssertionError(e);
             }
@@ -85,7 +85,7 @@ public class APIManager {
 
                 out.writeUTF(builder.toString());
 
-                new SendPluginMessage("geSuitAPI", server, stream).run();
+                new SendPluginMessage(geSuit.CHANNEL_NAMES.API_CHANNEL, server, stream).run();
             } catch (IOException e) {
                 throw new AssertionError(e);
             }
@@ -121,7 +121,7 @@ public class APIManager {
 
                 out.writeUTF(builder.toString());
 
-                new SendPluginMessage("geSuitAPI", server, stream).run();
+                new SendPluginMessage(geSuit.CHANNEL_NAMES.API_CHANNEL, server, stream).run();
             } catch (IOException e) {
                 throw new AssertionError(e);
             }

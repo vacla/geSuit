@@ -21,9 +21,7 @@ public class DelWorldSpawn {
             e.printStackTrace();
         }
     
-        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), new SendPluginMessage(geSuit
-                .CHANNEL_NAMES.SPAWN_CHANNEL.toString(),
-                server,
-                bytes));
+        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(),
+            new SendPluginMessage(geSuit.CHANNEL_NAMES.SPAWN_CHANNEL, server, bytes));
     }
 }

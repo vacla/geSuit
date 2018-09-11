@@ -50,8 +50,8 @@ public class TeleportToLocation
         catch (IOException e) {
             e.printStackTrace();
         }
-    
-        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), new SendPluginMessage(geSuit
-                .CHANNEL_NAMES.TELEPORT_CHANNEL.toString(), location.getServer(), bytes));
+
+        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(),
+            new SendPluginMessage(geSuit.CHANNEL_NAMES.TELEPORT_CHANNEL, location.getServer(), bytes));
     }
 }

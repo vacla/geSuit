@@ -30,8 +30,8 @@ public class LeavingServer
             e.printStackTrace();
         }
     
-        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), new SendPluginMessage(geSuit
-                .CHANNEL_NAMES.TELEPORT_CHANNEL.toString(), player
-                .getProxiedPlayer().getServer().getInfo(), bytes));
+        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(),
+            new SendPluginMessage(geSuit.CHANNEL_NAMES.TELEPORT_CHANNEL,
+                player.getProxiedPlayer().getServer().getInfo(), bytes));
     }
 }

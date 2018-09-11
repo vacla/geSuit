@@ -18,7 +18,7 @@ public class APIMessageListener extends MessageListener {
     }
     @EventHandler
     public void receivePluginMessage(PluginMessageEvent event) throws IOException {
-        if (eventNotMatched(event)) return;
+        if (!eventMatched(event)) return;
 		// Message debugging (can be toggled live)
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 

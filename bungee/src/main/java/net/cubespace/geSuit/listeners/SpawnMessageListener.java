@@ -16,12 +16,12 @@ import java.io.IOException;
 public class SpawnMessageListener extends MessageListener {
 
     public SpawnMessageListener(boolean legacy) {
-        super(legacy, geSuit.CHANNEL_NAMES.PORTAL_CHANNEL);
+        super(legacy, geSuit.CHANNEL_NAMES.SPAWN_CHANNEL);
     }
 
     @EventHandler
     public void receivePluginMessage(PluginMessageEvent event) throws IOException {
-        if (eventNotMatched(event)) return;
+        if (!eventMatched(event)) return;
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
         String task = in.readUTF();

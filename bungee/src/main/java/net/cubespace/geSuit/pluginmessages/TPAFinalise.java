@@ -23,8 +23,8 @@ public class TPAFinalise {
             e.printStackTrace();
         }
     
-        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), new SendPluginMessage(geSuit
-                .CHANNEL_NAMES.TELEPORT_CHANNEL.toString(),
+        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(),
+            new SendPluginMessage(geSuit.CHANNEL_NAMES.TELEPORT_CHANNEL,
                 ProxyServer.getInstance().getServerInfo(player.getServer()), bytes));
     }
 }

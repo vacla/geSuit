@@ -20,7 +20,7 @@ public class AdminMessageListener extends MessageListener {
         if (geSuit.getInstance().isDebugEnabled()) {
             Utilities.dumpPacket(event.getTag(), "RECV", event.getData(), true);
         }
-        if (eventNotMatched(event)) return;
+        if (!eventMatched(event)) return;
         //todo any message processing here
     }
 }

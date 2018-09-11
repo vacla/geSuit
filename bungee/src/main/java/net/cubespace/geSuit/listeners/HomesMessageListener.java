@@ -24,7 +24,7 @@ public class HomesMessageListener extends MessageListener {
 
     @EventHandler
     public void receivePluginMessage(PluginMessageEvent event) throws IOException {
-        if (eventNotMatched(event)) return;
+        if (!eventMatched(event)) return;
         DataInputStream in = new DataInputStream( new ByteArrayInputStream( event.getData() ) );
 
         String task = in.readUTF();

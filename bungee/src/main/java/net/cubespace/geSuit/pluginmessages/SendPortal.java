@@ -38,8 +38,7 @@ public class SendPortal {
             e.printStackTrace();
         }
     
-        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(), new SendPluginMessage(geSuit
-                .CHANNEL_NAMES.PORTAL_CHANNEL.toString(), p
-                .getServer(), bytes));
+        geSuit.proxy.getScheduler().runAsync(geSuit.getInstance(),
+            new SendPluginMessage(geSuit.CHANNEL_NAMES.PORTAL_CHANNEL, p.getServer(), bytes));
     }
 }
