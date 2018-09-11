@@ -2,6 +2,7 @@ package net.cubespace.geSuit.tasks;
 
 import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
+import net.cubespace.geSuit.managers.ConfigManager;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.io.ByteArrayOutputStream;
@@ -12,8 +13,8 @@ public class SendPluginMessage implements Runnable {
 	    private final ByteArrayOutputStream bytes;
 	    private final ServerInfo server;
 	    
-	    public SendPluginMessage(String channel, ServerInfo server, ByteArrayOutputStream bytes) {
-	        this.channel = channel;
+	    public SendPluginMessage(geSuit.CHANNEL_NAMES channel, ServerInfo server, ByteArrayOutputStream bytes) {
+	        this.channel = ConfigManager.main.enableLegacy ? channel.getLegacy() : channel.getLegacy();
 	        this.bytes = bytes;
 	        this.server = server;
 	    }
