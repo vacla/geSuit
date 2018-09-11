@@ -12,8 +12,8 @@ import net.md_5.bungee.api.plugin.Listener;
  * Created by benjamincharlton on 31/08/2018.
  */
 public abstract class MessageListener implements Listener {
-    private static boolean isLegacy = false;
-    protected static geSuit.CHANNEL_NAMES channelName;
+    private boolean isLegacy = false;
+    private geSuit.CHANNEL_NAMES channelName;
 
     public MessageListener(boolean legacy, geSuit.CHANNEL_NAMES channel) {
         channelName = channel;
@@ -25,17 +25,14 @@ public abstract class MessageListener implements Listener {
      * @param event The event to check
      * @return boolean
      */
-    public static boolean eventNotMatched(PluginMessageEvent event) {
-        if (event.isCancelled()) return true;
-        if (!(event.getSender() instanceof Server)) return true;
+    public boolean eventMatched(PluginMessageEvent event) {
+        if (event.isCancelled()) return false;
+        if (!(event.getSender() instanceof Server)) return false;
         if (event.getTag().equalsIgnoreCase(channelName.toString())
                 || (isLegacy && event.getTag().equalsIgnoreCase(channelName.getLegacy()))) {
-            if (geSuit.getInstance().isDebugEnabled()) {
-                geSuit.getInstance().getLogger().info("Packet Matched and will be handled on channel: " + channelName + " Legacy:" + isLegacy);
-            }
             event.setCancelled(true);
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }
