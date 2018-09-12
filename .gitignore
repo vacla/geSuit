@@ -5,6 +5,7 @@
 /.settings/
 /.project
 /target
+/bungee/target
 *.*~
 classes
 
