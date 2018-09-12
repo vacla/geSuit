@@ -1,7 +1,7 @@
 package net.cubespace.geSuitBans.commands;
 
 import net.cubespace.geSuitBans.managers.BansManager;
-import net.cubespace.geSuitBans.utils.TimeParser;
+import net.cubespace.geSuit.utils.Utilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
@@ -19,7 +19,7 @@ public class TempBanCommand implements CommandExecutor {
             String player = args[0];
             String timing = args[1];
             String reason = StringUtils.join(args, " ", 2, args.length);
-            int seconds = TimeParser.parseStringToSecs(timing);
+            int seconds = Utilities.parseStringToSecs(timing);
             if (seconds == 0) {
                 sender.sendMessage("&c Couldn't convert "+args[1]+" to seconds");
                 return false;

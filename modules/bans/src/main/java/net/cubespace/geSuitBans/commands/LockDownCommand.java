@@ -1,7 +1,7 @@
 package net.cubespace.geSuitBans.commands;
 
 import net.cubespace.geSuitBans.managers.BansManager;
-import net.cubespace.geSuitBans.utils.TimeParser;
+import net.cubespace.geSuit.utils.Utilities;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -60,7 +60,7 @@ public class LockDownCommand implements CommandExecutor {
      */
     private long getExpiryTime(CommandSender sender, String time) {
         try {
-            long timemillisec = TimeParser.parseStringtoMillisec(time);
+            long timemillisec = Utilities.parseStringtoMillisecs(time);
             if (timemillisec > 0) {
                 return System.currentTimeMillis() + timemillisec;
             }

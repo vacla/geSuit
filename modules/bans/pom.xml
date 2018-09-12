@@ -4,6 +4,13 @@
     <artifactId>geSuitBans</artifactId>
     <packaging>jar</packaging>
     <name>geSuitBans</name>
+    <dependencies>
+        <dependency>
+            <groupId>net.cubespace</groupId>
+            <artifactId>BukkitModule</artifactId>
+            <version>0.9.3-RC</version>
+        </dependency>
+    </dependencies>
     <parent>
         <groupId>net.cubespace</groupId>
         <artifactId>geSuitCommon</artifactId>

@@ -7,8 +7,6 @@ import org.bukkit.command.CommandSender;
 
 import net.cubespace.geSuitWarps.managers.WarpsManager;
 
-import java.util.Arrays;
-
 
 public class SetWarpDescCommand implements CommandExecutor {
 

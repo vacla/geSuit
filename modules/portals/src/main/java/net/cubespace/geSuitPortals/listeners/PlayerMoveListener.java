@@ -1,7 +1,5 @@
 package net.cubespace.geSuitPortals.listeners;
 
-import net.cubespace.geSuitPortals.geSuitPortals;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

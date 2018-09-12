@@ -2,6 +2,7 @@ package net.cubespace.geSuitPortals;
 
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import net.cubespace.geSuit.BukkitModule;
 import net.cubespace.geSuitPortals.commands.DeletePortalCommand;
 import net.cubespace.geSuitPortals.commands.ListPortalsCommand;
 import net.cubespace.geSuitPortals.commands.SetPortalCommand;
@@ -17,22 +18,24 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 
-public class geSuitPortals extends JavaPlugin {
-    public static geSuitPortals INSTANCE = null;
-    public static WorldEditPlugin WORLDEDIT = null;
-    public static String CHANNEL_NAME = "gesuit:portals";
+import static org.bukkit.Bukkit.getServer;
 
+public class geSuitPortals extends BukkitModule {
+    public static WorldEditPlugin WORLDEDIT = null;
+    
+    protected geSuitPortals() {
+        super("portals");
+    }
+    
     @Override
     public void onEnable() {
-        INSTANCE = this;
+        super.onEnable();
         loadWorldEdit();
-        registerListeners();
-        registerChannels();
-        registerCommands();
     }
 
     @Override
     public void onDisable() {
+        super.onDisable();
         for (ArrayList<Portal> list : PortalsManager.PORTALS.values()) {
             for (Portal p : list) {
                 p.clearPortal();
@@ -40,25 +43,24 @@ public class geSuitPortals extends JavaPlugin {
         }
     }
 
-
     private void loadWorldEdit() {
         WORLDEDIT = (WorldEditPlugin) getServer().getPluginManager().getPlugin("WorldEdit");
     }
 
-    private void registerCommands() {
+    protected void registerCommands() {
         getCommand("setportal").setExecutor(new SetPortalCommand());
         getCommand("delportal").setExecutor(new DeletePortalCommand());
         getCommand("portals").setExecutor(new ListPortalsCommand());
     }
-
-    private void registerChannels() {
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, CHANNEL_NAME, new PortalsMessageListener
+    
+    protected void registerChannels() {
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, getCHANNEL_NAME(), new PortalsMessageListener
                 ());
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, CHANNEL_NAME);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, getCHANNEL_NAME());
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
-
-    private void registerListeners() {
+    
+    protected void registerListeners() {
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
         getServer().getPluginManager().registerEvents(new PhysicsListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerLoginListener(), this);

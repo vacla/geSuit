@@ -1,4 +1,4 @@
-package au.com.addstar.geSuitAdmin;
+package net.cubespace.geSuit.utils;
 
 import java.text.DateFormat;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +24,7 @@ public class Utilities {
      * @param string String to convert to Seconds
      * @return Seconds
      */
-    public static int parseString(String string) {
+    public static int parseStringToSecs(String string) {
         Matcher m = TIME_PATTERN.matcher(string);
         int total = 0;
         while (m.find()) {
@@ -51,7 +51,7 @@ public class Utilities {
     }
 
     public static long parseStringtoMillisecs(String string) {
-        int total = parseString(string);
+        int total = parseStringToSecs(string);
         return total * 1000;
     }
 

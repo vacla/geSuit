@@ -6,14 +6,14 @@ import org.bukkit.entity.Player;
 public class PermissionsManager {
 
     public static void addAllPermissions(Player player) {
-        player.addAttachment(geSuitPortals.INSTANCE, "gesuit.portals.*", true);
+        player.addAttachment(geSuitPortals.getInstance(), "gesuit.portals.*", true);
     }
 
     public static void addAdminPermissions(Player player) {
-        player.addAttachment(geSuitPortals.INSTANCE, "gesuit.portals.admin", true);
+        player.addAttachment(geSuitPortals.getInstance(), "gesuit.portals.admin", true);
     }
 
     public static void addUserPermissions(Player player) {
-        player.addAttachment(geSuitPortals.INSTANCE, "gesuit.portals.user", true);
+        player.addAttachment(geSuitPortals.getInstance(), "gesuit.portals.user", true);
     }
 }

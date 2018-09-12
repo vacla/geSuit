@@ -2,7 +2,6 @@ package net.cubespace.geSuitPortals.managers;
 
 import net.cubespace.geSuitPortals.geSuitPortals;
 import net.cubespace.geSuitPortals.objects.Portal;
-import net.cubespace.geSuitPortals.tasks.PluginMessageTask;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import org.bukkit.Bukkit;
@@ -24,7 +23,7 @@ public class PortalsManager {
     public static HashMap<World, ArrayList<Portal>> PORTALS = new HashMap<>();
     public static HashMap<String, Location> pendingTeleports = new HashMap<>();
 
-    public static void deletePortal( String name, String string ) {
+    public void deletePortal( String name, String string ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -35,7 +34,7 @@ public class PortalsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitPortals.INSTANCE );
+        geSuitPortals.instance.sendMessage(b);
 
     }
 
@@ -59,7 +58,7 @@ public class PortalsManager {
         return null;
     }
 
-    public static void getPortalsList( String name ) {
+    public void getPortalsList( String name ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -69,11 +68,11 @@ public class PortalsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitPortals.INSTANCE );
+        geSuitPortals.instance.sendMessage(b);
 
     }
 
-    public static void teleportPlayer( Player p, Portal portal ) {
+    public void teleportPlayer( Player p, Portal portal ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -86,10 +85,10 @@ public class PortalsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitPortals.INSTANCE );
+        geSuitPortals.instance.sendMessage(b);
     }
 
-    public static void setPortal( CommandSender sender, String name, String type, String dest, String fill ) {
+    public void setPortal( CommandSender sender, String name, String type, String dest, String fill ) {
 
         Player p = ( Player ) sender;
         Selection sel = geSuitPortals.WORLDEDIT.getSelection( p );
@@ -121,11 +120,11 @@ public class PortalsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitPortals.INSTANCE );
+        geSuitPortals.instance.sendMessage(b);
 
     }
 
-    public static void addPortal( String name, String type, String dest, String filltype, Location max, Location min ) {
+    public void addPortal( String name, String type, String dest, String filltype, Location max, Location min ) {
         if ( max.getWorld() == null ) {
             Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "World does not exist portal " + name + " will not load :(" );
             return;
@@ -140,7 +139,7 @@ public class PortalsManager {
         portal.fillPortal();
     }
 
-    public static void requestPortals() {
+    public void requestPortals() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -148,19 +147,19 @@ public class PortalsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitPortals.INSTANCE );
-
+        geSuitPortals.instance.sendMessage(b);
+    
     }
 
-    public static void sendVersion() {
+    public void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "SendVersion" );
-            out.writeUTF( ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.INSTANCE.getDescription().getVersion() );
+            out.writeUTF( ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.getInstance().getDescription().getVersion() );
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitPortals.INSTANCE );
+        geSuitPortals.instance.sendMessage(b);
     }
 }

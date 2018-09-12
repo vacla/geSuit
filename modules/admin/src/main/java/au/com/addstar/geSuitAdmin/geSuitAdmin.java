@@ -2,18 +2,21 @@ package au.com.addstar.geSuitAdmin;
 
 import au.com.addstar.geSuitAdmin.commands.DebugCommand;
 import au.com.addstar.geSuitAdmin.listeners.AdminListener;
+import net.cubespace.geSuit.BukkitModule;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Created for use for the Add5tar MC Minecraft server
  * Created by benjamincharlton on 7/08/2017.
  */
-public class geSuitAdmin extends JavaPlugin {
-    private static geSuitAdmin INSTANCE = null;
-    private static String CHANNEL_NAME = "gesuit:admin";
+public class geSuitAdmin extends BukkitModule {
     private boolean debug;
-
+    
+    protected geSuitAdmin() {
+        super("admin");
+        debug =  false;
+    }
+    
     public boolean isDebug() {
         return debug;
     }
@@ -22,31 +25,12 @@ public class geSuitAdmin extends JavaPlugin {
         this.debug = debug;
     }
 
-    @Override
-    public void onDisable() {
-        unRegisterChannels();
-        super.onDisable();
-    }
-
-    @Override
-    public void onEnable() {
-        super.onEnable();
-        INSTANCE = this;
-        registerChannels();
-        registerCommands();
-        debug =  false;
-    }
-
-    private void registerChannels() {
+    protected void registerChannels() {
         Bukkit.getMessenger().registerIncomingPluginChannel(this,
-                CHANNEL_NAME, new AdminListener(this));
-
+                getCHANNEL_NAME(), new AdminListener(this));
     }
 
-    private void unRegisterChannels(){
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
-    }
-    private void registerCommands() {
-        getCommand("gsAdmin_debug").setExecutor(new DebugCommand(INSTANCE));
+    protected void registerCommands() {
+        getCommand("gsAdmin_debug").setExecutor(new DebugCommand(this));
     }
 }

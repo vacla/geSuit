@@ -1,5 +1,6 @@
 package net.cubespace.geSuiteSpawn;
 
+import net.cubespace.geSuit.BukkitModule;
 import net.cubespace.geSuiteSpawn.commands.GlobalSpawnCommand;
 import net.cubespace.geSuiteSpawn.commands.ServerSpawnCommand;
 import net.cubespace.geSuiteSpawn.commands.SetGlobalSpawnCommand;
@@ -16,18 +17,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class geSuitSpawn extends JavaPlugin {
+import static org.bukkit.Bukkit.getServer;
+
+public class geSuitSpawn extends BukkitModule {
 	public static Plugin INSTANCE = null;
     public static String CHANNEL_NAME = "gesuit:spawns";
-	@Override
-	public void onEnable() {
-		INSTANCE = this;
-		registerListeners();
-		registerChannels();
-		registerCommands();
-	}
-
-	private void registerCommands() {
+    
+    protected geSuitSpawn() {
+        super("spawns");
+    }
+    
+    protected void registerCommands() {
 		getCommand("setnewspawn").setExecutor(new SetNewSpawnCommand());
 		getCommand("setworldspawn").setExecutor(new SetWorldSpawnCommand());
 		getCommand("delworldspawn").setExecutor(new DelWorldSpawnCommand());
@@ -39,15 +39,15 @@ public class geSuitSpawn extends JavaPlugin {
 		getCommand("globalspawn").setExecutor(new GlobalSpawnCommand());
                 getCommand("warpspawn").setExecutor(new WarpSpawnCommand());
 	}
-
-	private void registerChannels() {
+    
+    protected void registerChannels() {
 		Bukkit.getMessenger().registerIncomingPluginChannel(this,
                 CHANNEL_NAME, new SpawnMessageListener());
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this,
                 CHANNEL_NAME);
 	}
-
-	private void registerListeners() {
+    
+    protected void registerListeners() {
 		getServer().getPluginManager().registerEvents(
 				new SpawnListener(), this);
 	}

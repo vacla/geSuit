@@ -1,7 +1,6 @@
 package net.cubespace.geSuitHomes.managers;
 
 import net.cubespace.geSuitHomes.geSuitHomes;
-import net.cubespace.geSuitHomes.tasks.PluginMessageTask;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,8 +28,7 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
-
+        geSuitHomes.instance.sendMessage(b);
     }
 
     public static void deleteOtherHime( CommandSender sender, String player, String home ) {
@@ -44,7 +42,7 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
+        geSuitHomes.instance.sendMessage(b);
 
     }
 
@@ -58,7 +56,7 @@ public class HomesManager {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new PluginMessageTask(b).runTaskAsynchronously(geSuitHomes.instance);
+        geSuitHomes.instance.sendMessage(b);
     }
     
     public static void sendOtherHome( CommandSender sender, String player, String home ) {
@@ -72,7 +70,7 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
+        geSuitHomes.instance.sendMessage(b);
 
     }
 
@@ -86,7 +84,7 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
+        geSuitHomes.instance.sendMessage(b);
 
     }
     
@@ -100,7 +98,7 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
+        geSuitHomes.instance.sendMessage(b);
 
     }
 
@@ -148,7 +146,7 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
+        geSuitHomes.instance.sendMessage(b);
 
     }
 
@@ -171,7 +169,7 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
+        geSuitHomes.instance.sendMessage(b);
 
     }
 
@@ -193,7 +191,7 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitHomes.instance );
+        geSuitHomes.instance.sendMessage(b);
 
 
     }

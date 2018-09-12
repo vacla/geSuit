@@ -1,6 +1,7 @@
 package net.cubespace.geSuitTeleports;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import net.cubespace.geSuit.BukkitModule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,8 +22,7 @@ import net.cubespace.geSuitTeleports.listeners.TeleportsMessageListener;
 
 import java.util.List;
 
-public class geSuitTeleports extends JavaPlugin {
-    public static geSuitTeleports instance;
+public class geSuitTeleports extends BukkitModule {
     public static String teleportinitiated;
     public static String teleporting;
     public static String aborted;
@@ -45,17 +45,23 @@ public class geSuitTeleports extends JavaPlugin {
     public static List<String> deny_Teleport;
     public static String tp_admin_bypass;
     private static WorldGuardPlugin mWorldGuard;
-    public static final String CHANNEL_NAME = "gesuit:teleports";
     public static boolean worldGuarded;
     public static boolean geSuitSpawns;
     public static boolean logDebugMessages;
-
+    
+    protected geSuitTeleports() {
+        super("teleport");
+    }
+    
     @Override
     public void onEnable() {
-        instance = this;
+        setupConfig();
+        super.onEnable();
+    }
+    private void setupConfig(){
         this.saveDefaultConfig();
         getConfig().options().copyDefaults(true);
-		saveConfig();
+        saveConfig();
         teleportinitiated = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.teleport_initiated"));
         teleporting = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.teleporting"));
         aborted = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.aborted"));
@@ -84,19 +90,14 @@ public class geSuitTeleports extends JavaPlugin {
             worldGuarded = false;
             deny_Teleport = null;
         }
-
+    
         logDebugMessages = getConfig().getBoolean("options.debug_logging");
-
+    
         //check for geSuitSpawns
         geSuitSpawns = Bukkit.getPluginManager().isPluginEnabled("geSuitSpawn");
-
-
-        registerListeners();
-        registerChannels();
-        registerCommands();
     }
 
-    private void registerCommands() {
+    protected void registerCommands() {
         getCommand("tp").setExecutor(new TPCommand());
         getCommand("tppos").setExecutor(new TPPosCommand());
         getCommand("tphere").setExecutor(new TPHereCommand());
@@ -109,23 +110,19 @@ public class geSuitTeleports extends JavaPlugin {
         getCommand("tptoggle").setExecutor(new ToggleCommand());
         getCommand("top").setExecutor(new TopCommand());
     }
-
-    private void registerChannels() {
+    
+    protected void registerChannels() {
         Bukkit.getMessenger().registerIncomingPluginChannel(this,
-                CHANNEL_NAME, new TeleportsMessageListener());
+                getCHANNEL_NAME(), new TeleportsMessageListener());
         Bukkit.getMessenger().registerOutgoingPluginChannel(this,
-                CHANNEL_NAME);
+                getCHANNEL_NAME());
     }
-
-    private void registerListeners() {
+    
+    protected void registerListeners() {
         getServer().getPluginManager().registerEvents(
                 new TeleportsListener(), this);
     }
-
-    public static geSuitTeleports getInstance() {
-        return instance;
-    }
-
+    
     public static WorldGuardPlugin getWorldGuard() {
         return mWorldGuard;
     }

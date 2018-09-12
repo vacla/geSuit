@@ -1,7 +1,6 @@
 package net.cubespace.geSuitTeleports.managers;
 
 import net.cubespace.geSuitTeleports.geSuitTeleports;
-import net.cubespace.geSuitTeleports.tasks.PluginMessageTask;
 import net.cubespace.geSuitTeleports.utils.LocationUtil;
 
 import org.bukkit.Bukkit;
@@ -44,7 +43,7 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+        geSuitTeleports.getInstance().sendMessage(b);
 
     }
 
@@ -58,7 +57,7 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+        geSuitTeleports.getInstance().sendMessage(b);
     }
 
     public static void tpaHereRequest( CommandSender sender, String targetPlayer ) {
@@ -71,7 +70,7 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+        geSuitTeleports.getInstance().sendMessage(b);
 
     }
 
@@ -87,7 +86,7 @@ public class TeleportsManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+        geSuitTeleports.getInstance().sendMessage(b);
     }
 
     public static void tpDeny( String sender ) {
@@ -99,7 +98,7 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+        geSuitTeleports.getInstance().sendMessage(b);
 
     }
 
@@ -119,7 +118,7 @@ public class TeleportsManager {
                         ByteArrayOutputStream b = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(b);
                         doTeleportToPlayer(out, player, target);
-                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+                        geSuitTeleports.getInstance().sendMessage(b);
                     } else {
                         player.sendMessage(geSuitTeleports.aborted);
                     }
@@ -130,7 +129,7 @@ public class TeleportsManager {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             doTeleportToPlayer(out, player, target);
-            new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+            geSuitTeleports.getInstance().sendMessage(b);
         }
     }
 
@@ -171,7 +170,7 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+        geSuitTeleports.getInstance().sendMessage(b);
     }
 
     public static void sendTeleportBackLocation( Player p, boolean empty ) {
@@ -190,7 +189,9 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b, empty ).runTaskAsynchronously( geSuitTeleports.instance );
+        //todo the boolean was being passed to the message sender which was ignoring it..need to
+        // evaluate its importance
+        geSuitTeleports.getInstance().sendMessage(b);
     }
 
     public static void sendPlayerBack( final CommandSender sender ) {
@@ -210,7 +211,7 @@ public class TeleportsManager {
                         ByteArrayOutputStream b = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(b);
                         doSendBack(out, sender);
-                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+                        geSuitTeleports.getInstance().sendMessage(b);
                     } else {
                         player.sendMessage(geSuitTeleports.aborted);
                     }
@@ -221,7 +222,7 @@ public class TeleportsManager {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             doSendBack(out, sender);
-            new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+            geSuitTeleports.getInstance().sendMessage(b);
         }
     }
 
@@ -245,7 +246,7 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+        geSuitTeleports.getInstance().sendMessage(b);
     }
 
     public static void teleportPlayerToPlayer( final String player, String target ) {
@@ -316,7 +317,7 @@ public class TeleportsManager {
                         ByteArrayOutputStream b = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(b);
                         doTeleportToPlayer(out, sender, playerName, target);
-                        new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+                        geSuitTeleports.getInstance().sendMessage(b);
                     } else {
                         player.sendMessage(geSuitTeleports.aborted);
                     }
@@ -327,7 +328,7 @@ public class TeleportsManager {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             doTeleportToPlayer(out, sender, playerName, target);
-            new PluginMessageTask(b).runTaskAsynchronously(geSuitTeleports.instance);
+            geSuitTeleports.getInstance().sendMessage(b);
         }
     }
 
@@ -360,8 +361,8 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+    
+        geSuitTeleports.getInstance().sendMessage(b);
 
     }
 
@@ -381,8 +382,8 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+    
+        geSuitTeleports.getInstance().sendMessage(b);
 
     }
 
@@ -395,6 +396,6 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitTeleports.instance );
+        geSuitTeleports.getInstance().sendMessage(b);
     }
 }

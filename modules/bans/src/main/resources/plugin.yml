@@ -1,6 +1,6 @@
 name: geSuitBans
 main : net.cubespace.geSuitBans.geSuitBans
-version: ${project.version}b-${build.number}
+version: ${plugin.version}
 api-version: ${spigot.api.verison}
 description: Part of the geSuit this plugin allows moderators to ban and kick players
 author: narimm

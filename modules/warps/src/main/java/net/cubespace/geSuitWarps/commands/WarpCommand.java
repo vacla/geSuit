@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 
 import net.cubespace.geSuitWarps.managers.WarpsManager;
 
-import java.util.HashMap;
-
 public class WarpCommand implements CommandExecutor {
 
     @Override

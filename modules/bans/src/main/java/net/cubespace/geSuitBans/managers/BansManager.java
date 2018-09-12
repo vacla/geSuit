@@ -1,8 +1,7 @@
 package net.cubespace.geSuitBans.managers;
 
+import net.cubespace.geSuit.utils.Utilities;
 import net.cubespace.geSuitBans.geSuitBans;
-import net.cubespace.geSuitBans.tasks.PluginMessageTask;
-import net.cubespace.geSuitBans.utils.TimeParser;
 import org.bukkit.ChatColor;
 
 import java.io.ByteArrayOutputStream;
@@ -23,7 +22,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void forceToNewSpawn(String sender, String player) {
@@ -36,7 +35,7 @@ public class BansManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        new PluginMessageTask(b).runTaskAsynchronously(geSuitBans.instance);
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void warnPlayer( String sender, String player, String msg ) {
@@ -50,7 +49,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void kickAll( String sender, String msg ) {
@@ -63,7 +62,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
 
     }
 
@@ -78,8 +77,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
-
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void tempBanPlayer( String sender, String player, int seconds, String reason ) {
@@ -94,7 +92,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
 
     /**
@@ -103,7 +101,7 @@ public class BansManager {
      */
     @Deprecated
     public static void tempBanPlayer( String sender, String player, String timing, String reason ) {
-        int seconds = TimeParser.parseStringToSecs(timing);
+        int seconds = Utilities.parseStringToSecs(timing);
         tempBanPlayer(sender, player, seconds, reason);
     }
 
@@ -118,7 +116,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask(b).runTaskAsynchronously(geSuitBans.instance);
+        geSuitBans.instance.sendMessage(b);
 
     }
 
@@ -131,7 +129,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void ipBanPlayer( String sender, String player, String msg ) {
@@ -145,8 +143,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
-
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void unipBanPlayer(String sender, String player) {
@@ -159,7 +156,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
 
     }
 
@@ -173,7 +170,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
     
     public static void displayPlayerBanHistory( String sender, String player ) {
@@ -186,7 +183,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void displayPlayerWarnHistory( String sender, String player, boolean showStaffNames ) {
@@ -200,7 +197,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void displayPlayerWarnBanHistory( String sender, String player) {
@@ -213,7 +210,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void displayWhereHistory( String sender, String options, String search ) {
@@ -227,7 +224,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void displayOnTimeHistory( String sender, String player ) {
@@ -240,7 +237,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
     public static void displayOnTimeTop( String sender, int pagenum ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -252,7 +249,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
     public static void displayLastLogins( String sender, String target, int pagenum ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -265,7 +262,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
     
     public static void displayNameHistory( String sender, String nameOrId ) {
@@ -278,7 +275,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void lockDown(String sender, long expiryTime, String msg) {
@@ -292,7 +289,7 @@ public class BansManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        new PluginMessageTask(b).runTaskAsynchronously(geSuitBans.instance);
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void endLockDown(String sender) {
@@ -304,7 +301,7 @@ public class BansManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        new PluginMessageTask(b).runTaskAsynchronously(geSuitBans.instance);
+        geSuitBans.instance.sendMessage(b);
     }
 
     public static void lockDownStatus(String sender) {
@@ -316,11 +313,9 @@ public class BansManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        new PluginMessageTask(b).runTaskAsynchronously(geSuitBans.instance);
+        geSuitBans.instance.sendMessage(b);
     }
-
-
-
+    
     public static void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
@@ -330,6 +325,6 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitBans.instance );
+        geSuitBans.instance.sendMessage(b);
     }
 }

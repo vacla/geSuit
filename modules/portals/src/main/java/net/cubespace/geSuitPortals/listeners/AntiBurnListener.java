@@ -18,7 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
  * @author geNAZt (fabian.fassbender42@googlemail.com)
  */
 public class AntiBurnListener implements Listener {
-    private static final int FIRE_SPREAD_RADIUS = 2;
+    private final int FIRE_SPREAD_RADIUS = 2;
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDamageEvent(EntityDamageEvent event) {

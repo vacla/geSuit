@@ -1,7 +1,6 @@
 package net.cubespace.geSuitWarps.managers;
 
 import net.cubespace.geSuitWarps.geSuitWarps;
-import net.cubespace.geSuitWarps.tasks.PluginMessageTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -28,7 +27,7 @@ public class WarpsManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        new PluginMessageTask(b).runTaskAsynchronously(geSuitWarps.instance);
+        geSuitWarps.getInstance().sendMessage(b);
     }
 
     public static void setWarp( CommandSender sender, String name, boolean hidden, boolean global ) {
@@ -50,7 +49,7 @@ public class WarpsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitWarps.instance );
+        geSuitWarps.getInstance().sendMessage(b);
     }
 
     public static void setWarpDesc( CommandSender sender, String warpName, String description ) {
@@ -65,7 +64,7 @@ public class WarpsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitWarps.instance );
+        geSuitWarps.getInstance().sendMessage(b);
     }
 
     public static void silentWarpPlayer( final CommandSender sender, final String senderName, final String warp ) {
@@ -82,7 +81,7 @@ public class WarpsManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        new PluginMessageTask(b).runTaskAsynchronously(geSuitWarps.instance);
+        geSuitWarps.getInstance().sendMessage(b);
     }
 
     public static void deleteWarp( CommandSender sender, String warp ) {
@@ -95,7 +94,7 @@ public class WarpsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitWarps.instance );
+        geSuitWarps.getInstance().sendMessage(b);
     }
 
 
@@ -112,6 +111,6 @@ public class WarpsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitWarps.instance );
+        geSuitWarps.getInstance().sendMessage(b);
     }
 }

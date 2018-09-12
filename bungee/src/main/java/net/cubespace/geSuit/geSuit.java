@@ -94,15 +94,23 @@ public class geSuit extends Plugin
                 getProxy().registerChannel(name.getLegacy().toLowerCase());   // For old legacy bukkit plugins
             }
         }
-
+        String lineEnd = System.getProperty("line.separator");
+        StringBuilder mess = new StringBuilder();
+        mess.append("Gesuit Report: Proxy has registered the following channels:" + lineEnd);
+        for (String channel : getProxy().getChannels()) {
+            mess.append(channel).append(lineEnd);
+        }
+        getProxy().getLogger().info(mess.toString());
+        
         proxy.getPluginManager().registerListener(this, new PlayerListener());
-        proxy.getPluginManager().registerListener(this, new BansMessageListener(legacy));
         proxy.getPluginManager().registerListener(this, new TeleportsListener());
+        proxy.getPluginManager().registerListener(this, new SpawnListener());
+    
         proxy.getPluginManager().registerListener(this, new TeleportsMessageListener(legacy));
+        proxy.getPluginManager().registerListener(this, new BansMessageListener(legacy));
         proxy.getPluginManager().registerListener(this, new WarpsMessageListener(legacy));
         proxy.getPluginManager().registerListener(this, new HomesMessageListener(legacy));
         proxy.getPluginManager().registerListener(this, new PortalsMessageListener(legacy));
-        proxy.getPluginManager().registerListener(this, new SpawnListener());
         proxy.getPluginManager().registerListener(this, new SpawnMessageListener(legacy));
         proxy.getPluginManager().registerListener(this, new APIMessageListener(legacy));
         proxy.getPluginManager().registerListener(this, new AdminMessageListener(legacy));

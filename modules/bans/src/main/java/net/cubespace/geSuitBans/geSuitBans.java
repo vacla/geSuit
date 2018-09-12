@@ -1,20 +1,15 @@
 package net.cubespace.geSuitBans;
 
 import net.cubespace.geSuitBans.commands.*;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.cubespace.geSuit.BukkitModule;
 
-public class geSuitBans extends JavaPlugin {
-    public static geSuitBans instance;
-    public static String CHANNEL_NAME = "gesuit:bans";
-
-    @Override
-    public void onEnable() {
-        instance = this;
-        registerChannels();
-        registerCommands();
+public class geSuitBans extends BukkitModule {
+    
+    geSuitBans() {
+        super("bans");
     }
-
-    private void registerCommands() {
+    
+    protected void registerCommands() {
         getCommand( "ban" ).setExecutor( new BanCommand() );
         getCommand( "warn" ).setExecutor( new WarnCommand() );
         getCommand( "checkban" ).setExecutor( new CheckBanCommand() );
@@ -35,8 +30,8 @@ public class geSuitBans extends JavaPlugin {
         getCommand("newSpawn").setExecutor(new NewSpawnCommand());
 
     }
-
-    private void registerChannels() {
-        this.getServer().getMessenger().registerOutgoingPluginChannel(this, CHANNEL_NAME);
+    
+    protected void registerChannels() {
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, getCHANNEL_NAME());
     }
 }

@@ -1,7 +1,6 @@
 package net.cubespace.geSuit.listeners;
 
 
-import net.cubespace.geSuit.Utilities;
 import net.cubespace.geSuit.geSuit;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;

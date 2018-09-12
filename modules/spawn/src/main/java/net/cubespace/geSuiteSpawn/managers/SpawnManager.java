@@ -1,7 +1,6 @@
 package net.cubespace.geSuiteSpawn.managers;
 
 import net.cubespace.geSuiteSpawn.geSuitSpawn;
-import net.cubespace.geSuiteSpawn.tasks.PluginMessageTask;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,7 +11,6 @@ import org.bukkit.entity.Player;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.HashMap;
 
 
@@ -32,8 +30,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
-
+geSuitSpawn.getInstance().sendMessage(b);
     }
 
     public static void setNewPlayerSpawn( CommandSender sender ) {
@@ -55,7 +52,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
+        geSuitSpawn.getInstance().sendMessage(b);
 
     }
 
@@ -78,7 +75,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
+        geSuitSpawn.getInstance().sendMessage(b);
     }
 
     public static void setServerSpawn( CommandSender sender ) {
@@ -101,7 +98,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
+        geSuitSpawn.getInstance().sendMessage(b);
 
     }
 
@@ -125,7 +122,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
+        geSuitSpawn.getInstance().sendMessage(b);
 
     }
 
@@ -157,7 +154,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
+        geSuitSpawn.getInstance().sendMessage(b);
     }
 
     public static void getSpawns() {
@@ -168,8 +165,8 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
+    
+        geSuitSpawn.getInstance().sendMessage(b);
     }
 
     public static boolean hasWorldSpawn( World w ) {
@@ -228,7 +225,7 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
+        geSuitSpawn.getInstance().sendMessage(b);
     }
 
     public static void sendVersion() {
@@ -241,6 +238,6 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        new PluginMessageTask( b ).runTaskAsynchronously( geSuitSpawn.INSTANCE );
+        geSuitSpawn.getInstance().sendMessage(b);
     }
 }

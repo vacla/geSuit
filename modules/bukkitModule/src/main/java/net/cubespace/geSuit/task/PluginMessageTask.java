@@ -1,23 +1,25 @@
-package net.cubespace.geSuitBans.tasks;
+package net.cubespace.geSuit.task;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Iterator;
-
-import net.cubespace.geSuitBans.geSuitBans;
-
+import net.cubespace.geSuit.BukkitModule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Iterator;
+
 public class PluginMessageTask extends BukkitRunnable
 {
 
     private final ByteArrayOutputStream bytes;
-
-    public PluginMessageTask(ByteArrayOutputStream bytes)
+    private final BukkitModule module;
+    
+    
+    public PluginMessageTask(ByteArrayOutputStream bytes, BukkitModule module)
     {
         this.bytes = bytes;
+        this.module = module;
     }
 
     public void run()
@@ -26,8 +28,8 @@ public class PluginMessageTask extends BukkitRunnable
 		if (iterator.hasNext()) {
 		    Player player = iterator.next();
 			player.sendPluginMessage(
-					geSuitBans.instance,
-                    geSuitBans.CHANNEL_NAME,
+					module,
+                    module.getCHANNEL_NAME(),
 					bytes.toByteArray());
 		} else {
 			System.out.println(ChatColor.RED + "Unable to send Plugin Message - No players online.");
