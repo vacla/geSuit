@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class geSuitPortals extends JavaPlugin {
     public static geSuitPortals INSTANCE = null;
     public static WorldEditPlugin WORLDEDIT = null;
-    public static String CHANNEL_NAME = "bungeecord:geSuitPortals";
+    public static String CHANNEL_NAME = "gesuit:portals";
 
     @Override
     public void onEnable() {

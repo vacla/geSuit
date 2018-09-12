@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class geSuitAdmin extends JavaPlugin {
     private static geSuitAdmin INSTANCE = null;
-    private static String CHANNEL_NAME = "bungeecord:gesuitadmin";
+    private static String CHANNEL_NAME = "gesuit:admin";
     private boolean debug;
 
     public boolean isDebug() {

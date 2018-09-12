@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class geSuitWarps extends JavaPlugin {
 	public static geSuitWarps instance;
-    public static String CHANNEL_NAME = "bungeecord:gesuitwarps";
+    public static String CHANNEL_NAME = "gesuit:warps";
 
 	@Override
 	public void onEnable() {

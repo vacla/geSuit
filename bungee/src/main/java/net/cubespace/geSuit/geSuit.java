@@ -127,14 +127,14 @@ public class geSuit extends Plugin
     
     public enum CHANNEL_NAMES {
 
-        TELEPORT_CHANNEL("bungeecord:gesuitteleport", "geSuitTeleport"),
-        SPAWN_CHANNEL("bungeecord:gesuitspawns", "geSuitSpawns"),
-        BAN_CHANNEL("bungeecord:gesuitbans", "geSuitBans"),
-        PORTAL_CHANNEL("bungeecord:gesuitportals", "geSuitPortals"),
-        WARP_CHANNEL("bungeecord:gesuitwarps", "geSuitWarps"),
-        HOME_CHANNEL("bungeecord:gesuithomes", "geSuitHomes"),
-        API_CHANNEL("bungeecord:gesuitapi", "geSuitAPI"),
-        ADMIN_CHANNEL("bungeecord:gesuitadmin", "geSuitAdmin");
+        TELEPORT_CHANNEL("gesuit:teleports", "geSuitTeleport"),
+        SPAWN_CHANNEL("gesuit:spawns", "geSuitSpawns"),
+        BAN_CHANNEL("gesuit:bans", "geSuitBans"),
+        PORTAL_CHANNEL("gesuit:portals", "geSuitPortals"),
+        WARP_CHANNEL("gesuit:warps", "geSuitWarps"),
+        HOME_CHANNEL("gesuit:homes", "geSuitHomes"),
+        API_CHANNEL("gesuit:api", "geSuitAPI"),
+        ADMIN_CHANNEL("gesuit:admin", "geSuitAdmin");
 
         private final String channelName;
         private final String legacy_channelName;
