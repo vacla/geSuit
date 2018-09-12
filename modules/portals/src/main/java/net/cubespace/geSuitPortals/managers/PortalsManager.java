@@ -23,7 +23,7 @@ public class PortalsManager {
     public static HashMap<World, ArrayList<Portal>> PORTALS = new HashMap<>();
     public static HashMap<String, Location> pendingTeleports = new HashMap<>();
 
-    public void deletePortal( String name, String string ) {
+    public static void deletePortal( String name, String string ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -58,7 +58,7 @@ public class PortalsManager {
         return null;
     }
 
-    public void getPortalsList( String name ) {
+    public static void getPortalsList( String name ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -72,7 +72,7 @@ public class PortalsManager {
 
     }
 
-    public void teleportPlayer( Player p, Portal portal ) {
+    public static void teleportPlayer( Player p, Portal portal ) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -88,7 +88,8 @@ public class PortalsManager {
         geSuitPortals.instance.sendMessage(b);
     }
 
-    public void setPortal( CommandSender sender, String name, String type, String dest, String fill ) {
+    public static void setPortal( CommandSender sender, String name, String type, String dest,
+                                  String fill ) {
 
         Player p = ( Player ) sender;
         Selection sel = geSuitPortals.WORLDEDIT.getSelection( p );
@@ -124,7 +125,8 @@ public class PortalsManager {
 
     }
 
-    public void addPortal( String name, String type, String dest, String filltype, Location max, Location min ) {
+    public static void addPortal( String name, String type, String dest, String filltype,
+                                  Location max, Location min ) {
         if ( max.getWorld() == null ) {
             Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "World does not exist portal " + name + " will not load :(" );
             return;
@@ -139,7 +141,7 @@ public class PortalsManager {
         portal.fillPortal();
     }
 
-    public void requestPortals() {
+    public static void requestPortals() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -151,7 +153,7 @@ public class PortalsManager {
     
     }
 
-    public void sendVersion() {
+    public static void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {

@@ -1,5 +1,6 @@
 package net.cubespace.geSuitPortals.listeners;
 
+import net.cubespace.geSuitPortals.geSuitPortals;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -54,13 +55,22 @@ public class PlayerMoveListener implements Listener {
         if (!PortalsManager.PORTALS.containsKey(f.getWorld())) {
             return;
         }
-        if (f.getRelative(BlockFace.NORTH).getType() == Material.PORTAL || f.getRelative(BlockFace.NORTH).getType() == Material.ENDER_PORTAL) {
+        Material portal;
+        Material enderPortal;
+        if (geSuitPortals.getInstance().getDescription().getAPIVersion().contains("legacy")){
+            portal = Material.getMaterial("portal");
+            enderPortal = Material.getMaterial("END_PORTAL");
+        } else{
+            portal = Material.NETHER_PORTAL;
+            enderPortal = Material.END_PORTAL;
+        }
+        if (f.getRelative(BlockFace.NORTH).getType() == portal || f.getRelative(BlockFace.NORTH).getType() == enderPortal) {
             b = f.getRelative(BlockFace.NORTH);
-        } else if (f.getRelative(BlockFace.EAST).getType() == Material.PORTAL || f.getRelative(BlockFace.EAST).getType() == Material.ENDER_PORTAL) {
+        } else if (f.getRelative(BlockFace.EAST).getType() == portal || f.getRelative(BlockFace.EAST).getType() == enderPortal) {
             b = f.getRelative(BlockFace.EAST);
-        } else if (f.getRelative(BlockFace.SOUTH).getType() == Material.PORTAL || f.getRelative(BlockFace.SOUTH).getType() == Material.ENDER_PORTAL) {
+        } else if (f.getRelative(BlockFace.SOUTH).getType() == portal || f.getRelative(BlockFace.SOUTH).getType() == enderPortal) {
             b = f.getRelative(BlockFace.SOUTH);
-        } else if (f.getRelative(BlockFace.WEST).getType() == Material.PORTAL || f.getRelative(BlockFace.WEST).getType() == Material.ENDER_PORTAL) {
+        } else if (f.getRelative(BlockFace.WEST).getType() == portal || f.getRelative(BlockFace.WEST).getType() == enderPortal) {
             b = f.getRelative(BlockFace.WEST);
         } else {
             return;

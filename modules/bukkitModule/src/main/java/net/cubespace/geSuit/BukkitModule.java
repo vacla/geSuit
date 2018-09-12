@@ -10,9 +10,15 @@ import java.io.ByteArrayOutputStream;
 public abstract class BukkitModule extends JavaPlugin {
     public static BukkitModule instance;
     private String CHANNEL_NAME;
+    private boolean legacy;
     
     protected BukkitModule(String key){
         setChannelName(key);
+        legacy = this.getDescription().getAPIVersion().contains("legacy");
+    }
+    
+    public boolean isLegacy(){
+        return legacy;
     }
     
     /**

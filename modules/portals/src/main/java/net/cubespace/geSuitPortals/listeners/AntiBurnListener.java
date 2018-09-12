@@ -1,7 +1,9 @@
 package net.cubespace.geSuitPortals.listeners;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import net.cubespace.geSuitPortals.geSuitPortals;
 import net.cubespace.geSuitPortals.managers.PortalsManager;
 import net.cubespace.geSuitPortals.objects.Portal;
 import org.bukkit.Location;
@@ -58,7 +60,13 @@ public class AntiBurnListener implements Listener {
 
     private boolean canIgnite(Block block) {
         Material mat = block.getType();
-
-        return (mat == Material.LAVA || mat == Material.STATIONARY_LAVA);
+        List<Material> ignitable = new ArrayList<>();
+        if(geSuitPortals.getInstance().isLegacy()){
+            ignitable.add(Material.getMaterial("LAVA"));
+            ignitable.add(Material.getMaterial("STATIONARY_LAVA"));
+        }else{
+            ignitable.add(Material.getMaterial("LAVA"));
+        }
+        return (ignitable.contains(mat));
     }
 }

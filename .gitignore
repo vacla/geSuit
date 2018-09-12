@@ -1,11 +1,9 @@
-/target/
 /bin
 /.project
 /.classpath
 /.settings/
 /.project
-/target
-/bungee/target
+*/target
 *.*~
 classes
 
