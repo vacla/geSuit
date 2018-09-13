@@ -57,7 +57,7 @@ public class PlayerMoveListener implements Listener {
         }
         Material portal;
         Material enderPortal;
-        if (geSuitPortals.getInstance().getDescription().getAPIVersion().contains("legacy")){
+        if (geSuitPortals.instance.getDescription().getAPIVersion().contains("legacy")){
             portal = Material.getMaterial("portal");
             enderPortal = Material.getMaterial("END_PORTAL");
         } else{

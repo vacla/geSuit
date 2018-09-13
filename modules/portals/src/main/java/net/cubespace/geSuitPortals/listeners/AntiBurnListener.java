@@ -61,7 +61,7 @@ public class AntiBurnListener implements Listener {
     private boolean canIgnite(Block block) {
         Material mat = block.getType();
         List<Material> ignitable = new ArrayList<>();
-        if(geSuitPortals.getInstance().isLegacy()){
+        if(geSuitPortals.instance.isLegacy()){
             ignitable.add(Material.getMaterial("LAVA"));
             ignitable.add(Material.getMaterial("STATIONARY_LAVA"));
         }else{

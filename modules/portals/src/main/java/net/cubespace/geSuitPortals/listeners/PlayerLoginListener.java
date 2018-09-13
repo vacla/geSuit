@@ -17,7 +17,7 @@ public class PlayerLoginListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerConnect(PlayerJoinEvent e) {
         if (!PortalsManager.RECEIVED) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(geSuitPortals.INSTANCE, new Runnable() {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(geSuitPortals.instance, new Runnable() {
 
                 @Override
                 public void run() {

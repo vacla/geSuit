@@ -14,7 +14,7 @@ public abstract class BukkitModule extends JavaPlugin {
     
     protected BukkitModule(String key){
         setChannelName(key);
-        legacy = this.getDescription().getAPIVersion().contains("legacy");
+        legacy = !(this.getServer().getVersion().contains("1.13"));
     }
     
     public boolean isLegacy(){

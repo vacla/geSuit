@@ -13,7 +13,7 @@ import net.cubespace.geSuitPortals.objects.Portal;
 public class PhysicsListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockPhysics(BlockPhysicsEvent e) {
-        if (!(e.getBlock().isLiquid() || e.getBlock().getType() == Material.PORTAL || e.getBlock().getType() == Material.ENDER_PORTAL || e.getBlock().getType() == Material.SUGAR_CANE_BLOCK)) {
+        if (!(e.getBlock().isLiquid() || e.getBlock().getType() == Material.NETHER_PORTAL || e.getBlock().getType() == Material.END_PORTAL || e.getBlock().getType() == Material.SUGAR_CANE)) {
             return;
         }
         if (!PortalsManager.PORTALS.containsKey(e.getBlock().getWorld())) {
@@ -30,7 +30,7 @@ public class PhysicsListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockPhysics(BlockFromToEvent e) {
-        if (!(e.getBlock().isLiquid() || e.getBlock().getType() == Material.PORTAL || e.getBlock().getType() == Material.ENDER_PORTAL || e.getBlock().getType() == Material.SUGAR_CANE_BLOCK)) {
+        if (!(e.getBlock().isLiquid() || e.getBlock().getType() == Material.NETHER_PORTAL || e.getBlock().getType() == Material.END_PORTAL || e.getBlock().getType() == Material.SUGAR_CANE)) {
             return;
         }
         if (!PortalsManager.PORTALS.containsKey(e.getBlock().getWorld())) {

@@ -158,7 +158,7 @@ public class PortalsManager {
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "SendVersion" );
-            out.writeUTF( ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.getInstance().getDescription().getVersion() );
+            out.writeUTF( ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.instance.getDescription().getVersion() );
         } catch ( IOException e ) {
             e.printStackTrace();
         }

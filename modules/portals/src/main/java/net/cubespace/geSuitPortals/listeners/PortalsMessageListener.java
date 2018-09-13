@@ -37,9 +37,9 @@ public class PortalsMessageListener implements PluginMessageListener {
                     }
                     if (name != null) {
                         Player p = Bukkit.getPlayer(name);
-                        p.sendMessage(ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.getInstance().getDescription().getVersion());
+                        p.sendMessage(ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.instance.getDescription().getVersion());
                     }
-                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.getInstance().getDescription().getVersion());
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.instance.getDescription().getVersion());
                     PortalsManager.sendVersion();
                     break;
                 }
