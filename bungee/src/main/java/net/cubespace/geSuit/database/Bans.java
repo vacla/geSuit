@@ -46,7 +46,7 @@ public class Bans implements IRepository {
         try (
                 Connection con = DatabaseManager.connectionPool.getConnection();
                 PreparedStatement banPlayer =
-                        DatabaseManager.connectionPool.getPreparedStatement("banPlayer", con)
+                        DatabaseManager.connectionPool.getPreparedStatement("banPlayer", con, Statement.RETURN_GENERATED_KEYS)
         ) {
             banPlayer.setString(1, banned_playername);
             banPlayer.setString(2, banned_uuid);
@@ -72,7 +72,7 @@ public class Bans implements IRepository {
         try (
                 Connection con = DatabaseManager.connectionPool.getConnection();
                 PreparedStatement banPlayer =
-                        DatabaseManager.connectionPool.getPreparedStatement("warnPlayer", con)
+                        DatabaseManager.connectionPool.getPreparedStatement("warnPlayer", con, Statement.RETURN_GENERATED_KEYS)
         ) {
             banPlayer.setString(1, banned_playername);
             banPlayer.setString(2, banned_uuid);
@@ -96,7 +96,7 @@ public class Bans implements IRepository {
         try (
                 Connection con = DatabaseManager.connectionPool.getConnection();
                 PreparedStatement banPlayer =
-                        DatabaseManager.connectionPool.getPreparedStatement("kickPlayer", con)
+                        DatabaseManager.connectionPool.getPreparedStatement("kickPlayer", con, Statement.RETURN_GENERATED_KEYS)
         ) {
             banPlayer.setString(1, banned_playername);
             banPlayer.setString(2, banned_uuid);

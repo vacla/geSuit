@@ -117,21 +117,28 @@ public class ConnectionPool {
 
     private PreparedStatement prepareSQL(String name) throws SQLException {
         Connection connection = dataSource.getConnection();
-        return prepareSQL(name, connection);
+        return prepareSQL(name, connection, 0);
     }
 
-    private PreparedStatement prepareSQL(String name, Connection connection) throws SQLException {
+    private PreparedStatement prepareSQL(String name, Connection connection, int mode) throws SQLException {
         String sql = getSQL(name);
         if (sql == null) {
             geSuit.getInstance().getLogger().warning("No SQL found for entry: " + name);
             return null;
         }
-        return connection.prepareStatement(sql);
+        if (mode == 0) return connection.prepareStatement(sql);
+        else return connection.prepareStatement(sql, mode);
     }
 
     @Nullable
+    public PreparedStatement getPreparedStatement(String name, Connection conn, int mode) throws SQLException {
+        return prepareSQL(name, conn, mode);
+    }
+
+
+    @Nullable
     public PreparedStatement getPreparedStatement(String name, Connection connection) throws SQLException {
-        return prepareSQL(name, connection);
+        return prepareSQL(name, connection, 0);
     }
     
     /**
