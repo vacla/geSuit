@@ -125,40 +125,43 @@ public class OnTime implements IRepository {
                 Connection con3 = DatabaseManager.connectionPool.getConnection();
                 Connection con4 = DatabaseManager.connectionPool.getConnection();
 
-                PreparedStatement timeInfo = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeToday", con);
-                PreparedStatement timeInfo2 = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeWeek", con1);
-                PreparedStatement timeInfo3 = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeMonth", con2);
-                PreparedStatement timeInfo4 = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeYear", con3);
-                PreparedStatement timeInfo5 = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeTotal", con4)
+                PreparedStatement timeInfoToday = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeToday", con);
+                PreparedStatement timeInfoWeek = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeWeek", con1);
+                PreparedStatement timeInfoMonth = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeMonth", con2);
+                PreparedStatement timeInfoYear = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeYear", con3);
+                PreparedStatement timeInfoTotal = DatabaseManager.connectionPool.getPreparedStatement("getOnTimeTotal", con4)
         ) {
             ResultSet res;
+
             // Time today
-            timeInfo.setString(1, uuid);
-            res = timeInfo.executeQuery();
+            timeInfoToday.setString(1, uuid);
+            res = timeInfoToday.executeQuery();
             if (res.next()) trec.setTimeToday(res.getLong(1) * 1000);
             res.close();
+
         	// Time this week
-            timeInfo2.setString(1, uuid);
-            res = timeInfo2.executeQuery();
+            timeInfoWeek.setString(1, uuid);
+            res = timeInfoWeek.executeQuery();
             if (res.next()) trec.setTimeWeek(res.getLong(1) * 1000);
             res.close();
 
         	// Time this month
-
-            timeInfo3.setString(1, uuid);
-            res = timeInfo3.executeQuery();
+            timeInfoMonth.setString(1, uuid);
+            res = timeInfoMonth.executeQuery();
             if (res.next()) trec.setTimeMonth(res.getLong(1) * 1000);
             res.close();
 
         	// Time this year
-            timeInfo4.setString(1, uuid);
-            res = timeInfo4.executeQuery();
+            timeInfoYear.setString(1, uuid);
+            res = timeInfoYear.executeQuery();
             if (res.next()) trec.setTimeYear(res.getLong(1) * 1000);
             res.close();
+
         	// Total time
-            timeInfo5.setString(1, uuid);
-            res = timeInfo.executeQuery();
+            timeInfoTotal.setString(1, uuid);
+            res = timeInfoTotal.executeQuery();
             if (res.next()) trec.setTimeTotal(res.getLong(1) * 1000);
+
             res.close();
         } catch (Exception e) {
             e.printStackTrace();
