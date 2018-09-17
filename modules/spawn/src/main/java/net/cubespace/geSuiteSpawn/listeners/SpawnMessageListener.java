@@ -38,9 +38,9 @@ public class SpawnMessageListener implements PluginMessageListener, Listener {
                     }
                     if ( name != null ) {
                         Player p = Bukkit.getPlayer( name );
-                        p.sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.INSTANCE.getDescription().getVersion() );
+                        p.sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.instance.getDescription().getVersion() );
                     }
-                    Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.INSTANCE.getDescription().getVersion() );
+                    Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.instance.getDescription().getVersion() );
                     SpawnManager.sendVersion();
                     break;
             }

@@ -233,7 +233,7 @@ geSuitSpawn.getInstance().sendMessage(b);
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "SendVersion" );
-            out.writeUTF( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.INSTANCE.getDescription().getVersion() );
+            out.writeUTF( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.instance.getDescription().getVersion() );
 
         } catch ( IOException e ) {
             e.printStackTrace();

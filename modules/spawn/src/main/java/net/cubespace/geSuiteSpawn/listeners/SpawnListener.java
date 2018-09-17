@@ -16,7 +16,7 @@ public class SpawnListener implements Listener {
     public void playerLogin( PlayerJoinEvent e ) {
 		if (e.getPlayer().hasMetadata("NPC")) return; // Ignore NPCs
         if ( !SpawnManager.HAS_SPAWNS ) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously( geSuitSpawn.INSTANCE, new Runnable() {
+            Bukkit.getScheduler().runTaskLaterAsynchronously( geSuitSpawn.instance, new Runnable() {
                 @Override
                 public void run() {
                     if ( !SpawnManager.HAS_SPAWNS ) {

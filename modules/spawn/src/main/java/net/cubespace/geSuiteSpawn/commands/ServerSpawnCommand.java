@@ -57,7 +57,7 @@ public class ServerSpawnCommand implements CommandExecutor {
             final Location lastLocation = player.getLocation();
 
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Teleportation will commence in &c3 seconds&6. Don't move."));
-            Bukkit.getServer().getScheduler().runTaskLater(geSuitSpawn.INSTANCE, new Runnable() {
+            Bukkit.getServer().getScheduler().runTaskLater(geSuitSpawn.instance, new Runnable() {
                 @Override
                 public void run() {
                 	if (player.isOnline()) {

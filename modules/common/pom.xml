@@ -21,8 +21,8 @@
         <module>../teleports</module>
     </modules>
     <properties>
-        <spigot.api.version>1.13.1</spigot.api.version>
-        <spigot.version>${spigot.api.version}-R0.1-SNAPSHOT</spigot.version>
+        <spigot.api.version>legacy</spigot.api.version>
+        <spigot.version>1.12.1-R0.1-SNAPSHOT</spigot.version>
     </properties>
     <repositories>
         <repository>

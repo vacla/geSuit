@@ -1,6 +1,7 @@
 package net.cubespace.geSuit.task;
 
 import net.cubespace.geSuit.BukkitModule;
+import net.cubespace.geSuit.utils.Utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -31,6 +32,8 @@ public class PluginMessageTask extends BukkitRunnable
 					module,
                     module.getCHANNEL_NAME(),
 					bytes.toByteArray());
+            module.getServer().getLogger().config("["+module.getName()+"]" +
+                    Utilities.dumpPacket(module.getCHANNEL_NAME(),"SEND",bytes.toByteArray()));
 		} else {
 			System.out.println(ChatColor.RED + "Unable to send Plugin Message - No players online.");
 		}
