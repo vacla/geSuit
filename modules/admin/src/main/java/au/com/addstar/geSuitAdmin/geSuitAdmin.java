@@ -13,7 +13,7 @@ public class geSuitAdmin extends BukkitModule {
     private boolean debug;
     
     protected geSuitAdmin() {
-        super("admin");
+        super("admin", false);
         debug =  false;
     }
     
@@ -25,11 +25,11 @@ public class geSuitAdmin extends BukkitModule {
         this.debug = debug;
     }
 
-    protected void registerChannels() {
-        Bukkit.getMessenger().registerIncomingPluginChannel(this,
-                getCHANNEL_NAME(), new AdminListener(this));
+    @Override
+    protected void registerListeners() {
+        registerPluginMessageListener(this,new AdminListener(this));
     }
-
+    
     protected void registerCommands() {
         getCommand("gsAdmin_debug").setExecutor(new DebugCommand(this));
     }

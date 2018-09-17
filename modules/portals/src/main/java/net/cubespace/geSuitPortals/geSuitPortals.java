@@ -24,7 +24,7 @@ public class geSuitPortals extends BukkitModule {
     public static WorldEditPlugin WORLDEDIT = null;
     
     protected geSuitPortals() {
-        super("portals");
+        super("portals",true);
     }
     
     @Override
@@ -54,13 +54,13 @@ public class geSuitPortals extends BukkitModule {
     }
     
     protected void registerChannels() {
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, getCHANNEL_NAME(), new PortalsMessageListener
-                ());
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, getCHANNEL_NAME());
+        registerOutgoingChannel();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
     
     protected void registerListeners() {
+        registerPluginMessageListener(this,new PortalsMessageListener());
+        
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
         getServer().getPluginManager().registerEvents(new PhysicsListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerLoginListener(), this);

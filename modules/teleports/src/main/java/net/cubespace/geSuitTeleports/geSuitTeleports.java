@@ -50,7 +50,7 @@ public class geSuitTeleports extends BukkitModule {
     public static boolean logDebugMessages;
     
     protected geSuitTeleports() {
-        super("teleport");
+        super("teleport", true);
     }
     
     @Override
@@ -111,14 +111,10 @@ public class geSuitTeleports extends BukkitModule {
         getCommand("top").setExecutor(new TopCommand());
     }
     
-    protected void registerChannels() {
-        Bukkit.getMessenger().registerIncomingPluginChannel(this,
-                getCHANNEL_NAME(), new TeleportsMessageListener());
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this,
-                getCHANNEL_NAME());
-    }
     
     protected void registerListeners() {
+        registerPluginMessageListener(this,new TeleportsMessageListener());
+        
         getServer().getPluginManager().registerEvents(
                 new TeleportsListener(), this);
     }

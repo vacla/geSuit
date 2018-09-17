@@ -20,11 +20,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import static org.bukkit.Bukkit.getServer;
 
 public class geSuitSpawn extends BukkitModule {
-	public static Plugin INSTANCE = null;
-    public static String CHANNEL_NAME = "gesuit:spawns";
     
     protected geSuitSpawn() {
-        super("spawns");
+        super("spawns", true);
     }
     
     protected void registerCommands() {
@@ -39,17 +37,11 @@ public class geSuitSpawn extends BukkitModule {
 		getCommand("globalspawn").setExecutor(new GlobalSpawnCommand());
                 getCommand("warpspawn").setExecutor(new WarpSpawnCommand());
 	}
-    
-    protected void registerChannels() {
-		Bukkit.getMessenger().registerIncomingPluginChannel(this,
-                CHANNEL_NAME, new SpawnMessageListener());
-		Bukkit.getMessenger().registerOutgoingPluginChannel(this,
-                CHANNEL_NAME);
-	}
-    
+	   
     protected void registerListeners() {
-		getServer().getPluginManager().registerEvents(
-				new SpawnListener(), this);
+    	registerPluginMessageListener(this,new SpawnMessageListener());
+    	
+		getServer().getPluginManager().registerEvents(new SpawnListener(), this);
 	}
 
 }

@@ -8,12 +8,11 @@ import net.cubespace.geSuitWarps.commands.SetWarpDescCommand;
 import net.cubespace.geSuitWarps.commands.SilentWarpCommand;
 import net.cubespace.geSuitWarps.commands.WarpCommand;
 import net.cubespace.geSuitWarps.listeners.WarpsListener;
-import org.bukkit.Bukkit;
 
 public class geSuitWarps extends BukkitModule {
 	
 	protected geSuitWarps() {
-		super("warps");
+		super("warps", true);
 	}
 	
 	protected void registerCommands() {
@@ -23,10 +22,6 @@ public class geSuitWarps extends BukkitModule {
 		getCommand("setwarpdesc").setExecutor(new SetWarpDescCommand());
 		getCommand("silentwarp").setExecutor(new SilentWarpCommand());
 		getCommand("delwarp").setExecutor(new DeleteWarpCommand());
-	}
-	
-	protected void registerChannels() {
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, getCHANNEL_NAME());
 	}
 	
 	protected void registerListeners() {

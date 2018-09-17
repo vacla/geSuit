@@ -12,7 +12,7 @@ import org.bukkit.Bukkit;
 public class geSuitHomes extends BukkitModule {
 	
 	protected geSuitHomes() {
-		super("homes");
+		super("homes",true);
 	}
 	
 	protected void registerCommands() {
@@ -21,10 +21,6 @@ public class geSuitHomes extends BukkitModule {
 		getCommand("delhome").setExecutor(new DelHomeCommand());
 		getCommand("homes").setExecutor(new HomesCommand());
 		getCommand("importhomes").setExecutor(new ImportHomesCommand());
-	}
-
-	protected  void registerChannels() {
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, getCHANNEL_NAME());
 	}
 	
 	protected void registerListeners() {
