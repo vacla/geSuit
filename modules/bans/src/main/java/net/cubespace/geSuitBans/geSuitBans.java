@@ -4,8 +4,8 @@ import net.cubespace.geSuitBans.commands.*;
 import net.cubespace.geSuit.BukkitModule;
 
 public class geSuitBans extends BukkitModule {
-    
-    geSuitBans() {
+
+    public geSuitBans() {
         super("bans",true);
     }
     

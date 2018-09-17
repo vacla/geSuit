@@ -20,8 +20,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import static org.bukkit.Bukkit.getServer;
 
 public class geSuitSpawn extends BukkitModule {
-    
-    protected geSuitSpawn() {
+
+	public geSuitSpawn() {
         super("spawns", true);
     }
     

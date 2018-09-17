@@ -11,8 +11,8 @@ import org.bukkit.Bukkit;
  */
 public class geSuitAdmin extends BukkitModule {
     private boolean debug;
-    
-    protected geSuitAdmin() {
+
+    public geSuitAdmin() {
         super("admin", false);
         debug =  false;
     }

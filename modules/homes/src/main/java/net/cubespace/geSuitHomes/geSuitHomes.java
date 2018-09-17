@@ -10,8 +10,8 @@ import net.cubespace.geSuitHomes.listeners.HomesListener;
 import org.bukkit.Bukkit;
 
 public class geSuitHomes extends BukkitModule {
-	
-	protected geSuitHomes() {
+
+	public geSuitHomes() {
 		super("homes",true);
 	}
 	

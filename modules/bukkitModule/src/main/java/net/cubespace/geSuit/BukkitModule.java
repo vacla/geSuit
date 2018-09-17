@@ -15,13 +15,14 @@ public abstract class BukkitModule extends JavaPlugin {
     private String CHANNEL_NAME;
     private boolean legacy;
     private boolean isSender;
+
     
     /**
      *
      * @param key the channelname key
      * @param isSender if true will register outgoing plugin channels as define by the key.
      */
-    protected BukkitModule(String key, boolean isSender){
+    public BukkitModule(String key, boolean isSender) {
         setChannelName(key);
         legacy = !(this.getServer().getVersion().contains("1.13"));
         this.isSender = isSender;
@@ -63,18 +64,26 @@ public abstract class BukkitModule extends JavaPlugin {
         registerCommands();
         registerListeners();
         StringBuilder message = new StringBuilder();
-        message.append(System.getProperty("line.separator"));
-        message.append(this.getName()).append(" registered the ")
-                .append("following outgoing channels: ");
-        for (String name : this.getServer().getMessenger().getOutgoingChannels(this)){
+        message.append("[").append(this.getName()).append("]");
+        if (this.getServer().getMessenger().getOutgoingChannels(this).size() > 0) {
+            message.append(System.getProperty("line.separator"));
+            message.append("   Registered the following outgoing channels: ");
+            for (String name : this.getServer().getMessenger().getOutgoingChannels(this)) {
                 message.append(name).append(", ");
+            }
+        } else {
+            message.append("    No Outgoing channels");
         }
-        message.append(System.getProperty("line.separator"));
-        message.append(" and the following incoming channels");
-        for (String name : this.getServer().getMessenger().getIncomingChannels(this)){
-            message.append(name).append(", ");
+        if (this.getServer().getMessenger().getIncomingChannels(this).size() > 0) {
+            message.append(System.getProperty("line.separator"));
+            message.append("   Registered the following incoming channels");
+            for (String name : this.getServer().getMessenger().getIncomingChannels(this)) {
+                message.append(name).append(", ");
+            }
+        } else {
+            message.append("    No Incoming channels");
         }
-        this.getServer().getLogger().config(message.toString());
+        this.getLogger().info(message.toString());
     }
     
     @Override

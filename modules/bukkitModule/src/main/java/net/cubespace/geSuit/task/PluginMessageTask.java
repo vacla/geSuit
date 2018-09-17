@@ -32,7 +32,7 @@ public class PluginMessageTask extends BukkitRunnable
 					module,
                     module.getCHANNEL_NAME(),
 					bytes.toByteArray());
-            module.getServer().getLogger().config("["+module.getName()+"]" +
+            module.getLogger().info("[" + module.getName() + "]" +
                     Utilities.dumpPacket(module.getCHANNEL_NAME(),"SEND",bytes.toByteArray()));
 		} else {
 			System.out.println(ChatColor.RED + "Unable to send Plugin Message - No players online.");

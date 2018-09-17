@@ -10,8 +10,8 @@ import net.cubespace.geSuitWarps.commands.WarpCommand;
 import net.cubespace.geSuitWarps.listeners.WarpsListener;
 
 public class geSuitWarps extends BukkitModule {
-	
-	protected geSuitWarps() {
+
+	public geSuitWarps() {
 		super("warps", true);
 	}
 	

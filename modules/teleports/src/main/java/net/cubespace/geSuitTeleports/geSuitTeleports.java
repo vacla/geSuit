@@ -44,12 +44,12 @@ public class geSuitTeleports extends BukkitModule {
     public static String location_blocked;
     public static List<String> deny_Teleport;
     public static String tp_admin_bypass;
-    private static WorldGuardPlugin mWorldGuard;
+    private static JavaPlugin mWorldGuard;
     public static boolean worldGuarded;
     public static boolean geSuitSpawns;
     public static boolean logDebugMessages;
-    
-    protected geSuitTeleports() {
+
+    public geSuitTeleports() {
         super("teleport", true);
     }
     
@@ -120,7 +120,7 @@ public class geSuitTeleports extends BukkitModule {
     }
     
     public static WorldGuardPlugin getWorldGuard() {
-        return mWorldGuard;
+        return (WorldGuardPlugin) mWorldGuard;
     }
 
 }

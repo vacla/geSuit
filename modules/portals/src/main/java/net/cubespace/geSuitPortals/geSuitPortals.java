@@ -22,8 +22,8 @@ import static org.bukkit.Bukkit.getServer;
 
 public class geSuitPortals extends BukkitModule {
     public static WorldEditPlugin WORLDEDIT = null;
-    
-    protected geSuitPortals() {
+
+    public geSuitPortals() {
         super("portals",true);
     }
     
