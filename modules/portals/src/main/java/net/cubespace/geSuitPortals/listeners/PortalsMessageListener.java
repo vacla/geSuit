@@ -13,6 +13,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 public class PortalsMessageListener implements PluginMessageListener {
+    private final PortalsManager manager;
+    private final geSuitPortals instance;
+
+    public PortalsMessageListener(PortalsManager manager, geSuitPortals instance) {
+        this.manager = manager;
+        this.instance = instance;
+    }
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
@@ -23,10 +30,10 @@ public class PortalsMessageListener implements PluginMessageListener {
             task = in.readUTF();
             switch (task) {
                 case "SendPortal":
-                    PortalsManager.addPortal(in.readUTF(), in.readUTF(), in.readUTF(), in.readUTF(), new Location(Bukkit.getWorld(in.readUTF()), in.readDouble(), in.readDouble(), in.readDouble()), new Location(Bukkit.getWorld(in.readUTF()), in.readDouble(), in.readDouble(), in.readDouble()));
+                    manager.addPortal(in.readUTF(), in.readUTF(), in.readUTF(), in.readUTF(), new Location(Bukkit.getWorld(in.readUTF()), in.readDouble(), in.readDouble(), in.readDouble()), new Location(Bukkit.getWorld(in.readUTF()), in.readDouble(), in.readDouble(), in.readDouble()));
                     break;
                 case "DeletePortal":
-                    PortalsManager.removePortal(in.readUTF());
+                    manager.removePortal(in.readUTF());
                     break;
                 case "GetVersion": {
                     String name = null;
@@ -37,10 +44,10 @@ public class PortalsMessageListener implements PluginMessageListener {
                     }
                     if (name != null) {
                         Player p = Bukkit.getPlayer(name);
-                        p.sendMessage(ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.instance.getDescription().getVersion());
+                        p.sendMessage(ChatColor.RED + "Portals - " + ChatColor.GOLD + instance.getDescription().getVersion());
                     }
-                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.instance.getDescription().getVersion());
-                    PortalsManager.sendVersion();
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Portals - " + ChatColor.GOLD + instance.getDescription().getVersion());
+                    manager.sendVersion();
                     break;
                 }
             }

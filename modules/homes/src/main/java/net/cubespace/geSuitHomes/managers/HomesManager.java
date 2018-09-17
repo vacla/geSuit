@@ -1,6 +1,8 @@
 package net.cubespace.geSuitHomes.managers;
 
-import net.cubespace.geSuitHomes.geSuitHomes;
+import net.cubespace.geSuit.BukkitModule;
+import net.cubespace.geSuit.managers.DataManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,9 +18,13 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Set;
 
-public class HomesManager {
+public class HomesManager extends DataManager {
 
-    public static void deleteHome( CommandSender sender, String home ) {
+    public HomesManager(BukkitModule instance) {
+        super(instance);
+    }
+
+    public void deleteHome(CommandSender sender, String home) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -28,10 +34,10 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitHomes.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void deleteOtherHime( CommandSender sender, String player, String home ) {
+    public void deleteOtherHime(CommandSender sender, String player, String home) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -42,11 +48,11 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitHomes.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void sendHome( CommandSender sender, String home ) {
+    public void sendHome(CommandSender sender, String home) {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             try {
@@ -56,10 +62,10 @@ public class HomesManager {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        geSuitHomes.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
-    
-    public static void sendOtherHome( CommandSender sender, String player, String home ) {
+
+    public void sendOtherHome(CommandSender sender, String player, String home) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -70,11 +76,11 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitHomes.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void getHomesList( CommandSender sender ) {
+    public void getHomesList(CommandSender sender) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -84,11 +90,11 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitHomes.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
-    
-    public static void getOtherHomesList( CommandSender sender, String player ) {
+
+    public void getOtherHomesList(CommandSender sender, String player) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -98,11 +104,11 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitHomes.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void importHomes( CommandSender sender ) {
+    public void importHomes(CommandSender sender) {
         String path = "plugins/Essentials/userdata";
         File folder = new File( path );
 
@@ -137,7 +143,7 @@ public class HomesManager {
 
     }
 
-    public static void reloadHomes( CommandSender sender ) {
+    public void reloadHomes(CommandSender sender) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -146,11 +152,11 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitHomes.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void setHome( CommandSender sender, String home ) {
+    public void setHome(CommandSender sender, String home) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         Location l = ( ( Player ) sender ).getLocation();
@@ -169,11 +175,11 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitHomes.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void setHome( String sender, String home, Location l ) {
+    public void setHome(String sender, String home, Location l) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -191,7 +197,7 @@ public class HomesManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitHomes.instance.sendMessage(b);
+        instance.sendMessage(b);
 
 
     }

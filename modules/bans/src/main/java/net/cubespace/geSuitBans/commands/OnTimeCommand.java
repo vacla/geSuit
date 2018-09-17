@@ -1,17 +1,20 @@
 package net.cubespace.geSuitBans.commands;
 
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitBans.managers.BansManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.lang.String;
 
-public class OnTimeCommand implements CommandExecutor
-{
+public class OnTimeCommand extends CommandManager<BansManager> {
+
+    public OnTimeCommand(BansManager manager) {
+        super(manager);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command,
@@ -33,16 +36,16 @@ public class OnTimeCommand implements CommandExecutor
                         return true;
                     }
                 }
-                BansManager.displayOnTimeTop(sender.getName(), page);
+                manager.displayOnTimeTop(sender.getName(), page);
                 return true;
             }
         	if ((sender instanceof Player) && (!sender.hasPermission("gesuit.bans.command.ontime.other"))) {
         		sender.sendMessage(ChatColor.RED + "You do not have permission to do that command.");
         		return true;
         	}
-            BansManager.displayOnTimeHistory(sender.getName(), args[0]);
+            manager.displayOnTimeHistory(sender.getName(), args[0]);
         } else {
-            BansManager.displayOnTimeHistory(sender.getName(), sender.getName());
+            manager.displayOnTimeHistory(sender.getName(), sender.getName());
         }
 
         return true;

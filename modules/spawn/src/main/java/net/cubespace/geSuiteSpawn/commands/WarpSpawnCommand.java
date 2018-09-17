@@ -4,14 +4,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.cubespace.geSuiteSpawn.geSuitSpawn;
+import net.cubespace.geSuit.BukkitModule;
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 
-public class WarpSpawnCommand implements CommandExecutor {
+public class WarpSpawnCommand extends CommandManager<SpawnManager> {
+
+    public WarpSpawnCommand(SpawnManager manager, BukkitModule mod) {
+        super(manager, mod);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -30,13 +34,13 @@ public class WarpSpawnCommand implements CommandExecutor {
 
             // warpspawn SpawnName
             if (args.length == 2) {
-                SpawnManager.sendPlayerToArgSpawn(player, args[1], "");
+                manager.sendPlayerToArgSpawn(player, args[1], "");
                 return true;
             }
 
             // warpspawn SpawnName Server
             if (args.length == 3) {
-                SpawnManager.sendPlayerToArgSpawn(player, args[1], args[2]);
+                manager.sendPlayerToArgSpawn(player, args[1], args[2]);
                 return true;
             }
 
@@ -64,7 +68,7 @@ public class WarpSpawnCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "You do not have permission to do this.");
                     return true;
                 }
-                SpawnManager.sendPlayerToArgSpawn(target, args[1], "");
+                manager.sendPlayerToArgSpawn(target, args[1], "");
                 return true;
             }
             sendToSpawn(player, args[0], args[1]);
@@ -84,7 +88,7 @@ public class WarpSpawnCommand implements CommandExecutor {
                 return true;
             }
 
-            SpawnManager.sendPlayerToArgSpawn(target, args[1], args[2]);
+            manager.sendPlayerToArgSpawn(target, args[1], args[2]);
             return true;
         }
 
@@ -95,7 +99,7 @@ public class WarpSpawnCommand implements CommandExecutor {
         if (!player.hasPermission("gesuit.warps.bypass.delay")) {
             final Location lastLocation = player.getLocation();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Teleportation will commence in &c3 seconds&6. Don't move."));
-            Bukkit.getServer().getScheduler().runTaskLater(geSuitSpawn.instance, new Runnable() {
+            Bukkit.getServer().getScheduler().runTaskLater(instance, new Runnable() {
                 @Override
                 public void run() {
                     if (player.isOnline()) {
@@ -104,7 +108,7 @@ public class WarpSpawnCommand implements CommandExecutor {
 
                         if (lastLocation.getBlock().equals(player.getLocation().getBlock())) {
                             player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
-                            SpawnManager.sendPlayerToArgSpawn(player, spawn, server);
+                            manager.sendPlayerToArgSpawn(player, spawn, server);
                         } else {
                             player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
                         }
@@ -112,7 +116,7 @@ public class WarpSpawnCommand implements CommandExecutor {
                 }
             }, 60L);
         } else {
-            SpawnManager.sendPlayerToArgSpawn(player, spawn, server);
+            manager.sendPlayerToArgSpawn(player, spawn, server);
         }
     }
 

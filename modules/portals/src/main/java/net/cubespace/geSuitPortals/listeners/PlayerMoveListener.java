@@ -17,6 +17,13 @@ import net.cubespace.geSuitPortals.managers.PortalsManager;
 import net.cubespace.geSuitPortals.objects.Portal;
 
 public class PlayerMoveListener implements Listener {
+    private PortalsManager manager;
+    private geSuitPortals instance;
+
+    public PlayerMoveListener(PortalsManager manager, geSuitPortals instance) {
+        this.manager = manager;
+        this.instance = instance;
+    }
 
     @EventHandler(ignoreCancelled = true)
     public void PlayerMove(PlayerMoveEvent e) {
@@ -33,7 +40,7 @@ public class PlayerMoveListener implements Listener {
         for (Portal p : PortalsManager.PORTALS.get(t.getWorld())) {
             if (p.isBlockInPortal(t)) {
                 if (player.hasPermission("gesuit.portals.portal.*") || player.hasPermission("gesuit.portals.portal." + p.getName())) {
-                    PortalsManager.teleportPlayer(player, p);
+                    manager.teleportPlayer(player, p);
                     Vector unitVector = e.getFrom().toVector().subtract(e.getTo().toVector()).normalize();
                     Location l = player.getLocation();
                     l.setYaw(l.getYaw() + 180);
@@ -57,7 +64,7 @@ public class PlayerMoveListener implements Listener {
         }
         Material portal;
         Material enderPortal;
-        if (geSuitPortals.instance.isLegacy()){
+        if (instance.isLegacy()) {
             portal = Material.getMaterial("portal");
             enderPortal = Material.getMaterial("END_PORTAL");
         } else{

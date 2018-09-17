@@ -14,17 +14,17 @@ import net.cubespace.geSuitPortals.listeners.PortalsMessageListener;
 import net.cubespace.geSuitPortals.managers.PortalsManager;
 import net.cubespace.geSuitPortals.objects.Portal;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 
-import static org.bukkit.Bukkit.getServer;
-
 public class geSuitPortals extends BukkitModule {
+
     public static WorldEditPlugin WORLDEDIT = null;
+    private PortalsManager manager;
 
     public geSuitPortals() {
         super("portals",true);
+        manager = new PortalsManager(this);
     }
     
     @Override
@@ -48,9 +48,9 @@ public class geSuitPortals extends BukkitModule {
     }
 
     protected void registerCommands() {
-        getCommand("setportal").setExecutor(new SetPortalCommand());
-        getCommand("delportal").setExecutor(new DeletePortalCommand());
-        getCommand("portals").setExecutor(new ListPortalsCommand());
+        getCommand("setportal").setExecutor(new SetPortalCommand(manager));
+        getCommand("delportal").setExecutor(new DeletePortalCommand(manager));
+        getCommand("portals").setExecutor(new ListPortalsCommand(manager));
     }
     
     protected void registerChannels() {
@@ -59,11 +59,11 @@ public class geSuitPortals extends BukkitModule {
     }
     
     protected void registerListeners() {
-        registerPluginMessageListener(this,new PortalsMessageListener());
-        
-        getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
+        registerPluginMessageListener(this, new PortalsMessageListener(manager, this));
+
+        getServer().getPluginManager().registerEvents(new PlayerMoveListener(manager, this), this);
         getServer().getPluginManager().registerEvents(new PhysicsListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerLoginListener(), this);
-        getServer().getPluginManager().registerEvents(new AntiBurnListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerLoginListener(this, manager), this);
+        getServer().getPluginManager().registerEvents(new AntiBurnListener(this), this);
     }
 }

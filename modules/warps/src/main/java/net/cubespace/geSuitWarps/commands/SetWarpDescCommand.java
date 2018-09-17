@@ -2,13 +2,17 @@ package net.cubespace.geSuitWarps.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitWarps.managers.WarpsManager;
 
 
-public class SetWarpDescCommand implements CommandExecutor {
+public class SetWarpDescCommand extends CommandManager<WarpsManager> {
+
+    public SetWarpDescCommand(WarpsManager manager) {
+        super(manager);
+    }
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
@@ -31,7 +35,7 @@ public class SetWarpDescCommand implements CommandExecutor {
 				warpDescription = "";
 
 			try {
-				WarpsManager.setWarpDesc(sender, warpName, warpDescription);
+                manager.setWarpDesc(sender, warpName, warpDescription);
 			} catch (Exception e) {
 				sender.sendMessage(ChatColor.RED + "Error setting the warp description");
 				return false;

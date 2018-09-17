@@ -1,6 +1,5 @@
 package net.cubespace.geSuitPortals.objects;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 public enum FillType {

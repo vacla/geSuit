@@ -12,6 +12,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 public class TeleportsMessageListener implements PluginMessageListener {
+    private TeleportsManager manager;
+    private geSuitTeleports instance;
+
+    public TeleportsMessageListener(TeleportsManager manager, geSuitTeleports pl) {
+        this.manager = manager;
+        instance = pl;
+    }
 
     @Override
     public void onPluginMessageReceived( String channel, Player player, byte[] message ) {
@@ -21,20 +28,20 @@ public class TeleportsMessageListener implements PluginMessageListener {
             task = in.readUTF();
             if ( task.equals( "TeleportToPlayer" ) ) {
                 // Player1 Player2
-                TeleportsManager.teleportPlayerToPlayer( in.readUTF(), in.readUTF() );
+                manager.teleportPlayerToPlayer(in.readUTF(), in.readUTF());
             }
 
             if ( task.equals( "TeleportToLocation" ) ) {
                 // Player World X Y Z Yaw Pitch
-                TeleportsManager.teleportPlayerToLocation( in.readUTF(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat() );
+                manager.teleportPlayerToLocation(in.readUTF(), in.readUTF(), in.readDouble(), in.readDouble(), in.readDouble(), in.readFloat(), in.readFloat());
             }
             
             if ( task.equals( "TeleportAccept" ) ) {
-                TeleportsManager.finishTPA(Bukkit.getPlayerExact(in.readUTF()), in.readUTF());
+                manager.finishTPA(Bukkit.getPlayerExact(in.readUTF()), in.readUTF());
             }
             
             if ( task.equals( "LeavingServer" ) ) {
-                TeleportsManager.doLeaveServer(Bukkit.getPlayerExact(in.readUTF()));
+                manager.doLeaveServer(Bukkit.getPlayerExact(in.readUTF()));
             }
 
         } catch ( IOException e ) {
@@ -50,10 +57,10 @@ public class TeleportsMessageListener implements PluginMessageListener {
             }
             if ( name != null ) {
                 Player p = Bukkit.getPlayer( name );
-                p.sendMessage( ChatColor.RED + "Teleports - " + ChatColor.GOLD + geSuitTeleports.instance.getDescription().getVersion() );
+                p.sendMessage(ChatColor.RED + "Teleports - " + ChatColor.GOLD + instance.getDescription().getVersion());
             }
-            TeleportsManager.sendVersion();
-            Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Teleports - " + ChatColor.GOLD + geSuitTeleports.instance.getDescription().getVersion() );
+            manager.sendVersion();
+            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Teleports - " + ChatColor.GOLD + instance.getDescription().getVersion());
         }
     }
 

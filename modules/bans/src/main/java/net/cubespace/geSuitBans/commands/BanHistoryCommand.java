@@ -1,12 +1,15 @@
 package net.cubespace.geSuitBans.commands;
 
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitBans.managers.BansManager;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class BanHistoryCommand implements CommandExecutor
-{
+public class BanHistoryCommand extends CommandManager<BansManager> {
+
+    public BanHistoryCommand(BansManager manager) {
+        super(manager);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command,
@@ -14,7 +17,7 @@ public class BanHistoryCommand implements CommandExecutor
     {
 
         if (args.length > 0) {
-            BansManager.displayPlayerBanHistory(sender.getName(), args[0]);
+            manager.displayPlayerBanHistory(sender.getName(), args[0]);
             return true;
         }
 

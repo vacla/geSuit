@@ -1,11 +1,11 @@
 package net.cubespace.geSuitBans.commands;
 
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitBans.managers.BansManager;
 import net.cubespace.geSuit.utils.Utilities;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -14,7 +14,11 @@ import java.util.Objects;
 /**
  * Author: narimm on 26/08/2015.
  */
-public class LockDownCommand implements CommandExecutor {
+public class LockDownCommand extends CommandManager<BansManager> {
+
+    public LockDownCommand(BansManager manager) {
+        super(manager);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -28,21 +32,21 @@ public class LockDownCommand implements CommandExecutor {
         }
 
         if (Objects.equals(StringUtils.uncapitalize(args[0]), "end")) {
-            BansManager.endLockDown(sender.getName());
+            manager.endLockDown(sender.getName());
             return true;
         }
         if (Objects.equals(StringUtils.uncapitalize(args[0]), "status")) {
-            BansManager.lockDownStatus(sender.getName());
+            manager.lockDownStatus(sender.getName());
             return true;
         }
         long expiryTime = getExpiryTime(sender, args[0]);
         if (expiryTime > 0) {
             if (args.length == 1) {
-                BansManager.lockDown(sender.getName(), expiryTime, "");
+                manager.lockDown(sender.getName(), expiryTime, "");
                 return true;
             }
             if (args.length > 1) {
-                BansManager.lockDown(sender.getName(), expiryTime, StringUtils.join(args, " ", 1, args.length));
+                manager.lockDown(sender.getName(), expiryTime, StringUtils.join(args, " ", 1, args.length));
                 return true;
             }
         }

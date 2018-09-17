@@ -1,12 +1,16 @@
 package net.cubespace.geSuitHomes.commands;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitHomes.managers.HomesManager;
 
-public class DelHomeCommand implements CommandExecutor {
+public class DelHomeCommand extends CommandManager<HomesManager> {
+
+	public DelHomeCommand(HomesManager manager) {
+		super(manager);
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
@@ -26,12 +30,12 @@ public class DelHomeCommand implements CommandExecutor {
 			}
 			if(other){
 				if(sender.hasPermission("gesuit.homes.commands.delhomes.other"))
-				HomesManager.deleteOtherHime(sender,pname,homename);
+					manager.deleteOtherHime(sender, pname, homename);
 			}else{
-				HomesManager.deleteHome(sender, homename);
+				manager.deleteHome(sender, homename);
 			}
 		}else{
-			HomesManager.deleteHome(sender, "home");
+			manager.deleteHome(sender, "home");
 		}
 		return true;
 	}

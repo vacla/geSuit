@@ -1,18 +1,22 @@
 package net.cubespace.geSuitWarps.commands;
 
-import net.cubespace.geSuitWarps.geSuitWarps;
+import net.cubespace.geSuit.BukkitModule;
+import net.cubespace.geSuit.managers.CommandManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.cubespace.geSuitWarps.managers.WarpsManager;
 
-public class WarpCommand implements CommandExecutor {
+public class WarpCommand extends CommandManager<WarpsManager> {
+
+    public WarpCommand(WarpsManager manager, BukkitModule mod) {
+        super(manager, mod);
+    }
 
     @Override
     public boolean onCommand(final CommandSender sender, Command command,
@@ -24,7 +28,7 @@ public class WarpCommand implements CommandExecutor {
 
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Teleportation will commence in &c3 seconds&6. Don't move."));
 
-                geSuitWarps.getInstance().getServer().getScheduler().runTaskLater(geSuitWarps.getInstance(), new Runnable() {
+                instance.getServer().getScheduler().runTaskLater(instance, new Runnable() {
                     @Override
                     public void run() {
                     	if (player.isOnline()) {
@@ -33,7 +37,7 @@ public class WarpCommand implements CommandExecutor {
                     		
     	                    if (lastLocation.getBlock().equals(player.getLocation().getBlock())) {
 		                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
-		                        WarpsManager.warpPlayer(sender, sender.getName(), args[0]);
+                                manager.warpPlayer(sender, sender.getName(), args[0]);
 		                    } else {
 		                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
 		                    }
@@ -42,12 +46,12 @@ public class WarpCommand implements CommandExecutor {
                 }, 60L);
                 return true;
             } else {
-                WarpsManager.warpPlayer(sender, sender.getName(), args[0]);
+                manager.warpPlayer(sender, sender.getName(), args[0]);
                 return true;
             }
 
         } else if (args.length > 1 && sender.hasPermission("gesuit.warps.command.warp.other")) {
-            WarpsManager.warpPlayer(sender, args[0], args[1]);
+            manager.warpPlayer(sender, args[0], args[1]);
             return true;
         }
 

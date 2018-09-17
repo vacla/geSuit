@@ -19,10 +19,16 @@ import net.cubespace.geSuitTeleports.commands.ToggleCommand;
 import net.cubespace.geSuitTeleports.commands.TopCommand;
 import net.cubespace.geSuitTeleports.listeners.TeleportsListener;
 import net.cubespace.geSuitTeleports.listeners.TeleportsMessageListener;
+import net.cubespace.geSuitTeleports.managers.TeleportsManager;
+import net.cubespace.geSuiteSpawn.geSuitSpawn;
+import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 
 import java.util.List;
 
 public class geSuitTeleports extends BukkitModule {
+
+    private final TeleportsManager manager;
+    private SpawnManager spawnManager;
     public static String teleportinitiated;
     public static String teleporting;
     public static String aborted;
@@ -51,6 +57,8 @@ public class geSuitTeleports extends BukkitModule {
 
     public geSuitTeleports() {
         super("teleport", true);
+        manager = new TeleportsManager(this);
+        spawnManager = null;
     }
     
     @Override
@@ -94,29 +102,33 @@ public class geSuitTeleports extends BukkitModule {
         logDebugMessages = getConfig().getBoolean("options.debug_logging");
     
         //check for geSuitSpawns
-        geSuitSpawns = Bukkit.getPluginManager().isPluginEnabled("geSuitSpawn");
+        if (Bukkit.getPluginManager().isPluginEnabled("geSuitSpawn")) {
+            geSuitSpawns = true;
+            spawnManager = ((geSuitSpawn) Bukkit.getPluginManager().getPlugin("geSuitSpawn")).getManager();
+        }
+
     }
 
     protected void registerCommands() {
-        getCommand("tp").setExecutor(new TPCommand());
-        getCommand("tppos").setExecutor(new TPPosCommand());
-        getCommand("tphere").setExecutor(new TPHereCommand());
-        getCommand("tpall").setExecutor(new TPAllCommand());
-        getCommand("tpa").setExecutor(new TPACommand());
-        getCommand("tpahere").setExecutor(new TPAHereCommand());
-        getCommand("tpaccept").setExecutor(new TPAcceptCommand());
-        getCommand("tpdeny").setExecutor(new TPDenyCommand());
-        getCommand("back").setExecutor(new BackCommand());
-        getCommand("tptoggle").setExecutor(new ToggleCommand());
-        getCommand("top").setExecutor(new TopCommand());
+        getCommand("tp").setExecutor(new TPCommand(manager));
+        getCommand("tppos").setExecutor(new TPPosCommand(manager));
+        getCommand("tphere").setExecutor(new TPHereCommand(manager));
+        getCommand("tpall").setExecutor(new TPAllCommand(manager));
+        getCommand("tpa").setExecutor(new TPACommand(manager));
+        getCommand("tpahere").setExecutor(new TPAHereCommand(manager));
+        getCommand("tpaccept").setExecutor(new TPAcceptCommand(manager));
+        getCommand("tpdeny").setExecutor(new TPDenyCommand(manager));
+        getCommand("back").setExecutor(new BackCommand(manager));
+        getCommand("tptoggle").setExecutor(new ToggleCommand(manager));
+        getCommand("top").setExecutor(new TopCommand(manager));
     }
     
     
     protected void registerListeners() {
-        registerPluginMessageListener(this,new TeleportsMessageListener());
+        registerPluginMessageListener(this, new TeleportsMessageListener(manager, this));
         
         getServer().getPluginManager().registerEvents(
-                new TeleportsListener(), this);
+                new TeleportsListener(manager, spawnManager, this), this);
     }
     
     public static WorldGuardPlugin getWorldGuard() {

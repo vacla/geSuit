@@ -20,7 +20,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
  * @author geNAZt (fabian.fassbender42@googlemail.com)
  */
 public class AntiBurnListener implements Listener {
+
+    private final geSuitPortals instance;
     private final int FIRE_SPREAD_RADIUS = 2;
+
+    public AntiBurnListener(geSuitPortals instance) {
+        this.instance = instance;
+    }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDamageEvent(EntityDamageEvent event) {
@@ -61,7 +67,7 @@ public class AntiBurnListener implements Listener {
     private boolean canIgnite(Block block) {
         Material mat = block.getType();
         List<Material> ignitable = new ArrayList<>();
-        if(geSuitPortals.instance.isLegacy()){
+        if (instance.isLegacy()) {
             ignitable.add(Material.getMaterial("LAVA"));
             ignitable.add(Material.getMaterial("STATIONARY_LAVA"));
         }else{

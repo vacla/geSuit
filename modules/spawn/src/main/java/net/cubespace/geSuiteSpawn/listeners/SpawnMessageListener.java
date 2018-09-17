@@ -13,6 +13,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 public class SpawnMessageListener implements PluginMessageListener, Listener {
+    private geSuitSpawn instance;
+    private SpawnManager manager;
+
+    public SpawnMessageListener(geSuitSpawn instance, SpawnManager manager) {
+        this.instance = instance;
+        this.manager = manager;
+    }
 
     @Override
     public void onPluginMessageReceived( String channel, Player player, byte[] message ) {
@@ -38,10 +45,10 @@ public class SpawnMessageListener implements PluginMessageListener, Listener {
                     }
                     if ( name != null ) {
                         Player p = Bukkit.getPlayer( name );
-                        p.sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.instance.getDescription().getVersion() );
+                        p.sendMessage(ChatColor.RED + "Spawns - " + ChatColor.GOLD + instance.getDescription().getVersion());
                     }
-                    Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.instance.getDescription().getVersion() );
-                    SpawnManager.sendVersion();
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Spawns - " + ChatColor.GOLD + instance.getDescription().getVersion());
+                    manager.sendVersion();
                     break;
             }
 

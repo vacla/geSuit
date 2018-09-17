@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream;
  * Created for the AddstarMC Project. Created by Narimm on 12/09/2018.
  */
 public abstract class BukkitModule extends JavaPlugin {
-    public static BukkitModule instance;
+    public BukkitModule instance;
     private String CHANNEL_NAME;
     private boolean legacy;
     private boolean isSender;
@@ -51,8 +51,8 @@ public abstract class BukkitModule extends JavaPlugin {
     public String getCHANNEL_NAME(){
         return CHANNEL_NAME;
     }
-    
-    public static BukkitModule getInstance(){
+
+    public BukkitModule getInstance() {
         return instance;
     }
    

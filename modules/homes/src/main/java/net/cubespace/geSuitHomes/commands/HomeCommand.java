@@ -1,25 +1,29 @@
 package net.cubespace.geSuitHomes.commands;
 
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitHomes.geSuitHomes;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import net.cubespace.geSuitHomes.managers.HomesManager;
 
 import org.bukkit.entity.Player;
 
-public class HomeCommand implements CommandExecutor {
+public class HomeCommand extends CommandManager<HomesManager> {
+
+	public HomeCommand(HomesManager manager, geSuitHomes plugin) {
+		super(manager, plugin);
+	}
 
 	@Override
 	public boolean onCommand(final CommandSender sender, Command command,
 			String label, final String[] args) {
 		if (sender instanceof Player) {
 			if (args.length == 0) {
-				HomesManager.getHomesList(sender);
+				manager.getHomesList(sender);
 			} else {
 				final Player player = ((Player)sender).getPlayer();
 				if (player == null) {
@@ -45,14 +49,14 @@ public class HomeCommand implements CommandExecutor {
 
 				if ((homename == null) && (pname != null)) {
 					// Syntax: "/home player:home"
-					HomesManager.getOtherHomesList(sender, pname);
+					manager.getOtherHomesList(sender, pname);
 					return true;
 				} else {
 					if (!player.hasPermission("gesuit.homes.bypass.delay")) {
 						final Location lastLocation = player.getLocation();
 						player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Teleportation will commence in &c3 seconds&6. Don't move."));
 
-						geSuitHomes.getInstance().getServer().getScheduler().runTaskLater(geSuitHomes.getInstance(), new Runnable() {
+						instance.getServer().getScheduler().runTaskLater(instance, new Runnable() {
 							@Override
 							public void run() {
 								if (player.isOnline()) {
@@ -63,9 +67,9 @@ public class HomeCommand implements CommandExecutor {
 										player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
 										player.saveData();
 										if (pname == null) {
-											HomesManager.sendHome(sender, homename);
+											manager.sendHome(sender, homename);
 										} else {
-											HomesManager.sendOtherHome(sender, pname, homename);
+											manager.sendOtherHome(sender, pname, homename);
 										}
 									} else {
 										player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
@@ -77,10 +81,10 @@ public class HomeCommand implements CommandExecutor {
 						player.saveData();
 						if (pname == null) {
 							// Teleport to own player home
-							HomesManager.sendHome(sender, homename);
+							manager.sendHome(sender, homename);
 						} else {
 							// Teleport player to other player home
-							HomesManager.sendOtherHome(sender, pname, homename);
+							manager.sendOtherHome(sender, pname, homename);
 						}
 					}
 				}

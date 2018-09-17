@@ -7,25 +7,25 @@ import net.cubespace.geSuitWarps.commands.SetWarpCommand;
 import net.cubespace.geSuitWarps.commands.SetWarpDescCommand;
 import net.cubespace.geSuitWarps.commands.SilentWarpCommand;
 import net.cubespace.geSuitWarps.commands.WarpCommand;
-import net.cubespace.geSuitWarps.listeners.WarpsListener;
+import net.cubespace.geSuitWarps.managers.WarpsManager;
 
 public class geSuitWarps extends BukkitModule {
 
+    private WarpsManager manager;
 	public geSuitWarps() {
 		super("warps", true);
+        manager = new WarpsManager(this);
 	}
 	
 	protected void registerCommands() {
-		getCommand("warp").setExecutor(new WarpCommand());
-		getCommand("warps").setExecutor(new ListWarpsCommand());
-		getCommand("setwarp").setExecutor(new SetWarpCommand());
-		getCommand("setwarpdesc").setExecutor(new SetWarpDescCommand());
-		getCommand("silentwarp").setExecutor(new SilentWarpCommand());
-		getCommand("delwarp").setExecutor(new DeleteWarpCommand());
+        getCommand("warp").setExecutor(new WarpCommand(manager, this));
+        getCommand("warps").setExecutor(new ListWarpsCommand(manager));
+        getCommand("setwarp").setExecutor(new SetWarpCommand(manager));
+        getCommand("setwarpdesc").setExecutor(new SetWarpDescCommand(manager));
+        getCommand("silentwarp").setExecutor(new SilentWarpCommand(manager, this));
+        getCommand("delwarp").setExecutor(new DeleteWarpCommand(manager));
 	}
 	
 	protected void registerListeners() {
-		getServer().getPluginManager().registerEvents(
-				new WarpsListener(), this);
 	}
 }

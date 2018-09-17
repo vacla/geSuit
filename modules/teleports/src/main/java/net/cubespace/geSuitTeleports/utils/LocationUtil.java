@@ -25,6 +25,12 @@ import static net.cubespace.geSuitTeleports.geSuitTeleports.logDebugMessages;
  */
 public class LocationUtil {
 
+    private final geSuitTeleports instance;
+
+    public LocationUtil(geSuitTeleports instance) {
+        this.instance = instance;
+    }
+
     /**
      * The type Vector 3 d.
      */
@@ -135,7 +141,7 @@ public class LocationUtil {
      * @param z     the z
      * @return the boolean
      */
-    public static boolean isBlockUnsafe(final World world, final int x, final int y, final int z) {
+    public boolean isBlockUnsafe(final World world, final int x, final int y, final int z) {
         return isBlockDamaging(world, x, y, z) || isBlockAboveAir(world, x, y, z);
 
     }
@@ -150,11 +156,11 @@ public class LocationUtil {
      *
      * @return the boolean
      */
-    public static boolean isBlockDamaging(final World world, final int x, final int y, final int z) {
+    public boolean isBlockDamaging(final World world, final int x, final int y, final int z) {
         final Block below = world.getBlockAt(x, y - 1, z);
         Material magma = null;
         try {
-            if (geSuitTeleports.getInstance().getServer().getVersion().equals("1.13"))
+            if (instance.getServer().getVersion().equals("1.13"))
                 magma = Material.getMaterial("MAGMA_BLOCK");
         } catch (Exception e) {
             magma = Material.getMaterial("MAGMA");
@@ -193,7 +199,7 @@ public class LocationUtil {
      *
      * @return the safe destination
      */
-    public static Location getSafeDestination(final Player player, final Location loc) {
+    public Location getSafeDestination(final Player player, final Location loc) {
         if (loc.getWorld().equals(player.getWorld())
                 && ((player.getGameMode() == GameMode.CREATIVE) || (player.isFlying()))) {
             return getRoundedDestination(loc);
@@ -209,7 +215,7 @@ public class LocationUtil {
      *
      * @return the safe destination
      */
-    public static Location getSafeDestination(final Location loc) {
+    public Location getSafeDestination(final Location loc) {
         if (loc == null || loc.getWorld() == null) {
             return null;
         }
@@ -272,13 +278,13 @@ public class LocationUtil {
      *
      * @return the boolean
      */
-    public static boolean shouldFly(Location loc) {
+    public boolean shouldFly(Location loc) {
         final World world = loc.getWorld();
         final int x = loc.getBlockX();
         int y = (int) Math.round(loc.getY());
         final int z = loc.getBlockZ();
         int count = 0;
-        while (LocationUtil.isBlockUnsafe(world, x, y, z) && y > -1) {
+        while (isBlockUnsafe(world, x, y, z) && y > -1) {
             y--;
             count++;
             if (count > 2) {
@@ -297,9 +303,9 @@ public class LocationUtil {
      *
      * @return the boolean
      */
-    public static boolean worldGuardTpAllowed(Location l, Player p) {
+    public boolean worldGuardTpAllowed(Location l, Player p) {
         boolean result = true;
-        Logger log = geSuitTeleports.instance.getLogger();
+        Logger log = instance.getLogger();
         if(logDebugMessages) log.info("Checking if WG allows TP. Status of Plugin:"+geSuitTeleports.worldGuarded);//Todo remove after debug
         if (geSuitTeleports.worldGuarded) {
             try {

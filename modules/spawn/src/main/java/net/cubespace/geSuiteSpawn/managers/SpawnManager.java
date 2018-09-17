@@ -1,6 +1,8 @@
 package net.cubespace.geSuiteSpawn.managers;
 
-import net.cubespace.geSuiteSpawn.geSuitSpawn;
+import net.cubespace.geSuit.BukkitModule;
+import net.cubespace.geSuit.managers.DataManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -14,11 +16,15 @@ import java.io.IOException;
 import java.util.HashMap;
 
 
-public class SpawnManager {
+public class SpawnManager extends DataManager {
     public static boolean HAS_SPAWNS = false;
     public static HashMap<String, Location> SPAWNS = new HashMap<>();
 
-    public static void sendPlayerToProxySpawn( CommandSender sender, boolean silent ) {
+    public SpawnManager(BukkitModule instance) {
+        super(instance);
+    }
+
+    public void sendPlayerToProxySpawn(CommandSender sender, boolean silent) {
 
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
@@ -30,10 +36,10 @@ public class SpawnManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-geSuitSpawn.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void setNewPlayerSpawn( CommandSender sender ) {
+    public void setNewPlayerSpawn(CommandSender sender) {
         Player p = ( Player ) sender;
         Location l = p.getLocation();
 
@@ -52,11 +58,11 @@ geSuitSpawn.getInstance().sendMessage(b);
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitSpawn.getInstance().sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void setProxySpawn( CommandSender sender ) {
+    public void setProxySpawn(CommandSender sender) {
         Player p = ( Player ) sender;
         Location l = p.getLocation();
 
@@ -75,10 +81,10 @@ geSuitSpawn.getInstance().sendMessage(b);
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitSpawn.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void setServerSpawn( CommandSender sender ) {
+    public void setServerSpawn(CommandSender sender) {
         Player p = ( Player ) sender;
         Location l = p.getLocation();
         p.getWorld().setSpawnLocation( l.getBlockX(), l.getBlockY(), l.getBlockZ() );
@@ -98,11 +104,11 @@ geSuitSpawn.getInstance().sendMessage(b);
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitSpawn.getInstance().sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void setWorldSpawn( CommandSender sender ) {
+    public void setWorldSpawn(CommandSender sender) {
         Player p = ( Player ) sender;
         Location l = p.getLocation();
         p.getWorld().setSpawnLocation( l.getBlockX(), l.getBlockY(), l.getBlockZ() );
@@ -122,16 +128,16 @@ geSuitSpawn.getInstance().sendMessage(b);
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitSpawn.getInstance().sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void sendPlayerToServerSpawn( CommandSender sender ) {
+    public void sendPlayerToServerSpawn(CommandSender sender) {
         Player p = ( Player ) sender;
         p.teleport( getServerSpawn() );
     }
 
-    public static void sendPlayerToWorldSpawn( CommandSender sender ) {
+    public void sendPlayerToWorldSpawn(CommandSender sender) {
         Player p = ( Player ) sender;
         Location l = getWorldSpawn( p.getWorld() );
         if ( l == null ) {
@@ -141,7 +147,7 @@ geSuitSpawn.getInstance().sendMessage(b);
         }
     }
 
-    public static void delWorldSpawn( CommandSender sender ) {
+    public void delWorldSpawn(CommandSender sender) {
         Player p = ( Player ) sender;
         Location l = p.getLocation();
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -154,10 +160,10 @@ geSuitSpawn.getInstance().sendMessage(b);
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitSpawn.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void getSpawns() {
+    public void getSpawns() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -165,8 +171,8 @@ geSuitSpawn.getInstance().sendMessage(b);
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-    
-        geSuitSpawn.getInstance().sendMessage(b);
+
+        instance.sendMessage(b);
     }
 
     public static boolean hasWorldSpawn( World w ) {
@@ -185,7 +191,7 @@ geSuitSpawn.getInstance().sendMessage(b);
         return SPAWNS.get( "server" );
     }
 
-    public static void sendPlayerToSpawn( CommandSender sender ) {
+    public void sendPlayerToSpawn(CommandSender sender) {
         Player p = ( Player ) sender;
         if(p.hasPermission("gesuit.spawns.spawn.bed")){
             try {
@@ -194,12 +200,12 @@ geSuitSpawn.getInstance().sendMessage(b);
                 //catch if they dont have a bed
             }
         }
-        if ( SpawnManager.hasWorldSpawn( p.getWorld() ) && p.hasPermission( "gesuit.spawns.spawn.world" ) ) {
+        if (hasWorldSpawn(p.getWorld()) && p.hasPermission("gesuit.spawns.spawn.world")) {
             p.teleport( getWorldSpawn( p.getWorld() ) );
-        } else if ( SpawnManager.hasServerSpawn() && p.hasPermission( "gesuit.spawns.spawn.server" ) ) {
+        } else if (hasServerSpawn() && p.hasPermission("gesuit.spawns.spawn.server")) {
             p.teleport( getServerSpawn() );
         } else if ( p.hasPermission( "gesuit.spawns.spawn.global" ) ) {
-            SpawnManager.sendPlayerToProxySpawn( p, false );
+            sendPlayerToProxySpawn(p, false);
         }
     }
 
@@ -213,7 +219,7 @@ geSuitSpawn.getInstance().sendMessage(b);
 
     }
 
-    public static void sendPlayerToArgSpawn( CommandSender sender, String spawn, String server ) {
+    public void sendPlayerToArgSpawn(CommandSender sender, String spawn, String server) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -225,19 +231,19 @@ geSuitSpawn.getInstance().sendMessage(b);
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitSpawn.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void sendVersion() {
+    public void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "SendVersion" );
-            out.writeUTF( ChatColor.RED + "Spawns - " + ChatColor.GOLD + geSuitSpawn.instance.getDescription().getVersion() );
+            out.writeUTF(ChatColor.RED + "Spawns - " + ChatColor.GOLD + instance.getDescription().getVersion());
 
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitSpawn.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 }

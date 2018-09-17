@@ -1,7 +1,6 @@
 package net.cubespace.geSuitTeleports.listeners;
 
 import net.cubespace.geSuitTeleports.geSuitTeleports;
-import net.cubespace.geSuitTeleports.managers.PermissionsManager;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 import net.cubespace.geSuitTeleports.utils.LocationUtil;
 import net.cubespace.geSuiteSpawn.managers.SpawnManager;
@@ -13,7 +12,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -23,9 +21,15 @@ import static net.cubespace.geSuitTeleports.geSuitTeleports.logDebugMessages;
 
 public class TeleportsListener implements Listener {
 
+    private geSuitTeleports instance;
+    private TeleportsManager manager;
+    private SpawnManager spawnsManager;
 
-	public TeleportsListener(){
+    public TeleportsListener(TeleportsManager manager, SpawnManager spawnManager, geSuitTeleports pl) {
 		super();
+        this.manager = manager;
+        instance = pl;
+        spawnsManager = spawnManager;
 	}
 	
 	@EventHandler
@@ -40,22 +44,22 @@ public class TeleportsListener implements Listener {
 			}
 			TeleportsManager.ignoreTeleport.add(e.getPlayer());
 			Location loc = t.getLocation();
-			if(LocationUtil.worldGuardTpAllowed(loc,e.getPlayer())) {
+            if (manager.getUtil().worldGuardTpAllowed(loc, e.getPlayer())) {
 				e.setSpawnLocation(loc);
 			}else{
 				if (logDebugMessages) {
-					geSuitTeleports.getInstance().getLogger().info(e.getPlayer().getName() + "being sent to spawn due to a worldguard block at " + loc.toString());
+                    instance.getLogger().info(e.getPlayer().getName() + "being sent to spawn due to a worldguard block at " + loc.toString());
 				}
 				e.setSpawnLocation(e.getPlayer().getWorld().getSpawnLocation());
 			}
 		}else if (TeleportsManager.pendingTeleportLocations.containsKey(e.getPlayer().getName())){
 			Location l = TeleportsManager.pendingTeleportLocations.get(e.getPlayer().getName());
 			TeleportsManager.ignoreTeleport.add(e.getPlayer());
-			if(LocationUtil.worldGuardTpAllowed(l,e.getPlayer())) {
+            if (manager.getUtil().worldGuardTpAllowed(l, e.getPlayer())) {
 				e.setSpawnLocation(l);
 			}else{
 				if((geSuitTeleports.geSuitSpawns) && (SpawnManager.hasWorldSpawn(e.getSpawnLocation().getWorld()))){
-					SpawnManager.sendPlayerToWorldSpawn(e.getPlayer());
+                    spawnsManager.sendPlayerToWorldSpawn(e.getPlayer());
 				}else{
 					e.setSpawnLocation(e.getSpawnLocation().getWorld().getSpawnLocation());
 				}
@@ -65,7 +69,7 @@ public class TeleportsListener implements Listener {
 	
 	@EventHandler (ignoreCancelled = true)
 	public void playerTeleport(PlayerTeleportEvent e){
-		if(!LocationUtil.worldGuardTpAllowed(e.getTo(),e.getPlayer())){ //cancel the event if the location is blocked
+        if (!manager.getUtil().worldGuardTpAllowed(e.getTo(), e.getPlayer())) { //cancel the event if the location is blocked
 			e.setCancelled(true);
 			e.setTo(e.getFrom());
 			return;
@@ -79,7 +83,7 @@ public class TeleportsListener implements Listener {
 			TeleportsManager.ignoreTeleport.remove(e.getPlayer());
 			return;
 		}
-		TeleportsManager.sendTeleportBackLocation(e.getPlayer(), false);
+        manager.sendTeleportBackLocation(e.getPlayer(), false);
 	}
 	
 	@EventHandler
@@ -90,37 +94,22 @@ public class TeleportsListener implements Listener {
 		if(Bukkit.getOnlinePlayers().size() == 1){
 			empty = true;
 		}
-		TeleportsManager.sendTeleportBackLocation(e.getPlayer(), empty);
+        manager.sendTeleportBackLocation(e.getPlayer(), empty);
 	}
 	
 	@EventHandler(ignoreCancelled = true)
 	public void playerDeath(PlayerDeathEvent e){
 		if (e.getEntity().hasMetadata("NPC")) return; // Ignore NPCs
-		TeleportsManager.sendDeathBackLocation(e.getEntity());
+        manager.sendDeathBackLocation(e.getEntity());
         TeleportsManager.ignoreTeleport.add(e.getEntity());
-	}
-	
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void setFormatChat(final PlayerLoginEvent e) {
-		if (e.getPlayer().hasMetadata("NPC")) return; // Ignore NPCs
-		if(e.getPlayer().hasPermission("gesuit.*")){
-			PermissionsManager.addAllPermissions(e.getPlayer());
-		}else if(e.getPlayer().hasPermission("gesuit.admin")){
-			PermissionsManager.addAdminPermissions(e.getPlayer());
-		}else if(e.getPlayer().hasPermission("gesuit.vip")){
-			PermissionsManager.addVIPPermissions(e.getPlayer());
-		}else if(e.getPlayer().hasPermission("gesuit.user")){
-			PermissionsManager.addUserPermissions(e.getPlayer());
-		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void playerJoin(final PlayerJoinEvent event) {
 		if (event.getPlayer().hasMetadata("NPC")) return; // Ignore NPCs
 	    // This is to prevent recording the back location when teleporting across servers, on the destination server
-	    TeleportsManager.ignoreTeleport.add(event.getPlayer());
-        Bukkit.getScheduler().runTaskLaterAsynchronously(geSuitTeleports.instance, () -> TeleportsManager.ignoreTeleport.remove(event.getPlayer()), 20);
+        TeleportsManager.ignoreTeleport.add(event.getPlayer());
+        Bukkit.getScheduler().runTaskLaterAsynchronously(instance, () -> TeleportsManager.ignoreTeleport.remove(event.getPlayer()), 20);
 	}
 
 }

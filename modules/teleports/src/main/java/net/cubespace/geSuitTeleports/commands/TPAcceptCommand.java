@@ -1,17 +1,21 @@
 package net.cubespace.geSuitTeleports.commands;
 
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitTeleports.utils.LocationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 import org.bukkit.entity.Player;
 
 
-public class TPAcceptCommand implements CommandExecutor {
+public class TPAcceptCommand extends CommandManager<TeleportsManager> {
+
+	public TPAcceptCommand(TeleportsManager manager) {
+		super(manager);
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
@@ -22,8 +26,8 @@ public class TPAcceptCommand implements CommandExecutor {
 		}
 		Player p  = Bukkit.getPlayer(sender.getName());
 		p.saveData();
-		if(LocationUtil.worldGuardTpAllowed(p.getLocation(),p ) || sender.hasPermission("worldgaurd.teleports.allregions"))
-			TeleportsManager.tpAccept(sender);
+		if (manager.getUtil().worldGuardTpAllowed(p.getLocation(), p) || sender.hasPermission("worldgaurd.teleports.allregions"))
+			manager.tpAccept(sender);
 		else sender.sendMessage(ChatColor.RED + "This region will not allow teleporting");
 		return true;
 	}

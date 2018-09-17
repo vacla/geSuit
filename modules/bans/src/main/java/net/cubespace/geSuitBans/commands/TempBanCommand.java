@@ -1,15 +1,19 @@
 package net.cubespace.geSuitBans.commands;
 
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitBans.managers.BansManager;
 import net.cubespace.geSuit.utils.Utilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 
-public class TempBanCommand implements CommandExecutor {
+public class TempBanCommand extends CommandManager<BansManager> {
+
+    public TempBanCommand(BansManager manager) {
+        super(manager);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command,
@@ -24,7 +28,7 @@ public class TempBanCommand implements CommandExecutor {
                 sender.sendMessage("&c Couldn't convert "+args[1]+" to seconds");
                 return false;
             }
-            BansManager.tempBanPlayer(sender.getName(), player, seconds, reason);
+            manager.tempBanPlayer(sender.getName(), player, seconds, reason);
             return true;
         }
 

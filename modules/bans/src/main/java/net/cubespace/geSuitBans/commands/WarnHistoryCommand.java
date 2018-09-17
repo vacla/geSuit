@@ -1,14 +1,18 @@
 package net.cubespace.geSuitBans.commands;
 
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitBans.managers.BansManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class WarnHistoryCommand implements CommandExecutor {
+public class WarnHistoryCommand extends CommandManager<BansManager> {
 
-    @Override
+	public WarnHistoryCommand(BansManager manager) {
+		super(manager);
+	}
+
+	@Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		String playerName;
 
@@ -20,7 +24,7 @@ public class WarnHistoryCommand implements CommandExecutor {
         
 		if (sender.hasPermission("gesuit.bans.command.warn")) {
 			// Show warnings followed by any active bans
-			BansManager.displayPlayerWarnBanHistory(sender.getName(), playerName);
+			manager.displayPlayerWarnBanHistory(sender.getName(), playerName);
 		} else {
 			if (!sender.getName().equals(playerName)) {
 				sender.sendMessage(ChatColor.RED + "You can only view your own warnings.");
@@ -28,7 +32,7 @@ public class WarnHistoryCommand implements CommandExecutor {
 			}
 
 			boolean showStaffNames = false;
-			BansManager.displayPlayerWarnHistory(sender.getName(), playerName, showStaffNames);
+			manager.displayPlayerWarnHistory(sender.getName(), playerName, showStaffNames);
 		}
 
 		return true;

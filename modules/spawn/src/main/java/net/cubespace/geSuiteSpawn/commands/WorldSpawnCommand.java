@@ -4,16 +4,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.cubespace.geSuiteSpawn.geSuitSpawn;
+import net.cubespace.geSuit.BukkitModule;
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 
-public class WorldSpawnCommand implements CommandExecutor {
+public class WorldSpawnCommand extends CommandManager<SpawnManager> {
 
-	@Override
+    public WorldSpawnCommand(SpawnManager manager, BukkitModule mod) {
+        super(manager, mod);
+    }
+
+    @Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 
@@ -29,7 +33,7 @@ public class WorldSpawnCommand implements CommandExecutor {
                     return true;
                 }
 
-                SpawnManager.sendPlayerToWorldSpawn(player);
+                manager.sendPlayerToWorldSpawn(player);
                 return true;
             }
 
@@ -48,7 +52,7 @@ public class WorldSpawnCommand implements CommandExecutor {
                     return true;
                 }
 
-                SpawnManager.sendPlayerToWorldSpawn(target);
+                manager.sendPlayerToWorldSpawn(target);
                 return true;
             }
 
@@ -56,7 +60,7 @@ public class WorldSpawnCommand implements CommandExecutor {
             final Location lastLocation = player.getLocation();
 
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Teleportation will commence in &c3 seconds&6. Don't move."));
-            Bukkit.getServer().getScheduler().runTaskLater(geSuitSpawn.instance, new Runnable() {
+            Bukkit.getServer().getScheduler().runTaskLater(instance, new Runnable() {
                 @Override
                 public void run() {
                 	if (player.isOnline()) {
@@ -65,7 +69,7 @@ public class WorldSpawnCommand implements CommandExecutor {
                 		
 	                    if (lastLocation.getBlock().equals(player.getLocation().getBlock())) {
 	                        player.sendMessage(ChatColor.GOLD + "Teleportation commencing...");
-	                		SpawnManager.sendPlayerToWorldSpawn(player);
+                            manager.sendPlayerToWorldSpawn(player);
 	                    } else {
 	                        player.sendMessage(ChatColor.RED + "Teleportation aborted because you moved.");
 	                    }
@@ -74,7 +78,7 @@ public class WorldSpawnCommand implements CommandExecutor {
             }, 60L);
             return true;
         } else {
-    		SpawnManager.sendPlayerToWorldSpawn(player);
+            manager.sendPlayerToWorldSpawn(player);
             return true;
         }
 	}

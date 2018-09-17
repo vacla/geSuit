@@ -3,7 +3,6 @@ package au.com.addstar.geSuitAdmin;
 import au.com.addstar.geSuitAdmin.commands.DebugCommand;
 import au.com.addstar.geSuitAdmin.listeners.AdminListener;
 import net.cubespace.geSuit.BukkitModule;
-import org.bukkit.Bukkit;
 
 /**
  * Created for use for the Add5tar MC Minecraft server

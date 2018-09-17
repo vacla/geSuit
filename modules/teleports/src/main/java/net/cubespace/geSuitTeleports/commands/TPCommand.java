@@ -1,17 +1,21 @@
 package net.cubespace.geSuitTeleports.commands;
 
 
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class TPCommand implements CommandExecutor {
+public class TPCommand extends CommandManager<TeleportsManager> {
+
+    public TPCommand(TeleportsManager manager) {
+        super(manager);
+    }
 
     @Override
     public boolean onCommand( CommandSender sender, Command command, String label, String[] args ) {
@@ -72,7 +76,7 @@ public class TPCommand implements CommandExecutor {
                 }
                 sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + args[1] + " " + args[2] + " " + args[3] + geSuitTeleports.in_world + args[4]);
                 p.saveData();
-                TeleportsManager.teleportToLocation(
+                manager.teleportToLocation(
                         p.getName(),  // Player to teleport
                         "",           // Server
                         args[4],      // World
@@ -93,7 +97,7 @@ public class TPCommand implements CommandExecutor {
                 }
                 sender.sendMessage(geSuitTeleports.sending + p.getName() + geSuitTeleports.to + args[1] + " " + args[2] + " " + args[3] + geSuitTeleports.in_world + args[4] + geSuitTeleports.on_server + args[5]);
                 p.saveData();
-                TeleportsManager.teleportToLocation(
+                manager.teleportToLocation(
                         p.getName(),  // Player to teleport
                         args[5],      // Server
                         args[4],      // World
@@ -122,7 +126,7 @@ public class TPCommand implements CommandExecutor {
                 // Do not validate target username since may not be on this server
                 target = Bukkit.getPlayer(sender.getName());
                 target.saveData();
-                TeleportsManager.teleportToPlayer(sender, target.getName(), args[0]);
+                manager.teleportToPlayer(sender, target.getName(), args[0]);
                 return true;
             case 2:
                 // tp Player1 Player2
@@ -136,7 +140,7 @@ public class TPCommand implements CommandExecutor {
                 }
 
                 target.saveData();
-                TeleportsManager.teleportToPlayer(sender, target.getName(), args[1]);
+                manager.teleportToPlayer(sender, target.getName(), args[1]);
                 return true;
             case 3:
                 // tp X Y Z
@@ -147,7 +151,7 @@ public class TPCommand implements CommandExecutor {
                 }
                 target = Bukkit.getPlayer(sender.getName());
                 target.saveData();
-                TeleportsManager.teleportToLocation(
+                manager.teleportToLocation(
                         target.getName(),                 // Player to teleport
                         "",                          // Server
                         target.getWorld().getName(),      // World
@@ -169,7 +173,7 @@ public class TPCommand implements CommandExecutor {
                         return true;
                     }
                     destination.saveData();
-                    TeleportsManager.teleportToLocation(
+                    manager.teleportToLocation(
                             destination.getName(),                // Player to teleport
                             "",                          // Server
                             target.getWorld().getName(),      // World
@@ -185,7 +189,7 @@ public class TPCommand implements CommandExecutor {
                         return true;
                     }
                     target.saveData();
-                    TeleportsManager.teleportToLocation(
+                    manager.teleportToLocation(
                             target.getName(),                 // Player to teleport
                             "",                          // Server
                             args[3],                     // World
@@ -208,7 +212,7 @@ public class TPCommand implements CommandExecutor {
                         return true;
                     }
                     destination.saveData();
-                    TeleportsManager.teleportToLocation(
+                    manager.teleportToLocation(
                             destination.getName(),                // Player to teleport
                             "",                          // Server
                             args[4],                     // World
@@ -224,7 +228,7 @@ public class TPCommand implements CommandExecutor {
                         return true;
                     }
                     target.saveData();
-                    TeleportsManager.teleportToLocation(
+                    manager.teleportToLocation(
                             target.getName(),                 // Player to teleport
                             args[0],                     // Server
                             args[1],                     // World
@@ -249,7 +253,7 @@ public class TPCommand implements CommandExecutor {
                     return true;
                 }
                 destination.saveData();
-                TeleportsManager.teleportToLocation(
+                manager.teleportToLocation(
                         destination.getName(),                // Player to teleport
                         args[5],                     // Server
                         args[4],                     // World

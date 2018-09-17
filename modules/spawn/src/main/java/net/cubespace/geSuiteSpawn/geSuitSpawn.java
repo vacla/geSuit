@@ -13,35 +13,35 @@ import net.cubespace.geSuiteSpawn.commands.WarpSpawnCommand;
 import net.cubespace.geSuiteSpawn.commands.WorldSpawnCommand;
 import net.cubespace.geSuiteSpawn.listeners.SpawnListener;
 import net.cubespace.geSuiteSpawn.listeners.SpawnMessageListener;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import static org.bukkit.Bukkit.getServer;
+import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 
 public class geSuitSpawn extends BukkitModule {
 
+	private SpawnManager manager;
 	public geSuitSpawn() {
         super("spawns", true);
+		manager = new SpawnManager(this);
     }
-    
+
+	public SpawnManager getManager() {
+		return manager;
+	}
     protected void registerCommands() {
-		getCommand("setnewspawn").setExecutor(new SetNewSpawnCommand());
-		getCommand("setworldspawn").setExecutor(new SetWorldSpawnCommand());
-		getCommand("delworldspawn").setExecutor(new DelWorldSpawnCommand());
-		getCommand("setserverspawn").setExecutor(new SetServerSpawnCommand());
-		getCommand("setglobalspawn").setExecutor(new SetGlobalSpawnCommand());
-		getCommand("spawn").setExecutor(new SpawnCommand());
-		getCommand("worldspawn").setExecutor(new WorldSpawnCommand());
-		getCommand("serverspawn").setExecutor(new ServerSpawnCommand());
-		getCommand("globalspawn").setExecutor(new GlobalSpawnCommand());
-                getCommand("warpspawn").setExecutor(new WarpSpawnCommand());
+		getCommand("setnewspawn").setExecutor(new SetNewSpawnCommand(manager));
+		getCommand("setworldspawn").setExecutor(new SetWorldSpawnCommand(manager));
+		getCommand("delworldspawn").setExecutor(new DelWorldSpawnCommand(manager));
+		getCommand("setserverspawn").setExecutor(new SetServerSpawnCommand(manager));
+		getCommand("setglobalspawn").setExecutor(new SetGlobalSpawnCommand(manager));
+		getCommand("spawn").setExecutor(new SpawnCommand(manager, this));
+		getCommand("worldspawn").setExecutor(new WorldSpawnCommand(manager, this));
+		getCommand("serverspawn").setExecutor(new ServerSpawnCommand(manager, this));
+		getCommand("globalspawn").setExecutor(new GlobalSpawnCommand(manager, this));
+		getCommand("warpspawn").setExecutor(new WarpSpawnCommand(manager, this));
 	}
 	   
     protected void registerListeners() {
-    	registerPluginMessageListener(this,new SpawnMessageListener());
-    	
-		getServer().getPluginManager().registerEvents(new SpawnListener(), this);
+		registerPluginMessageListener(this, new SpawnMessageListener(this, manager));
+		getServer().getPluginManager().registerEvents(new SpawnListener(manager, this), this);
 	}
 
 }

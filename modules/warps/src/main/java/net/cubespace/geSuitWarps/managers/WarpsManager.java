@@ -1,6 +1,7 @@
 package net.cubespace.geSuitWarps.managers;
 
-import net.cubespace.geSuitWarps.geSuitWarps;
+import net.cubespace.geSuit.BukkitModule;
+import net.cubespace.geSuit.managers.DataManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -11,9 +12,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 
-public class WarpsManager {
+public class WarpsManager extends DataManager {
 
-    public static void warpPlayer( final CommandSender sender, final String senderName, final String warp ) {
+    public WarpsManager(BukkitModule instance) {
+        super(instance);
+    }
+
+    public void warpPlayer(final CommandSender sender, final String senderName, final String warp) {
     	Player p = Bukkit.getPlayer(sender.getName());
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
@@ -27,10 +32,10 @@ public class WarpsManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        geSuitWarps.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void setWarp( CommandSender sender, String name, boolean hidden, boolean global ) {
+    public void setWarp(CommandSender sender, String name, boolean hidden, boolean global) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         Location l = ( ( Player ) sender ).getLocation();
@@ -49,10 +54,10 @@ public class WarpsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitWarps.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void setWarpDesc( CommandSender sender, String warpName, String description ) {
+    public void setWarpDesc(CommandSender sender, String warpName, String description) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         Location l = ( ( Player ) sender ).getLocation();
@@ -64,10 +69,10 @@ public class WarpsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitWarps.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void silentWarpPlayer( final CommandSender sender, final String senderName, final String warp ) {
+    public void silentWarpPlayer(final CommandSender sender, final String senderName, final String warp) {
         Player p = Bukkit.getPlayer(sender.getName());
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
@@ -81,10 +86,10 @@ public class WarpsManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        geSuitWarps.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void deleteWarp( CommandSender sender, String warp ) {
+    public void deleteWarp(CommandSender sender, String warp) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -94,11 +99,11 @@ public class WarpsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitWarps.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
 
-    public static void listWarps( CommandSender sender ) {
+    public void listWarps(CommandSender sender) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -111,6 +116,6 @@ public class WarpsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitWarps.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 }

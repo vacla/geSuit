@@ -1,5 +1,7 @@
 package net.cubespace.geSuitTeleports.managers;
 
+import net.cubespace.geSuit.BukkitModule;
+import net.cubespace.geSuit.managers.DataManager;
 import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.utils.LocationUtil;
 
@@ -17,14 +19,25 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 
-public class TeleportsManager {
+public class TeleportsManager extends DataManager {
     public static final HashMap<String, Player> pendingTeleports = new HashMap<>();
     public static final HashMap<String, Location> pendingTeleportLocations = new HashMap<>();
     public static final HashSet<Player> ignoreTeleport = new HashSet<>();
     public static final HashSet<Player> administrativeTeleport = new HashSet<>();
 
     static final HashMap<Player, Location> lastLocation = new HashMap<>();
-    
+
+    public LocationUtil getUtil() {
+        return util;
+    }
+
+    private final LocationUtil util;
+
+    public TeleportsManager(BukkitModule instance) {
+        super(instance);
+        util = new LocationUtil((geSuitTeleports) instance);
+    }
+
     public static void RemovePlayer(Player player) {
     	pendingTeleports.remove(player.getName());
     	pendingTeleportLocations.remove(player.getName());
@@ -33,7 +46,7 @@ public class TeleportsManager {
         administrativeTeleport.remove(player);
     }
 
-    public static void tpAll( CommandSender sender, String targetPlayer ) {
+    public void tpAll(CommandSender sender, String targetPlayer) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -43,11 +56,11 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitTeleports.getInstance().sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void tpaRequest( CommandSender sender, String targetPlayer ) {
+    public void tpaRequest(CommandSender sender, String targetPlayer) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -57,10 +70,10 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitTeleports.getInstance().sendMessage(b);
+        instance.getInstance().sendMessage(b);
     }
 
-    public static void tpaHereRequest( CommandSender sender, String targetPlayer ) {
+    public void tpaHereRequest(CommandSender sender, String targetPlayer) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -70,11 +83,11 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitTeleports.getInstance().sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void tpAccept( final CommandSender sender ) {
+    public void tpAccept(final CommandSender sender) {
         final Player player = Bukkit.getPlayer(sender.getName());
 
         player.saveData();
@@ -86,10 +99,10 @@ public class TeleportsManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        geSuitTeleports.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void tpDeny( String sender ) {
+    public void tpDeny(String sender) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -98,16 +111,16 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitTeleports.getInstance().sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void finishTPA( final Player player, final String target ) {
+    public void finishTPA(final Player player, final String target) {
         if (!player.hasPermission("gesuit.teleports.bypass.delay")) {
             lastLocation.put(player, player.getLocation());
             player.sendMessage(geSuitTeleports.teleportinitiated);
 
-            geSuitTeleports.getInstance().getServer().getScheduler().runTaskLater(geSuitTeleports.getInstance(), () -> {
+            instance.getServer().getScheduler().runTaskLater(instance, () -> {
                 Location loc = lastLocation.get(player);
                 lastLocation.remove(player);
                 if (player.isOnline()) {
@@ -118,7 +131,7 @@ public class TeleportsManager {
                         ByteArrayOutputStream b = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(b);
                         doTeleportToPlayer(out, player, target);
-                        geSuitTeleports.getInstance().sendMessage(b);
+                        instance.sendMessage(b);
                     } else {
                         player.sendMessage(geSuitTeleports.aborted);
                     }
@@ -129,11 +142,11 @@ public class TeleportsManager {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             doTeleportToPlayer(out, player, target);
-            geSuitTeleports.getInstance().sendMessage(b);
+            instance.sendMessage(b);
         }
     }
 
-    private static void doTeleportToPlayer(DataOutputStream out, Player player, String target) {
+    private void doTeleportToPlayer(DataOutputStream out, Player player, String target) {
         try {
             out.writeUTF("TeleportToPlayer");
             out.writeUTF(player.getName());
@@ -146,7 +159,7 @@ public class TeleportsManager {
         }
     }
 
-    public static void doLeaveServer( Player p ) {
+    public void doLeaveServer(Player p) {
         if (p == null) {
             return;
         }
@@ -154,7 +167,7 @@ public class TeleportsManager {
         sendTeleportBackLocation(p, false);
     }
 
-    public static void sendDeathBackLocation( Player p ) {
+    public void sendDeathBackLocation(Player p) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -170,10 +183,10 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitTeleports.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void sendTeleportBackLocation( Player p, boolean empty ) {
+    public void sendTeleportBackLocation(Player p, boolean empty) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -191,17 +204,17 @@ public class TeleportsManager {
         }
         //todo the boolean was being passed to the message sender which was ignoring it..need to
         // evaluate its importance
-        geSuitTeleports.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void sendPlayerBack( final CommandSender sender ) {
+    public void sendPlayerBack(final CommandSender sender) {
         final Player player = Bukkit.getPlayer(sender.getName());
 
         if (!player.hasPermission("gesuit.teleports.bypass.delay")) {
             lastLocation.put(player, player.getLocation());
             player.sendMessage(geSuitTeleports.teleportinitiated);
 
-            geSuitTeleports.getInstance().getServer().getScheduler().runTaskLater(geSuitTeleports.getInstance(), () -> {
+            instance.getServer().getScheduler().runTaskLater(instance, () -> {
                 Location loc = lastLocation.get(player);
                 lastLocation.remove(player);
                 if (player.isOnline()) {
@@ -211,7 +224,7 @@ public class TeleportsManager {
                         ByteArrayOutputStream b = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(b);
                         doSendBack(out, sender);
-                        geSuitTeleports.getInstance().sendMessage(b);
+                        instance.sendMessage(b);
                     } else {
                         player.sendMessage(geSuitTeleports.aborted);
                     }
@@ -222,7 +235,7 @@ public class TeleportsManager {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             doSendBack(out, sender);
-            geSuitTeleports.getInstance().sendMessage(b);
+            instance.sendMessage(b);
         }
     }
 
@@ -237,7 +250,7 @@ public class TeleportsManager {
         }
     }
 
-    public static void toggleTeleports( String name ) {
+    public void toggleTeleports(String name) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -246,10 +259,10 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitTeleports.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void teleportPlayerToPlayer( final String player, String target ) {
+    public void teleportPlayerToPlayer(final String player, String target) {
         Player p = Bukkit.getPlayer( player );
         Player t = Bukkit.getPlayer( target );
         if(t.hasPermission("worldguard.teleports.allregions")) {
@@ -260,11 +273,11 @@ public class TeleportsManager {
         } else {
             pendingTeleports.put( player, t );
             //clear pending teleport if they dont connect
-            Bukkit.getScheduler().runTaskLaterAsynchronously(geSuitTeleports.instance, () -> pendingTeleports.remove(player), 100L);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(instance, () -> pendingTeleports.remove(player), 100L);
         }
     }
 
-    public static void teleportPlayerToLocation( final String player, String world, double x, double y, double z, float yaw, float pitch ) {
+    public void teleportPlayerToLocation(final String player, String world, double x, double y, double z, float yaw, float pitch) {
         World w = Bukkit.getWorld( world );
         Location t;
         
@@ -277,9 +290,9 @@ public class TeleportsManager {
         Player p = Bukkit.getPlayer( player );
         if ( p != null ) {
             //Check if Block is safe
-            if (LocationUtil.isBlockUnsafe(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ())) {
+            if (util.isBlockUnsafe(t.getWorld(), t.getBlockX(), t.getBlockY(), t.getBlockZ())) {
                 try {
-                    Location l = LocationUtil.getSafeDestination(p, t);
+                    Location l = util.getSafeDestination(p, t);
                     if (l != null) {
                     	p.teleport(l);
                     } else {
@@ -294,20 +307,20 @@ public class TeleportsManager {
         } else {
             pendingTeleportLocations.put( player, t );
             //clear pending teleport if they dont connect
-            Bukkit.getScheduler().runTaskLaterAsynchronously(geSuitTeleports.instance, () -> {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(instance, () -> {
                 pendingTeleportLocations.remove(player);
             }, 100L);
         }
     }
 
-    public static void teleportToPlayer( final CommandSender sender, final String playerName, final String target ) {
+    public void teleportToPlayer(final CommandSender sender, final String playerName, final String target) {
         final Player player = Bukkit.getPlayer(sender.getName());
 
         if (!player.hasPermission("gesuit.teleports.bypass.delay")) {
             lastLocation.put(player, player.getLocation());
             player.sendMessage(geSuitTeleports.teleportinitiated);
 
-            geSuitTeleports.getInstance().getServer().getScheduler().runTaskLater(geSuitTeleports.getInstance(), () -> {
+            instance.getServer().getScheduler().runTaskLater(instance, () -> {
                 Location loc = lastLocation.get(player);
                 lastLocation.remove(player);
                 if (player.isOnline()) {
@@ -317,7 +330,7 @@ public class TeleportsManager {
                         ByteArrayOutputStream b = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(b);
                         doTeleportToPlayer(out, sender, playerName, target);
-                        geSuitTeleports.getInstance().sendMessage(b);
+                        instance.sendMessage(b);
                     } else {
                         player.sendMessage(geSuitTeleports.aborted);
                     }
@@ -328,7 +341,7 @@ public class TeleportsManager {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             doTeleportToPlayer(out, sender, playerName, target);
-            geSuitTeleports.getInstance().sendMessage(b);
+            instance.sendMessage(b);
         }
     }
 
@@ -345,7 +358,7 @@ public class TeleportsManager {
         }
     }
 
-    public static void teleportToLocation( String player, String server, String world, Double x, Double y, Double z) {
+    public void teleportToLocation(String player, String server, String world, Double x, Double y, Double z) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -361,12 +374,12 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-    
-        geSuitTeleports.getInstance().sendMessage(b);
+
+        instance.sendMessage(b);
 
     }
 
-    public static void teleportToLocation( String player, String server, String world, Double x, Double y, Double z, float yaw, float pitch) {
+    public void teleportToLocation(String player, String server, String world, Double x, Double y, Double z, float yaw, float pitch) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -382,20 +395,20 @@ public class TeleportsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-    
-        geSuitTeleports.getInstance().sendMessage(b);
+
+        instance.sendMessage(b);
 
     }
 
-    public static void sendVersion() {
+    public void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "SendVersion" );
-            out.writeUTF( ChatColor.RED + "Teleports - " + ChatColor.GOLD + geSuitTeleports.instance.getDescription().getVersion() );
+            out.writeUTF(ChatColor.RED + "Teleports - " + ChatColor.GOLD + instance.getDescription().getVersion());
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitTeleports.getInstance().sendMessage(b);
+        instance.sendMessage(b);
     }
 }

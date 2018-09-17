@@ -1,5 +1,7 @@
 package net.cubespace.geSuitPortals.managers;
 
+import net.cubespace.geSuit.BukkitModule;
+import net.cubespace.geSuit.managers.DataManager;
 import net.cubespace.geSuitPortals.geSuitPortals;
 import net.cubespace.geSuitPortals.objects.Portal;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
@@ -17,13 +19,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class PortalsManager {
+public class PortalsManager extends DataManager {
 
     public static boolean RECEIVED = false;
     public static HashMap<World, ArrayList<Portal>> PORTALS = new HashMap<>();
     public static HashMap<String, Location> pendingTeleports = new HashMap<>();
 
-    public static void deletePortal( String name, String string ) {
+    public PortalsManager(BukkitModule instance) {
+        super(instance);
+    }
+
+    public void deletePortal(String name, String string) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -34,11 +40,11 @@ public class PortalsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitPortals.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void removePortal( String name ) {
+    public void removePortal(String name) {
         Portal p = getPortal( name );
         System.out.println( "removing portal " + name );
         if ( p != null ) {
@@ -47,7 +53,7 @@ public class PortalsManager {
         }
     }
 
-    public static Portal getPortal( String name ) {
+    public Portal getPortal(String name) {
         for ( ArrayList<Portal> list : PORTALS.values() ) {
             for ( Portal p : list ) {
                 if ( p.getName().equals( name ) ) {
@@ -58,7 +64,7 @@ public class PortalsManager {
         return null;
     }
 
-    public static void getPortalsList( String name ) {
+    public void getPortalsList(String name) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -68,11 +74,11 @@ public class PortalsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitPortals.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void teleportPlayer( Player p, Portal portal ) {
+    public void teleportPlayer(Player p, Portal portal) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -85,11 +91,11 @@ public class PortalsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitPortals.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void setPortal( CommandSender sender, String name, String type, String dest,
-                                  String fill ) {
+    public void setPortal(CommandSender sender, String name, String type, String dest,
+                          String fill ) {
 
         Player p = ( Player ) sender;
         Selection sel = geSuitPortals.WORLDEDIT.getSelection( p );
@@ -121,12 +127,12 @@ public class PortalsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitPortals.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void addPortal( String name, String type, String dest, String filltype,
-                                  Location max, Location min ) {
+    public void addPortal(String name, String type, String dest, String filltype,
+                          Location max, Location min ) {
         if ( max.getWorld() == null ) {
             Bukkit.getConsoleSender().sendMessage( ChatColor.RED + "World does not exist portal " + name + " will not load :(" );
             return;
@@ -141,7 +147,7 @@ public class PortalsManager {
         portal.fillPortal();
     }
 
-    public static void requestPortals() {
+    public void requestPortals() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -149,19 +155,19 @@ public class PortalsManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitPortals.instance.sendMessage(b);
+        instance.sendMessage(b);
     
     }
 
-    public static void sendVersion() {
+    public void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "SendVersion" );
-            out.writeUTF( ChatColor.RED + "Portals - " + ChatColor.GOLD + geSuitPortals.instance.getDescription().getVersion() );
+            out.writeUTF(ChatColor.RED + "Portals - " + ChatColor.GOLD + instance.getDescription().getVersion());
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitPortals.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 }

@@ -1,12 +1,17 @@
 package net.cubespace.geSuitBans.commands;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import net.cubespace.geSuit.managers.CommandManager;
 import net.cubespace.geSuitBans.managers.BansManager;
 
 
-public class WhereCommand implements CommandExecutor {
+public class WhereCommand extends CommandManager<BansManager> {
+
+	public WhereCommand(BansManager manager) {
+		super(manager);
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
@@ -21,7 +26,7 @@ public class WhereCommand implements CommandExecutor {
 				options = args[0];
 				search = args[1];
 			}
-			BansManager.displayWhereHistory(sender.getName(), options, search);
+			manager.displayWhereHistory(sender.getName(), options, search);
 			return true;
 		}
 

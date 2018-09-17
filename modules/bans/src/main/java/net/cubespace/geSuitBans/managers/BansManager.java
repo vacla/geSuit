@@ -1,5 +1,6 @@
 package net.cubespace.geSuitBans.managers;
 
+import net.cubespace.geSuit.managers.DataManager;
 import net.cubespace.geSuit.utils.Utilities;
 import net.cubespace.geSuitBans.geSuitBans;
 import org.bukkit.ChatColor;
@@ -9,9 +10,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 
-public class BansManager {
+public class BansManager extends DataManager {
 
-    public static void banPlayer( String sender, String player, String msg ) {
+    public BansManager(geSuitBans plugin) {
+        super(plugin);
+    }
+
+    public void banPlayer(String sender, String player, String msg) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -22,10 +27,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void forceToNewSpawn(String sender, String player) {
+    public void forceToNewSpawn(String sender, String player) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {
@@ -35,10 +40,10 @@ public class BansManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void warnPlayer( String sender, String player, String msg ) {
+    public void warnPlayer(String sender, String player, String msg) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -49,10 +54,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void kickAll( String sender, String msg ) {
+    public void kickAll(String sender, String msg) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -62,11 +67,11 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void kickPlayer( String sender, String player, String msg ) {
+    public void kickPlayer(String sender, String player, String msg) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -77,10 +82,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void tempBanPlayer( String sender, String player, int seconds, String reason ) {
+    public void tempBanPlayer(String sender, String player, int seconds, String reason) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -92,7 +97,7 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
     /**
@@ -100,13 +105,13 @@ public class BansManager {
      * @deprecated Does not validate timing is non-zero or a valid time.
      */
     @Deprecated
-    public static void tempBanPlayer( String sender, String player, String timing, String reason ) {
+    public void tempBanPlayer(String sender, String player, String timing, String reason) {
         int seconds = Utilities.parseStringToSecs(timing);
         tempBanPlayer(sender, player, seconds, reason);
     }
 
 
-    public static void unbanPlayer( String sender, String player ) {
+    public void unbanPlayer(String sender, String player) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -116,11 +121,11 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void reloadBans( String string ) {
+    public void reloadBans(String string) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -129,10 +134,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void ipBanPlayer( String sender, String player, String msg ) {
+    public void ipBanPlayer(String sender, String player, String msg) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -143,10 +148,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void unipBanPlayer(String sender, String player) {
+    public void unipBanPlayer(String sender, String player) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -156,11 +161,11 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
 
     }
 
-    public static void checkPlayerBans( String sender, String player ) {
+    public void checkPlayerBans(String sender, String player) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -170,10 +175,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
-    
-    public static void displayPlayerBanHistory( String sender, String player ) {
+
+    public void displayPlayerBanHistory(String sender, String player) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -183,10 +188,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void displayPlayerWarnHistory( String sender, String player, boolean showStaffNames ) {
+    public void displayPlayerWarnHistory(String sender, String player, boolean showStaffNames) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -197,10 +202,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void displayPlayerWarnBanHistory( String sender, String player) {
+    public void displayPlayerWarnBanHistory(String sender, String player) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -210,10 +215,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void displayWhereHistory( String sender, String options, String search ) {
+    public void displayWhereHistory(String sender, String options, String search) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -224,10 +229,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void displayOnTimeHistory( String sender, String player ) {
+    public void displayOnTimeHistory(String sender, String player) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -237,9 +242,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
-    public static void displayOnTimeTop( String sender, int pagenum ) {
+
+    public void displayOnTimeTop(String sender, int pagenum) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -249,9 +255,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
-    public static void displayLastLogins( String sender, String target, int pagenum ) {
+
+    public void displayLastLogins(String sender, String target, int pagenum) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -262,10 +269,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
-    
-    public static void displayNameHistory( String sender, String nameOrId ) {
+
+    public void displayNameHistory(String sender, String nameOrId) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
@@ -275,10 +282,10 @@ public class BansManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void lockDown(String sender, long expiryTime, String msg) {
+    public void lockDown(String sender, long expiryTime, String msg) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {
@@ -289,10 +296,10 @@ public class BansManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void endLockDown(String sender) {
+    public void endLockDown(String sender) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {
@@ -301,10 +308,10 @@ public class BansManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 
-    public static void lockDownStatus(String sender) {
+    public void lockDownStatus(String sender) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {
@@ -313,18 +320,18 @@ public class BansManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
-    
-    public static void sendVersion() {
+
+    public void sendVersion() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "SendVersion" );
-            out.writeUTF( ChatColor.RED + "Bans - " + ChatColor.GOLD + geSuitBans.instance.getDescription().getVersion() );
+            out.writeUTF(ChatColor.RED + "Bans - " + ChatColor.GOLD + instance.getDescription().getVersion());
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        geSuitBans.instance.sendMessage(b);
+        instance.sendMessage(b);
     }
 }
