@@ -3,7 +3,7 @@ main : net.cubespace.geSuiteSpawn.geSuitSpawn
 version: ${plugin.version}
 description: Part of the geSuit (gesuit) this plugin allows users to set a proxy wide spawn
 author: geNAZt
-depend: [geSuitTeleports]
+softdepend: [geSuitTeleports]
 api-version: ${spigot.api.version}
 commands:
     setnewspawn:

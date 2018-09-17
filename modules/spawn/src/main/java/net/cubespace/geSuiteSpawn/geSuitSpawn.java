@@ -15,6 +15,10 @@ import net.cubespace.geSuiteSpawn.listeners.SpawnListener;
 import net.cubespace.geSuiteSpawn.listeners.SpawnMessageListener;
 import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
 public class geSuitSpawn extends BukkitModule {
 
 	private SpawnManager manager;
@@ -23,7 +27,24 @@ public class geSuitSpawn extends BukkitModule {
 		manager = new SpawnManager(this);
     }
 
-	public SpawnManager getManager() {
+    private boolean checkforGTeleport() {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("geSuitTeleports");
+        if (plugin == null) {
+            this.getLogger().info("NOTICE: geSuitTeleports is not loaded and cross server " +
+                    "teleportation will fail to this server");
+            return false;
+        }
+        return true;
+
+    }
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        checkforGTeleport();
+    }
+
+    public SpawnManager getManager() {
 		return manager;
 	}
     protected void registerCommands() {
