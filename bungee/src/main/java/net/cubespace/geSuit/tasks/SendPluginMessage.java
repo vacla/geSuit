@@ -14,7 +14,7 @@ public class SendPluginMessage implements Runnable {
 	    private final ServerInfo server;
 	    
 	    public SendPluginMessage(geSuit.CHANNEL_NAMES channel, ServerInfo server, ByteArrayOutputStream bytes) {
-	        this.channel = ConfigManager.main.enableLegacy ? channel.getLegacy() : channel.getLegacy();
+            this.channel = ConfigManager.main.enableLegacy ? channel.getLegacy() : channel.toString();
 	        this.bytes = bytes;
 	        this.server = server;
 	    }
