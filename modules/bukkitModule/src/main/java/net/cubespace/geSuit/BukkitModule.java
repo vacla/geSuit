@@ -65,8 +65,8 @@ public abstract class BukkitModule extends JavaPlugin {
         registerListeners();
         StringBuilder message = new StringBuilder();
         message.append("[").append(this.getName()).append("]");
+        message.append(System.getProperty("line.separator"));
         if (this.getServer().getMessenger().getOutgoingChannels(this).size() > 0) {
-            message.append(System.getProperty("line.separator"));
             message.append("   Registered the following outgoing channels: ");
             for (String name : this.getServer().getMessenger().getOutgoingChannels(this)) {
                 message.append(name).append(", ");
@@ -74,9 +74,10 @@ public abstract class BukkitModule extends JavaPlugin {
         } else {
             message.append("    No Outgoing channels");
         }
+        message.append(System.getProperty("line.separator"));
         if (this.getServer().getMessenger().getIncomingChannels(this).size() > 0) {
             message.append(System.getProperty("line.separator"));
-            message.append("   Registered the following incoming channels");
+            message.append("   Registered the following incoming channels: ");
             for (String name : this.getServer().getMessenger().getIncomingChannels(this)) {
                 message.append(name).append(", ");
             }

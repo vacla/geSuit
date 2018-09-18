@@ -163,19 +163,23 @@ public class Utilities {
     }
 
     public static String dumpPacket(String channel, String direction, byte[] bytes) {
-        String data = "";
+        StringBuilder data = new StringBuilder();
+        data.append(channel);
+        data.append(" - ");
+        data.append(direction);
+        data.append(" : ");
         //ByteArrayInputStream ds = new ByteArrayInputStream(bytes);
         //DataInputStream di = new DataInputStream(ds);
         // Read upto 20 parameters from the stream and load them into the string list
         for (int x = 0; x < bytes.length; x++) {
             byte c = bytes[x];
             if (c >= 32 && c <= 126) {
-                data += (char) c;
+                data.append((char) c);
             } else {
-                data += "\\x" + Integer.toHexString(c);
+                data.append("\\x").append(Integer.toHexString(c));
             }
         }
-        return data;
+        return data.toString();
     }
 }
 

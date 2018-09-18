@@ -154,8 +154,11 @@ public class PortalManager {
     public static void listPortals(GSPlayer p) {
         for (ServerInfo s : portals.keySet()) {
             StringBuilder message = new StringBuilder();
-            message.append(ChatColor.GOLD).append(s.getName()).append(": ").append(ChatColor.RESET);
-
+            String serverName = s.getName();
+            message.append(ChatColor.GOLD)
+                    .append(serverName)
+                    .append(": ")
+                    .append(ChatColor.RESET);
             List<Portal> list = portals.get(s);
             for (Portal portal : list) {
                 message.append(portal.getName()).append(", ");
