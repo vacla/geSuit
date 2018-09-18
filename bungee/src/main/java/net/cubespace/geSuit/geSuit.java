@@ -135,7 +135,7 @@ public class geSuit extends Plugin
     
     public enum CHANNEL_NAMES {
 
-        TELEPORT_CHANNEL("gesuit:teleports", "geSuitTeleport"),
+        TELEPORT_CHANNEL("gesuit:teleport", "geSuitTeleport"),
         SPAWN_CHANNEL("gesuit:spawns", "geSuitSpawns"),
         BAN_CHANNEL("gesuit:bans", "geSuitBans"),
         PORTAL_CHANNEL("gesuit:portals", "geSuitPortals"),
