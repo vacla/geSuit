@@ -59,7 +59,9 @@ public class Portal {
         for (Loc locs : blocks) {
             Block b = locs.getBlock();
             if (b.isEmpty()) {
-                b.setType(fillType.getBlockMaterial());
+                Material mat = Material.AIR;
+                if (fillType.getBlockMaterial() != null) mat = fillType.getBlockMaterial();
+                b.setType(mat);
             }
         }
     }
