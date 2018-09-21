@@ -63,7 +63,7 @@ public abstract class BukkitModule extends JavaPlugin {
         if(isSender)registerChannels();
         registerCommands();
         registerListeners();
-        StringBuilder message = new StringBuilder();
+        /*StringBuilder message = new StringBuilder();
         message.append("[").append(this.getName()).append("]");
         message.append(System.getProperty("line.separator"));
         if (this.getServer().getMessenger().getOutgoingChannels(this).size() > 0) {
@@ -84,7 +84,7 @@ public abstract class BukkitModule extends JavaPlugin {
         } else {
             message.append("    No Incoming channels");
         }
-        this.getLogger().info(message.toString());
+        this.getLogger().info(message.toString());*/
     }
     
     @Override
