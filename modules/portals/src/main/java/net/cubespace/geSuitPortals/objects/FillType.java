@@ -4,7 +4,7 @@ import org.bukkit.Material;
 
 public enum FillType {
     AIR("AIR", "AIR"),
-    WATER("WATER", ""),
+    WATER("WATER", "WATER"),
     LAVA("LAVA", "LAVA"),
     WEB("WEB", "COBWEB"),
     SUGAR_CANE("SUGAR_CANE_BLOCK", "SUGAR_CANE"),
