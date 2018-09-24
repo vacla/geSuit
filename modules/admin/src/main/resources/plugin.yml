@@ -4,9 +4,8 @@ version: ${plugin.version}
 api-version: ${spigot.api.version}
 author: Narimm
 description: Part of the geSuit (gesuit) this plugin allows admin to perform network wide server specific restarts from proxy
-depend: [SimpleCountDown]
 commands:
-  gsAdmin_debug:
+  gesuitdebug:
     usage: /<command>
     description: Turn on debugging.
     permission: geSuit.admin

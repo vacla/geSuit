@@ -1,8 +1,8 @@
 package net.cubespace.geSuitTeleports.listeners;
 
+import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.managers.TeleportsManager;
-import net.cubespace.geSuitTeleports.utils.LocationUtil;
 import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,8 +16,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
-
-import static net.cubespace.geSuitTeleports.geSuitTeleports.logDebugMessages;
 
 public class TeleportsListener implements Listener {
 
@@ -47,9 +45,7 @@ public class TeleportsListener implements Listener {
             if (manager.getUtil().worldGuardTpAllowed(loc, e.getPlayer())) {
 				e.setSpawnLocation(loc);
 			}else{
-				if (logDebugMessages) {
-                    instance.getLogger().info(e.getPlayer().getName() + "being sent to spawn due to a worldguard block at " + loc.toString());
-				}
+				LoggingManager.debug(e.getPlayer().getName() + "being sent to spawn due to a worldguard block at " + loc.toString());
 				e.setSpawnLocation(e.getPlayer().getWorld().getSpawnLocation());
 			}
 		}else if (TeleportsManager.pendingTeleportLocations.containsKey(e.getPlayer().getName())){

@@ -159,15 +159,4 @@ public class PortalsManager extends DataManager {
     
     }
 
-    public void sendVersion() {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( b );
-        try {
-            out.writeUTF( "SendVersion" );
-            out.writeUTF(ChatColor.RED + "Portals - " + ChatColor.GOLD + instance.getDescription().getVersion());
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        instance.sendMessage(b);
-    }
 }

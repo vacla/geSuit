@@ -9,19 +9,10 @@ import net.cubespace.geSuit.BukkitModule;
  * Created by benjamincharlton on 7/08/2017.
  */
 public class geSuitAdmin extends BukkitModule {
-    private boolean debug;
 
     public geSuitAdmin() {
         super("admin", false);
-        debug =  false;
-    }
-    
-    public boolean isDebug() {
-        return debug;
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
+        setDebug(false);
     }
 
     @Override
@@ -30,6 +21,6 @@ public class geSuitAdmin extends BukkitModule {
     }
     
     protected void registerCommands() {
-        getCommand("gsAdmin_debug").setExecutor(new DebugCommand(this));
+        getCommand("gesuitdebug").setExecutor(new DebugCommand(this));
     }
 }
