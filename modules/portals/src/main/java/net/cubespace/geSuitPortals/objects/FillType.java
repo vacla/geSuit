@@ -3,22 +3,30 @@ package net.cubespace.geSuitPortals.objects;
 import org.bukkit.Material;
 
 public enum FillType {
-    AIR("AIR"),
-    WATER("WATER"),
-    LAVA("LAVA"),
-    WEB("COBWEB"),
-    SUGAR_CANE("SUGAR_CANE"),
-    END_PORTAL("END_PORTAL"),
-    PORTAL("NETHER_PORTAL");
-    
-    private final String BlockMaterial;
+    AIR("AIR", "AIR"),
+    WATER("WATER", ""),
+    LAVA("LAVA", "LAVA"),
+    WEB("WEB", "COBWEB"),
+    SUGAR_CANE("SUGAR_CANE_BLOCK", "SUGAR_CANE"),
+    END_PORTAL("ENDER_PORTAL", "END_PORTAL"),
+    PORTAL("PORTAL", "NETHER_PORTAL");
+
+    private final String legacyMaterial;
+    private final String material;
 
     FillType(String material) {
-        BlockMaterial = material;
+        this(material, null);
+    }
+
+    FillType(String legacy, String newMaterial) {
+        legacyMaterial = legacy;
+        this.material = newMaterial;
     }
 
     public Material getBlockMaterial() {
-        return Material.getMaterial(BlockMaterial);
+        Material mat = Material.getMaterial(legacyMaterial);
+        if (mat == null) mat = Material.getMaterial(material);
+        return mat;
     }
 
 }

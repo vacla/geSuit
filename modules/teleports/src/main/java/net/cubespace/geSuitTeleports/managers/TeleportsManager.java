@@ -399,16 +399,4 @@ public class TeleportsManager extends DataManager {
         instance.sendMessage(b);
 
     }
-
-    public void sendVersion() {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream( b );
-        try {
-            out.writeUTF( "SendVersion" );
-            out.writeUTF(ChatColor.RED + "Teleports - " + ChatColor.GOLD + instance.getDescription().getVersion());
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        instance.sendMessage(b);
-    }
 }

@@ -53,7 +53,6 @@ public class geSuitTeleports extends BukkitModule {
     private static JavaPlugin mWorldGuard;
     public static boolean worldGuarded;
     public static boolean geSuitSpawns;
-    public static boolean logDebugMessages;
 
     public geSuitTeleports() {
         super("teleport", true);
@@ -98,8 +97,8 @@ public class geSuitTeleports extends BukkitModule {
             worldGuarded = false;
             deny_Teleport = null;
         }
-    
-        logDebugMessages = getConfig().getBoolean("options.debug_logging");
+
+        setDebug(getConfig().getBoolean("options.debug_logging"));
     
         //check for geSuitSpawns
         if (Bukkit.getPluginManager().isPluginEnabled("geSuitSpawn")) {

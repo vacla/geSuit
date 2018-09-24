@@ -1,20 +1,38 @@
 package net.cubespace.geSuit;
 
+import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.task.PluginMessageTask;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.io.ByteArrayOutputStream;
+import java.util.logging.Level;
 
 /**
  * Created for the AddstarMC Project. Created by Narimm on 12/09/2018.
  */
 public abstract class BukkitModule extends JavaPlugin {
     public BukkitModule instance;
+
     private String CHANNEL_NAME;
     private boolean legacy;
     private boolean isSender;
+    private static boolean debug = false;
+
+    public static boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        BukkitModule.debug = debug;
+        if (debug) {
+            LoggingManager.setLevel(Level.ALL);
+        } else {
+            LoggingManager.setLevel(Level.INFO);
+        }
+    }
+
 
     
     /**
@@ -39,7 +57,7 @@ public abstract class BukkitModule extends JavaPlugin {
     private void setChannelName(String key){
         CHANNEL_NAME = "gesuit:"+key;
         if(CHANNEL_NAME.length() >20){
-            this.getServer().getLogger().warning(this.getName() + " tried to registed channel " +
+            LoggingManager.warn(this.getName() + " tried to registed channel " +
                     "with a length over 20...unsupported...sending disabled");
         }
         
@@ -63,28 +81,23 @@ public abstract class BukkitModule extends JavaPlugin {
         if(isSender)registerChannels();
         registerCommands();
         registerListeners();
-        /*StringBuilder message = new StringBuilder();
-        message.append("[").append(this.getName()).append("]");
-        message.append(System.getProperty("line.separator"));
+        LoggingManager.info(this.getName());
         if (this.getServer().getMessenger().getOutgoingChannels(this).size() > 0) {
-            message.append("   Registered the following outgoing channels: ");
+            LoggingManager.info("  Registered the following outgoing channels: ");
             for (String name : this.getServer().getMessenger().getOutgoingChannels(this)) {
-                message.append(name).append(", ");
+                LoggingManager.info("    " + name);
             }
         } else {
-            message.append("    No Outgoing channels");
+            LoggingManager.info("  No Outgoing channels");
         }
-        message.append(System.getProperty("line.separator"));
         if (this.getServer().getMessenger().getIncomingChannels(this).size() > 0) {
-            message.append(System.getProperty("line.separator"));
-            message.append("   Registered the following incoming channels: ");
+            LoggingManager.info("  Registered the following incoming channels: ");
             for (String name : this.getServer().getMessenger().getIncomingChannels(this)) {
-                message.append(name).append(", ");
+                LoggingManager.info("    " + name);
             }
         } else {
-            message.append("    No Incoming channels");
+            LoggingManager.info("  No Incoming channels");
         }
-        this.getLogger().info(message.toString());*/
     }
     
     @Override
