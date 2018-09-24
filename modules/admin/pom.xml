@@ -5,6 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>au.com.addstar</groupId>
     <artifactId>geSuitAdmin</artifactId>
+    <description>Part of the geSuit (gesuit) this plugin allows admin to perform network wide server
+        specific restarts from proxy
+    </description>
+    <developers>
+        <developer>
+            <name>Narimm</name>
+            <organization>AddstarMC</organization>
+            <url>http://github.com/Narimm</url>
+        </developer>
+    </developers>
     <dependencies>
         <dependency>
             <groupId>net.cubespace</groupId>
