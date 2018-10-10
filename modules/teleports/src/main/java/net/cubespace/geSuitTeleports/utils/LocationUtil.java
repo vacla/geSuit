@@ -350,7 +350,8 @@ public class LocationUtil {
                 result = true;
             }
         }
-        log.info("World gaurd check for TP completed: Player=" + p.getDisplayName() + " Location=(" + l.toString() + ") Region TP Allowed=" + result);
+        if (logDebugMessages)
+            log.info("World gaurd check for TP completed: Player=" + p.getDisplayName() + " Location=(" + l.toString() + ") Region TP Allowed=" + result);
         return result;
     }
 }
