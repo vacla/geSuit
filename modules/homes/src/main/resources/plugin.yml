@@ -53,7 +53,6 @@ permissions:
         children:
             gesuit.homes.commands.delhome.others: true
             gesuit.homes.commands.homes.other: true
-            gesuit.homes.commands.homes.other: true
     gesuit.homes.user:
         description: Gives access to all gesuit homes user commands
         children:

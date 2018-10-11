@@ -171,8 +171,7 @@ public class Utilities {
         //ByteArrayInputStream ds = new ByteArrayInputStream(bytes);
         //DataInputStream di = new DataInputStream(ds);
         // Read upto 20 parameters from the stream and load them into the string list
-        for (int x = 0; x < bytes.length; x++) {
-            byte c = bytes[x];
+        for (byte c : bytes) {
             if (c >= 32 && c <= 126) {
                 data.append((char) c);
             } else {

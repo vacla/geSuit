@@ -1,7 +1,5 @@
 package net.cubespace.geSuit.managers;
 
-import net.cubespace.geSuit.BukkitModule;
-
 import org.bukkit.Bukkit;
 
 import java.util.logging.Level;

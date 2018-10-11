@@ -33,7 +33,7 @@ public class Profile {
         }
     }
     private static final Charset UTF8 = Charset.forName("UTF-8");
-    private static final ThreadLocal<Gson> gson = ThreadLocal.withInitial(() -> new Gson());
+    private static final ThreadLocal<Gson> gson = ThreadLocal.withInitial(Gson::new);
     private String id;
     private String name;
 

@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Utilities {
+    @SuppressWarnings("UnstableApiUsage")
     public static boolean isIPAddress(String ip){
         return InetAddresses.isInetAddress(ip);
     }

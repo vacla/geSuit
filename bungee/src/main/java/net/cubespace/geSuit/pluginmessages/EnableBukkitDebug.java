@@ -2,7 +2,6 @@ package net.cubespace.geSuit.pluginmessages;
 
 import net.cubespace.geSuit.geSuit;
 import net.cubespace.geSuit.tasks.SendPluginMessage;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.io.ByteArrayOutputStream;

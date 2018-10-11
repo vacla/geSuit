@@ -39,7 +39,7 @@ public class PortalsMessageListener implements PluginMessageListener {
                     String name = null;
                     try {
                         name = in.readUTF();
-                    } catch (IOException e) {
+                    } catch (IOException ignored) {
 
                     }
                     if (name != null) {

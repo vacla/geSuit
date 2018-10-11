@@ -105,7 +105,7 @@ public class PortalsManager extends DataManager {
         try {
             out.writeUTF( "SetPortal" );
             out.writeUTF( sender.getName() );
-            if ( sel == null || !( sel instanceof CuboidSelection ) ) {
+            if (!(sel instanceof CuboidSelection)) {
                 out.writeBoolean( false );
             } else {
                 out.writeBoolean( true );
