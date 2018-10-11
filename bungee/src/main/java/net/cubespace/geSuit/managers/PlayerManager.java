@@ -47,8 +47,8 @@ public class PlayerManager {
 
     public static void initPlayer(final PendingConnection connection, final LoginEvent event) {
         ProxyServer.getInstance().getScheduler().runAsync(geSuit.getInstance(), () -> {
-
-            Boolean playerExists = playerExists(connection.getUniqueId());
+    
+            boolean playerExists = playerExists(connection.getUniqueId());
             //lockdown check
             if (!playerExists) {//check player is new first
                 if (!LockDownManager.checkExpiry()) {//returns true if expired and false if persisting

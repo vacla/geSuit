@@ -17,7 +17,6 @@ import net.cubespace.geSuiteSpawn.managers.SpawnManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class geSuitSpawn extends BukkitModule {
 

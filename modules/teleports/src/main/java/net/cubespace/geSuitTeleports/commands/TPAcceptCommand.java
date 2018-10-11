@@ -1,7 +1,6 @@
 package net.cubespace.geSuitTeleports.commands;
 
 import net.cubespace.geSuit.managers.CommandManager;
-import net.cubespace.geSuitTeleports.utils.LocationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

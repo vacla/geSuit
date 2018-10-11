@@ -6,7 +6,6 @@ import net.cubespace.geSuitTeleports.geSuitTeleports;
 import net.cubespace.geSuitTeleports.utils.LocationUtil;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -88,7 +87,12 @@ public class TeleportsManager extends DataManager {
     }
 
     public void tpAccept(final CommandSender sender) {
-        final Player player = Bukkit.getPlayer(sender.getName());
+        final Player player;
+        if (sender instanceof Player) {
+            player = (Player) sender;
+        } else {
+            player = Bukkit.getPlayer(sender.getName());
+        }
 
         player.saveData();
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -208,8 +212,12 @@ public class TeleportsManager extends DataManager {
     }
 
     public void sendPlayerBack(final CommandSender sender) {
-        final Player player = Bukkit.getPlayer(sender.getName());
-
+        final Player player;
+        if (sender instanceof Player) {
+            player = (Player) sender;
+        } else {
+            player = Bukkit.getPlayer(sender.getName());
+        }
         if (!player.hasPermission("gesuit.teleports.bypass.delay")) {
             lastLocation.put(player, player.getLocation());
             player.sendMessage(geSuitTeleports.teleportinitiated);

@@ -1,6 +1,7 @@
 name: ${project.artifactId}
 main : au.com.addstar.geSuitAdmin.geSuitAdmin
 version: ${plugin.version}
+api-version: ${spigot.api.version}
 author: Narimm
 description: ${project.description}
 commands:

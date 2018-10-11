@@ -10,8 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import sun.rmi.runtime.Log;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -43,9 +41,9 @@ public class AdminListener implements PluginMessageListener, Listener{
                     // servername sender milliSecs
                     String server = in.readUTF();
                     String sender = in.readUTF();
-                    Long time = in.readLong();
+                    long time = in.readLong();
                     if (instance.getName().equals(server)) {
-                        instance.getServer().shutdown();
+    
                         String timeString = Utilities.buildTimeDiffString(time, 4);
                         instance.getLogger().info("Shutdown issued by " + sender + " via " +
                                 "geSuitAdmin" +
@@ -55,7 +53,8 @@ public class AdminListener implements PluginMessageListener, Listener{
                                 " move to another server now to avoid disconnection == ");
                         Bukkit.getScheduler().runTaskLater(instance, Bukkit::shutdown, time);
                     } else {
-                        LoggingManager.debug("Debug: this Server Name = " + instance.getName());
+                        LoggingManager.debug("Debug: this Server Name = " + instance.getName() +
+                                " no match for restart command");
                     }
                     break;
                 case "EnableDebug":

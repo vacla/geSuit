@@ -4,7 +4,6 @@ import net.cubespace.geSuit.BukkitModule;
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuit.utils.Utilities;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
