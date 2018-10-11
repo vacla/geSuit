@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>geSuitSpawn</artifactId>
     <packaging>jar</packaging>
@@ -8,14 +7,14 @@
         <dependency>
             <groupId>net.cubespace</groupId>
             <artifactId>BukkitModule</artifactId>
-            <version>0.9.3-RC</version>
+            <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
     <parent>
         <groupId>net.cubespace</groupId>
         <artifactId>geSuitCommon</artifactId>
-        <version>0.9.3-SNAPSHOT</version>
+        <version>0.9.3</version>
         <relativePath>../common/pom.xml</relativePath>
     </parent>
     <build>

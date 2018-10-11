@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.cubespace</groupId>
     <artifactId>geSuit-parent</artifactId>
-    <version>0.9.3-SNAPSHOT</version>
+    <version>0.9.3</version>
     <name>geSuit-parent</name>
     <packaging>pom</packaging>
     <modules>
@@ -12,7 +11,7 @@
         <module>../modules/common</module>
     </modules>
     <properties>
-        <build.number/>
+        <build.number />
         <plugin.version>${project.version}-${build.number}</plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -20,7 +19,7 @@
         <connection>scm:git:git@github.com:AddstarMC/geSuit.git</connection>
         <developerConnection>scm:git:git@github.com:AddstarMC/geSuit.git</developerConnection>
         <url>https://github.com/AddstarMC/geSuit</url>
-        <tag>HEAD</tag>
+        <tag>geSuit-parent-0.9.3</tag>
     </scm>
     <developers>
         <developer>
