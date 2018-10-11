@@ -10,7 +10,7 @@
     <parent>
         <groupId>net.cubespace</groupId>
         <artifactId>geSuit-parent</artifactId>
-        <version>0.9.3-RC</version>
+        <version>0.9.3-SNAPSHOT</version>
         <relativePath>../geSuit-parent/pom.xml</relativePath>
     </parent>
     <repositories>
