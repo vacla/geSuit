@@ -3,7 +3,7 @@
 
     <groupId>net.cubespace</groupId>
     <artifactId>geSuit-parent</artifactId>
-    <version>0.9.3</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>geSuit-parent</name>
     <packaging>pom</packaging>
     <modules>
@@ -19,7 +19,6 @@
         <connection>scm:git:git@github.com:AddstarMC/geSuit.git</connection>
         <developerConnection>scm:git:git@github.com:AddstarMC/geSuit.git</developerConnection>
         <url>https://github.com/AddstarMC/geSuit</url>
-        <tag>geSuit-parent-0.9.3</tag>
     </scm>
     <developers>
         <developer>
