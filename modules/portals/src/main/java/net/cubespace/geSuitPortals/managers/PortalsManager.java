@@ -4,8 +4,17 @@ import net.cubespace.geSuit.BukkitModule;
 import net.cubespace.geSuit.managers.DataManager;
 import net.cubespace.geSuitPortals.geSuitPortals;
 import net.cubespace.geSuitPortals.objects.Portal;
-import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
-import com.sk89q.worldedit.bukkit.selections.Selection;
+
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.SessionOwner;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -98,14 +107,21 @@ public class PortalsManager extends DataManager {
                           String fill ) {
 
         Player p = ( Player ) sender;
-        Selection sel = geSuitPortals.WORLDEDIT.getSelection( p );
+        Region region;
+        try {
+            LocalSession session = WorldEdit.getInstance().getSessionManager().get(BukkitAdapter.adapt(p));
+            region = session.getRegionSelector(session.getSelectionWorld()).getRegion();
+        } catch (IncompleteRegionException exception) {
+            exception.printStackTrace();
+            return;
+        }
 
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream( b );
         try {
             out.writeUTF( "SetPortal" );
             out.writeUTF( sender.getName() );
-            if (!(sel instanceof CuboidSelection)) {
+            if (!(region instanceof CuboidRegion)) {
                 out.writeBoolean( false );
             } else {
                 out.writeBoolean( true );
@@ -113,13 +129,13 @@ public class PortalsManager extends DataManager {
                 out.writeUTF( type );
                 out.writeUTF( dest );
                 out.writeUTF( fill );
-                Location max = sel.getMaximumPoint();
-                Location min = sel.getMinimumPoint();
-                out.writeUTF( max.getWorld().getName() );
+                Vector max = region.getMaximumPoint();
+                Vector min = region.getMinimumPoint();
+                out.writeUTF(region.getWorld().getName());
                 out.writeDouble( max.getX() );
                 out.writeDouble( max.getY() );
                 out.writeDouble( max.getZ() );
-                out.writeUTF( min.getWorld().getName() );
+                out.writeUTF(region.getWorld().getName());
                 out.writeDouble( min.getX() );
                 out.writeDouble( min.getY() );
                 out.writeDouble( min.getZ() );

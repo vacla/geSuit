@@ -1,10 +1,12 @@
 package net.cubespace.geSuitTeleports.utils;
 
-import com.sk89q.worldguard.bukkit.RegionContainer;
-import com.sk89q.worldguard.bukkit.RegionQuery;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 
 import net.cubespace.geSuit.managers.LoggingManager;
 import net.cubespace.geSuitTeleports.geSuitTeleports;
@@ -309,12 +311,13 @@ public class LocationUtil {
         LoggingManager.debug("Checking if WG allows TP. Status of Plugin:" + geSuitTeleports.worldGuarded);//Todo remove after debug
         if (geSuitTeleports.worldGuarded) {
             try {
-                RegionContainer container = geSuitTeleports.getWorldGuard().getRegionContainer();
+                WorldGuard.getInstance().getPlatform().getRegionContainer();
+                RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
                 RegionQuery query = container.createQuery();
-                ApplicableRegionSet set = query.getApplicableRegions(l);
+                ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(l));
                 if (!set.isVirtual()) {//VirtualSet indicates that there is no region protection to check
                     for (ProtectedRegion region : set) {
-                        Set<String> flags = region.getFlag(DefaultFlag.BLOCKED_CMDS);
+                        Set<String> flags = region.getFlag(Flags.BLOCKED_CMDS);
                         if (flags != null) {
                             LoggingManager.debug("Blocked Commands Found:" + flags.toString());
                             for (String cmd : flags) {

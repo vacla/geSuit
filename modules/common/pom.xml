@@ -21,8 +21,10 @@
         <module>../teleports</module>
     </modules>
     <properties>
-        <spigot.api.version>legacy</spigot.api.version>
+        <spigot.api.version>1.13</spigot.api.version>
         <spigot.version>1.13.1-R0.1-SNAPSHOT</spigot.version>
+        <worldedit.version>7.0.0-SNAPSHOT</worldedit.version>
+        <worldgaurd.version>7.0.0-SNAPSHOT</worldgaurd.version>
     </properties>
     <repositories>
         <repository>
@@ -51,12 +53,6 @@
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>${spigot.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>plugin-annotations</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

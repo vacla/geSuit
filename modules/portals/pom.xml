@@ -21,8 +21,14 @@
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
-            <version>6.1.9-SNAPSHOT</version>
+            <version>${worldedit.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bstats</groupId>
+                    <artifactId>bstats-bukkit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.cubespace</groupId>
