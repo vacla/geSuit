@@ -1,5 +1,6 @@
 package net.cubespace.geSuitPortals.managers;
 
+import com.sk89q.worldedit.math.BlockVector3;
 import net.cubespace.geSuit.BukkitModule;
 import net.cubespace.geSuit.managers.DataManager;
 import net.cubespace.geSuitPortals.geSuitPortals;
@@ -7,7 +8,6 @@ import net.cubespace.geSuitPortals.objects.Portal;
 
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -129,8 +129,8 @@ public class PortalsManager extends DataManager {
                 out.writeUTF( type );
                 out.writeUTF( dest );
                 out.writeUTF( fill );
-                Vector max = region.getMaximumPoint();
-                Vector min = region.getMinimumPoint();
+                BlockVector3 max = region.getMaximumPoint();
+                BlockVector3 min = region.getMinimumPoint();
                 out.writeUTF(region.getWorld().getName());
                 out.writeDouble( max.getX() );
                 out.writeDouble( max.getY() );
