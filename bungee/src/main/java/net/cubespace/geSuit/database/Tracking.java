@@ -149,8 +149,9 @@ public class Tracking implements IRepository {
     
     Runnable nameHistoryUpdater(final List<UUID> uuids) {
         return () -> {
+            int updated = 0;
+            LoggingManager.log("Starting Tracking Table update for " + uuids.size() + " UUIDs...");
             for (UUID uuid : uuids) {
-                int updated = 0;
                 try {
                     Map<Timestamp, String> input = Profile.getMojangNameHistory(uuid);
                     Date changedAt = new Date(0);
@@ -161,21 +162,21 @@ public class Tracking implements IRepository {
                         Timestamp time = e.getKey();
                         Date firstSeen = new Date(time.getTime());
                         if (changedAt.before(firstSeen)) changedAt = firstSeen;
-                        insertHistoricTracking(oldName, uuid.toString(), "", firstSeen, changedAt);
+                        insertHistoricTracking(oldName, uuid.toString().replace("-", ""), "", firstSeen, changedAt);
                         updated++;
                         changedAt = firstSeen;
                     }
-                    if (updated % 500 == 0) {
-                        LoggingManager.log("0Updating database....." + updated + " processed...");
+                    if (updated % 100 == 0) {
+                        LoggingManager.log("Processing Tracking Table... " + updated + " entries updated...");
                     }
                     Thread.sleep(1200);
                 } catch (IllegalStateException | InterruptedException e) {
                     String mess = e.getMessage();
-                    System.out.println("Interrupted at UUID :" + uuid + " Cause:" + mess);
+                    System.out.println("Interrupted at UUID: " + uuid + " Cause: " + mess);
                     e.printStackTrace();
                 }
-                LoggingManager.log("Updated " + updated + " entries into Tracking Table....");
             }
+            LoggingManager.log("Tracking Table update complete! Updated " + updated + " entries.");
         };
     }
 
