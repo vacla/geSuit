@@ -26,14 +26,14 @@ public class ForceBatchNameHistoryUpdateCommand extends Command {
             return;
         }
         boolean all = false;
-        String param1 = "";
-        String param2 = "";
+        String startUUID = "";
+        String endUUID = "";
         if (args[0].equals("all")) all = true;
         
         if (args.length == 2) {
-            param1 = args[0];
-            param2 = args[1];
+            startUUID = args[0];
+            endUUID = args[1];
         }
-        PlayerManager.batchUpdatePlayerNames(sender, all, param1, param2);
+        PlayerManager.batchUpdatePlayerNames(sender, all, startUUID, endUUID);
     }
 }
