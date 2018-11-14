@@ -115,7 +115,7 @@ public class Tracking implements IRepository {
         List<Track> tracking = new ArrayList<>();
         try (Connection con = DatabaseManager.connectionPool.getConnection()) {
             PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("getNameHistory", con);
-            String uuid = id.toString().replace("-", "");
+            String uuid = Utilities.getStringFromUUID(id);
             statement.setString(1, uuid);
             statement.setString(2, uuid);
             
@@ -162,7 +162,7 @@ public class Tracking implements IRepository {
                         Timestamp time = e.getKey();
                         Date firstSeen = new Date(time.getTime());
                         if (changedAt.before(firstSeen)) changedAt = firstSeen;
-                        insertHistoricTracking(oldName, uuid.toString().replace("-", ""), "", firstSeen, changedAt);
+                        insertHistoricTracking(oldName, Utilities.getStringFromUUID(uuid), "", firstSeen, changedAt);
                         updated++;
                         changedAt = firstSeen;
                     }
@@ -184,7 +184,7 @@ public class Tracking implements IRepository {
         Track tracking = null;
         try (Connection con = DatabaseManager.connectionPool.getConnection()) {
             PreparedStatement statement = DatabaseManager.connectionPool.getPreparedStatement("checkNameChange", con);
-            String uuid = id.toString().replace("-", "");
+            String uuid = Utilities.getStringFromUUID(id);
             statement.setString(1, uuid);
             statement.setString(2, playername);
             
