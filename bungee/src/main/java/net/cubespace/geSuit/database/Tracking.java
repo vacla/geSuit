@@ -153,7 +153,13 @@ public class Tracking implements IRepository {
             LoggingManager.log("Starting Tracking Table update for " + uuids.size() + " UUIDs...");
             for (UUID uuid : uuids) {
                 try {
+                    // Fetch the list of names for this UUID from Mojang
                     Map<Timestamp, String> input = Profile.getMojangNameHistory(uuid);
+                    if (input == null) {
+                        LoggingManager.log("WARNING: Failed to fetch Tracking name history of \"" + uuid + "\" from Mojang");
+                        continue;
+                    }
+
                     Date changedAt = new Date(0);
                     TreeMap<Timestamp, String> sorted = new TreeMap<>(input);
                     while (sorted.size() > 0) {
@@ -165,9 +171,9 @@ public class Tracking implements IRepository {
                         insertHistoricTracking(oldName, Utilities.getStringFromUUID(uuid), "", firstSeen, changedAt);
                         updated++;
                         changedAt = firstSeen;
-                    }
-                    if (updated % 100 == 0) {
-                        LoggingManager.log("Processing Tracking Table... " + updated + " entries updated...");
+                        if (updated % 100 == 0) {
+                            LoggingManager.log("Processing Tracking Table... " + updated + " entries updated...");
+                        }
                     }
                     Thread.sleep(1200);
                 } catch (IllegalStateException | InterruptedException e) {

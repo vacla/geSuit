@@ -3,6 +3,7 @@ package net.cubespace.geSuit.profile;
 import com.google.gson.Gson;
 
 import net.cubespace.geSuit.Utilities;
+import net.cubespace.geSuit.managers.LoggingManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -102,6 +103,7 @@ public class Profile {
                 return null;
             }
             NameHistory[] names = gson.get().fromJson(in, NameHistory[].class);
+            if (names == null || names.length == 0) return null;
             for (NameHistory name : names) {
                 if (name.getName() != null) {
                     String oldname = name.getName();
