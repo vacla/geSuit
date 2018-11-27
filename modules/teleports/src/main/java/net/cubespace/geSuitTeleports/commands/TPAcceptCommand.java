@@ -25,7 +25,7 @@ public class TPAcceptCommand extends CommandManager<TeleportsManager> {
 		}
 		Player p  = Bukkit.getPlayer(sender.getName());
 		p.saveData();
-		if (manager.getUtil().worldGuardTpAllowed(p.getLocation(), p) || sender.hasPermission("worldgaurd.teleports.allregions"))
+		if (manager.getUtil().worldGuardTpAllowed(p.getLocation(), p) || sender.hasPermission("worldguard.teleports.allregions" || sender.hasPermission("worldgaurd.teleports.allregions"))
 			manager.tpAccept(sender);
 		else sender.sendMessage(ChatColor.RED + "This region will not allow teleporting");
 		return true;

@@ -323,7 +323,7 @@ public class LocationUtil {
                             for (String cmd : flags) {
                                 if (geSuitTeleports.deny_Teleport.contains(cmd)) {
                                     LoggingManager.debug("Test for " + cmd + " was true.");
-                                    if (p.hasPermission("worldgaurd.teleports.allregions") || TeleportsManager.administrativeTeleport.contains(p)) {
+                                    if (p.hasPermission("worldguard.teleports.allregions") || p.hasPermission("worldgaurd.teleports.allregions") || TeleportsManager.administrativeTeleport.contains(p)) {
                                         p.sendMessage(geSuitTeleports.tp_admin_bypass);
                                         LoggingManager.debug("Player:" + p.getDisplayName() + ":" + geSuitTeleports.tp_admin_bypass + "Location: Region=" + region.getId());
                                         TeleportsManager.administrativeTeleport.remove(p);
@@ -347,7 +347,7 @@ public class LocationUtil {
                 result = true;
             }
         }
-        LoggingManager.debug("World gaurd check for TP completed: Player=" + p.getDisplayName() + " Location=(" + l.toString() + ") Region TP Allowed=" + result);
+        LoggingManager.debug("World guard check for TP completed: Player=" + p.getDisplayName() + " Location=(" + l.toString() + ") Region TP Allowed=" + result);
         return result;
     }
 }
