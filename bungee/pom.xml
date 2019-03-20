@@ -1,7 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.cubespace</groupId>
     <artifactId>geSuit</artifactId>
     <packaging>jar</packaging>
     <url>https://github.com/AddstarMC/geSuit</url>
@@ -279,7 +278,13 @@
                             <pattern>org.bstats</pattern>
                             <!-- Replace this with your package! -->
                             <shadedPattern>net.cubespace.geSuit</shadedPattern>
-                        </relocation>
+                            <pattern>redis.clients.jedis</pattern>
+                            <shadedPattern>net.cubespace.geSuit.shaded.redis.clients.jedis</shadedPattern>
+                            <pattern>org.apache.commons</pattern>
+                            <shadedPattern>net.cubespace.geSuit.shaded.org.apache.commons</shadedPattern>
+                            <pattern>org.slf4j</pattern>
+                            <shadedPattern>net.cubespace.geSuit.shaded.org.slf4j</shadedPattern>
+                        </relocation>                        
                     </relocations>
                 </configuration>
                 <executions>
@@ -290,9 +295,9 @@
                         </goals>
                         <configuration>
                             <artifactSet>
-                                <excludes>
+                                <!-- <<excludes>
                                     <exclude>org.slf4j:slf4j-api</exclude>
-                                </excludes>
+                                </excludes> -->
                             </artifactSet>
                         </configuration>
                     </execution>
