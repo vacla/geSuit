@@ -56,6 +56,7 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bungeecord</artifactId>
             <version>1.2</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.maxmind.geoip</groupId>
@@ -276,10 +277,7 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <!-- Replace this with your package! -->
-                            <shadedPattern>net.cubespace.geSuit</shadedPattern>
-                            <pattern>redis.clients.jedis</pattern>
-                            <shadedPattern>net.cubespace.geSuit.shaded.redis.clients.jedis</shadedPattern>
+                            <shadedPattern>net.cubespace.geSuit.shaded.org.bstats</shadedPattern>
                             <pattern>org.apache.commons</pattern>
                             <shadedPattern>net.cubespace.geSuit.shaded.org.apache.commons</shadedPattern>
                             <pattern>org.slf4j</pattern>
@@ -293,13 +291,6 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <artifactSet>
-                                <!-- <<excludes>
-                                    <exclude>org.slf4j:slf4j-api</exclude>
-                                </excludes> -->
-                            </artifactSet>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
