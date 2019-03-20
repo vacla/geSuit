@@ -11,7 +11,7 @@ public class GeoIPSettings extends YamlConfig {
     public boolean DownloadIfMissing = true;
 
     @Comment("URL for the database that provides country level lookups only")
-    public String DownloadURL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
+    public String DownloadURL = "https://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz";
     @Comment("URL for the database that provides city level lookups")
-    public String CityDownloadURL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz";
+    public String CityDownloadURL = "https://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz";
 }
