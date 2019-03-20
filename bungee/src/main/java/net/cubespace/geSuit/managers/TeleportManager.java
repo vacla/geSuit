@@ -93,7 +93,7 @@ public class TeleportManager {
             return;
         }
         pendingTeleportsTPAHere.put(bt, bp);
-        bp.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", bp.getName()));
+        bp.sendMessage(ConfigManager.messages.TELEPORT_REQUEST_SENT.replace("{player}", bt.getName()));
         bt.sendMessage(ConfigManager.messages.PLAYER_REQUESTS_YOU_TELEPORT_TO_THEM.replace("{player}", bp.getName()));
 
         ProxyServer.getInstance().getScheduler().schedule(geSuit.getInstance(), () -> {
